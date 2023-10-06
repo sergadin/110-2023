@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-int func(FILE* input, FILE* output) {
+int func(FILE *input, FILE *output) {
 	double ans, mult = 1;
 	int n = 0;
 	while (!feof(input)) {
@@ -31,7 +31,7 @@ int func(FILE* input, FILE* output) {
 int main() {
 	char input_name[32], output_name[32];
 	scanf("%s%s", input_name, output_name);
-	FILE* input, * output;
+	FILE *input, *output;
 	input = fopen(input_name, "r");
 	output = fopen(output_name, "w");
 	if (input) {
