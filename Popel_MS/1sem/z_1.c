@@ -9,6 +9,7 @@ int main(void){
 	double epsilion;
 	int flag=0;
 	char file_input[30];
+	char test[50];
 	
 	printf("Введите имя входного файла: \n");
 	scanf("%s", file_input);
@@ -47,24 +48,36 @@ int main(void){
 	while (fscanf(f_in, "%lf", & curr)==1){
 		if (flag>=1){
 			if (fabs(((c1*a_n1)+(c2*a_n0)+(c3*curr))-b)>=epsilion){
-				printf("Результат загружен в файл output.txt.\n");
-				fprintf(f_out,"Последовательность не удовлетворяет условиям\n");
-				fclose(f_in);
-				fclose(f_out);
-				return 0;
+				flag=-1;
 			}
 			
 			a_n1=a_n0;
 			a_n0=curr;
+			if (flag!=-1){
+			flag+=1;
+			}
 
 		}else{
+			if (flag!=-1){
 			flag+=1;
+			}
 			a_n1=a_n0;
 			a_n0=curr;
 		}
 	}
-	if (flag==0){
+	if ((flag==1) || (flag==0)){
 		printf("В файле недостаточно значений.\n");
+		fclose(f_in);
+		fclose(f_out);
+		return 0;
+	}
+	if (fscanf(f_in,"%s", test)==1){
+		printf("В файле содержатся некорректные значения.\n");
+		return 0;
+		}
+	if (flag==-1){
+		printf("Результат загружен в файл output.txt.\n");
+		fprintf(f_out,"Последовательность не удовлетворяет условиям.\n");
 		fclose(f_in);
 		fclose(f_out);
 		return 0;
