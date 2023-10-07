@@ -26,7 +26,7 @@ int main (void)
 	float answ = 0;
 	FILE *input, *output;
 	input = fopen ("input.txt", "r");
-	output = fopen ("output.txt", "r");
+	output = fopen ("output.txt", "w");
 	if (test_file (input) == -1){
 		return -1;
 	}
@@ -35,6 +35,7 @@ int main (void)
 	}
 	answ = compute_midar (input);
 	fprintf (output, "answ = %f \n", answ);
+	printf ("answ = %f \n", answ);
 	fclose (input);
 	fclose (output);
 	return 0;
