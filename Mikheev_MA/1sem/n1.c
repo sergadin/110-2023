@@ -6,12 +6,12 @@ int main(void)
     FILE *input, *output;
     input = fopen("input.txt", "r");
     if(input == NULL){
-        printf("Не удалось открыть файл");
+        printf("Не удалось открыть файл\n");
         return -1;
     }
     fscanf(input, "%d %d", &x, &y);
     if (x == 0){
-        printf("Указана некорректная последовательность");
+        printf("Указана некорректная последовательность\n");
         return -1;
     }
     z = x;
@@ -20,7 +20,7 @@ int main(void)
         if(x > y && y != 0){
             cur = cur + 1;
             num = cur;
-            y = x;
+            x = y;
         }
         else{
             cur = cur + 1;
@@ -28,10 +28,10 @@ int main(void)
     }
     output = fopen("output.txt", "w");
     if(x == z){
-        fprintf(output, "Номер наименьшего - %d", num);
+        fprintf(output, "Номер наименьшего - %d\n", num);
     }
     else{
-        fprintf(output, "Номер наименьшего - %d", num + 1);
+        fprintf(output, "Номер наименьшего - %d\n", num + 1);
     }
     return 0;
 }
