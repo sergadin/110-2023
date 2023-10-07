@@ -1,5 +1,5 @@
 #include <stdio.h>
-#define E 0.1
+#include <math.h>
 int main(void)
 
 {
@@ -11,6 +11,7 @@ int main(void)
     float b = 100;
     float c = 1000;
     int d, e, g, h;
+    double E = 0.1;
 
     if(f == NULL)
     {
@@ -18,10 +19,18 @@ int main(void)
         return -1;
     }
 
-    if((fscanf(f, "%f", &a) != 1) && (fscanf(f, "%f", &b) != 1))
+    if((fscanf(f, "%f", &a) != 1)
     {
         printf("Reading error\n");
         return -1;
+    }
+    else
+    {
+        if (fscanf(f, "%f", &b) != 1)
+        {
+            printf("Reading error\n");
+            return -1;
+        }
     }
 
     printf("Enter multipliers\n");
@@ -33,16 +42,18 @@ int main(void)
 
     while((fscanf(f, "%f", &c) == 1))
     {
-        if ((d * a + e * b + g * c >= h*(E+1) ) && (d*a + e * b + g * c <= h*(1-E) ))
+        if (((d * a + e * b + g * c) - h) >= E)
         {
             printf("The sequence does not satisfy the expression at number  %d \n", count);
+            fclose(f);
             return 0;
         }
-        a = c;
         current = a;
+        a = b;
         b = current;
         count++;
     }
     printf("The sequence satisfies the expression\n");
+    fclose(f);
     return 0;
 }
