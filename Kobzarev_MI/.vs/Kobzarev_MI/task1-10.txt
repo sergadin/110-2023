@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+int main(void) {
+    int cur, prev, count;
+    FILE*f = fopen("input.txt","r");
+    count = 1;
+    
+    if(f==NULL){
+        printf("Error, empty file.");
+    }
+    
+    fscanf(f, "%d", &prev);
+    
+    while(fscanf(f, "%d", &cur)!=EOF){
+        if(cur > prev){
+            count++;
+        }
+        prev = count;
+    }
+    
+    printf("%d", count);
+    
+    return 0;
+}
