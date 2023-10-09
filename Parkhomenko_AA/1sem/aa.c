@@ -10,6 +10,7 @@ int checkSequence(char* filename) {
     int currentNum, prevNum;
     int isIncreasing = 1;
     // флаг для проверки возрастающей последовательности
+    
     int isDecreasing = 1; 
     // флаг для проверки убывающей последовательности
 
