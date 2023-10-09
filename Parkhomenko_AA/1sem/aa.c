@@ -1,12 +1,11 @@
 #include <stdio.h>
-
 int checkSequence(char* filename) {
     FILE* file = fopen(filename, "r");
     if (file == NULL) {
         printf("Ошибка открытия файла\n");
         return -1;
     }
-
+    
     int currentNum, prevNum;
     int isIncreasing = 1;
     // флаг для проверки возрастающей последовательности
