@@ -33,7 +33,7 @@ int main(void)
         }
     }
     output = fopen("output.txt", "w");
-    if(x == z){
+    if(x == z && num < 1){
         fprintf(output, "Номер наименьшего - %d\n", num);
     }
     else{
