@@ -40,7 +40,6 @@ int main(void){
 		}
 	}
 	if (fscanf(f_in,"%s", test)==1){
-	printf("%s",test);
 		printf("В файле содержатся некорректные значения.\n");
 		fclose(f_in);
 		fclose(f_out);
