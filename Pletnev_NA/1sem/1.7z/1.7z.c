@@ -9,7 +9,7 @@ int main(void) {
     char buf[LEN];
     
 
-    fopen_s(&f, "input.txt", "a+");  //открыли файл для чтения
+    fopen_s(&f, "input.txt", "r");  //открыли файл для чтения
 
     if (f == NULL) {                      //проверяем существование файла. если его нет, выводим ошибку
         printf("Error: File does not exist\n");
@@ -35,12 +35,19 @@ int main(void) {
 
     }
 
-    if ((maxx - minx) > eps) {
-        printf("Result: No, not all numbers are equal with an error of <%lf>\n", eps);
-        return 1;
+    if ((maxx != -1e100) && (minx != 1e100)) {
+        if ((maxx - minx) > eps) {
+            printf("Result: No, not all numbers are equal with an error of <%lf>\n", eps);
+            return 1;
+        }
+        else {
+            printf("Result: Yes, all numbers are equal with an error of <%lf>\n", eps);
+            return 2;
+        }
     }
+
     else {
-        printf("Result: Yes, all numbers are equal with an error of <%lf>\n", eps);
-        return 2;
+        printf("The file 'input.txt' is empty\n");
+        return 0;
     }
 }
