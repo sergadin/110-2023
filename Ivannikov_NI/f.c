@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h> 
-int fun(const char *sf,float *res)
+int fun(const char *sf,float *D)
 {
  int x,n=0,sumx2=0,sumx1=0,err=0;
- float M,D;
  FILE *f;
  f=fopen(sf,"r");
  if(f!=NULL)
@@ -21,9 +20,7 @@ int fun(const char *sf,float *res)
     sumx1=sumx1+x;
     n=n+1;
    }   
-   M=(sumx1)/n;
    *D=(float)((sumx2*n-sumx1*sumx1))/(n*n);
-   *res=D;
   }
   fclose(f);
  }
