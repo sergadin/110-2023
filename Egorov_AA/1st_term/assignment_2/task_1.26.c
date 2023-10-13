@@ -47,11 +47,11 @@ double a_mean(FILE* input, int* error) {
 		}
 	}
 	if (count) {
-		*error = 0; // error = 0 - все хорошо
+		*error = 0; // error = 0 - РІСЃРµ С…РѕСЂРѕС€Рѕ
 		return sum / count;
 	}
 	else {
-		*error = -1; // error = -1 - пустой файл
+		*error = -1; // error = -1 - С„Р°Р№Р» РїСѓСЃС‚
 		return 0;
 	}
 }
