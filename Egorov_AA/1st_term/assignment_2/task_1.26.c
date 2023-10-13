@@ -48,7 +48,6 @@ double a_mean(FILE* input, int* error) { /* функция возвращает 
 	}
 	if (!count) {
 		*error = -1;          // error = -1 - пустой файл
-		return 0;
 	}
 	*error = 0;               // error = 0 - все хорошо
 	return sum / count;
