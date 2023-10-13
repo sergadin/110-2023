@@ -22,7 +22,7 @@ int fun(const char *sf,float *res)
     n=n+1;
    }   
    M=(sumx1)/n;
-   D=((sumx2-2*sumx1*M+n*M*M))/n;
+   *D=(float)((sumx2*n-sumx1*sumx1))/(n*n);
    *res=D;
   }
   fclose(f);
