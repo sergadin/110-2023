@@ -8,7 +8,8 @@ int main(void){
 	double x;
 	double b=0.;
 	double a=0.;
-	char test[50];
+	char test[100000];
+	int flag=0, fl=0;
 	
 	FILE *f_in, *f_out;
 
@@ -28,28 +29,35 @@ int main(void){
 		printf("Файл не открывается\n");
 		return -1;	
 	}			
-	
-	if (fscanf(f_in, "%lf", & b)!=1){
+	fgets(test, 100000,f_in);
+	if (sscanf(test, "%lf", & b)!=1){
 		printf("Ошибка чтения\n");
 		return -1;
 	}		
 	polinom += b;
-	while (fscanf(f_in, "%lf", &a)==1){
+	while (fgets(test, 100000, f_in)){
+		if (sscanf(test, "%lf", &a)!=1){
+			fl+=1;
+			continue;
+		}
 		polinom*=x;
 		polinom+=a;
 		derivative*=x;
 		derivative+=(summa+b);
 		summa=(summa+b)*x;
 		b=a;
-	}
-	
-	if (fscanf(f_in,"%s", test)==1){
-		printf("В файле содержатся некорректные значения.\n");
-		fclose(f_in);
-		fclose(f_out);
-		return 0;
+		flag=1;
+		if (fl!=0){
+			printf("В файле содержатся некорректные значения или пустые строчки.\n");
+			fclose(f_in);
+			fclose(f_out);
+			return -1;
 		}
-
+	}
+	if (flag==0){
+		printf("Файл пуст.\n");
+		return -1;
+		}
 	printf("Ответ загружен в файл 'output.txt'.\n");		
 	fprintf(f_out,"Значение выражения = %lf\n Значение производной выражения = %lf\n", polinom, derivative);
 	fclose(f_in);
