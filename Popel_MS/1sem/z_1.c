@@ -7,9 +7,9 @@ int main(void){
 	double a_n0=0.;
 	double curr;
 	double epsilion;
-	int flag=0;
+	int flag=0 fl=0;
 	char file_input[30];
-	char test[50];
+	char test[10000], t[10000];
 	
 	printf("Введите имя входного файла: \n");
 	scanf("%s", file_input);
@@ -37,7 +37,8 @@ int main(void){
 		printf("Файл не открывается\n");
 		return -1;	
 	}
-	if (fscanf(f_in, "%lf", & curr)!=1)
+	fgets(test, 10000, f_in);
+	if (sscanf(test, "%lf", & curr)!=1)
 	{
 		printf("ошибка чтения\n");
 		return -1;
@@ -45,7 +46,17 @@ int main(void){
 	a_n1=a_n0;
 	a_n0=curr;
 	
-	while (fscanf(f_in, "%lf", & curr)==1){
+	while (fgets(test, 10000, f_in)){
+		if (sscanf(test, "%lf", & curr)!=1){
+			if (sscanf(test, "%s", t)==1){
+				printf("В файле содержатся некорректные значения.\n");
+				fclose(f_in);
+				fclose(f_out);
+				return -1;
+			}
+			fl+=1;
+			continue;
+		}
 		if (flag>=1){
 			if (fabs(((c1*a_n1)+(c2*a_n0)+(c3*curr))-b)>=epsilion){
 				flag=-1;
@@ -64,6 +75,12 @@ int main(void){
 			a_n1=a_n0;
 			a_n0=curr;
 		}
+		if (fl!=0){
+			printf("В файле содержатся некорректные значения или пустые строчки.\n");
+			fclose(f_in);
+			fclose(f_out);
+			return -1;
+		}
 	}
 	if ((flag==1) || (flag==0)){
 		printf("В файле недостаточно значений.\n");
@@ -71,10 +88,6 @@ int main(void){
 		fclose(f_out);
 		return 0;
 	}
-	if (fscanf(f_in,"%s", test)==1){
-		printf("В файле содержатся некорректные значения.\n");
-		return 0;
-		}
 	if (flag==-1){
 		printf("Результат загружен в файл output.txt.\n");
 		fprintf(f_out,"Последовательность не удовлетворяет условиям.\n");
