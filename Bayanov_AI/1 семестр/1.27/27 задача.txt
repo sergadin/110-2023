@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <math.h>
+float Function(FILE*vvod, char c[1000])
+{
+  int current;
+  int previous1;
+  int previous2;
+  int t=0;
+  float sum=0;
+  float Ar=0;
+  
+  vvod=fopen(c, "r");
+  if(fscanf(vvod, "%d", &current)==EOF)
+     Ar=0;
+         else
+            {
+                previous1=current;
+                previous2=previous1-1;
+               while(!feof(vvod))
+                       {
+                         fscanf(vvod, "%d", &current);
+                         
+                             if(previous1==current && previous2!=current) 
+                               {
+                                   t++;
+                                   sum+=current;
+                               } 
+                         previous2=previous1;
+                         previous1=current;
+                       }
+                if(t!=0)
+                Ar=sum/t;
+             }
+       return(Ar);
+}
+
+ int main(void)
+  {
+   FILE*vvod;
+   char nazvanie[1000];
+   
+    printf("Введите название файла: ");
+    scanf("%s", nazvanie);
+  
+
+   vvod=fopen(nazvanie, "r");
+      if(vvod==NULL)
+        {
+         printf("Не удалось открыть файл");
+         return -1;
+         }
+      fclose(vvod); 
+      
+
+          printf("%f", Function(vvod, nazvanie));
+     return 0;
+   }
