@@ -34,6 +34,36 @@ float Function(FILE*vvod, char c[1000])
        return(Ar);
 }
 
+int Proverka(FILE*vvod, char c[1000])
+{
+  int current;
+  int previous1;
+  int previous2;
+  int t=0;
+  
+  vvod=fopen(c, "r");
+  if(fscanf(vvod, "%d", &current)==EOF)
+     t=-1;
+         else
+            {
+                previous1=current;
+                previous2=previous1-1;
+               while(!feof(vvod))
+                       {
+                         fscanf(vvod, "%d", &current);
+                         
+                             if(previous1==current && previous2!=current) 
+                               {
+                                   t++;
+                               } 
+                         previous2=previous1;
+                         previous1=current;
+                       }
+             }
+       return(t);
+}
+
+
  int main(void)
   {
    FILE*vvod;
@@ -51,7 +81,12 @@ float Function(FILE*vvod, char c[1000])
          }
       fclose(vvod); 
       
-
-          printf("%f", Function(vvod, nazvanie));
+    if(Proverka(vvod, nazvanie)==-1)
+     printf("Файл пустой");
+       else
+          if(Proverka(vvod, nazvanie)==0)
+              printf("В последовательности нет постоянных участков");
+                 else
+                   printf("%f", Function(vvod, nazvanie));
      return 0;
    }
