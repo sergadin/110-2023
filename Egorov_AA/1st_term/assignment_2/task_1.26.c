@@ -32,7 +32,7 @@ int main(void) {
 	return 0;
 }
 
-double a_mean(FILE* input, int* error) { /* функция возвращает среднее арифметическое значение */
+double a_mean(FILE* input, int* error) {     /* функция возвращает среднее арифметическое значение */
 	int count = 0, last_num, cur_num;    /* чисел последовательности и присваивает значение    */
 	double sum = 0;                      /* переменной - флагу error                           */
 	if (fscanf(input, "%d", &last_num) == 1) {
