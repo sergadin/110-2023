@@ -1,10 +1,10 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <math.h>
 
 double a_mean(FILE* input, int* error);
 
 int main(void) {
-  FILE* input, * output;
+	FILE* input, * output;
 	char input_name[32], output_name[32];
 	scanf("%s%s", input_name, output_name);
 	input = fopen(input_name, "r");
@@ -32,9 +32,9 @@ int main(void) {
 	return 0;
 }
 
-double a_mean(FILE* input, int* error) {
-	int count = 0, last_num, cur_num;
-	double sum = 0;
+double a_mean(FILE* input, int* error) { /* функция возвращает среднее арифметическое значение */
+	int count = 0, last_num, cur_num;    /* чисел последовательности и присваивает значение    */
+	double sum = 0;                      /* переменной - флагу error                           */
 	if (fscanf(input, "%d", &last_num) == 1) {
 		sum += last_num;
 		count++;
@@ -46,12 +46,10 @@ double a_mean(FILE* input, int* error) {
 			last_num = cur_num;
 		}
 	}
-	if (count) {
-		*error = 0; // error = 0 - ��� ������
-		return sum / count;
-	}
-	else {
-		*error = -1; // error = -1 - ������ ����
+	if (!count) {
+		*error = -1;          // error = -1 - пустой файл
 		return 0;
 	}
+	*error = 0;               // error = 0 - все хорошо
+	return sum / count;
 }
