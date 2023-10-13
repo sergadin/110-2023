@@ -5,7 +5,6 @@ int solution(FILE *f_in , FILE *f_out){
 	double epsilion;
 	double curr;
 	double min_c , max_c;
-	int flag=0 , fl=0;
 	
 	printf("Введите значение погрешности: \n");
 	scanf("%lf", & epsilion);
