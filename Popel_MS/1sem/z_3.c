@@ -60,7 +60,7 @@ int main(void){
 			return -1;
 		}
 	}
-	if (flag==0){
+	if ((flag==0) && (b==0.)){
 		printf("Файл пуст.\n");
 		return -1;
 		}
