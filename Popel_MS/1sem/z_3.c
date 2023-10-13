@@ -8,7 +8,7 @@ int main(void){
 	double x;
 	double b=0.;
 	double a=0.;
-	char test[100000];
+	char test[100000], t[10000];
 	int flag=0, fl=0;
 	
 	FILE *f_in, *f_out;
@@ -37,6 +37,12 @@ int main(void){
 	polinom += b;
 	while (fgets(test, 100000, f_in)){
 		if (sscanf(test, "%lf", &a)!=1){
+			if (sscanf(test, "%s", t)==1){
+				printf("В файле содержатся некорректные значения.\n");
+				fclose(f_in);
+				fclose(f_out);
+				return -1;
+			}
 			fl+=1;
 			continue;
 		}
