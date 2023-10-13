@@ -4,13 +4,13 @@ int main(void)
 {
 
     FILE* f;
-    int count = 3;
+    int count = 0;
     f = fopen("input.txt", "r");
     float a = 10;
     float b = 100;
     float c = 1000;
-    int d = 0;
-    int res;
+    double d = 0;
+    double res;
 
     if (f == NULL)
     {
@@ -18,7 +18,7 @@ int main(void)
         return -1;
     }
 
-    if ((fscanf(f, "%f", &a) != 1)
+    if (fscanf(f, "%f", &a) != 1)
     {
         printf("Reading error\n");
             return -1;
@@ -33,7 +33,7 @@ int main(void)
         }
     }
 
-    while ((fscanf(f, "%f", &ñ) == 1))
+    while ((fscanf(f, "%f", &c) == 1))
     {
         if ((b > a && b > c) || (b < a && b < c))
         {
