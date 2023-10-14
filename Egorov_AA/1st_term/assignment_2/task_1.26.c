@@ -1,7 +1,7 @@
 ﻿#include <stdio.h>
 #include <math.h>
 #define OK 0
-#define EMPTYFILE -1
+#define INPUT_VALUE_ERROR -1
 
 
 double a_mean(FILE* input, int* error);
@@ -50,7 +50,7 @@ double a_mean(FILE* input, int* error) {     /* функция возвраща�
 		}
 	}
 	if (!count) {
-		*error = EMPTYFILE;          // error = EMPTYFILE - пустой файл
+		*error = INPUT_VALUE_ERROR;          // error = INPUT_VALUE_ERROR - пустой файл/не числовые значения
 		return 0;
 	}
 	*error = OK;               // error = OK - все хорошо
