@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <math.h>
+int Function(FILE*vvod, char c[1000])
+{
+  int current;
+  int previous;
+  int t=0;
+  
+  vvod=fopen(c, "r");
+  if(fscanf(vvod, "%d", &current)==EOF)
+     t=-1;
+         else
+            {
+                t++;
+                previous=current;
+                
+               while(!feof(vvod))
+                       {
+                         fscanf(vvod, "%d", &current);
+                         
+                             if(previous>current)
+                               {
+                                   t=-2;
+                                   break;
+                               } 
+                                   
+                             if(previous<current)
+                                {
+                                    t++;
+                                    previous=current;
+                                }
+                            
+                       }
+
+             }
+       return(t);
+}
+
+ int main(void)
+  {
+   FILE*vvod;
+   char nazvanie[1000];
+   
+    printf("Введите название файла: ");
+    scanf("%s", nazvanie);
+  
+
+   vvod=fopen(nazvanie, "r");
+      if(vvod==NULL)
+        {
+         printf("Не удалось открыть файл");
+         return -1;
+         }
+      fclose(vvod); 
+      
+      if(Function(vvod, nazvanie)==-1)
+        printf("Файл пустой");
+        
+      if(Function(vvod, nazvanie)==-2)
+        printf("Последовательность не является неубывающей");
+        
+      if(Function(vvod, nazvanie)>0)
+          printf("%d", Function(vvod, nazvanie));
+     return 0;
+   }
