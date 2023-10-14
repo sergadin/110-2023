@@ -17,15 +17,13 @@ int main(void) {
 		printf("Failed to open output file\n");
 		return -2;
 	}
+	int error;
+	double ans = a_mean(input, &error);
+	if (error) {
+		fprintf(output, "Input file is empty");
+	}
 	else {
-		int error;
-		double ans = a_mean(input, &error);
-		if (error) {
-			fprintf(output, "Input file is empty");
-		}
-		else {
-			fprintf(output, "%lf", ans);
-		}
+		fprintf(output, "%lf", ans);
 	}
 	fclose(input);
 	fclose(output);
@@ -48,6 +46,7 @@ double a_mean(FILE* input, int* error) {     /* функция возвраща�
 	}
 	if (!count) {
 		*error = -1;          // error = -1 - пустой файл
+		return -1;
 	}
 	*error = 0;               // error = 0 - все хорошо
 	return sum / count;
