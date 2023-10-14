@@ -21,19 +21,19 @@ int main(void) {
 	int ans = num_of_different_values(input, &error);
 	if (error == -1) {
 		fprintf(output, "Input file is empty");
+		return -3;
 	}
-	else if (error == -2) {
+	if (error == -2) {
 		fprintf(output, "Sequence is not neubivayuschaya");
+		return -4;
 	}
-	else {
-		fprintf(output, "%d", ans);
-	}
+	fprintf(output, "%d", ans);
 	fclose(input);
 	fclose(output);
 	return 0;
 }
 
-int num_of_different_values(FILE* input, int* error) { /* функция возвращает кол-во различных    */
+int num_of_different_values(FILE* input, int* error) {     /* функция возвращает кол-во различных    */
 	int count = 0, last_num, cur_num;                  /* чисел последовательности и присваивает */
 	if (fscanf(input, "%d", &last_num) == 1) {         /* значение переменной - флагу error      */
 		count++;
