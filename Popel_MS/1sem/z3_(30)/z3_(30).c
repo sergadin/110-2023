@@ -1,46 +1,55 @@
 #include <stdio.h>
+#define OK 0
+#define NOT_OK -1
 
-double solution(FILE *f_in , FILE *f_out){
+
+typedef struct {
+	double pol;
+	double der;
+} Polyvalue;
+
+int polinom_deriv(FILE *f_in, double x, Polyvalue *pv);
+
+int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){
 
 	double polinom = 0;
 	double derivative = 0;
 	double summa = 0;
-	double x;
-	double b = 0.;
-	double a = 0.;
+	double coef1 = 0.;
+	double coef2 = 0.;
 	
-	printf("Введите значение переменной х: \n");
-	scanf("%lf", & x);
+	if (fscanf(f_in, "%lf", & coef2)!=1){
+		return NOT_OK;
+	}	
 	
-	if (fscanf(f_in , "%lf", & b)!=1){
-		printf("Ошибка чтения\n");
-		return -1;
-	}		
-	polinom += b;
-	while (fscanf(f_in , "%lf" , & a)==1){
+	polinom += coef2;
+	
+	while (fscanf(f_in, "%lf", & coef1)==1){
 		polinom *= x;
-		polinom += a;
+		polinom += coef1;
 		derivative *= x;
-		derivative += ( summa + b );
-		summa = ( summa + b ) * x;
-		b = a;
+		derivative += (summa + coef2);
+		summa = (summa + coef2) * x;
+		coef2 = coef1;
 	}
-	
-	printf("Ответ загружен в файл 'output.txt'.\n");
-	fprintf( f_out , "Значение выражения = %lf\n Значение производной выражения = %lf\n" , polinom , derivative);
-	return 0;
+
+	pv->pol = polinom;
+	pv->der = derivative;
+	return OK;
 }
+
 
 int main(void){
 
 	char file_input[30];
-	double ans1 , ans2;
+	double x;
 	FILE *f_in, *f_out;
+	Polyvalue pv;
 
 	printf("Введите имя входного файла\n");
-	scanf("%s" , file_input);
-	f_in = fopen(file_input , "r");
-	f_out = fopen("output.txt" , "w");
+	scanf("%s", file_input);
+	f_in = fopen(file_input, "r");
+	f_out = fopen("output.txt", "w");
 
 	if (f_in == NULL){
 		 printf("Файл не открывается\n");
@@ -49,10 +58,19 @@ int main(void){
 
 	if (f_out == NULL){
 		printf("Файл не открывается\n");
+		fclose(f_in);
 		return -1;	
 	}
 	
-	solution(f_in , f_out);
+	printf("Введите значение переменной х: \n");
+	scanf("%lf", & x);
+	
+	if(polinom_deriv(f_in, x, & pv) == NOT_OK){
+		printf("Ошибка чтения\n");
+	}else{
+		printf("Ответ загружен в файл 'output.txt'.\n");
+		fprintf(f_out, "Значение выражения = %lf\n Значение производной выражения = %lf\n", pv.pol, pv.der);
+	}
 	
 	fclose(f_in);
 	fclose(f_out);			
