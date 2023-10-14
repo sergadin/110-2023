@@ -25,7 +25,7 @@ int sequence_cor(FILE *f_in, double c1, double c2, double c3, double b, double e
 	a_n1 = a_n0;
 	a_n0 = curr;
 	
-	while (fscanf(f_in, "%lf", & curr)==1){ 
+	while (fscanf(f_in, "%lf", & curr) == 1){ 
 		if (sequence_count >= 1){
 			if (fabs(((c1 * a_n1) + (c2 * a_n0) + (c3 * curr)) - b) >= epsilion){
 				sequence_count = -1;
