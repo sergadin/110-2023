@@ -10,7 +10,7 @@ typedef struct {
 
 int polinom_deriv(FILE *f_in, double x, Polyvalue *pv);
 
-int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){
+int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){     //Программа считывает из файла коэффициенты многочлена по убыванию степеней. С клавиатуры считывается элемент х - относительно кот. подсчитывается значение многочлена и производной.
 
 	double polinom = 0;
 	double derivative = 0;
