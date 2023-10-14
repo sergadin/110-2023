@@ -21,10 +21,9 @@ int main(void) {
 	double ans = a_mean(input, &error);
 	if (error) {
 		fprintf(output, "Input file is empty");
+		return -3;
 	}
-	else {
-		fprintf(output, "%lf", ans);
-	}
+	fprintf(output, "%lf", ans);
 	fclose(input);
 	fclose(output);
 	return 0;
