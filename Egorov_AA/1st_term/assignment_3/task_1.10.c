@@ -1,8 +1,8 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <math.h>
 #define OK 0
-#define EMPTYFILE -1
-#define WRONGSEQUENCE -2
+#define INPUT_VALUE_ERROR -1
+#define WRONG_SEQUENCE -2
 
 
 int num_of_different_values(FILE* input, int* error);
@@ -10,7 +10,7 @@ int num_of_different_values(FILE* input, int* error);
 
 int main(void) {
 	FILE* input, * output;
-    int error, ans;
+	int error, ans;
 	char input_name[32], output_name[32];
 	scanf("%s%s", input_name, output_name);
 	input = fopen(input_name, "r");
@@ -24,11 +24,11 @@ int main(void) {
 		return -2;
 	}
 	ans = num_of_different_values(input, &error);
-	if (error == EMPTYFILE) {
-		fprintf(output, "Input file is empty");
+	if (error == INPUT_VALUE_ERROR) {
+		fprintf(output, "Failed to read input sequence");
 		return -3;
 	}
-	if (error == WRONGSEQUENCE) {
+	if (error == WRONG_SEQUENCE) {
 		fprintf(output, "Sequence is not non-decreasing");
 		return -4;
 	}
@@ -39,9 +39,9 @@ int main(void) {
 }
 
 
-int num_of_different_values(FILE* input, int* error) {     /* функция возвращает кол-во различных    */
-	int count = 0, last_num, cur_num;                      /* чисел последовательности и присваивает */
-	if (fscanf(input, "%d", &last_num) == 1) {             /* значение переменной - флагу error      */
+int num_of_different_values(FILE* input, int* error) {    /* функция возвращает кол-во различных    */
+	int count = 0, last_num, cur_num;                 /* чисел последовательности и присваивает */
+	if (fscanf(input, "%d", &last_num) == 1) {        /* значение переменной - флагу error      */
 		count++;
 	}
 	while (fscanf(input, "%d", &cur_num) == 1) {
@@ -50,14 +50,14 @@ int num_of_different_values(FILE* input, int* error) {     /* функция в�
 			last_num = cur_num;
 		}
 		else if (cur_num < last_num) {
-			*error = WRONGSEQUENCE;         // error = WRONGSEQUENCE - последовательность НЕ неубывающая
+			*error = WRONG_SEQUENCE;   // error = WRONG_SEQUENCE - последовательность НЕ неубывающая
 			return 0;
 		}
 	}
 	if (!count) {
-		*error = EMPTYFILE;             // error = EMPTYFILE - пустой файл
+		*error = INPUT_VALUE_ERROR;   // error = INPUT_VALUE_ERROR - пустой файл / не числовые значения
 		return 0;
 	}
-	*error = OK;                  // error = OK - все хорошо
+	*error = OK;   // error = OK - все хорошо
 	return count;
 }
