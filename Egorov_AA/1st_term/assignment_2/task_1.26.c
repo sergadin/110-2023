@@ -25,7 +25,7 @@ int main(void) {
 	}
 	ans = a_mean(input, &error);
 	if (error) {
-		fprintf(output, "Input file is empty");
+		fprintf(output, "Failed to read input sequence");
 		return -3;
 	}
 	fprintf(output, "%lf", ans);
