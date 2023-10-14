@@ -17,18 +17,18 @@ int main(void) {
 		printf("Failed to open output file\n");
 		return -2;
 	}
+	int error;
+	double res = g_mean(input, &error);
+	if (error == -2) {
+		fprintf(output, "Input file is empty");
+		return -3;
+	}
+	else if (error == -1) {
+		fprintf(output, "Operation is impossible");
+		return -4;
+	}
 	else {
-		int error;
-		double res = g_mean(input, &error);
-		if (error == -2) {
-			fprintf(output, "Input file is empty");
-		}
-		else if (error == -1) {
-			fprintf(output, "Operation is impossible");
-		}
-		else {
-			fprintf(output, "%lf", res);
-		}
+		fprintf(output, "%lf", res);
 	}
 	fclose(output);
 	fclose(input);
@@ -44,20 +44,18 @@ double g_mean(FILE* input, int* error) {
 		mult = mult * temp;
 		n++;
 	}
-	if (n) {
-		if ((n % 2 == 0) && (mult < 0)) {
-			*error = -1; // error = -1, если операция не может быть выполнена (т.к. подкорневое - отриц.)
-			return -1;
-		}
-		else if (mult < 0) {
-			return ((-1) * pow(mult * (-1), 1.0 / n));
-		}
-		else {
-			return pow(mult, 1.0 / n);
-		}
-	}
-	else {
+	if (!n) {
 		*error = -2; // error = -2, если файл пуст
 		return -2;
+	}
+	if ((n % 2 == 0) && (mult < 0)) {
+		*error = -1; // error = -1, если операция не может быть выполнена (т.к. подкорневое - отриц.)
+		return -1;
+	}
+	if (mult < 0) {
+	return ((-1) * pow(mult * (-1), 1.0 / n));
+	}
+	else {
+		return pow(mult, 1.0 / n);
 	}
 }
