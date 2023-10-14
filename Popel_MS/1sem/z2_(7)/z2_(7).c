@@ -11,7 +11,7 @@ int equal_elem(FILE *f_in, double epsilion){ //Программа сравнив
 	double curr;
 	double min_c, max_c;
 	
-	if (fscanf(f_in, "%lf", & curr)!=1)
+	if (fscanf(f_in, "%lf", & curr) != 1)
 	{
 		return NOT_OK;
 	}
