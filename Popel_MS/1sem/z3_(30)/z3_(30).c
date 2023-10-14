@@ -18,13 +18,13 @@ int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){     //Программа
 	double coef1 = 0.;
 	double coef2 = 0.;
 	
-	if (fscanf(f_in, "%lf", & coef2)!=1){
+	if (fscanf(f_in, "%lf", & coef2) != 1){
 		return NOT_OK;
 	}	
 	
 	polinom += coef2;
 	
-	while (fscanf(f_in, "%lf", & coef1)==1){
+	while (fscanf(f_in, "%lf", & coef1) == 1){
 		polinom *= x;
 		polinom += coef1;
 		derivative *= x;
