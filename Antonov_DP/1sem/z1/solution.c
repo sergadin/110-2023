@@ -36,12 +36,12 @@ int main (void)
 	fprintf (output, "answ = %lf \n", answ);
 	fclose (input);
 	fclose (output);
-	if ( error == 1)
+	if ( error == E_DATA)
 	{
 		printf ( "ошибка при открытии файла" );
 			return -1;
 	}
-	if ( error == 2)
+	if ( error == E_IO)
 	{
 		printf ( "ошибка при чтении файла");
 		return -1;
