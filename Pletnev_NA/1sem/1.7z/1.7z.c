@@ -1,53 +1,101 @@
-#include <stdio.h>  
-#define LEN 100000
+#include <stdio.h>
+#include <math.h> 
+#define LEN 100000000
+int EqualityCheck(FILE *inp_f,  FILE *out_f, double eps, int mxlen);
 
-int main(void) {
 
-    FILE* f;
+int EqualityCheck(FILE *inp_f,  FILE *out_f, double eps, int mxlen){ //функция проверяет, что все числа в файле равны с собой с учетом погрешности
+    
     double x, maxx, minx;
-    double eps = 0.001;  // задали определённую точность для вещественных чисел
     char buf[LEN];
     
+    maxx = -1*pow(10, 2*mxlen+1);  //вводим бесконечное малое значение, чтобы сравнить с ним
+    minx = -1*pow(10, 2*mxlen+1);  //вводим бесконечное большое значение, чтобы сравнить с ним
 
-    fopen_s(&f, "input.txt", "r");  //открыли файл для чтения
+    while (fgets(buf, LEN, inp_f)) { //идем по файлу пока мы можем считовать файл
 
-    if (f == NULL) {                      //проверяем существование файла. если его нет, выводим ошибку
-        printf("Error: File does not exist\n");
-        return -2;
-    }
-    
-    maxx = -1e100;
-    minx = 1e100;
-
-    while (fgets(buf, LEN, f)) {
-
-        if (sscanf_s(buf, "%lf", &x) != 1) {
-            printf("Error: Invalid data entry\n");
+        if (sscanf(buf, "%lf", &x) != 1) { //проверяем, что мы можем считать строчки
+            
+            printf("Error: Invalid data entry. Check the input file\n");
+            return -2;
+        }
+        
+        if (fabs(x) > 1*pow(10, mxlen)) {  //проверяем, что наши числа не слишком болшие
+            
+            printf("Error: The file input file contains too large values\n");
             return -1;
         }
         
-        if (x > maxx) {
+        if (x > maxx) { //ищем наибольшое значение в файле
             maxx = x;
         }
-        if (x < minx) {
+        
+        if (x < minx) { //ищем наименьшее значение в файле
             minx = x;
         }
 
     }
 
-    if ((maxx != -1e100) && (minx != 1e100)) {
-        if ((maxx - minx) > eps) {
-            printf("Result: No, not all numbers are equal with an error of <%lf>\n", eps);
+    if  ( (maxx < -1*pow(10, 2*mxlen) ) || (minx > 1*pow(10, 2*mxlen) ) ) {  //проверяем, что в файл не пуст
+        
+            printf("The input file is empty\n");
+            return 0;
+        }
+    
+    if ((maxx - minx) > eps) { //проверяем, что все наши зажатые числа лежат в предлах погрешности
+        
+            printf("The result is uploaded to the output file\n");
+            fprintf(out_f, "Result: No, not all numbers are equal");
             return 1;
         }
-        else {
-            printf("Result: Yes, all numbers are equal with an error of <%lf>\n", eps);
-            return 2;
-        }
-    }
+        
+        
+    printf("The result is uploaded to the output file\n");    
+    fprintf(out_f, "Result: Yes, all numbers are equal\n");
+    return 2;
 
-    else {
-        printf("The file 'input.txt' is empty\n");
-        return 0;
-    }
 }
+
+
+int main(void) {
+
+    FILE *inp_f, *out_f;
+    double eps;
+    int mxlen;
+    char fi[30], fo[30];
+    
+    printf("Enter the name of the input file:\n");
+	scanf("%s" , fi);
+    
+	printf("Enter the name of the output file:\n");
+	scanf("%s" , fo);
+    
+
+    inp_f = fopen(fi, "r");  //открыли файл для чтения
+    out_f = fopen(fo , "w"); //открыли файл для записи
+    
+    
+    if (inp_f == NULL) {                             //проверяем существование файла. если его нет, выводим ошибку
+        printf("Error: The file '%s' does not exist\n", fi);
+        return -3;
+    }
+    
+    
+    printf("Enter the error value:\n");
+	scanf("%lf" , &eps);
+    
+	printf("Enter the maximum power of 10 to check the numbers\n");
+	scanf("%d" , &mxlen);
+  
+    
+    EqualityCheck(inp_f, out_f, eps, mxlen); //запускаем работу функции
+    
+    fclose(inp_f); //закрыли файл для чтения
+	fclose(out_f); //закрыли файл для записи
+    
+	return 100;
+        
+}
+
+
+
