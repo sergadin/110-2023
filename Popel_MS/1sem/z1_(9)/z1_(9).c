@@ -1,94 +1,111 @@
 #include <stdio.h>
 #include <math.h>
+#define Correct_seq 0
+#define Err_reading -1
+#define Not_enough_val -2
+#define Uncorrect_seq -3
 
-int solution(FILE *f_in , FILE *f_out){
 
-	double c1 , c2 , c3 , b , curr , epsilion;
+int sequence_cor(FILE *f_in, double c1, double c2, double c3, double b, double epsilion){ //Программа подставляет элементы последовательности в рекуррентное соотношение с заданными коэффициентами.
+											 // Программа выполняется, если все числа удовлетворяют рекурентной последовательности с точностью до погрешности.
+											//Алгоритм: из файла считываются три элемента и домножаются на соответствующие им коэффициенты. Полученный результат сравнивается с заданным значением b. 
+										       //Если равенство не выполняется (с точностью до погрешности), программа перестает считывать значения и выводит соотв. результат. 
+										      //Иначе - элементы "сдвигаются" на один влево, считывается новый элемент, проверяется новое равенство.
+
+	double curr;
 	double a_n1 = 0.;
 	double a_n0 = 0.;
-	int sequence_corr = 0; //счетчик элементов и индикатор корректности последоватедьности
-	
-	printf("Введите значение погрешности: \n");
-	scanf("%lf" , & epsilion);
-	printf("Введите коэффициент с1:\n");
-	scanf("%lf" , & c1);
-	printf("Введите коэффициент с2:\n");
-	scanf("%lf" , & c2);
-	printf("Введите коэффициент с3:\n");
-	scanf ("%lf" , & c3);
-	printf("Введите значение b:\n");
-	scanf ("%lf" , & b);
+	int sequence_count = 0; //счетчик элементов и индикатор корректности последоватедьности
 	
 	if (fscanf(f_in, "%lf", & curr) != 1)
 	{
-		printf("ошибка чтения\n");
-		return -1;
+		return Err_reading;
 	}
 	
 	a_n1 = a_n0;
 	a_n0 = curr;
 	
-	while (fscanf(f_in , "%lf" , & curr)==1){ 
-		if (sequence_corr >= 1){
+	while (fscanf(f_in, "%lf", & curr) == 1){ 
+		if (sequence_count >= 1){
 			if (fabs(((c1 * a_n1) + (c2 * a_n0) + (c3 * curr)) - b) >= epsilion){
-				sequence_corr = -1;
+				sequence_count = -1;
 			}
 			
 			a_n1 = a_n0;
 			a_n0 = curr;
-			if (sequence_corr != -1){
-			sequence_corr += 1;
+			if (sequence_count != -1){
+			sequence_count += 1;
 			}
 
 		}else{
-			if (sequence_corr != -1){
-				sequence_corr += 1;
+			if (sequence_count != -1){
+				sequence_count += 1;
 			}
 			a_n1 = a_n0;
 			a_n0 = curr;
 		}
 	}
 	
-	if ((sequence_corr == 1) || (sequence_corr == 0)){
-		printf("В файле недостаточно значений.\n");
-		return -1;
+	if ((sequence_count == 1) || (sequence_count == 0)){
+		return Not_enough_val;
 	}
 	
-	if (sequence_corr == -1){
-		printf("Результат загружен в файл output.txt.\n");
-		fprintf(f_out , "Последовательность не удовлетворяет условиям.\n");
-		return 0;
+	if (sequence_count == -1){
+		preturn Uncorrect_seq;
 	}
-	
-	printf("Результат загружен в файл output.txt.\n");
-	fprintf(f_out,"Последовательность удовлетворяет условиям\n");
-	
-	return 0;
+		
+	return Correct_seq;
 }
 
 int main(void){
 	FILE *f_in, *f_out;
 	char file_input[30];
+	int func_val;
+	double c1, c2, c3, b, epsilion;
 	
 	printf("Введите имя входного файла: \n");
-	scanf("%s" , file_input);
+	scanf("%s", file_input);
 	printf("Результат выводится в файл: output.txt.\n");
-	f_in = fopen(file_input , "r");
-	f_out = fopen("output.txt" , "w");
+	f_in = fopen(file_input, "r");
+	f_out = fopen("output.txt", "w");
 	
 	
 	
-	if ( f_in == NULL )
+	if (f_in == NULL)
 	{
 		printf("Файл не открывается\n");
 		return -1;
 	}
 	if (f_out == NULL){
 		printf("Файл не открывается\n");
+		fclose(f_in);
 		return -1;	
 	}
 	
-	solution(f_in, f_out);
+	printf("Введите значение погрешности: \n");
+	scanf("%lf", & epsilion);
+	printf("Введите коэффициент с1:\n");
+	scanf("%lf", & c1);
+	printf("Введите коэффициент с2:\n");
+	scanf("%lf", & c2);
+	printf("Введите коэффициент с3:\n");
+	scanf("%lf", & c3);
+	printf("Введите значение b:\n");
+	scanf("%lf", & b);
+	
+	func_val = sequence_cor(f_in, c1, c2, c3, b, epsilion);
+	if(func_val == Err_reading){
+		printf("Ошибка чтения\n");
+	}else if (func_val == Not_enough_val){
+		printf("В файле недостаточно значений.\n");
+	}else {
+		printf("Результат загружен в файл output.txt.\n");
+		if (func_val == Uncorrect_seq){
+			fprintf(f_out, "Последовательность не удовлетворяет условиям.\n");
+		}else{
+			fprintf(f_out,"Последовательность удовлетворяет условиям\n");
+		}
+	}
 			
 	fclose(f_in);
 	fclose(f_out);

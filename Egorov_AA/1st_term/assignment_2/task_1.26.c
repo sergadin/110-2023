@@ -1,9 +1,15 @@
 ﻿#include <stdio.h>
 #include <math.h>
+#define OK 0
+#define INPUT_VALUE_ERROR -1
+
 
 double a_mean(FILE* input, int* error);
 
+
 int main(void) {
+	int error;
+    double ans;
 	FILE* input, * output;
 	char input_name[32], output_name[32];
 	scanf("%s%s", input_name, output_name);
@@ -17,10 +23,9 @@ int main(void) {
 		printf("Failed to open output file\n");
 		return -2;
 	}
-	int error;
-	double ans = a_mean(input, &error);
+	ans = a_mean(input, &error);
 	if (error) {
-		fprintf(output, "Input file is empty");
+		fprintf(output, "Failed to read input sequence");
 		return -3;
 	}
 	fprintf(output, "%lf", ans);
@@ -29,9 +34,10 @@ int main(void) {
 	return 0;
 }
 
+
 double a_mean(FILE* input, int* error) {     /* функция возвращает среднее арифметическое значение */
-	int count = 0, last_num, cur_num;    /* чисел последовательности и присваивает значение    */
-	double sum = 0;                      /* переменной - флагу error                           */
+	int count = 0, last_num, cur_num;        /* чисел последовательности и присваивает значение    */
+	double sum = 0;                          /* переменной - флагу error                           */
 	if (fscanf(input, "%d", &last_num) == 1) {
 		sum += last_num;
 		count++;
@@ -44,9 +50,9 @@ double a_mean(FILE* input, int* error) {     /* функция возвраща�
 		}
 	}
 	if (!count) {
-		*error = -1;          // error = -1 - пустой файл
-		return -1;
+		*error = INPUT_VALUE_ERROR;          // error = INPUT_VALUE_ERROR - пустой файл/не числовые значения
+		return 0;
 	}
-	*error = 0;               // error = 0 - все хорошо
+	*error = OK;               // error = OK - все хорошо
 	return sum / count;
 }
