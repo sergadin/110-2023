@@ -26,7 +26,7 @@ int main(void){
 
 int Schet(FILE *fin){
 	int count = 0;
-	int current;
+	int current;	
 	int previous;
 
 	if (fscanf(fin, "%d", &previous) != 1){
