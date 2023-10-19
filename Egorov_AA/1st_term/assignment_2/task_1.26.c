@@ -17,15 +17,21 @@ int main(void) {
 	output = fopen(output_name, "w");
 	if (!input) {
 		printf("Failed to open input file\n");
+		fclose(input);
+		fclose(output);
 		return -1;
 	}
 	if (!output) {
 		printf("Failed to open output file\n");
+		fclose(input);
+		fclose(output);
 		return -2;
 	}
 	ans = a_mean(input, &error);
 	if (error) {
 		fprintf(output, "Failed to read input sequence");
+		fclose(input);
+		fclose(output);
 		return -3;
 	}
 	fprintf(output, "%lf", ans);
