@@ -33,13 +33,13 @@ int fun(const char *sf,float *D)
 int main(void)
 {
  int err=0;
- float res;
- err=fun("txt.txt",&res);
+ float D;
+ err=fun("txt.txt",&D);
  if(err==-1)
   printf("can't open file \n");
  if(err==-2)
   printf("not enough data in file\n");
  else
-  printf("D = %f\n",res);
+  printf("D = %f\n",D);
  return err;
 }
