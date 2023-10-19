@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+int det_number(const char* name);
+// Функция определяет порядковый номер первого максимального числа
+
+
+int det_number(const char* name)
+{
+  int current = 0;
+  int index = 0;
+  int max_val;
+  int cnt = 0;
+  FILE* data;
+  
+  data = fopen(name, "r");
+  if (!data)
+    return -1;
+  if (fscanf(data, "%d", &max_val) != 1) {
+	  return 0;};
+  while (fscanf(data,"%d",&current) == 1){
+             cnt++;
+
+       if (max_val<current) { 
+           max_val = current;
+           index=cnt;
+       }
+  }
+  if (!feof(data))
+  {
+       fclose(data);
+       return -2;
+  }
+  fclose(data);
+      return index;
+
+}
+int main(void) {
+  FILE *answer = fopen("output.txt", "w");
+  if (!answer) {
+      printf("What?");
+      return -1;
+  }
+  if (fprintf(answer, "%d", det_number("input.txt")) == 0) {
+      printf("NO SUCCESS!!");
+      return -2;
+  }
+  fclose(answer);
+  return 0;
+}

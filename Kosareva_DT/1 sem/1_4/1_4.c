@@ -2,22 +2,41 @@
 
 int how_much(FILE *f);
 int how_much(FILE *f) {
-    int count, last, new;
+    int count, last, new, check;
 	count = 0;
-	fscanf(f, "%d", &last);
-	while (fscanf(f, "%d", &new) == 1) {
+
+	check = fscanf(f, "%d", &last);
+	if (check == 0) {
+		printf("Ошибка данных\n");
+		return -2;
+	}
+	if (check == -1) {
+		printf("%d\n", count);
+		return 0;
+	}
+	check = fscanf(f, "%d", &new);
+        if (check == 0) {
+                printf("Ошибка данных\n");
+                return -2;
+        }
+	while (check == 1) {
 		if (new > last) count++;
 		last = new;
+		check = fscanf(f, "%d", &new);
+        	if (check == 0) {
+                	printf("Ошибка данных\n");
+                	return -2;
+        	}
 	}
 	printf("%d\n", count);
 	fclose(f);
 	return 0;
 }
 int main(void) {
-	char str[30];
+	char str[60];
 	FILE *f;
 	printf("Введите имя файла или указатель на него: ");
-	scanf("%30s", str);
+	scanf("%60s", str);
 	f = fopen(str, "r");
 	if (f == NULL) {
 		printf("Не удалось открыть файл\n");
