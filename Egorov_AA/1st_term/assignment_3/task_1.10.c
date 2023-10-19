@@ -17,19 +17,27 @@ int main(void) {
 	output = fopen(output_name, "w");
 	if (!input) {
 		printf("Failed to open input file\n");
+		fclose(input);
+		fclose(output);
 		return -1;
 	}
 	if (!output) {
 		printf("Failed to open output file\n");
+		fclose(input);
+		fclose(output);
 		return -2;
 	}
 	ans = num_of_different_values(input, &error);
 	if (error == INPUT_VALUE_ERROR) {
 		fprintf(output, "Failed to read input sequence");
+		fclose(input);
+		fclose(output);
 		return -3;
 	}
 	if (error == WRONG_SEQUENCE) {
 		fprintf(output, "Sequence is not non-decreasing");
+		fclose(input);
+		fclose(output);
 		return -4;
 	}
 	fprintf(output, "%d", ans);
