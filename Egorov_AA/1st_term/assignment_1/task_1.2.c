@@ -18,19 +18,27 @@ int main(void) {
 	output = fopen(output_name, "w");
 	if (!input) {
 		printf("Failed to open input file\n");
+		fclose(output);
+		fclose(input);
 		return -1;
 	}
 	if (!output) {
 		printf("Failed to open output file\n");
+		fclose(output);
+		fclose(input);
 		return -2;
 	}
 	res = g_mean(input, &error);
 	if (error == INPUT_VALUE_ERROR) {
 		fprintf(output, "Failed to read input sequence");
+		fclose(output);
+		fclose(input);
 		return -3;
 	}
 	if (error == OPERATION_ERROR) {
 		fprintf(output, "Operation is impossible");
+		fclose(output);
+		fclose(input);
 		return -4;
 	}
 	fprintf(output, "%lf", res);
@@ -56,7 +64,7 @@ double g_mean(FILE* input, int* error) {
 		return 0;
 	}
 	if ((n % 2 == 0) && (mult < 0)) {
-		*error = OPERATION_ERROR; // error = OPERATIONERR - операция не может быть выполнена (т.к. подкорневое - отриц.)
+		*error = OPERATION_ERROR; // error = OPERATION_ERROR - операция не может быть выполнена (т.к. подкорневое - отриц.)
 		return 0;
 	}
 	*error = OK; // error = OK - все хорошо
