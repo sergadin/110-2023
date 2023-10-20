@@ -1,12 +1,14 @@
 #include <stdio.h>
 
-int test_file (FILE *input);
+typedef enum { OK = 0, E_DATA, E_IO} ERR;
 
-int test_file (FILE *input)
+int test_file (FILE *input, ERR *error);
+
+int test_file (FILE *input, ERR *error)
 {
 	if (input == NULL){
-	       printf ("Не удалось открыть: inut.txt");
-	       return -1;
+	       printf ("Не удалось открыть: input.txt");
+	       *error = E_DATA;
 	}
 	{
 		return 0;

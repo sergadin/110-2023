@@ -1,9 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h> 
-int fun(const char *sf,float *res)
+int fun(const char *sf,float *D)
 {
  int x,n=0,sumx2=0,sumx1=0,err=0;
- float M,D;
  FILE *f;
  f=fopen(sf,"r");
  if(f!=NULL)
@@ -21,9 +20,7 @@ int fun(const char *sf,float *res)
     sumx1=sumx1+x;
     n=n+1;
    }   
-   M=(sumx1)/n;
-   D=((sumx2-2*sumx1*M+n*M*M))/n;
-   *res=D;
+   *D=(float)((sumx2*n-sumx1*sumx1))/(n*n);
   }
   fclose(f);
  }
@@ -36,13 +33,13 @@ int fun(const char *sf,float *res)
 int main(void)
 {
  int err=0;
- float res;
- err=fun("txt.txt",&res);
+ float D;
+ err=fun("txt.txt",&D);
  if(err==-1)
   printf("can't open file \n");
  if(err==-2)
   printf("not enough data in file\n");
  else
-  printf("D = %f\n",res);
+  printf("D = %f\n",D);
  return err;
 }

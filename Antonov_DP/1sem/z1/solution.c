@@ -1,42 +1,50 @@
 #include <stdio.h>
 
-int test_file (FILE *input);
-int compute_midar (FILE *input);
+typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
-int compute_midar (FILE *input)
+int test_file (FILE *input, ERR *error);	//проверяет нормально ли открылся файл
+double compute_midar (FILE *input, ERR *error);	//высчитывание среднего арифметического
+int test_file_input_double (FILE *input, double *num, ERR *error);	//проверяет правильность ввода из файла
+
+double compute_midar (FILE *input, ERR *error)
 {
 	int quan = 0;
-	float curr = 0, summ = 0, answ = 0;
-	if (fscanf (input, "%f", & summ) != 1){
-		return -1;
-	}
-	curr = summ;
+	double curr = 0, summ = 0, answ = 0;
+	test_file_input_double ( input, & curr, error );
+	summ = curr;
 	quan = 1;
-	while (fscanf (input, "%f", & curr) == 1 && (int) curr != 0)
+	while ((test_file_input_double ( input, & curr, error ) == 0) && (int) curr != 0)
 	{
 		summ += curr;
 		quan += 1;
 	}
-	answ = summ/quan;
+	answ = summ / quan;
 	return answ;
 }
 
+
 int main (void)
 {
-	float answ = 0;
+	double answ = 0;
+	ERR error = OK;
 	FILE *input, *output;
 	input = fopen ("input.txt", "r");
 	output = fopen ("output.txt", "w");
-	if (test_file (input) == -1){
-		return -1;
-	}
-	if (test_file (output) == -1){
-		return -1;
-	}
-	answ = compute_midar (input);
-	fprintf (output, "answ = %f \n", answ);
-	printf ("answ = %f \n", answ);
+	test_file ( input, & error );
+	test_file ( output, & error );
+	answ = compute_midar (input, & error);
+	fprintf (output, "answ = %lf \n", answ);
 	fclose (input);
 	fclose (output);
+	if ( error == E_DATA)
+	{
+		printf ( "ошибка при открытии файла" );
+			return -1;
+	}
+	if ( error == E_IO)
+	{
+		printf ( "ошибка при чтении файла");
+		return -1;
+	}
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+
 int main(void)
 
 {
@@ -19,7 +20,7 @@ int main(void)
         return -1;
     }
 
-    if((fscanf(f, "%f", &a) != 1)
+    if((fscanf(f, "%f", &a)) != 1)
     {
         printf("Reading error\n");
         return -1;
@@ -42,7 +43,7 @@ int main(void)
 
     while((fscanf(f, "%f", &c) == 1))
     {
-        if (((d * a + e * b + g * c) - h) >= E)
+        if (fabs(d * a + e * b + g * c - h)>= E)
         {
             printf("The sequence does not satisfy the expression at number  %d \n", count);
             fclose(f);

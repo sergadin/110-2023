@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+int findMaxSum(FILE *file);
+int result;
+
 int findMaxSum(FILE *file) {
     int maxSum = 0;
     int currentSum = 0;
@@ -19,8 +22,7 @@ int findMaxSum(FILE *file) {
 
     return maxSum;
 }
-
-int main() {
+int main(void) {
     FILE *file = fopen("input.txt", "r");
     
     if (file == NULL) {
@@ -28,9 +30,9 @@ int main() {
         return 1;
     }
     
-    int maxSum = findMaxSum(file);
+    result = findMaxSum(file);
     
-    printf("Максимальная сумма подряд идущих элементов: %d\n", maxSum);
+    printf("Максимальная сумма подряд идущих элементов: %d\n", result);
     
     fclose(file);
     return 0;
