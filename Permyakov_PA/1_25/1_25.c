@@ -4,14 +4,14 @@
 int min_distance_between_local_mins(const char* name);
 
 
-int main(int argc char** argv)
+int main(int argc, char** argv)
 {
+char* name;
+int result;
 if (argc != 2){
  printf("need only one argument - input filename\n");
  return -1;
 }
-char* name;
-int result = 0;
 name = argv[1];
 result = min_distance_between_local_mins(name);
 if (result == -1){
@@ -22,24 +22,27 @@ if (result == -2){
  printf("incorrect input file - need only number sequence\n");
  return -3;
 }
-printf("Minimum distance between two local minimums is %d", result);
+printf("Minimum distance between two local minimums is %d\n", result);
 return 0;
 }
 
 
-int min_distance_between_local_mins(char* name)
+int min_distance_between_local_mins(const char* name)
 {
 FILE* fp;
+int min_distance;
+int previous;
+int present;
+int current_distance;
+int flag;
+flag = 1;
 fp = fopen(name, "r");
+current_distance = 0;
+min_distance = 9999999;
+previous = fscanf(fp, "%d", &previous);
 if (!fp){
  return -1;
 }
-int min_distance = 99999999;
-int previous;
-int present = 0;
-int current_distance = 1;
-int flag = 0;
-previous = fscanf(fp, "%d", &previous);
 while (fscanf(fp, "%d", &present) == 1){
  if (present < previous){
   current_distance++;
@@ -58,6 +61,6 @@ while (fscanf(fp, "%d", &present) == 1){
 if (!feof(fp)){
  return -2;
 }
-fclosef(fp);
+fclose(fp);
 return min_distance;
 }
