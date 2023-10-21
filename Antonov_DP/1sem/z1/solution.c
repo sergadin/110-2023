@@ -4,7 +4,7 @@ typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);	//проверяет нормально ли открылся файл
 double compute_midar (FILE *input, ERR *error);	//высчитывание среднего арифметического
-int test_file_input_double (FILE *input, double *num, ERR *error);	//проверяет правильность ввода из файла
+int test_file_input_double (FILE *input, double *num, ERR *error);	//проверяет правильность ввода из файла вещественного числа
 
 double compute_midar (FILE *input, ERR *error)
 {
