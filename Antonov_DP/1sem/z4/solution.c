@@ -1,41 +1,38 @@
 #include <stdio.h>
-
+  
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-double compute_midgeo (FILE *input, ERR *error); //высчитывание среднего геометрического
+long int compute_quan (FILE *input, ERR *error); //высчитывание кол-ва чисел больших предыдущего
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла
-double root (double num, int root);
-double power (double num, int pow);
 
-double compute_midgeo (FILE *input, ERR *error)
+long int compute_quan (FILE *input, ERR *error)
 {
-        int quan = 0;
-        double curr = 0, mult = 0, answ = 0;
+        long int quan = 0, answ = 0;
+        double curr = 0, prev = 0;
         test_file_input_double ( input, & curr, error );
-        mult = curr;
-        quan = 1;
+        prev = curr;
         while ((test_file_input_double ( input, & curr, error ) == 0) && (int) curr != 0)
         {
-                mult *= curr;
-                quan += 1;
+                if ( prev < curr ) { quan += 1; }
+	       prev = curr;	       
         }
-        answ = root (mult , quan);
+        answ = quan;
         return answ;
 }
 
 
 int main (void)
 {
-        double answ = 0;
+        long int answ = 0;
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
         test_file ( input, & error );
         test_file ( output, & error );
-        answ = compute_midgeo (input, & error);
-        fprintf (output, "answ = %lf \n", answ);
+        answ = compute_quan (input, & error);
+        fprintf (output, "answ = %ld \n", answ);
         fclose (input);
         fclose (output);
         if ( error == E_DATA)
@@ -50,4 +47,3 @@ int main (void)
         }
         return 0;
 }
-

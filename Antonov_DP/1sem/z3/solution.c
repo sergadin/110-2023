@@ -1,26 +1,24 @@
 #include <stdio.h>
-
+  
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-double compute_midgeo (FILE *input, ERR *error); //высчитывание среднего геометрического
-int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла
-double root (double num, int root);
-double power (double num, int pow);
+double compute_midgar (FILE *input, ERR *error); //высчитывание среднего гармонического
+int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-double compute_midgeo (FILE *input, ERR *error)
+double compute_midgar (FILE *input, ERR *error)
 {
         int quan = 0;
-        double curr = 0, mult = 0, answ = 0;
+        double curr = 0, summ = 0, answ = 0;
         test_file_input_double ( input, & curr, error );
-        mult = curr;
+        summ = curr;
         quan = 1;
         while ((test_file_input_double ( input, & curr, error ) == 0) && (int) curr != 0)
         {
-                mult *= curr;
+                summ += 1 / curr;
                 quan += 1;
         }
-        answ = root (mult , quan);
+        answ = quan / summ;
         return answ;
 }
 
@@ -34,7 +32,7 @@ int main (void)
         output = fopen ("output.txt", "w");
         test_file ( input, & error );
         test_file ( output, & error );
-        answ = compute_midgeo (input, & error);
+        answ = compute_midgar (input, & error);
         fprintf (output, "answ = %lf \n", answ);
         fclose (input);
         fclose (output);
@@ -50,4 +48,3 @@ int main (void)
         }
         return 0;
 }
-
