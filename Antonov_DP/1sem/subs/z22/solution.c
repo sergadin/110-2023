@@ -3,39 +3,37 @@
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-double compute_midgeo (FILE *input, ERR *error); //высчитывание среднего геометрического
-int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла
-double root (double num, int root);
-double power (double num, int pow);
+int compute_max_len (FILE *input, ERR *error);      //вычисляет кол-во элементов самой длинной подпоследовательности
+int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-double compute_midgeo (FILE *input, ERR *error)
+int compute_max_len (FILE *input, ERR *error)
 {
-        int quan = 0;
-        double curr = 0, mult = 0, answ = 0;
+        int len = 1, quan = 1;
+        double curr = 0, prev = 0;
         test_file_input_double ( input, & curr, error );
-        mult = curr;
-        quan = 1;
+        prev = curr;
         while ((test_file_input_double ( input, & curr, error ) == 0) && (int) curr != 0)
-        {
-                mult *= curr;
-                quan += 1;
-        }
-        answ = root (mult , quan);
-        return answ;
+	{
+		if ( prev <= curr ) { quan++; }
+		else { if ( len < quan ) { len = quan;}
+		quan = 1;}
+		prev = curr;
+	}
+	return len;
 }
 
 
 int main (void)
 {
-        double answ = 0;
+	int answ;
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
         test_file ( input, & error );
         test_file ( output, & error );
-        answ = compute_midgeo (input, & error);
-        fprintf (output, "answ = %lf \n", answ);
+        answ = compute_max_len (input, & error);
+	fprintf ( output, "answ = %d \n", answ);
         fclose (input);
         fclose (output);
         if ( error == E_DATA)
@@ -45,7 +43,7 @@ int main (void)
         }
         if ( error == E_IO)
         {
-                printf ( "ошибка при чтении файла");
+                printf ( "ошибка при чтении файла" );
                 return -1;
         }
         return 0;
