@@ -22,8 +22,9 @@ int opred_ravenstvo_chisel(FILE *file)
 	if( fscanf(file, "%lf", &perv_elem) != 1) {
 		return OSHIBKA;
 	}
-        min_elem = perv_elem;
-		max_elem = min_elem;
+	
+    min_elem = perv_elem;
+    max_elem = min_elem;
   
     while ((is_elem_chislo = fscanf(file, "%lf", &elem)) != EOF) { 
         if (is_elem_chislo != 1) { 
