@@ -49,7 +49,7 @@ double g_mean(FILE* input, int* error) {
 		n++;
 	}
 	if (!n) {
-		*error = INPUT_VALUE_ERROR; // error = INPUT_VALUE_ERROR - файл пуст / не числовые значения
+		*error = INPUT_VALUE_ERROR; // error = INPUT_VALUE_ERROR - файл пуст
 		return 0;
 	}
 	if ((n % 2 == 0) && (mult < 0)) {
