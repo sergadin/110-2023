@@ -10,7 +10,9 @@ typedef struct {
 
 int polinom_deriv(FILE *f_in, double x, Polyvalue *pv);
 
-int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){     //Программа считывает из файла коэффициенты многочлена по убыванию степеней. С клавиатуры считывается элемент х - относительно кот. подсчитывается значение многочлена и производной.
+int polinom_deriv(FILE *f_in, double x, Polyvalue *pv){     
+	
+	//Программа считывает из файла коэффициенты многочлена по убыванию степеней. С клавиатуры считывается элемент х - относительно кот. подсчитывается значение многочлена и производной.
 
 	double polinom = 0;
 	double derivative = 0;
@@ -49,12 +51,13 @@ int main(void){
 	printf("Введите имя входного файла\n");
 	scanf("%s", file_input);
 	f_in = fopen(file_input, "r");
-	f_out = fopen("output.txt", "w");
-
+	
 	if (f_in == NULL){
 		 printf("Файл не открывается\n");
 		 return -1;
 	}
+	
+	f_out = fopen("output.txt", "w");
 
 	if (f_out == NULL){
 		printf("Файл не открывается\n");
