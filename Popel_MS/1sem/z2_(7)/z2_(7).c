@@ -44,6 +44,7 @@ int main(void){
 	char file_input[30];
 	double epsilion;
 	int func_val;
+	int uncorr_val = 0;
 	FILE *f_in, *f_out;
 	
 	printf("Введите имя входного файла: \n");
@@ -64,19 +65,24 @@ int main(void){
 	}
 	
 	printf("Введите значение погрешности: \n");
-	scanf("%lf", & epsilion);
+	if (scanf("%lf", & epsilion) != 1){
+		printf("Введено некорректное значение.\n");
+		uncorr_val = -1;
+	}
 	
-	func_val = equal_elem(f_in, epsilion);
-	
-	if (func_val == NOT_OK){
-		printf("ошибка чтения\n");
-	}else{
-		printf("Результат загружен в файл output.txt.\n");
+	if (uncorr_val == 0){
+		func_val = equal_elem(f_in, epsilion);
 		
-		if (func_val == not_equal_val){
-			fprintf(f_out, "Значения не равны друг другу.\n");
+		if (func_val == NOT_OK){
+			printf("ошибка чтения\n");
 		}else{
-			fprintf(f_out, "Все значения равны друг другу с точностью до погрешности.\n");
+			printf("Результат загружен в файл output.txt.\n");
+			
+			if (func_val == not_equal_val){
+				fprintf(f_out, "Значения не равны друг другу.\n");
+			}else{
+				fprintf(f_out, "Все значения равны друг другу с точностью до погрешности.\n");
+			}
 		}
 	}
 	fclose(f_in);
