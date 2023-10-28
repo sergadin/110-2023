@@ -6,7 +6,7 @@
 #define NET_TAKOGO_CHISLA -2
 
 int opred_nomer_X(FILE *file, double X); 
-// функция определяет номер (itog_nom) последнего вхождения числа X, которое мы сами ввели в консоль, в файле (input)
+// функция определяет номер (itog_nom) последнего вхождения числа X
 // в случае несуществования числа X в файле функция присвоит искомому номеру (itog_nom) значение NET_TAKOGO_CHISLA
 // в случае другой ошибки (ошибки считывания) присвоит искомому номеру (itog_nom) переменную ошибка (OSHIBKA)
 
@@ -31,7 +31,7 @@ int opred_nomer_X(FILE *file, double X)
     if (nom_elem == -1){
 		itog_nom = OSHIBKA;
 	}
-		return itog_nom;		
+    return itog_nom;		
 }
 
 
@@ -52,9 +52,8 @@ int main(void)
     if (is_X_chislo != 1) {  
         opred_nomer = OSHIBKA; 
 	}
-    else 
-    {
-    opred_nomer = opred_nomer_X(file, X);
+    else {
+        opred_nomer = opred_nomer_X(file, X);
     }
 
 	if (opred_nomer == NET_TAKOGO_CHISLA)  // если в файле нет числа, равного Х
