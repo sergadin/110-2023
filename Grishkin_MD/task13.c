@@ -10,9 +10,13 @@ int main(void) {
         return 1; 
     } 
      
-    result = findLastMinIndex(file); 
+    result = findLastMinIndex(file);
+    if (result == -1) {
+	   printf("файл пуст\n");
+    }
+    else { 
     printf("Номер последнего числа, равного минимуму: %d\n", result); 
-     
+    } 
     fclose(file); 
     return 0; 
 } 
@@ -28,12 +32,11 @@ int findLastMinIndex(FILE* file) {
     index = 0; 
     while (fscanf(file, "%d", &number) == 1) { 
         if (number <= min) { 
-            min = number;
-	    index++;
-            lastIndex = index; 
-            
-	}	
-    } 
+            min = number; 
+            index++;
+	}
+            lastIndex = index;  	
+    }
      
     return lastIndex; 
 }
