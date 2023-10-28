@@ -5,26 +5,20 @@
 #define WRONG_SEQUENCE -2
 
 
+// функция возвращает количество различных чисел в неубывающей последовательности
 int num_of_different_values(FILE* input, int* error);
 
 
 int main(void) {
 	FILE* input, * output;
 	int error, ans;
-	char input_name[32], output_name[32];
-	scanf("%s%s", input_name, output_name);
-	input = fopen(input_name, "r");
-	output = fopen(output_name, "w");
-	if (!input) {
+	if ((input = fopen("input.txt", "r")) == NULL) {
 		printf("Failed to open input file\n");
-		fclose(input);
-		fclose(output);
 		return -1;
 	}
-	if (!output) {
+	if ((output = fopen("output.txt", "w")) == NULL) {
 		printf("Failed to open output file\n");
 		fclose(input);
-		fclose(output);
 		return -2;
 	}
 	ans = num_of_different_values(input, &error);
@@ -47,9 +41,9 @@ int main(void) {
 }
 
 
-int num_of_different_values(FILE* input, int* error) {    /* функция возвращает кол-во различных    */
-	int count = 0, last_num, cur_num;                 /* чисел последовательности и присваивает */
-	if (fscanf(input, "%d", &last_num) == 1) {        /* значение переменной - флагу error      */
+int num_of_different_values(FILE* input, int* error) {
+	int count = 0, last_num, cur_num;
+	if (fscanf(input, "%d", &last_num) == 1) {
 		count++;
 	}
 	while (fscanf(input, "%d", &cur_num) == 1) {
@@ -63,7 +57,7 @@ int num_of_different_values(FILE* input, int* error) {    /* функция во
 		}
 	}
 	if (!count) {
-		*error = INPUT_VALUE_ERROR;   // error = INPUT_VALUE_ERROR - пустой файл / не числовые значения
+		*error = INPUT_VALUE_ERROR;   // error = INPUT_VALUE_ERROR - пустой файл
 		return 0;
 	}
 	*error = OK;   // error = OK - все хорошо
