@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <math.h> 
+#include <stdlib.h>
 #define LEN 4098
 #define Error_File_NOT_Exist -444
 #define Error_Invalid_Data -333
@@ -9,77 +10,66 @@
 #define Result_Answer_N0 111
 #define Result_Answer_YES 222
 
-int EqualityCheck(FILE* inp_f, double eps, int mxlen);
+int LastMinimum(const FILE* inp_f, const int mxlen);
 
+//Функция ищет номер последнего наименьшего элемента всей целой последовательности
+int LastMinimum(const FILE* inp_f, const int mxlen) {
 
-//функция проверяет, что все элементы в файле равны с собой с учетом погрешности
-int EqualityCheck(FILE* inp_f, double eps, int mxlen) {
-    
-	double x;                              // -элемент последовательности
-    double maxx;                           // -наибольшее число в псоледовательности
-    double minx;                           // -наименьшее число в псоледовательности
-    double checklen = 1 * pow(10, mxlen);  // -пременная для проверки велечины элемента
+	int x;                                 // -элемент последовательности
+	int i;                                 // -вспомогательная перемная для номерации элементов в последовательности
+	double minx;                           // -наименьшее число в псоледовательности
+	double checklen = 1 * pow(10, mxlen);  // -пременная для проверки велечины элемента
+	int mini;                              // -результат функции - номер последнего наименьшего элемента последовательности  
 	char buf[LEN];                         // -вспомогательный стек памяти для считование строки из файла
-    
-    //вводим бесконечное малое значение, чтобы сравнить с ним
-	maxx = -1 * pow(10, 2 * mxlen + 1);
-    
-    //вводим бесконечное большое значение, чтобы сравнить с ним
-	minx = 1 * pow(10, 2 * mxlen + 1);  
+
+
+	//вводим бесконечное большое значение, чтобы сравнить с ним элементы
+	minx = 1 * pow(10, 2 * mxlen + 1);
+	mini = 0;
+	i = 1;
     
     //идем по файлу пока мы можем считовать файл
-	while (fgets(buf, LEN, inp_f)) { 
-        
-        //проверяем, что мы можем считать строчки
-		if (sscanf(buf, "%lf", &x) != 1) { 
+	while (fgets(buf, LEN, inp_f)) {
+
+		//проверяем, что мы можем считать строчки
+		if (sscanf(buf, "%d", &x) != 1) {
 			return Error_Invalid_Data;
 		}
-		
-        //проверяем, что наши элементы не слишком болшие
-		if (fabs(x) > checklen)) { 
+
+		//проверяем, что наши элементы не слишком болшие
+		if (abs(x) > checklen) {
 			return Error_Large_Values;
 		}
         
-        //ищем наибольший элемент в файле
-		if (x > maxx) { 
-			maxx = x;
-		}
-        
-        //ищем наименьший элемент в файле
-		if (x < minx) { 
+        //ищем последней наименьшей элемент в файле
+		if (x <= minx) {
 			minx = x;
+			mini = i;
 		}
 
+		++i;
 	}
-    
-    //проверяем, что в файл закончился (все строки считали правильно)
+
+	//проверяем, что в файл закончился (все строки считали правильно)
 	if (!feof(inp_f)) {
 		return Error_Invalid_Data;
 	}
-	
-    //проверяем, что в файл не пуст
-	if ((maxx < -1 * pow(10, 2 * mxlen)) || (minx > 1 * pow(10, 2 * mxlen))) {  
+
+	//проверяем, что в файл не пуст
+	if (minx > 1 * pow(10, 2 * mxlen)) {
 		return Error_File_Empty;
 	}
     
-    //проверяем, что все наши зажатые элементы лежат в предлах погрешности
-	if ((maxx - minx) > eps) {
-        
-        //возращаем отрицательный ответ
-		return Result_Answer_N0;
-	}
-    
-    //возращаем положительный ответ
-	return Result_Answer_YES;
+    //возращаем ответ на задачу (номер последнего наименьшего элемента последовательности)
+	return mini;
+
 }
 
-
-int main(void) {
+int main(void){
     
 	FILE* inp_f; // -файл наших значений для обработки
 	FILE* out_f; // -файл для вывода ответа
-	double eps;  // -погрешность, с которой мы проверяем элементы 
-	int mxlen;   // -максимальный разряд числа
+	int mxlen;   // -максимальный разряд элемента
 	int result;  // -вспомогательная перемнная для загрузки результата нашей функции
 	char fi[30]; // -вспомогательная перемнная для ввода имени файла наших значений
 	char fo[30]; // -вспомогательная перемнная для для ввода имени файла ответа
@@ -102,14 +92,11 @@ int main(void) {
     //открыли файл для записи
 	out_f = fopen(fo, "w"); 
 
-	printf("Enter the error value:\n");
-	scanf("%lf", &eps);
-
 	printf("Enter the estimated maximum discharge\n");
 	scanf("%d", &mxlen);
 
     //запускаем работу функции и результат загружаем в вспомогательную переменую
-	result = EqualityCheck(inp_f, eps, mxlen); 
+	result = LastMinimum(inp_f, mxlen); 
     
 	if (result == Error_Invalid_Data) {
 		printf("Error: Invalid data entry. Check the file '%s'\n", fi);
@@ -128,12 +115,7 @@ int main(void) {
 
 	printf("The result is uploaded to the file '%s'\n", fo);
 
-	if (result == Result_Answer_N0) {
-		fprintf(out_f, "Result: No, not all numbers are equal");
-		return Result_Answer_N0;
-	}
-
-	fprintf(out_f, "Result: Yes, all numbers are equal\n");
+	fprintf(out_f, "Result: The number of the last smallest element in the sequence = %d", result);
     
     //закрыли файл для чтения
 	fclose(inp_f);
@@ -142,6 +124,3 @@ int main(void) {
 
 	return Result_Answer_YES;
 }
-
-
-

@@ -10,10 +10,10 @@
 #define Result_Answer_N0 111
 #define Result_Answer_YES 222
 
-int Counter(FILE* inp_f, int mxlen);
+int Counter(const FILE* inp_f, const int mxlen);
 
 //Функция ищет наибольшое количество элементов в постоянном участке целой последовательности с наибольшей суммой элементов этого участка
-int Counter(FILE* inp_f, int mxlen) {
+int Counter(const FILE* inp_f, const int mxlen) {
 
 	int x;                                 // -текущий элемент последовательности 
 	int px;                                // -предыдущий элемент последовательности
