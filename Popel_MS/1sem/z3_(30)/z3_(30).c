@@ -45,6 +45,7 @@ int main(void){
 
 	char file_input[30];
 	double x;
+	int uncorr_val = 0;
 	FILE *f_in, *f_out;
 	Polyvalue pv;
 
@@ -66,15 +67,20 @@ int main(void){
 	}
 	
 	printf("Введите значение переменной х: \n");
-	scanf("%lf", & x);
-	
-	if(polinom_deriv(f_in, x, & pv) == NOT_OK){
-		printf("Ошибка чтения\n");
-	}else{
-		printf("Ответ загружен в файл 'output.txt'.\n");
-		fprintf(f_out, "Значение выражения = %lf\n Значение производной выражения = %lf\n", pv.pol, pv.der);
+	if (scanf("%lf", & x) != 1){
+
+		print("Введено некорректное значение\n");
+		uncorr_val = -1;
 	}
 	
+	if (uncorr_val == 0){
+		if(polinom_deriv(f_in, x, & pv) == NOT_OK){
+			printf("Ошибка чтения\n");
+		}else{
+			printf("Ответ загружен в файл 'output.txt'.\n");
+			fprintf(f_out, "Значение выражения = %lf\n Значение производной выражения = %lf\n", pv.pol, pv.der);
+		}
+	}
 	fclose(f_in);
 	fclose(f_out);			
 	return 0;
