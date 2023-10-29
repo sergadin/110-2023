@@ -13,9 +13,9 @@ int fun(FILE *f)
     while (fscanf(f, "%lf", &x) == 1) {
         if (i != 0) {
             if (k == 90 || k == -1) {
-                if (x == y) {k = -1};
-                if (x > y) {k = 1};
-                if (x < y) {k = 2};
+                if (x == y) { k = -1; }
+                if (x > y) { k = 1; }
+                if (x < y) { k = 2; }
             }
             if (k == 1) {
                 if (x <= y) { k = 0; return k; }
