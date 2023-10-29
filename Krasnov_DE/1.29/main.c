@@ -1,54 +1,61 @@
 #include <stdio.h>
 #include <stdlib.h>
-float tochka(char c[20],float x){
-FILE *f1;
-f1=fopen(c,"r");
-float chislo;
-int k=0;
-float s=0;
-while(fscanf(f1,"%f",&chislo)!=EOF){ //цикл считывающий все числа из последовательности
-        s=s+chislo*powf(x,k);
-        k=k+1;
+
+
+float tochka (char name[20], float x){
+FILE *f1 ;
+f1 = fopen (name, " r ") ;
+float chislo, znajenie_v_tochke = 0, stepen_x = 1;
+int flag = 0 ;
+while(fscanf (f1, " %f ", &chislo) != EOF){ //цикл считывающий все числа из последовательности
+        znajenie_v_tochke = znajenie_v_tochke + chislo * stepen_x ;
+        flag = flag + 1;
+        stepen_x = stepen_x * x;
 }
 fclose(f1);
-return s;
+return znajenie_v_tochke;
 }
 
-float proizvodnaya(char c[20],float y){
+
+float proizvodnaya (char name[20], float y){
 FILE *f1;
-f1=fopen(c,"r");
-float chislo;
-int k=0;
-float p=0;
-while(fscanf(f1,"%f",&chislo)!=EOF){ //цикл считывающий все числа из последовательности
-        if(k>=1){
-            p=p+chislo*powf(y,k-1);
+f1 = fopen(name,"r");
+float chislo, proizvodnay_v_tochke = 0, stepen_y = 1;
+int flag = 0;
+while(fscanf(f1, " %f ", &chislo) != EOF){ //цикл считывающий все числа из последовательности
+        if(flag >= 1){
+            proizvodnay_v_tochke = proizvodnay_v_tochke + chislo * stepen_y * flag;
+            stepen_y = stepen_y * y;
         }
-        k=k+1;
+        flag = flag + 1;
+
 }
 fclose(f1);
-return p;
+return proizvodnay_v_tochke;
 }
 
 
 int main(){
 
-float a,b,c;
-char m[20];
+float c, z;
+char file_name[20];
 printf("vvedi nazvanie file\n");
-scanf("%s",m);
+scanf("%s", file_name);
 FILE *f1;
-f1=fopen(m,"r");
-if(f1==NULL){
+f1 = fopen(file_name, "r");
+if(f1 == NULL){
     printf("file not open");
     return -1;
 }
-scanf("%f",&c);
-a=tochka(m,c);
-b=proizvodnaya(m,c);
+if(fscanf (f1, "%f", &z) == EOF){
+    printf("file pust");
+    return -1;
+}
+printf("vvedi tochku X\n");
+scanf("%f", &c);
+printf("znajenie v tochke x ravno %f\n", tochka(file_name, c));
+printf("znajenie proizvod v tochke x ravno %f", proizvodnaya(file_name, c));
 fclose(f1);
-printf("znajenie v tochke x ravno %f\n",a);
-printf("znajenie proizvod v tochke x ravno %f",b);
 
     return 0;
 }

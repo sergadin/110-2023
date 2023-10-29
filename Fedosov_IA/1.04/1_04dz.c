@@ -20,6 +20,9 @@ int main(void){
 
 	fprintf (fout, "%d", Result);
 	
+	fclose("input.txt");
+	fclose("output.txt");
+
 	return 0;
 }
 	
