@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 int reverse_array(double *Array, int len);
+//Функция перезаписывает массив в обратном порядке. Возвращает измененный массив.
 
 int reverse_array(double *Array, int len){
 
