@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 int sum_array_elem(double *Array, int len);
+//Функция перезаписывает массив по следующему принципу: 
+//на i-ое место записывается сумма всех предыдущих элементов массива, включая значение i-ого элемента. 
 
 int sum_array_elem(double *Array, int len){
 
