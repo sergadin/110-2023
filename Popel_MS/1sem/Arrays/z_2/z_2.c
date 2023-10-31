@@ -55,7 +55,7 @@ int main(void){
 	if (Array == NULL){
 		printf("Оперативная память не выделена\n");
 		main_return_code = -1;
-		goto terminate_1;
+		goto terminate;
 	}
 
 	
