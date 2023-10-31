@@ -1,8 +1,8 @@
 #include <stdio.h> 
  
 int findLastMinIndex(FILE* file); 
- 
-int main() { 
+int result;
+int main(void) { 
     FILE* file = fopen("input.txt", "r"); 
      
     if (file == NULL) { 
@@ -10,15 +10,19 @@ int main() {
         return 1; 
     } 
      
-    int index = findLastMinIndex(file); 
-    printf("Номер последнего числа, равного минимуму: %d\n", index); 
-     
+    result = findLastMinIndex(file);
+    if (result == -1) {
+	   printf("файл пуст\n");
+    }
+    else { 
+    printf("Номер последнего числа, равного минимуму: %d\n", result); 
+    } 
     fclose(file); 
     return 0; 
 } 
  
 int findLastMinIndex(FILE* file) { 
-    int number, min, index, lastIndex = -1; 
+    int number, min, index = 0, lastIndex = -1; 
      
     if (fscanf(file, "%d", &min) != 1) { 
         printf("Файл пуст.\n"); 
@@ -29,10 +33,10 @@ int findLastMinIndex(FILE* file) {
     while (fscanf(file, "%d", &number) == 1) { 
         if (number <= min) { 
             min = number; 
-            lastIndex = index; 
-        } 
-        index++; 
-    } 
+            index++;
+	}
+            lastIndex = index;  	
+    }
      
     return lastIndex; 
 }

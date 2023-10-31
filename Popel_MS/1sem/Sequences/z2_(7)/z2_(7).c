@@ -1,25 +1,28 @@
 #include <stdio.h>
 #include <math.h>
+#define NOT_OK -1
+#define equal_val 0
+#define not_equal_val -2
 
-int solution(FILE *f_in , FILE *f_out){
-	double epsilion;
+int equal_elem(FILE *f_in, double epsilion);
+int equal_elem(FILE *f_in, double epsilion){ 
+	//Программа сравнивает все элементы последовательности. Если все элементы равны между собой
+	// с точностью до погрешности, программа удовлетворяет условиям, иначе - нет.
+	// Алгоритм: из файла считываются элементы, вычисляется минимальное и максимальное значение,
+	// значения сравниваются между собой с точностью до погрешности - результат будет ответом задачи.
+	
 	double curr;
-	double min_c , max_c;
+	double min_c, max_c;
 	
-	printf("Введите значение погрешности: \n");
-	scanf("%lf", & epsilion);
-	
-	
-	if (fscanf(f_in, "%lf", & curr)!=1)
+	if (fscanf(f_in, "%lf", & curr) != 1)
 	{
-		printf("ошибка чтения\n");
-		return -1;
+		return NOT_OK;
 	}
 	
 	min_c = curr;
 	max_c = curr;
 	
-	while(fscanf(f_in , "%lf" , & curr) == 1){   
+	while(fscanf(f_in , "%lf", & curr) == 1){   
 
 		if (curr > max_c){
 			max_c = curr;
@@ -29,39 +32,59 @@ int solution(FILE *f_in , FILE *f_out){
 		}
 	}
 	
-	printf("Результат загружен в файл output.txt.\n");
-	
 	if (fabs(min_c - max_c) >= epsilion){
-		fprintf(f_out , "Значения не равны друг другу.\n");
+		return not_equal_val;
 	} else {
-		fprintf(f_out , "Все значения равны друг другу с точностью до погрешности.\n");
+		return equal_val;
 	}
-	
-	return 0;
 }
 
 int main(void){
 
 	char file_input[30];
-	FILE *f_in , *f_out;
+	double epsilion;
+	int func_val;
+	int uncorr_val = 0;
+	FILE *f_in, *f_out;
 	
 	printf("Введите имя входного файла: \n");
-	scanf("%s" , file_input);
-	f_in = fopen(file_input , "r");
-	f_out = fopen("output.txt" , "w");
-	
+	scanf("%s", file_input);
+	f_in = fopen(file_input, "r");
 	if ( f_in == NULL )
 	{
 		printf("Файл не открывается\n");
 		return -1;
 	}
+	
+	f_out = fopen("output.txt", "w");
+	
 	if (f_out == NULL){
 		printf("Файл не открывается\n");
+		fclose(f_in);
 		return -1;	
 	}
 	
-	solution(f_in , f_out);
+	printf("Введите значение погрешности: \n");
+	if (scanf("%lf", & epsilion) != 1){
+		printf("Введено некорректное значение.\n");
+		uncorr_val = -1;
+	}
 	
+	if (uncorr_val == 0){
+		func_val = equal_elem(f_in, epsilion);
+		
+		if (func_val == NOT_OK){
+			printf("ошибка чтения\n");
+		}else{
+			printf("Результат загружен в файл output.txt.\n");
+			
+			if (func_val == not_equal_val){
+				fprintf(f_out, "Значения не равны друг другу.\n");
+			}else{
+				fprintf(f_out, "Все значения равны друг другу с точностью до погрешности.\n");
+			}
+		}
+	}
 	fclose(f_in);
 	fclose(f_out);
 	return 0;

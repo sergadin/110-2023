@@ -4,34 +4,34 @@ int main(void){
 
 	FILE *fin, *fout;
 	int counter = 0;
-	int x;
-    	int mtemp;
-	int btemp;	
+	int first_num;
+    	int medium_num;
+	int last_num;	
 	fin = fopen("input.txt", "r");
         if (fin == NULL){
 		printf("Не удалось открыть файл\n");
 		return -1;
 	}
 
-	if (fscanf(fin, "%d", &mtemp) != 1){
+	if (fscanf(fin, "%d", &medium_num) != 1){
 	       printf ("Файл пуст\n");
 	       return -2;
 	}	       
-	btemp = mtemp + 1;
+	last_num = medium_num + 1;
 
-	while ( fscanf(fin, "%d", &x)  == 1) {
-		if (mtemp == x || mtemp == btemp){
+	while ( fscanf(fin, "%d", &first_num)  == 1) {
+		if (medium_num == first_num || medium_num == last_num){
 			counter += 1;
 		}
-		btemp = mtemp;
-		mtemp = x;
+		last_num = medium_num;
+		medium_num = first_num;
 	}
 	if (feof (fin) == 0){
 		printf("error");
 		return -1;
 	}		
 
-	if (mtemp == btemp){
+	if (medium_num == last_num){
 		counter += 1;
 	}	
 
