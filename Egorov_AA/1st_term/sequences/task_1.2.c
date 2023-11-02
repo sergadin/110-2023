@@ -5,6 +5,7 @@
 #define OK 0
 
 
+// Функция возвращает среднее геометрическое значение числе последовательности
 double g_mean(FILE* input, int* error);
 
 
@@ -12,19 +13,12 @@ int main(void) {
 	FILE* input, * output;
 	int error;
 	double res;
-	char input_name[32], output_name[32];
-	scanf("%s%s", input_name, output_name);
-	input = fopen(input_name, "r");
-	output = fopen(output_name, "w");
-	if (!input) {
+	if ((input = fopen("input.txt", "r")) == NULL) {
 		printf("Failed to open input file\n");
-		fclose(output);
-		fclose(input);
 		return -1;
 	}
-	if (!output) {
+	if ((output = fopen("output.txt", "w")) == NULL) {
 		printf("Failed to open output file\n");
-		fclose(output);
 		fclose(input);
 		return -2;
 	}
@@ -49,18 +43,14 @@ int main(void) {
 
 
 double g_mean(FILE* input, int* error) {
-	double mult = 1;
+	double mult = 1, temp;
 	int n = 0;
-	while (!feof(input)) {
-		double temp;
-		if (fscanf(input, "%lf", &temp) != 1) {
-			break;
-		}
+	while (fscanf(input, "%lf", &temp) == 1) {
 		mult = mult * temp;
 		n++;
 	}
 	if (!n) {
-		*error = INPUT_VALUE_ERROR; // error = INPUT_VALUE_ERROR - файл пуст / не числовые значения
+		*error = INPUT_VALUE_ERROR; // error = INPUT_VALUE_ERROR - файл пуст
 		return 0;
 	}
 	if ((n % 2 == 0) && (mult < 0)) {
