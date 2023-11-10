@@ -1,0 +1,65 @@
+﻿#include <stdio.h>
+FILE* data;
+
+double extr(const char* name){//Функция считывает среднее арифметическое локальных экстремумов последовательности
+	int current;
+	int prev;
+	int next;
+	double sum = 0 ;
+	int count = 0;
+	 
+          
+    if(fscanf(data,"%d%d", &prev, &current) != 2){ printf("error"); return -2;}
+    while(fscanf(data,"%d", &next) == 1){//Проверка считалось ли число
+	    if (current>prev && current>next)
+	    {
+		    sum=sum+current;
+		    count++;
+	    }
+	    if (current<prev && current<next)
+	    {
+		    sum=sum+current;
+		    count++;
+	    }
+	    prev=current;
+	    current=next;
+    }   
+   
+            if(count==0){
+		    printf("No extremums");
+	    }
+             else{
+		     sum=sum/count;
+		     printf("%lf", sum);
+	     }
+	 return sum;
+ }
+int main(void) {
+	FILE *answer = fopen("output.txt", "w");
+
+	if (!answer) {
+      		printf("What?");
+      		return -1;
+  	}
+
+  	data = fopen("input1.txt", "r");
+
+  	if (!data) {printf("ERR"); return -1;}
+
+  	double r = extr("input1.txt");
+
+  	if (!feof(data)) {
+	  	printf("nums only!");
+		fclose(data);
+		return -2;
+  	}
+  	fclose(data);
+  	if (fprintf(answer, "%lf", r) == 0) {
+      		printf("NO SUCCESS!!");
+      		return -2;
+	}
+  	fclose(answer);
+}
+
+		   
+
