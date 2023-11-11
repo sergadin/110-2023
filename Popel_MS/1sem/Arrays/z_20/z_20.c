@@ -9,7 +9,7 @@ int combinate_arrays(double *Array1, double *Array2, double *Array3, int len1, i
 	for (int i = 0; i < (len1 + len2); ++i){
 		if (ind_1 < len1){
 			if (ind_2 < len2){
-				if (Array1[ind_1]<= Array2[ind_2]){
+				if (Array1[ind_1] <= Array2[ind_2]){
 					Array3[i] = Array1[ind_1];
 					ind_1 += 1;
 				}else{
@@ -42,7 +42,6 @@ int main(void){
 	f_in = fopen(input , "r");
 	
 	if (f_in == NULL){
-	
 		printf("Файл не открывается\n");
 		return -1;
 	}
@@ -50,7 +49,6 @@ int main(void){
 	f_out = fopen("output.txt", "w");
 	
 	if (f_out == NULL){
-	
 		printf("Файл не открывается\n");
 		fclose(f_in);
 		return -1;
@@ -76,22 +74,22 @@ int main(void){
 		goto terminate_2;
 	}
 	
-	Array3 = (double *)malloc((len1+len2)*sizeof(double));
+	Array3 = (double *)malloc((len1 + len2) * sizeof(double));
 	if (Array3 == NULL){
 		printf("Оперативная память не выделена\n");
 		main_return_code = -1;
 		goto terminate_3;
 	}
 	
-	for (int i=0; i < len1; ++i){
-		if (fscanf(f_in, "%lf", & Array1[i])!=1){
+	for (int i = 0; i < len1; ++i){
+		if (fscanf(f_in, "%lf", & Array1[i]) != 1){
 			printf("В файле недостаточно значений либо значения не корректны\n");
 			main_return_code = -1;
 			goto terminate;
 		}
 		
 		if (i>=1){
-			if (Array1[i]<Array1[i-1]){
+			if (Array1[i] < Array1[i-1]){
 				printf("В файле значения не неубывают\n");
 				main_return_code = -1;
 				goto terminate;
@@ -100,14 +98,14 @@ int main(void){
 	}
 	
 	for (int i = 0; i < len2; ++i){
-		if (fscanf(f_in, "%lf", & Array2[i])!=1){
+		if (fscanf(f_in, "%lf", & Array2[i]) != 1){
 			printf("В файле недостаточно значений либо значения не корректны\n");
 			main_return_code = -1;
 			goto terminate;
 		}
 		
-		if (i>=1){
-			if (Array2[i]<Array2[i-1]){
+		if (i >= 1){
+			if (Array2[i] < Array2[i-1]){
 				printf("В файле значения не неубывают\n");
 				main_return_code = -1;
 				goto terminate;
@@ -116,7 +114,7 @@ int main(void){
 	}
 	combinate_arrays(Array1, Array2, Array3, len1, len2);
 		
-	for (int i = 0; i < (len1+len2); i++){
+	for (int i = 0; i < (len1 + len2); i++){
 		fprintf(f_out, "%lf\n", Array3[i]);
 			
 	}
