@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
- 
-int fun(FILE *f);
- 
+
 int fun(FILE *f)
 {
     int x, k, s = 0, i = 0, g = 1, gg = 1, u = 0;

@@ -1,48 +1,46 @@
 #include <stdio.h>
+#include <math.h>
   
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-int compute_define (FILE *input, FILE *output, ERR *error);	 //определяет является ли последовательность убыващей или ворастащей
+int define_subs (FILE *input, ERR *error);	 //определяет является ли последовательность убыващей или ворастащей
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-int compute_define (FILE *input, FILE *output, ERR *error)
+int define_subs (FILE *input, ERR *error)
 {
-        int answ;
+        int crease;
         double curr = 0, prev = 0;
-        test_file_input_double ( input, & curr, error );
+        test_file_input_double(input, &curr, error);
         prev = curr;
-	test_file_input_double ( input, & curr, error );
-	if ( prev < curr ) { answ = 1; }
-	else { answ = -1; }	
-        while ((test_file_input_double ( input, & curr, error ) == 0) && (int) curr != 0)
+	test_file_input_double(input, &curr, error);
+	if ( prev < curr ) { crease = 1; }
+	else if ( fabs(curr - prev) < 0.01 ) { return 0; }
+	else { crease = -1; }
+        while ((test_file_input_double (input, &curr, error) == 0))
 	{
-		if ( ( prev > curr ) && answ == 1 ) { 
-			fprintf ( output , " последовательность ни возрастащая, ни убыващая " );
-			return 1;
-		}
-		else { if ( ( prev < curr ) && answ == -1 ) { 
-			fprintf ( output , " последовательность ни возрастащая, ни убыващая " );
-			return 1;
-		}
-		}
+		if ( ( prev >= curr ) && crease == 1 ) { return 0; }
+		else  if ( ( prev <= curr ) && crease == -1 ) { return 0; }
 		prev = curr;
 	}
-	if ( answ == 1 ) { fprintf ( output , " последовательность является возрастащей " ) ; }
-	else { fprintf ( output , " последовательность является убыващей " ) ; }
-	return 0;
+	return crease;
 }
 
 
 int main (void)
 {
         ERR error = OK;
+	int crease;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
-        test_file ( input, & error );
-        test_file ( output, & error );
-        compute_define (input, output, & error);
+        test_file(input, &error);
+        test_file(output, &error);
+        crease = define_subs (input, &error);
+	if ( crease == 1 ) { fprintf(output, "последовательность является возрастающей."); }
+	else if ( crease == -1 ) { fprintf(output, "последовательность является убывающей."); }
+	else {
+		fprintf (output, "последовательность не убывающая и не возрастающая."); }
         fclose (input);
         fclose (output);
         if ( error == E_DATA)
@@ -57,4 +55,3 @@ int main (void)
         }
         return 0;
 }
-

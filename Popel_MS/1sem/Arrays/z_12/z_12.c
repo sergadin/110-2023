@@ -2,6 +2,8 @@
 #include <stdlib.h>
 
 int sum_array_elem(double *Array, int len);
+//Функция перезаписывает массив по следующему принципу: 
+//на i-ое место записывается сумма всех предыдущих элементов массива, включая значение i-ого элемента. 
 
 int sum_array_elem(double *Array, int len){
 
@@ -12,7 +14,7 @@ int sum_array_elem(double *Array, int len){
 		Array[i] = summa;
 	}
 	
-	return *Array;
+	return 0;
 }
 
 
@@ -20,7 +22,8 @@ int main(void){
 	
 	char input[50];
 	FILE *f_in, *f_out; 
-	int len = 0, correct = 1;
+	int len = 0, main_return_code = 0;
+	double *Array = NULL;
 	
 	printf("Введите имя входного файла: \n");
 	scanf("%s" , input);
@@ -43,48 +46,43 @@ int main(void){
 	
 	if (fscanf(f_in, "%d", &len)!=1){
 		printf("Файл пуст\n");
+		main_return_code = -1;
+		goto terminate;
 		
-	}else{
+	}
 	
-		double *Array = (double *)malloc(len*sizeof(double));
-		if (Array == NULL){
-		
-			printf("Оперативная память не выделена\n");
-			fclose(f_in);
-			fclose(f_out);
-			return -1;
-		}
-
-		
-		for (int i=0; i < len; ++i){
-			if (fscanf(f_in, "%lf", &Array[i])!=1){
-			
-				correct = 0;
-				break;
-			}
-		}
-		
-		if (correct==1){
-		
-			*Array = sum_array_elem(Array, len);
-			
-			for (int i = 0; i < len; i++){
-			
-				fprintf(f_out, "%lf\n", Array[i]);
-			}
-			
-			printf("Ответ выведен в файл output.txt\n");
-			
-		}else{
-		
-			printf("В файле недостаточкно значений\n");
-		}
-		
-	free(Array);
-	
+	Array = (double *)malloc(len*sizeof(double)); 
+	if (Array == NULL){
+		printf("Оперативная память не выделена\n");
+		main_return_code = -1;
+		goto terminate;
 	}
 
+	
+	for (int i=0; i < len; ++i){    //В созданный массив записываются элементы из входного файла
+		if (fscanf(f_in, "%lf", &Array[i])!=1){
+			printf("В файле недостаточкно значений\n");
+			main_return_code = -1;
+			goto terminate_1;
+		}
+	}
+	
+	sum_array_elem(Array, len);
+		
+	for (int i = 0; i < len; i++){   //Измененный массив записывается в файл output.txt
+		fprintf(f_out, "%lf\n", Array[i]);
+			
+	}
+		
+	printf("Ответ выведен в файл output.txt\n");
+		
+	terminate_1:
+
+	free(Array);
+	
+	terminate:
+	
 	fclose(f_in);
 	fclose(f_out);
-	return 0;
+	return main_return_code;
 }
