@@ -11,28 +11,15 @@ double opred_max_sum(FILE *file);
 double opred_max_sum(FILE *file) {
 	double next_elem, first_elem;
 	int is_next_elem_chislo;
-	int kol_vseh_elem = 0;
-	int	kol_otricat = 0;
 	double max_sum;
     double sum;
-    double max_otricat_el;
 
     if (fscanf(file, "%lf", &first_elem) != 1) {
         OSHIBKA = -1;
         return -1;
     }
-
-    kol_vseh_elem = 1;
     
-    if (first_elem < 0) {
-        max_otricat_el = first_elem;
-        sum = 0;
-        kol_otricat = 1;
-    }
-    else {
-        sum = first_elem;
-    }
-    
+    sum = first_elem;    
     max_sum = sum;
 	
 	while ((is_next_elem_chislo = fscanf(file, "%lf", &next_elem)) != EOF) {    
@@ -40,30 +27,19 @@ double opred_max_sum(FILE *file) {
 			OSHIBKA = -1;
             return -1;
         }
+
+        if (sum < 0) {
+            sum = 0;
+		}
         
-        kol_vseh_elem += 1;
 		sum += next_elem;
 		
 		if (sum > max_sum) {
 			max_sum = sum;
 		}
-		if (sum < 0) {
-            sum = 0;
-		}
-		
-		if ((next_elem < 0) && (first_elem < 0)){
-            kol_otricat += 1;
-			if (max_otricat_el < next_elem){
-				max_otricat_el = next_elem;
-			}
-		}
 	} 
-	
-	if (kol_vseh_elem == kol_otricat) {
-		max_sum = max_otricat_el;
-	}
-	
-	return max_sum; 
+
+	return max_sum;
 }
 
 
