@@ -23,6 +23,7 @@ int main(void){
 	char input[50];
 	FILE *f_in, *f_out; 
 	int len = 0, main_return_code = 0;
+	double *Array = NULL;
 	
 	printf("Введите имя входного файла: \n");
 	scanf("%s" , input);
@@ -50,7 +51,7 @@ int main(void){
 		
 	}
 	
-	double *Array = (double *)malloc(len*sizeof(double)); 
+	Array = (double *)malloc(len*sizeof(double)); 
 	if (Array == NULL){
 		printf("Оперативная память не выделена\n");
 		main_return_code = -1;
