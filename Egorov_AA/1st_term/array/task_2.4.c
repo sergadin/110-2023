@@ -30,11 +30,9 @@ void comparasion(int* arr_a, int* arr_b, int len_a, int len_b) {
 }
 
 int main(void) {
-
 	FILE* input_1, * input_2;
 	int* arr_a, * arr_b;
 	int len_a, len_b;
-
 	if ((input_1 = fopen("input_1.txt", "r")) == NULL) {
 		printf("Failed to open first input file\n");
 		return -1;
@@ -43,7 +41,6 @@ int main(void) {
 		printf("Failed to open second input file\n");
 		return -2;
 	}
-
 	if (!fscanf(input_1, "%d", &len_a)) {
 		printf("first input value error\n");
 		return -3;
@@ -52,10 +49,8 @@ int main(void) {
 		printf("second input value error\n");
 		return -4;
 	}
-
 	arr_a = (int*)malloc(len_a * sizeof(int));
 	arr_b = (int*)malloc(len_b * sizeof(int));
-
 	if (arr_a == NULL) {
 		printf("Memory allocation error\n");
 		return -5;
@@ -64,16 +59,13 @@ int main(void) {
 		printf("Memory allocation error\n");
 		return -6;
 	}
-
 	for (int i = 0; i < len_a; i++) {
 		fscanf(input_1, "%d", &arr_a[i]);
 	}
 	for (int i = 0; i < len_b; i++) {
 		fscanf(input_2, "%d", &arr_b[i]);
 	}
-
 	comparasion(arr_a, arr_b, len_a, len_b);
-
 	free(arr_a);
 	free(arr_b);
 
