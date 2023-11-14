@@ -35,28 +35,39 @@ int main(void) {
 	int len_a, len_b;
 	if ((input_1 = fopen("input_1.txt", "r")) == NULL) {
 		printf("Failed to open first input file\n");
+		fclose(input_1);
 		return -1;
 	}
 	if ((input_2 = fopen("input_2.txt", "r")) == NULL) {
 		printf("Failed to open second input file\n");
+		fclose(input_1);
+		fclose(input_2);
 		return -2;
 	}
 	if (!fscanf(input_1, "%d", &len_a)) {
 		printf("first input value error\n");
+		fclose(input_1);
+		fclose(input_2);
 		return -3;
 	}
 	if (!fscanf(input_2, "%d", &len_b)) {
 		printf("second input value error\n");
+		fclose(input_1);
+		fclose(input_2);
 		return -4;
 	}
 	arr_a = (int*)malloc(len_a * sizeof(int));
 	arr_b = (int*)malloc(len_b * sizeof(int));
 	if (arr_a == NULL) {
 		printf("Memory allocation error\n");
+		fclose(input_1);
+		fclose(input_2);
 		return -5;
 	}
 	if (arr_b == NULL) {
 		printf("Memory allocation error\n");
+		fclose(input_1);
+		fclose(input_2);
 		return -6;
 	}
 	for (int i = 0; i < len_a; i++) {
@@ -68,6 +79,7 @@ int main(void) {
 	comparasion(arr_a, arr_b, len_a, len_b);
 	free(arr_a);
 	free(arr_b);
-
+	fclose(input_1);
+	fclose(input_2);
 	return 0;
 }
