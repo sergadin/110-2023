@@ -3,6 +3,9 @@
 
 int combinate_arrays(double *Array1, double *Array2, double *Array3, int len1, int len2);
 
+//Функция получает на вход два неубывающих массива и составляет из них третий неубывающий массив. 
+//На вход подаются длины двух массивов и элементы каждого из них в порядке неубывания (сперва первый массив, затем второй).
+
 int combinate_arrays(double *Array1, double *Array2, double *Array3, int len1, int len2){
 	
 	int ind_1 = 0, ind_2 = 0;
