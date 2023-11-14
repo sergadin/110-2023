@@ -32,43 +32,38 @@ void comparasion(int* arr_a, int* arr_b, int len_a, int len_b) {
 int main(void) {
 	FILE* input_1, * input_2;
 	int* arr_a, * arr_b;
-	int len_a, len_b;
+	int len_a, len_b, code;
 	if ((input_1 = fopen("input_1.txt", "r")) == NULL) {
 		printf("Failed to open first input file\n");
-		fclose(input_1);
-		return -1;
+		code = -1;
+		goto stop_1;
 	}
 	if ((input_2 = fopen("input_2.txt", "r")) == NULL) {
 		printf("Failed to open second input file\n");
-		fclose(input_1);
-		fclose(input_2);
-		return -2;
+		code = -2;
+		goto stop_1;
 	}
 	if (!fscanf(input_1, "%d", &len_a)) {
 		printf("first input value error\n");
-		fclose(input_1);
-		fclose(input_2);
-		return -3;
+		code = -3;
+		goto stop_1;
 	}
 	if (!fscanf(input_2, "%d", &len_b)) {
 		printf("second input value error\n");
-		fclose(input_1);
-		fclose(input_2);
-		return -4;
+		code = -4;
+		goto stop_1;
 	}
 	arr_a = (int*)malloc(len_a * sizeof(int));
 	arr_b = (int*)malloc(len_b * sizeof(int));
 	if (arr_a == NULL) {
 		printf("Memory allocation error\n");
-		fclose(input_1);
-		fclose(input_2);
-		return -5;
+		code = -5;
+		goto stop_2;
 	}
 	if (arr_b == NULL) {
 		printf("Memory allocation error\n");
-		fclose(input_1);
-		fclose(input_2);
-		return -6;
+		code = -6;
+		goto stop_2;
 	}
 	for (int i = 0; i < len_a; i++) {
 		fscanf(input_1, "%d", &arr_a[i]);
@@ -77,9 +72,11 @@ int main(void) {
 		fscanf(input_2, "%d", &arr_b[i]);
 	}
 	comparasion(arr_a, arr_b, len_a, len_b);
+	stop_1:
 	free(arr_a);
 	free(arr_b);
+	stop_2:
 	fclose(input_1);
 	fclose(input_2);
-	return 0;
+	return code;
 }
