@@ -7,8 +7,8 @@ void comparasion(int* arr_a, int* arr_b, int len_a, int len_b);
 
 void comparasion(int* arr_a, int* arr_b, int len_a, int len_b) {
 	int count = 0;
-	for (int i = 0; i <= len_a; i++) {
-		for (int j = 0; j <= len_b; j++) {
+	for (int i = 0; i < len_a; i++) {
+		for (int j = 0; j < len_b; j++) {
 			if (arr_a[i] == arr_b[j]) {
 				count++;
 				break;
@@ -72,6 +72,7 @@ int main(void) {
 		fscanf(input_2, "%d", &arr_b[i]);
 	}
 	comparasion(arr_a, arr_b, len_a, len_b);
+	code = 0;
 	stop_1:
 	free(arr_a);
 	free(arr_b);
