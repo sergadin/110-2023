@@ -1,52 +1,45 @@
-#include <stdio.h>
-#include <math.h>
-int main(void)
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+
+int main(void) 
 {
 
-    FILE* f;
-    int count = 0;
-    f = fopen("input.txt", "r");
-    float number1 = 10;
-    float number2 = 100;
-    float number3 = 1000;
-    double armin = 0;
-    double res;
+    int a;
+    int sum;
+    int previos;
+    float average;
+    int n;
+    FILE* input;
+    input = fopen("input.txt", "r");
 
-    if (f == NULL)
+    if (input == NULL) 
     {
-        printf("File did not open\n");
+        printf("File did not open.\n");
         return -1;
     }
 
-    if (fscanf(f, "%f", &number1) != 1)
+    if (fscanf(input, "%d", &a) != 1) 
     {
-        printf("Reading error\n");
-            return -1;
+        printf("Unable to read first value.\n");
+        return -1;
     }
 
-    else
+    n = 1;
+    sum = a;
+    previos = a;
+
+    while (fscanf(input, "%d", &a) == 1) 
     {
-        if (fscanf(f, "%f", &number2) != 1)
-        {
-            printf("Reading error\n");
-                return -1;
+        if (a != previos) {
+            sum += a;
+            n++;
+            previos = a;
         }
     }
 
-    while ((fscanf(f, "%f", &number3) == 1))
-    {
-        if ((number2 > number1 && number2 > number3) || (number2 < number1 && number2 < number3))
-        {
-            armin += number2;
-            count++;
-            fclose(f);
-            return 0;
-        }
-        number1 = number2;
-        number2 = number3;
-    }
-    res = armin / count;
-    printf("The arithmetical mean = %lf \n", res);
-    fclose(f);
+    fclose(input);
+    average = sum / n;
+    printf("average of constant section of the sequence: %f\n", average);
     return 0;
 }
