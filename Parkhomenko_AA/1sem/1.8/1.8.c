@@ -2,69 +2,58 @@
 #include <string.h>
 #include <math.h>
 
-int fun(FILE *f) 
+int OSHIBKA = 0;
+int vozr_ili_ybiv_posl(FILE *f) 
 //Определить является ли последовательность возрастающей, убывающей
+
 {
-    int i, k = 90;
-    double x, y;
-    //"x" - используется для считывания чисел из файла
-    //"y" -  используется для сравнения чисел в последовательности
-    i = 0;
-    //"i" - это целочисленная переменная, которая используется для подсчета количества чисел, которые были считаны из файла
-    while (fscanf(f, "%lf", &x) == 1) {
-        if (i != 0) {
-            if (k == 90 || k == -1) {
-                if (x == y) { k = -1; }
-                //Если x равно y, то тип последовательности становится -1
-                if (x > y) { k = 1; }
-                //Если x больше y, то тип последовательности становится 1
-                if (x < y) { k = 2; }
-                //Если x меньше y, то тип последовательности становится 2
+int vozr_posl = 0, ybiv_posl = 0;
+double tek, pred;
 
-            //-1, если последовательность не возрастающая или не убывающая
-            //1, если последовательность возрастающая
-            //2, если последовательность убывающая
-            
-            }
-            if (k == 1) {
-                if (x <= y) { k = 0; return k; }
-                //Если x меньше или равно y, то тип последовательности становится 0 и возвращается значение k
-            }
-            if (k == 2) {
-                if (x >= y) { k = 0; return k; }
-                //Если x больше или равно y, то тип последовательности становится 0 и возвращается значение k
-            }
-            //"k" - это целочисленная переменная, которая используется для хранения значения, представляющего тип последовательности чисел в файле
-            //Если тип последовательности еще не определен (k = 90 или k = -1), то сравнивается текущее число (x) с предыдущим (y)
-        }
-
-        // printf("%lf ", x);
-        y = x;
-        i++;
-    }
-
-    return k;
+if (fscanf(f, "%lf", &tek) != 1) {
+    OSHIBKA = -1;
+    return -1;
 }
 
-int main(void) 
-{
-    FILE *f;
-    char name[100] = {0};
-
-    int k;
-
-    printf("File: ");
-    fgets(name, sizeof(name)-1, stdin);
-    name[strlen(name)-1] = 0;
-    f = fopen(name, "r");
-    if (f == NULL) {
-        printf("Can't open file \n");
-        return -1;
+while (fscanf(f, "%lf", &pred) == 1) {
+    if (tek < pred) {
+        vozr_posl = 1;
+    } else if (tek > pred) {
+        ybiv_posl = 1;
     }
+    tek = pred;
+}
 
-    k = fun(f);
-    if (k == 0) {printf("\n Не возрастает, не убывает\n");}
-    if (k == 1) {printf("\n Возрастает\n");}
-    if (k == 2) {printf("\n Убывает\n");}
+if (vozr_posl == 1 && ybiv_posl == 1) {
+    return -1;
+} else if (vozr_posl == 1) {
+    return 1;
+} else if (ybiv_posl == 1) {
     return 0;
+}
+return -1;
+}
+
+int main(void) {
+int opred_posl;
+FILE *f = fopen("1.8.txt", "r");
+if (f == NULL) {
+    printf("error opening the file\n"); 
+    return -1;
+}
+
+opred_posl = vozr_ili_ybiv_posl(f);
+
+if (opred_posl == OSHIBKA) {
+    printf("error\n"); 
+    return -1;
+} else if (opred_posl == 1) {
+    printf("Последовательность возрастает\n");
+} else if (opred_posl == 0) {
+    printf("Последовательность убывает\n");
+}
+
+fclose(f); 
+
+return 0;
 }
