@@ -1,93 +1,81 @@
 #include <stdio.h>
 
 
-int function(FILE*);
+int find_distance(FILE * fin);
+//функция ищет максимальное расстояние между 2-мя соседними локальными минимумами
 
 
-int main(void){
-	FILE *fout, *fin;
-	int res;
-
+int main(){
+	FILE *fin, *fout;
+	int result;
+	
 	fin = fopen("input.txt", "r");
-
-	if (fin == NULL){
-		printf("error\n");
+	if (fin == NULL) { 
+		printf("Не удалось открыть файл 'input.txt'\n");
 		return -1;
 	}
-
-	res = function(fin);
-
-	fout = fopen ("output.txt", "w");
-
-	fprintf (fout, "%d", res);
-
+	
+	fout = fopen("output.txt", "w");
+	if (fout == NULL) { 
+		printf("Не удалось открыть файл 'output.txt'\n");
+		return -1;
+	}
+	
+	result = find_distance(fin);
+	
+	if (result != -1){
+		fprintf(fout, "%d\n", result);
+	}
+	
+	fclose(fin);
+	fclose(fout);
+	
 	return 0;
-
-	fclose("input.txt");
-	fclose("output.txt");
-
 }
 
 
-int function(FILE *fin){
-	int counter = 0;
-	int third;
-	int second;
-	int first;
-	int temp1 = 0;  //переменная для хранения номера настоящего минимума
-	int temp2 = 0;	//переменная для хранения номера предыдущего минимума
-	int result = 0;
-
-	if (fscanf(fin, "%d", &first) != 1){
-		printf ("error\n");
-		return -2;
-	}
-
-	second = first;
-
-	if (fscanf(fin, "%d", &first) != 1){
-                printf ("error\n");
-		return -2;
-	}
-
-	if (second >= first){
-		temp1 = 1;
-	}
-
-	third = second;
-	second = first;
+int find_distance(FILE * fin){
+	int distance = 0;	//искомое расстояние
+	int nomer = 2;		//номер читаемого числа, начинается с 2 тк первые 2 элемента мы читаем вне цикла	
+	int min1, min2;		//номер первого и второго минимума
+	int amount_min = 0;	//общее кол-во минимумов
+	double prev_num, r_num, next_num;
 	
-	while (fscanf(fin, "%d", &first) == 1){
-
-		counter ++;
-
-		if (first >= second && third >= second){
-			temp2 = temp1;
-			temp1 = counter;
-		}	
-
-		if (result <= temp1 - temp2 - 1){
-			result = temp1 - temp2 - 1;
-		}
-
-		third = second;
-		second = first;
-	}
-
-	if (second < third){
-		counter ++;
-		temp2 = temp1;
-		temp1 = counter;
-		if (result <= temp1 - temp2 - 1){
-			result = temp1 - temp2 - 1;
-		}
-	}
-
-	if (feof(fin) == 0){
-		printf("error\n");
-		return -5;
+	if (fscanf(fin, "%lf", &prev_num) != 1) { 
+        	printf("Не удалось прочитать первый элемент\n");
+        	return -1;
+    	}
+     
+    	if (fscanf(fin, "%lf", &r_num) != 1) {  
+        	printf("В последовательности нет ни одного локального минимума так как она состоит из одного числа\n");
+        	return -1;
+   	}
+   	
+   	while (fscanf(fin, "%lf", &next_num) == 1) {
+        	if ((r_num < prev_num) && (r_num < next_num)) {
+			min1 = min2;
+		    	min2 = nomer;
+		    	amount_min ++;
+		    	if ((min2 - min1 > distance) && (amount_min > 1)) {
+			    	distance = min2 - min1 - 1;
+		    		}
+			}
+		prev_num = r_num;
+		r_num = next_num;
+		nomer ++;
+    		}
+    	
+    	if (feof (fin) == 0){
+                printf("Файл не прочитался до конца\n");
+                return -1;
+        }
+    	
+	if (amount_min < 2) {   //проверка количества минимумов
+		printf("В последовательности не более одного локального минимума\n");
+		return -1;
 	}
 	
-	return result;
+	return distance;
 }
+	 
 
