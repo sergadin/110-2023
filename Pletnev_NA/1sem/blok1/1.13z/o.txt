@@ -1,1 +1,0 @@
-Result: The number of the last smallest element in the sequence = 12

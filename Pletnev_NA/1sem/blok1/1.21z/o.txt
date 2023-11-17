@@ -1,1 +1,0 @@
-Result: The largest number of elements in a constant section of the whole sequence with the largest sum of elements of this section = 4

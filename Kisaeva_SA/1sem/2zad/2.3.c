@@ -56,7 +56,6 @@ int main(void) {
     
     if (mas == NULL) {
         printf("Memory error\n");
-        free(mas);
         fclose(file_in);
         fclose(file_out);
         return -1;
