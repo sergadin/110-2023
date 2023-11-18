@@ -12,7 +12,11 @@ int main(void) {
     }
     mean = calculateHarmonicMean(finput);
     foutput = fopen("output.txt", "w");
-    fprintf ( foutput, "Среднее гармоническое: %.2lf\n", mean);
+    if (foutput == NULL) {
+	    printf(" не удалось открыть файл для вывода\n");
+	    return 2;
+    }
+    fprintf(foutput,"%.2lf", mean);
 	    
     fclose(finput);
     fclose(foutput);
