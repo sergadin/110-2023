@@ -18,6 +18,10 @@ void cyclic_Shift_Right(double *mas, int len) {
         return;
     }
 	
+	if (len == 1) {     //нечего сдвигать, т к только один элемент
+        return;
+    }
+
 	posled_el = mas[len - 1];    //сохраняем последний элемент массива
 	
 	for (int i = len - 1; i > 0; i--) {		//сдвигаем элементы массива вправо
@@ -56,7 +60,6 @@ int main(void) {
     
     if (mas == NULL) {
         printf("Memory error\n");
-        free(mas);
         fclose(file_in);
         fclose(file_out);
         return -1;

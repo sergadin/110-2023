@@ -2,42 +2,47 @@
 
 
 int Schet(FILE*);
+//Функция считает кол-во чисел, больших предыдущего
 
 
 int main(void){
 	FILE *fout, *fin;
 	int Result;
+
 	fin = fopen("input.txt", "r");
-	
 	if (fin == NULL){
-		printf("error\n");
+		printf("Не удалось открыть файл 'input.txt'\n");
 		return -3;
 	}
 	
 	Result = Schet(fin);
 
 	fout = fopen ("output.txt", "w");
+	if (fout == NULL){
+		printf("Не удалось открыть файл 'output.txt'\n");
+		return -3;
+	}
 
 	fprintf (fout, "%d", Result);
 	
-	fclose("input.txt");
-	fclose("output.txt");
+	fclose(fin);
+	fclose(fout);
 
 	return 0;
 }
 	
 
 int Schet(FILE *fin){
-	int count = 0;
-	int current;	
-	int previous;
+	int count = 0; 	//Кол-во чисел
+	double current;					
+	double previous;	
 
-	if (fscanf(fin, "%d", &previous) != 1){
-		printf("error\n");
-		return -2;
+	if (fscanf(fin, "%lf", &previous) != 1){
+		printf("В файле содержится не число\n");
+		return -2; //Чтение первого значения из файла и проверка, что это число
 	}
 
-	while (fscanf(fin, "%d", &current) == 1){
+	while (fscanf(fin, "%lf", &current) == 1){
 		if (current > previous){
 			count ++;
 		}
@@ -45,7 +50,7 @@ int Schet(FILE *fin){
 	}
 
 	if (feof (fin) == 0){
-		printf("error\n");
+		printf("Файл не прочитался до конца\n");
 		return -1;
 	}
 

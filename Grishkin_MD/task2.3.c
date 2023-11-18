@@ -1,4 +1,5 @@
 #include <stdio.h>
+void reverseArray(int arr[], int length);
 
 void reverseArray(int arr[], int length) {
     int start = 0;
@@ -14,7 +15,6 @@ void reverseArray(int arr[], int length) {
         end--;
     }
 }
-
 int main(void) {
     FILE* file = fopen("input.txt", "r");
     if (file == NULL) {
