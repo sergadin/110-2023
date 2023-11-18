@@ -29,11 +29,14 @@ int opred_sum_chet_elem (FILE *f)
         }
         
         if (tek > pred) {
+            NE_VOZR = 1;
             if (tek%2 == 0) { sum += tek; }
         }
         else {
+            if(tek < pred) {
+                if ((NE_VOZR != 1) && (pred%2 == 0)) { sum += pred; }
             NE_VOZR = 1;
-            return -1;
+            }
         }
         pred = tek;
     }
@@ -55,11 +58,11 @@ int main(void) {
     if (OSHIBKA == -1) {
 		printf("Некорректный файл\n"); //пустой или есть буквы  
     }
-    else if (NE_VOZR == 1) {
-		printf("Последовательность не возрастает\n");
-    }
+   // else if (NE_VOZR == 1) {
+	//	printf("Последовательность не возрастает\n");
+   // }
 	else {
-		printf("Сумма чётных элементов в возрастающей последовательности равна: %d\n", sum_ravna);
+		printf("Сумма чётных элементов в возрастающих участках целой последовательности равна: %d\n", sum_ravna);
 	}
 	
     fclose(f);
