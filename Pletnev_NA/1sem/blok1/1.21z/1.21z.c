@@ -18,8 +18,6 @@ int Counter(FILE* inp_f) {
 	int lc_k;                              // -текущее количество элементов в посто€нном участке целой последовательности
 	int gl_sm;                             // -наибольша€ сумма элементов в посто€нном участке целой последовательности
 	int lc_sm;                             // -текуща€ сумма элементов в посто€нном участке целой последовательности
-	int lc_xch;
-    int gl_xch;
 	
 	if (fscanf(inp_f, "%d", &x) != 1) {
 		return Error_Invalid_Data;
@@ -29,16 +27,22 @@ int Counter(FILE* inp_f) {
     
 	lc_k = 1;
 	lc_sm = px;
-    if (px == 0){
-        lc_xch = 0;
-    }
-    else {
-        lc_xch = abs(px)/px
-    }
-    
+
+	//считаем превый посто€нный участок
+	while ((fscanf(inp_f, "%d", &x) == 1) && (x == px)) {
+
+		lc_k += 1;
+		lc_sm += x;
+		px = x;
+	}
+
     gl_k = lc_k;
 	gl_sm = lc_sm;
-    gl_xch = lc_xch;
+
+	px = x;
+
+	lc_k = 1;
+	lc_sm = x;
     
     //идем по файлу пока мы можем считовать файл
 	while (fscanf(inp_f, "%d", &x) == 1) {
@@ -47,40 +51,24 @@ int Counter(FILE* inp_f) {
 		if (x == px) {
 			lc_k += 1;
 			lc_sm += x;
-            
-            if ((lc_xch == gl_xch) && (gl_xch == -1)) {
-                //провер€ем, что локальна€ сумма больше глобальной по модулю, если числа отрицательные
-                if (lc_sm < gl_sm) {
-                    gl_k = lc_k;
-                    gl_sm = lc_sm;
-                    gl_xch = lc_xch;
-                }
-            }
-            
-            //провер€ем, что локальна€ сумма больше глобальной
-            if (lc_sm > gl_sm) {
-                    gl_k = lc_k;
-                    gl_sm = lc_sm;
-                    gl_xch = lc_xch;
-                }
-            
+
+			//провер€ем, что локальна€ сумма больше глобальной
+			if (lc_sm > gl_sm) {
+				gl_sm = lc_sm;
+				gl_k = lc_k;
+			}
+
 			//провер€ем, что при равной сумме локальный счетчик больше глобальной
 			if ((lc_sm == gl_sm) && (lc_k > gl_k)) {
 				gl_k = lc_k;
 			}
+
 		}
 
 		else {
-
 			lc_k = 1;
 			lc_sm = x;
-            if (x == 0){
-                lc_xch = 0;
-            }
-            else {
-                lc_xch = abs(x)/x;
-            }
-    
+
 		}
 
 		px = x;
