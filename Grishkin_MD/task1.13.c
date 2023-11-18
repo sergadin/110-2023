@@ -16,7 +16,7 @@ int main(void) {
     if (foutput == NULL) {
 	    printf("не удалось открыть файл для вывода\n");
 	    return 2;
-
+    }
     if (result == -1) {
 	   printf("файл пуст\n");
     }
@@ -44,9 +44,9 @@ int findLastMinIndex(FILE* finput) {
     while (fscanf(finput, "%d", &number) == 1) { 
         if (number <= min) { 
             min = number; 
-            lastIndex = index;
+            index++;
 	}
-	index++;
+        lastIndex = index;	
      }
 
     return lastIndex; 
