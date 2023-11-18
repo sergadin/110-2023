@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <math.h> 
+#include <stdlib.h> 
 #define Error_File_NOT_Exist -444
 #define Error_Invalid_Data -333
 #define Result_Answer 222
@@ -17,29 +18,52 @@ int Counter(FILE* inp_f) {
 	int lc_k;                              // -текущее количество элементов в постоянном участке целой последовательности
 	int gl_sm;                             // -наибольшая сумма элементов в постоянном участке целой последовательности
 	int lc_sm;                             // -текущая сумма элементов в постоянном участке целой последовательности
-
-
-	//вводим бесконечное маленькое значение нулевого элемента
-	px = -1316134912;
-	gl_k = -2;
-	lc_k = -1;
+	int lc_xch;
+    int gl_xch;
+	
+	if (fscanf(inp_f, "%d", &x) != 1) {
+		return Error_Invalid_Data;
+	}
+    
+    px = x;
+    
+	lc_k = 1;
 	lc_sm = px;
-	gl_sm = 0;
-
-	//идем по файлу пока мы можем считовать файл
+    if (px == 0){
+        lc_xch = 0;
+    }
+    else {
+        lc_xch = abs(px)/px
+    }
+    
+    gl_k = lc_k;
+	gl_sm = lc_sm;
+    gl_xch = lc_xch;
+    
+    //идем по файлу пока мы можем считовать файл
 	while (fscanf(inp_f, "%d", &x) == 1) {
 
 		//проверяем, что предыдущий элемент равен нынешнему
 		if (x == px) {
 			lc_k += 1;
 			lc_sm += x;
-
-			//проверяем, что локальная сумма большее глобальной
-			if (lc_sm > gl_sm) {
-				gl_k = lc_k;
-				gl_sm = lc_sm;
-			}
-
+            
+            if ((lc_xch == gl_xch) && (gl_xch == -1)) {
+                //проверяем, что локальная сумма больше глобальной по модулю, если числа отрицательные
+                if (lc_sm < gl_sm) {
+                    gl_k = lc_k;
+                    gl_sm = lc_sm;
+                    gl_xch = lc_xch;
+                }
+            }
+            
+            //проверяем, что локальная сумма больше глобальной
+            if (lc_sm > gl_sm) {
+                    gl_k = lc_k;
+                    gl_sm = lc_sm;
+                    gl_xch = lc_xch;
+                }
+            
 			//проверяем, что при равной сумме локальный счетчик больше глобальной
 			if ((lc_sm == gl_sm) && (lc_k > gl_k)) {
 				gl_k = lc_k;
@@ -50,11 +74,16 @@ int Counter(FILE* inp_f) {
 
 			lc_k = 1;
 			lc_sm = x;
-
+            if (x == 0){
+                lc_xch = 0;
+            }
+            else {
+                lc_xch = abs(x)/x;
+            }
+    
 		}
 
 		px = x;
-
 	}
 
 	//проверяем, что в файл закончился (все строки считали правильно)
