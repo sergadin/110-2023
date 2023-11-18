@@ -1,145 +1,129 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <math.h> 
+#include <math.h>
 #include <stdlib.h>
-#define LEN 4098
-#define LEN_ARRAY_A 4098
-#define LEN_ARRAY_B 4098
-#define Error_File_NOT_Exist -444
-#define Error_Invalid_Data -333
-#define Error_Large_Values -222
-#define Error_File_Empty -111
-#define Result_Answer_N0 111
-#define Result_Answer_YES 222
+#define Error_File_NOT_Exist -666
+#define Error_Invalid_Data -555
+#define Error_Unallocated_Memory -444
+#define Error_Array_Empty -333
+#define Result_Answer 222
+
+int ShiftTheArrayByPositionK(int* arr,int len, int k);
 
 
+//функция, которая сдвигает элементы на k позиций вправо
+int ShiftTheArrayByPositionK(int* arr, int len, int k) {
 
-int TransferFromFileToArray(const FILE * inp_f, const int len);
-
-
-
-int ArrayShift(const int arr);
-
-
-int TransferFromFileToArray(const FILE * inp_f, const int len){
-    
-    int i = 0;                                          // -РёРЅРґРµРєСЃ СЌР»РµРјРµРЅС‚Р° РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
-    double x;                                           // -СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
-    double arr[len] = {-1 * pow(10, 2 * mxlen + 1)};    // -РјР°СЃСЃРёРІ, РєСѓРґР° Р·Р°РїРёСЃС‹РІР°РµРј РґР°РЅРЅС‹Рµ
-    double checklen = 1 * pow(10, mxlen);               // -РїСЂРµРјРµРЅРЅР°СЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё РІРµР»РµС‡РёРЅС‹ 
-    char buf[LEN];                                      // -РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ СЃС‚РµРє РїР°РјСЏС‚Рё РґР»СЏ СЃС‡РёС‚РѕРІР°РЅРёРµ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р°
-    
-    //РёРґРµРј РїРѕ С„Р°Р№Р»Сѓ РїРѕРєР° РјС‹ РјРѕР¶РµРј СЃС‡РёС‚РѕРІР°С‚СЊ С„Р°Р№Р»
-	while (fgets(buf, LEN, inp_f)) { 
-        
-        //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РјС‹ РјРѕР¶РµРј СЃС‡РёС‚Р°С‚СЊ СЃС‚СЂРѕС‡РєРё
-		if (sscanf(buf, "%lf", &x) != 1) { 
-			return Error_Invalid_Data;
-		}
-		
-        //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РЅР°С€Рё СЌР»РµРјРµРЅС‚С‹ РЅРµ СЃР»РёС€РєРѕРј Р±РѕР»С€РёРµ
-		if (fabs(x) > checklen)) { 
-			return Error_Large_Values;
-		}
-		
-        i++
-        
-        arr[i] = x
-    }
-      
-    //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІ С„Р°Р№Р» Р·Р°РєРѕРЅС‡РёР»СЃСЏ (РІСЃРµ СЃС‚СЂРѕРєРё СЃС‡РёС‚Р°Р»Рё РїСЂР°РІРёР»СЊРЅРѕ)
-	if (!feof(inp_f)) {
-		return Error_Invalid_Data;
+	if (arr == NULL) {
+		printf("Error:The array is empty\n");
+		return Error_Array_Empty;
 	}
-	
-    //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ РІ С„Р°Р№Р» РЅРµ РїСѓСЃС‚
-	if (arr == {-1 * pow(10, 2 * mxlen + 1)}) {  
-		return Error_File_Empty;
-	}  
-        
-    return arr
+
+	k %= len;
+
+	arr = arr[-k:] + arr[:-k];
 }
-
-
-//С„СѓРЅРєС†РёСЏ 
-int ArrayShift(int arr){
-    
-}
-
-
-
 
 
 int main(void) {
-    
-    {
-        FILE* inp_f; // -С„Р°Р№Р» РЅР°С€РёС… Р·РЅР°С‡РµРЅРёР№ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё
-        FILE* out_f; // -С„Р°Р№Р» РґР»СЏ РІС‹РІРѕРґР° РѕС‚РІРµС‚Р°
-        int mxlen;   // -РјР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·СЂСЏРґ С‡РёСЃР»Р°
-        int result;  // -РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ РїРµСЂРµРјРЅРЅР°СЏ РґР»СЏ Р·Р°РіСЂСѓР·РєРё СЂРµР·СѓР»СЊС‚Р°С‚Р° РЅР°С€РµР№ С„СѓРЅРєС†РёРё
-        char fi[30]; // -РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ РїРµСЂРµРјРЅРЅР°СЏ РґР»СЏ РІРІРѕРґР° РёРјРµРЅРё С„Р°Р№Р»Р° РЅР°С€РёС… Р·РЅР°С‡РµРЅРёР№
-        char fo[30]; // -РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ РїРµСЂРµРјРЅРЅР°СЏ РґР»СЏ РґР»СЏ РІРІРѕРґР° РёРјРµРЅРё С„Р°Р№Р»Р° РѕС‚РІРµС‚Р°
-        
-    }
-    
-    
-    {
-        printf("Enter the name of the input file:\n");
-        scanf("%s", fi);
-        
-        //РѕС‚РєСЂС‹Р»Рё С„Р°Р№Р» РґР»СЏ С‡С‚РµРЅРёСЏ
-        inp_f = fopen(fi, "r");  
-        
-        if (inp_f == NULL) {                             
-            printf("Error: The file '%s' does not exist\n", fi);
-            return Error_File_NOT_Exist;
-        }
 
-        printf("Enter the name of the output file:\n");
-        scanf("%s", fo);
-        
-        //РѕС‚РєСЂС‹Р»Рё С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
-        out_f = fopen(fo, "w"); 
+	FILE* inp_f;		// -файл наших значений для обработки
+	FILE* out_f;		// -файл для вывода ответа
+	char fi[30];		// -вспомогательная перемнная для ввода имени файла наших значений
+	char fo[30];		// -вспомогательная перемнная для для ввода имени файла ответ
+	int code = 0;		// -резултат фнукции
+	int* arr = NULL;	// -наш массив для работы
+	int len;			// -длина нашего массива
+	int k;				// -число на которое нужно сдвинуть элементы массива
 
-        printf("Enter the error value:\n");
-        scanf("%lf", &eps);
+	printf("Enter the name of the input file:\n");
+	scanf("%s", fi);
 
-        printf("Enter the estimated maximum discharge\n");
-        scanf("%d", &mxlen);
-    }
-    
-    
+	//открыли файл для чтения
+	inp_f = fopen(fi, "r");
 
-    {
-        //Р·Р°РїСѓСЃРєР°РµРј СЂР°Р±РѕС‚Сѓ С„СѓРЅРєС†РёРё Рё СЂРµР·СѓР»СЊС‚Р°С‚ Р·Р°РіСЂСѓР¶Р°РµРј РІ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅСѓСЋ РїРµСЂРµРјРµРЅСѓСЋ
-        result1 = TransferFromFileToArray(inp_f, mxlen); 
-        
-        if (result1 == Error_Invalid_Data) {
-            printf("Error: Invalid data entry. Check the file '%s'\n", fi);
-            return Error_Invalid_Data;
-        }
+	//проверяем существование файла. если его нет, выводим ошибку
+	if (inp_f == NULL) {
+		printf("Error: The file '%s' does not exist\n", fi);
+		code = Error_File_NOT_Exist;
+	}
 
-        if (result1 == Error_Large_Values) {
-            printf("Error: The file file '%s' contains too large values\n", fi);
-            return Error_Large_Values;
-        }
+	if (fscanf(inp_f, "%d", &len) != 1) {
+		return Error_Invalid_Data;
+	}
 
-        if (result1 == Error_File_Empty) {
-            printf("The file '%s' is empty\n", fi);
-            return Error_File_Empty;
-        }
-    }
-	
-	
-    //Р·Р°РєСЂС‹Р»Рё С„Р°Р№Р» РґР»СЏ С‡С‚РµРЅРёСЏ
+	arr = (int*)malloc((len + 1) * sizeof(int));
+
+	if (arr == NULL) {
+		printf("Error: RAM is not allocated\n");
+		code = Error_Unallocated_Memory;
+	}
+
+	for (int i = 0; i < len; i++) {
+
+		if (fscanf(inp_f, "%d", &arr[i]) != 1) {
+			printf("Error: Invalid data entry. Check the file '%s'\n", fi);
+			code = Error_Invalid_Data;
+		}
+
+	}
+
+	//закрыли файл для чтения
 	fclose(inp_f);
-    //Р·Р°РєСЂС‹Р»Рё С„Р°Р№Р» РґР»СЏ Р·Р°РїРёСЃРё
-	fclose(out_f); 
-    
-    
-    
+
+	if (code != 0) {
+		return code;
+	}
+
+	printf("Enter the number by which you want to shift all array elements:\n");
+	scanf("%d", &k);
+
+	printf("%d - k\n", k);
+
+	for (int i = 0; i < len; i++) {
+		printf("%d ", arr[i]);
+	}
+	printf("\n");
+
+	code = ShiftTheArrayByPositionK(arr, len, k);
+
+	if (code != Result_Answer) {
+		return code;
+	}
+	
+
+	for (int i = 0; i < len; i++) {
+		printf("%d ", arr[i]);
+	}
+
+	return 101010;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	printf("Enter the name of the output file:\n");
+	scanf("%s", fo);
+
+	//открыли файл для записи
+	out_f = fopen(fo, "w");
 
 	printf("The result is uploaded to the file '%s'\n", fo);
-    
-    
+
+	for (int i = 0; i < len; i++) {
+		fprintf(out_f, "%d ", arr[i]);
+	}
+
+	//закрыли файл для записи
+	fclose(out_f);
+	free(arr);
+
+	return code;
 }
