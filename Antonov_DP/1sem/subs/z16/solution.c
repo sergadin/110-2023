@@ -1,46 +1,51 @@
 #include <stdio.h>
-
+  
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-int compute_max_len_of_incr (FILE *input, ERR *error);      //вычисляет кол-во элементов самой длинной подпоследовательности
+double compute_max_dev (FILE *input, ERR *error);      //вычисляет максимальное отклонение от среднего арифметического последовательности
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-int compute_max_len_of_incr (FILE *input, ERR *error)
+double compute_max_dev (FILE *input, ERR *error)
 {
-        int len = 1, quan = 1;
-        double curr = 0, prev = 0;
+        int quan = 1;
+        double curr = 0, max, min, summ, aver;
         test_file_input_double(input, & curr, error);
-        prev = curr;
+	max = curr;
+	min = curr;
+	summ = curr;
         while ((test_file_input_double(input, & curr, error) == 0))
-	{
-		if ( prev < curr ) { quan++; }
-		else if ( len < quan ) { len = quan, quan = 1; }
-		prev = curr;
-	}
-	return len;
+        {
+                summ += curr;
+		if (curr > max) {max = curr;}
+		if (curr < min) {min = curr;}
+		quan ++;
+        }
+        aver = summ / quan;
+	if (max - aver < aver - min) {return aver - min;}
+	else {return max - aver;}
 }
 
 
 int main (void)
 {
-	int len;
+        double max_dev;
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
         test_file(input, &error);
         test_file(output, &error);
-        len = compute_max_len_of_incr (input, &error);
-	fprintf ( output, "answ = %d \n", len);
+        max_dev = compute_max_dev(input, &error);
+        fprintf (output, "answ = %f \n", max_dev);
         fclose (input);
         fclose (output);
-        if ( error == E_DATA)
+        if (error == E_DATA)
         {
                 printf ( "ошибка при открытии файла \n" );
                         return -1;
         }
-        if ( error == E_IO)
+        if (error == E_IO)
         {
                 printf ( "ошибка при чтении файла \n" );
                 return -1;
