@@ -49,7 +49,7 @@ int main(void) {
         printf("Failed to open output file\n");
         code = -3;
         goto stop_4;
-    }
+	}
 
 	if (!fscanf(input_1, "%d", &len_a)) {
 		printf("input value error\n");
@@ -93,15 +93,15 @@ int main(void) {
 
 	res = comparasion(arr_a, arr_b, len_a, len_b);
 
-    if (res == 1) {
-        fprintf(output, "A equals B, A is a subset of B");
-    }
-    else if (res == 2) {
-        fprintf(output, "A does not equal B, A is a subset of B");
-    }
-    else if (res == 3) {
-        fprintf(output, "A does not equal B, A is not a subset of B");
-    }
+    	if (res == 1) {
+		fprintf(output, "A equals B, A is a subset of B");
+    	}
+    	else if (res == 2) {
+        	fprintf(output, "A does not equal B, A is a subset of B");
+    	}
+    	else if (res == 3) {
+        	fprintf(output, "A does not equal B, A is not a subset of B");
+    	}
 
 	code = 0;
 	stop_1:
@@ -114,6 +114,6 @@ int main(void) {
 	fclose(input_2);
 	stop_5:
 	fclose(input_1);
-    stop_6:
+    	stop_6:
 	return code;
 }
