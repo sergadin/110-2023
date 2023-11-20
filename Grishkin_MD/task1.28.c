@@ -1,39 +1,34 @@
 #include <stdio.h>
 
-int findMaxSum(FILE *file);
+int findMaxSum(FILE *fin);
 int result;
 int main(void) {
-    FILE *file = fopen("input.txt", "r");
+	FILE *fout, *fin;
+    fin = fopen("input.txt", "r");
 
-    if (file == NULL) {
+    if (fin == NULL) {
         printf("Не удалось открыть файл!\n");
         return -1;
     }
-    result = findMaxSum(file);
-    if (result == 0) {
-	    printf("в файле нет последовательности или все элементы равны 0\n");
-    }
-    else {
-            printf("Максимальная сумма подряд идущих элементов: %d\n", result);
-    }
-    fclose(file);
+    result = findMaxSum(fin);
+
+    fout = fopen("output.txt", "w");
+    fprintf(fout , "Максимальная сумма подряд идущих элементов: %d\n", result);
+
+    fclose(fout);
+    fclose(fin);
     return 0;
 }
 
-int findMaxSum(FILE *file) {
-    int maxSum = 0;
+int findMaxSum(FILE *fin) { 
+    int maxSum = -10000;
     int currentSum = 0;
     int number;
 
-    while (fscanf(file, "%d", &number) == 1) {
+    while (fscanf(fin, "%d", &number) == 1) {
         currentSum += number;
-        
         if (currentSum > maxSum) {
             maxSum = currentSum;
-        }
-        
-        if (currentSum < 0) {
-            currentSum = 0;
         }
     }
 

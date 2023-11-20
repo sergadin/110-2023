@@ -37,7 +37,7 @@ int current_distance;
 int min_flag;
 min_flag = 0;
 fp = fopen(name, "r");
-current_distance = 0;
+current_distance = 9999999;
 min_distance = 9999999;
 previous = fscanf(fp, "%d", &previous);
 if (!fp){
@@ -47,20 +47,19 @@ while (fscanf(fp, "%d", &present) == 1){
  if (present < previous){
   min_flag = 1;
  }
- else if ((present > previous) & (min_flag == 1)){
+ else if ((present > previous) && (min_flag == 1)){
   if (current_distance < min_distance){
    min_distance = current_distance;
   }
-  current_distance = 1;
+  current_distance = 0;
+  min_flag = 0;
  }
- if (min_flag){
-  current_distance++;
- }
+ current_distance++;
  previous = present;
 }
 if (!feof(fp)){
  return -2;
 }
 fclose(fp);
-return min_distance;
+return min_distance - 1;
 }
