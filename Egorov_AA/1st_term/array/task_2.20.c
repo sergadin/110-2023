@@ -2,11 +2,11 @@
 #include <stdlib.h>
 
 
-void united_set(int* arr_a, int* arr_b, int* arr_c,
+void unite_set(int* arr_a, int* arr_b, int* arr_c,
 	int len_a, int len_b);
 
 
-void united_set(int* arr_a, int* arr_b, int* arr_c,
+void unite_set(int* arr_a, int* arr_b, int* arr_c,
 	int len_a, int len_b) {
 	int a = 0, b = 0, c = 0;
 	while ((a < len_a) && (b < len_b)) {
@@ -100,7 +100,7 @@ int main(void) {
 		}
 	}
 
-	united_set(arr_a, arr_b, arr_c, len_a, len_b);
+	unite_set(arr_a, arr_b, arr_c, len_a, len_b);
 
 	for (int i = 0; i < (len_a + len_b); i++) {
 		fprintf(output, "%d ", arr_c[i]);
