@@ -77,14 +77,14 @@ int main(void) {
 	}
 
 	for (int i = 0; i < len_a; i++) {
-		if (!(fscanf(input_1, "%d", &arr_a[i]) == 1)) {
+		if (fscanf(input_1, "%d", &arr_a[i]) != 1) {
 			printf("input value error\n");
 			code = -8;
 			goto stop_1;
 		}
 	}
 	for (int i = 0; i < len_b; i++) {
-		if (!(fscanf(input_2, "%d", &arr_b[i]) == 1)) {
+		if (!(fscanf(input_2, "%d", &arr_b[i]) != 1)) {
 			printf("input value error\n");
 			code = -9;
 			goto stop_1;
@@ -93,15 +93,12 @@ int main(void) {
 
 	res = comparasion(arr_a, arr_b, len_a, len_b);
 
-    	if (res == 1) {
+    	if (res == 1)
 		fprintf(output, "A equals B, A is a subset of B");
-    	}
-    	else if (res == 2) {
+    	else if (res == 2)
         	fprintf(output, "A does not equal B, A is a subset of B");
-    	}
-    	else if (res == 3) {
+    	else if (res == 3)
         	fprintf(output, "A does not equal B, A is not a subset of B");
-    	}
 
 	code = 0;
 	stop_1:
