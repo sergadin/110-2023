@@ -53,7 +53,7 @@ int main(void)
         return -1;
     }
 
-    armin();
+    armin(average, input);
 
     fclose(input);
     return 0;
