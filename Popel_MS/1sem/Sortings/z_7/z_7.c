@@ -5,11 +5,11 @@
 #define Corr_ord 0
 #define Uncorr_ord -1
 
-void heap_sort(double *arr,int n);
-int ordered_seq(double *Array1, int len);
-int random_array(double *Array_rand, int len_n);
-void up(double *arr, int k);
-void down(double *arr, int n);
+void heap_sort(double *arr, int n);
+int ordered_seq(double *arr, int len);
+int random_array(double *arr, int len_n);
+void go_up(double *arr, int k);
+void go_down(double *arr, int n);
 void swap(double *a, double *b);
 
 void swap(double *a, double *b){
@@ -18,31 +18,31 @@ void swap(double *a, double *b){
 	*b = c;
 }
 
-void up(double *arr, int k){
+void go_up(double *arr, int k){
 	int j;
-	while(k>0) {
-		j = (k-1)/2;
+	while(k > 0){
+		j = (k - 1) / 2;
 		if (arr[k] > arr[j]) { 
-			swap(arr+k, arr+j); 
+			swap(arr + k, arr + j); 
 		}
 		else {
-		break; 
-			}	
+			break; 
+		}	
 		k = j;
-		}		
-	}
-void down(double *arr, int n){ 
+	}		
+}
+void go_down(double *arr, int n){ 
 	int i, i1, i2;
-	if (n<2) {
+	if (n < 2) {
 		return;
 	}
-	for (i=0; i<n; ) {
-		i1 = 2*i + 1;
+	for (i = 0; i < n; ) {
+		i1 = 2 * i + 1;
 		i2 = i1 + 1;
 		if (i1 >= n) {
 			break;
 		}
-		if (i2 < n && arr[i1] < arr[i2]) {
+		if ((i2 < n) && (arr[i1] < arr[i2])) {
 			i1 = i2;
 		}
 		if (arr[i] < arr[i1]) {
@@ -55,39 +55,37 @@ void down(double *arr, int n){
 }
 void heap_sort(double *arr, int n){
 	int k;
-	for (k=1; k<n; k++){
-		up (arr, k);
+	for (k = 1; k < n; k++){
+		go_up(arr, k);
 	}
-	for (k=n-1; k>0; k--){
+	for (k = n - 1; k > 0; k--){
 		swap(arr, arr+k);
-		down(arr, k);
+		go_down(arr, k);
 	}
 }
 
-int ordered_seq(double *Array1, int len){
-	double last_val = Array1[0];
+int ordered_seq(double *arr, int len){
+	double last_val = arr[0];
 	for (int i = 1; i < len; i++){
-		if (last_val > Array1[i]){
+		if (last_val > arr[i]){
 			return Uncorr_ord;
 		}
-		last_val = Array1[i];
+		last_val = arr[i];
 	}
 	return Corr_ord;
 }
 
-int random_array(double *Array_rand, int len_n){
-	
+int random_array(double *arr, int len_n){
 	srand(time(NULL));
-	
-	for (int i=0; i < len_n; i++){
-		Array_rand[i] = rand()*(0.00001);
+	for (int i = 0; i < len_n; i++){
+		arr[i] = rand()*(0.00001);
 	}
 	return 0;
 }
 
 int main(void){
 	char input[50];
-	int N=0;
+	int N = 0;
 	clock_t start, end;
 	double *Array1 = NULL, *Array_rand = NULL, seconds;
 	FILE *f_in, *f_out; 
@@ -102,7 +100,6 @@ int main(void){
 	f_in = fopen(input , "r");
 	
 	if (f_in == NULL){
-	
 		printf("Файл не открывается\n");
 		return -1;
 	}
@@ -110,13 +107,12 @@ int main(void){
 	f_out = fopen("output.txt", "w");
 	
 	if (f_out == NULL){
-	
 		printf("Файл не открывается\n");
 		fclose(f_in);
 		return -1;
 	}
 	
-	if (fscanf(f_in, "%d", & len)!=1){
+	if (fscanf(f_in, "%d", & len) != 1){
 		printf("Файл пуст\n");
 		main_return_code = -1;
 		goto terminate;
@@ -131,13 +127,14 @@ int main(void){
 	}
 
 	
-	for (int i=0; i < len; ++i){
-		if (fscanf(f_in, "%lf", &Array1[i])!=1){
+	for (int i = 0; i < len; ++i){
+		if (fscanf(f_in, "%lf", &Array1[i]) != 1){
 			printf("В файле недостаточно значений\n");
 			main_return_code = -1;
 			goto terminate_1;
 		}
 	}
+	
 	start = clock();
 	heap_sort( Array1, len);
 	end = clock();
@@ -167,11 +164,11 @@ int main(void){
 		printf("Последоватеьлности упорядочены по неубыванию\n");
 	}
 	
-	for (int i = 0; i< len; i++){
+	for (int i = 0; i < len; i++){
 		fprintf(f_out, "%lf\n", Array1[i]);
 	}
 	fprintf(f_out, "%s\n", "\nRandom\n");
-	for (int i = 0; i<len_n; i++){
+	for (int i = 0; i < len_n; i++){
 		fprintf(f_out, "%lf\n", Array_rand[i]);
 	}
 	
