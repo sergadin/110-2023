@@ -2,8 +2,8 @@
 #include<stdlib.h>
 #include<math.h>
 
-int armin(float average, FILE* input);
-int armin(float average, FILE* input)
+int armin(int a, int b, int c, float average, FILE* input);
+int armin(int a, int b, int c, float average, FILE* input)
 {
     int n;
     int a;
@@ -14,8 +14,11 @@ int armin(float average, FILE* input)
 
     sum = 0;
     n = 1;
+    a = 0; 
+    b = 0; 
+    c = 0;
 
-    while (fscanf(input, "%d", &c) == 1)
+    while (fscanf(input, "%d", &a) == 1)
     {
         if (b > a && b > c) 
         {
@@ -69,7 +72,19 @@ int main(void)
         return -1;
     }
 
-    armin(average, input);
+    if (fscanf(inp, "%f", &b) != 1)
+    {
+        printf("Unable to read the second element\n");
+        return 0;
+    }
+
+    if (fscanf(inp, "%f", &c) != 1)
+    {
+        printf("Unable to read the third element\n");
+        return 0;
+    }
+
+    armin(average, input, a, b, c);
 
     fclose(input);
     return 0;
