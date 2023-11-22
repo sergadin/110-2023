@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 FILE* data;
 int repl_amount( double *array, int N);  //Функция заменяет элемент на сумму предыдующих элементов
@@ -8,24 +8,20 @@ int repl_amount( double *array, int N){
 	int i;
 	for (i=1; i<N; i++){
 		array[i]=array[i-1]+array[i];}
+	
 	return 0;
-	if (fscanf(data, "%lf", array)!=1){//Проверяем, считалось ли число
-                printf("no!\n");
-                return -1;
-
-}
- 
 }
    int main(void){
 	int n;
 	FILE *answer;
-       answer =	fopen("output.txt", "w");
+	double *array = NULL;
+        answer = fopen("output.txt", "w");
 
 	if (!answer) {//Проверка существует ли answer
       		printf("What?");
       		return -1;
 	}
-   data = fopen("input1.txt", "r");
+        data = fopen("input1.txt", "r");
 
   	if (!data) {printf("ERR"); return -1;}//Проверка есть ли data
 	if (fscanf(data, "%d", &n)!=1){//Проверяем, считалось ли число
@@ -33,14 +29,18 @@ int repl_amount( double *array, int N){
 		return -1;
 
 	}
-	double *array = (double *)malloc(n*sizeof(double));
+	array = (double *)malloc(n*sizeof(double));
 	for (int i = 0; i<n; i++){
-		fscanf(data, "%lf", &array[i]);
+		if(fscanf(data, "%lf", &array[i]) != 1) {
+			printf("FGH");
+			return -1;
+		
+		}// считался ли элемент
 
 	}
 
-	for (int j =0; j<n;j++){
-		printf("%lf\n",array[j]);
+	for (int i =0; i<n;i++){
+		printf("%lf\n",array[i]);
 
 	}
 	

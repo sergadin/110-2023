@@ -1,6 +1,6 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 FILE* data;
-int count(const char* name, double A, double e);
+int count( double A, double e);
 //Функция считывает количество вхождений A в файл с точностью до e
 double fabs_(double a);
 
@@ -13,7 +13,7 @@ double fabs_(double a) {
 }
 
 
-int count(const char* name, double A, double e){
+int count( double A, double e){
   double el;
   int cnt = 0;
   while (fscanf(data, "%lf", &el)==1){ //Проверка, считалось ли число
@@ -28,6 +28,7 @@ int count(const char* name, double A, double e){
 int main(void) {
   FILE *answer = fopen("output.txt", "w");
   double x, e;
+  int r;
         printf("Ввод x и e\n");
   if (scanf("%lf%lf", &x, &e) != 2) {// Проверка, считалось ли 2 числа
   	printf("mistake");
@@ -40,7 +41,7 @@ int main(void) {
   data = fopen("input.txt", "r");
   if (!data)// Отклылась ли успешно data
     return -1;
-  int r = count("input.txt", x, e);
+   r = count( x, e);
   if (!feof(data))// Достигло ли конца файла
   {
   	printf("nums only!");
