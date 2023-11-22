@@ -6,17 +6,11 @@ int armin(int a, int b, int c, float average, FILE* input);
 int armin(int a, int b, int c, float average, FILE* input)
 {
     int n;
-    int a;
-    int b;
-    int c;
     int current;
     int sum;
 
     sum = 0;
     n = 1;
-    a = 0; 
-    b = 0; 
-    c = 0;
 
     while (fscanf(input, "%d", &a) == 1)
     {
@@ -84,7 +78,7 @@ int main(void)
         return 0;
     }
 
-    armin(average, input, a, b, c);
+    armin(a, b, c, average, input);
 
     fclose(input);
     return 0;
