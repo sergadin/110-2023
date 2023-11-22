@@ -7,20 +7,34 @@ int armin(float average, FILE* input)
 {
     int n;
     int a;
+    int b;
+    int c;
+    int current;
     int sum;
-    int previous;
 
+    sum = 0;
     n = 1;
-    sum = a;
-    previos = a;
 
-    while (fscanf(input, "%d", &a) == 1)
+    while (fscanf(input, "%d", &c) == 1)
     {
-        if (a != previos) 
+        if (b > a && b > c) 
         {
-            sum += a;
+            sum += b;
+            current = a;
+            a = b;
+            b = current;
             n++;
-            previos = a;
+        }
+        else
+        {
+            if (b < a && b < c)
+            {
+                sum += b;
+                current = a;
+                a = b; 
+                b = current;
+                n++
+            }
         }
     }
 
@@ -33,8 +47,10 @@ int main(void)
 {
 
     int a;
+    int b;
+    int c;
     int sum;
-    int previos;
+    int current;
     float average;
     int n;
     FILE* input;
