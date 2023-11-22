@@ -2,6 +2,33 @@
 #include<stdlib.h>
 #include<math.h>
 
+int armin(float average, FILE* input);
+int armin(float average, FILE* input)
+{
+    int n;
+    int a;
+    int sum;
+    int previous;
+
+    n = 1;
+    sum = a;
+    previos = a;
+
+    while (fscanf(input, "%d", &a) == 1)
+    {
+        if (a != previos) 
+        {
+            sum += a;
+            n++;
+            previos = a;
+        }
+    }
+
+    average = sum / n;
+    printf("average of constant section of the sequence: %f\n", average);
+    return 0;
+}
+
 int main(void) 
 {
 
@@ -11,6 +38,7 @@ int main(void)
     float average;
     int n;
     FILE* input;
+
     input = fopen("input.txt", "r");
 
     if (input == NULL) 
@@ -25,21 +53,9 @@ int main(void)
         return -1;
     }
 
-    n = 1;
-    sum = a;
-    previos = a;
-
-    while (fscanf(input, "%d", &a) == 1) 
-    {
-        if (a != previos) {
-            sum += a;
-            n++;
-            previos = a;
-        }
-    }
+    armin();
 
     fclose(input);
-    average = sum / n;
-    printf("average of constant section of the sequence: %f\n", average);
     return 0;
+
 }

@@ -65,7 +65,7 @@ int main()
         return -1;
     }
 
-    seqns(c1, c3, b, inp)
+    seqns(c1, c2, c3, b, inp);
 
     fclose(inp);
     return 0;
