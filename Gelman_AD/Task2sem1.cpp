@@ -34,6 +34,9 @@ int armin(double a, double b, double average, FILE* input)
                 n++
             }
         }
+
+        a = b;
+        b = current;
     }
 
     average = sum / n;
