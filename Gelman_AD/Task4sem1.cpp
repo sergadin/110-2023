@@ -1,43 +1,41 @@
 #include<stdio.h>
 #include<<stdlib.h>>
 
-//(определяю длину массива, считывая первый элемент в файле)
+//I read elements from the file and figure out the lengh of the array
 
-void shiftrightk(double* mas, int len);
-//получает на вход массив (mas) и его длину (lngh)
-//функция циклически сдвигает полученный на вход массив mas, каждый элемент массива сдвигается вправо
+void shiftrightk(double* mas, int lngth);
+//shiftrightK shifts the array "mas" in a cycle, every element shifts to the right
 
-
-void shiftrightk(double* mas, int lngh)
+void shiftrightk(double* mas, int lngth)
 {
-	double posled_el;
+	double finel;
 
-	if (lngh == 0)
+	if (lntgh == 0)
 	{
-		printf("No array, lngh = 0\n");
+		printf("No array, lngth = 0\n");
 		return;
 	}
 
-	if (lngh == 1)
-	{     //нечего сдвигать, т к только один элемент
+	if (lngth == 1)
+	{     //no elements to shift (only 1 element)
 		return;
 	}
 
-	posled_el = mas[lngh - 1];    //сохраняем последний элемент массива
+	finel = mas[lngth - 1];    //save the last element of the array
 
-	for (int i = lngh - 1; i > 0; i--)
-	{		//сдвигаем элементы массива вправо
+	for (int i = lngth - 1; i > 0; i--)
+	{		//shift elements to the right
 		mas[i] = mas[i - 1];
 	}
 
-	mas[0] = posled_el;
+	mas[0] = finel;
 }
 
 
 int main(void) 
 {
-	int lngh; //длина массива
-	int K; //Будем сдвигать массив на К позиций вправо
+	int lngth; //the length
+	int K; //We will shift the array K times to the right
 	FILE* file_in = fopen("input.txt", "r");
 	FILE* file_out = fopen("output.txt", "w");
 	double* mas = NULL;
@@ -55,7 +53,7 @@ int main(void)
 		return -1;
 	}
 
-	if (fscanf(file_in, "%d", &lngh) != 1)
+	if (fscanf(file_in, "%d", &lngth) != 1)
 	{
 		printf("Unable to read the file\n");
 		fclose(file_in);
@@ -73,7 +71,7 @@ int main(void)
 		return -1;
 	}
 
-	for (int i = 0; i < lngh; i++)
+	for (int i = 0; i < lngth; i++)
 	{
 		if (fscanf(file_in, "%lf", &mas[i]) != 1) 
 		{
@@ -85,24 +83,24 @@ int main(void)
 		}
 	}
 
-	//Считываем число К, введенное с клавиатуры
+	//Reading K, entered from the keyboard
 
 	printf("Enter the value of shifting the array\n");
 	fscanf(&K);
 
-	//Сдвигаем массив на К позиций вправо
+	//Shifting the array K times to the right
 
 	for (int K = 0; K)
 	{
-		shiftrightk(mas, lngh);
+		shiftrightk(mas, lngth);
 	}
 
-	for (int i = 0; i < lngh; i++)
+	for (int i = 0; i < lngth; i++)
 	{
 		fprintf(file_out, "%lf ", mas[i]);
 	}
 
-	if (lngh != 0)
+	if (lngth != 0)
 	{
 		printf("The result is printed\n");
 	}
