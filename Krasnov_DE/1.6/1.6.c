@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 int poryadok(char c[20]){
 FILE *f1;
 f1=fopen(c,"r");
@@ -10,7 +11,7 @@ printf("vvedi X\n");
 scanf("%f",&x);
 while(fscanf(f1,"%f",&chislo)!=EOF){ //цикл считывающий все числа из последовательности
         k=k+1;
-        if (fabs(chislo-x)<e){
+        if ( fabs(chislo-x)<e){
             nomer=k;
         }
 }

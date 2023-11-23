@@ -1,42 +1,31 @@
 #include <stdio.h>
 
+
+int counter(FILE*);
+//Функция считает общее количество элементов в постоянных участках последовательности
+
+
 int main(void){
 
 	FILE *fin, *fout;
-	int counter = 0;
-	int x;
-    	int mtemp;
-	int btemp;	
+	int Result;	
+
 	fin = fopen("input.txt", "r");
-        if (fin == NULL){
-		printf("Не удалось открыть файл\n");
-		return -1;
-	}
-
-	if (fscanf(fin, "%d", &mtemp) != 1){
-	       printf ("Файл пуст\n");
-	       return -2;
-	}	       
-	btemp = mtemp + 1;
-
-	while ( fscanf(fin, "%d", &x)  == 1) {
-		if (mtemp == x || mtemp == btemp){
-			counter += 1;
-		}
-		btemp = mtemp;
-		mtemp = x;
-	}
-	if (feof (fin) == 0){
-		printf("error");
-		return -1;
-	}		
-
-	if (mtemp == btemp){
-		counter += 1;
+	if (fin == NULL){
+		printf("Не удалось открыть файл 'input.txt'\n");
+		return -3;
 	}	
 
-	fout = fopen("output.txt", "w");
-	fprintf (fout, "%d\n", counter);
+	Result = counter(fin);
+
+	fout = fopen ("output.txt", "w");
+	if (fout == NULL){
+		printf("Не удалось открыть файл 'output.txt'\n");
+		return -3;
+	}
+
+	fprintf (fout, "%d\n", Result);
+
 	fclose(fin);
 	fclose(fout);
 
@@ -44,4 +33,36 @@ int main(void){
 }
 
 	
-	
+int counter(FILE *fin){
+	int counter = 0;	//искомое количество
+	double first_num;
+	double medium_num;
+	double last_num;
+
+	if (fscanf(fin, "%lf", &medium_num) != 1){
+               printf ("Файл пуст\n");
+               return -2;
+        }
+
+        last_num = medium_num + 1; 
+
+        while ( fscanf(fin, "%lf", &first_num)  == 1) {
+                if (medium_num == first_num || medium_num == last_num){
+                        counter += 1;
+                }
+                last_num = medium_num;
+                medium_num = first_num;
+        }
+
+        if (feof (fin) == 0){
+                printf("Файл не прочитался до конца\n");
+                return -1;
+        }
+
+        if (medium_num == last_num){
+                counter += 1;
+        }
+
+	return counter;
+}
+

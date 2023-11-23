@@ -33,8 +33,7 @@ int different_num_counter(const char* name)
     FILE* fp;
     int previous;
     int present;
-    int counter = 0;
-    int flag = 0;
+    int counter = 1;
     fp = fopen(name, "r");
     if (!fp){
         return -2;
@@ -47,11 +46,6 @@ int different_num_counter(const char* name)
         }
         if (previous != present){
             counter++;
-            flag = 1;
-        }
-        if ((previous == present) & (flag == 1)){
-            counter++;
-            flag = 0;
         }
         previous = present;
     }

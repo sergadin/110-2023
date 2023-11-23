@@ -1,52 +1,82 @@
-#include <stdio.h>
-#include <math.h>
-int main(void)
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+
+int armin(double a, double b, double average, FILE* input);
+int armin(double a, double b, double average, FILE* input)
+{
+    int n;
+    double current;
+    double sum;
+    double c;
+
+    sum = 0;
+    n = 1;
+
+    while (fscanf(input, "%d", &c) == 1)
+    {
+        if (b > a && b > c) 
+        {
+            sum += b;
+            current = a;
+            a = b;
+            b = current;
+            n++;
+        }
+        else
+        {
+            if (b < a && b < c)
+            {
+                sum += b;
+                current = a;
+                a = b; 
+                b = current;
+                n++
+            }
+        }
+
+        a = b;
+        b = current;
+    }
+
+    average = sum / n;
+    printf("average of constant section of the sequence: %f\n", average);
+    return 0;
+}
+
+int main(void) 
 {
 
-    FILE* f;
-    int count = 0;
-    f = fopen("input.txt", "r");
-    float number1 = 10;
-    float number2 = 100;
-    float number3 = 1000;
-    double armin = 0;
-    double res;
+    double a;
+    double b;
+    double c;
+    double average;
+    int n;
+    FILE* input;
 
-    if (f == NULL)
+    input = fopen("input.txt", "r");
+
+    if (input == NULL) 
     {
-        printf("File did not open\n");
+        printf("File did not open.\n");
         return -1;
     }
 
-    if (fscanf(f, "%f", &number1) != 1)
+    if (fscanf(inp, "%f", &a) != 1)
     {
-        printf("Reading error\n");
-            return -1;
+        printf("Unable to read the first element\n");
+        return 0;
     }
 
-    else
+    if (fscanf(inp, "%f", &b) != 1)
     {
-        if (fscanf(f, "%f", &number2) != 1)
-        {
-            printf("Reading error\n");
-                return -1;
-        }
+        printf("Unable to read the second element\n");
+        return 0;
     }
 
-    while ((fscanf(f, "%f", &number3) == 1))
-    {
-        if ((number2 > number1 && number2 > number3) || (number2 < number1 && number2 < number3))
-        {
-            armin += number2;
-            count++;
-            fclose(f);
-            return 0;
-        }
-        number1 = number2;
-        number2 = number3;
-    }
-    res = armin / count;
-    printf("The arithmetical mean = %lf \n", res);
-    fclose(f);
+    armin(a, b, average, input);
+
+    fclose(input);
     return 0;
+
 }
