@@ -5,9 +5,11 @@
 #define Corr_ord 0
 #define Uncorr_ord -1
 
-int sort_insert(double *Array1, int len);
-int ordered_seq(double *Array1, int len);
-int random_array(double *Array_rand, int len_n);
+int sort_insert(double *Array1, int len); //Функция сортирует массив методом вставок в неубывающем порядке.
+					//Также замеряется время работы этой функции, и оно же выводится на экран при успешном завершении программы.
+int ordered_seq(double *Array1, int len); //Функция проверяет итоговый массив на упорядоченность.
+int random_array(double *Array_rand, int len_n);//Функция записывает массив случайных действительных значений 
+                                               //(размер этого массива считывается с клавиатуры.)
 
 int sort_insert( double *Array1, int len){
 	double ins_val = 0.;
@@ -58,10 +60,16 @@ int main(void){
 	int len = 0, order1 = 0, order2 = 0, len_n, main_return_code = 0;
 	
 	printf("Введите имя входного файла: \n");
-	scanf("%s" , input);
+	if (scanf("%s" , input)!=1){
+		printf("Вы ввели некорректные значения\n");
+		return -1;
+	}
 	
 	printf("Введите длину случайного массива: \n");
-	scanf("%d", &len_n);
+	if (scanf("%d", & len_n)!=1){
+		printf("Вы ввели некорректные значения\n");
+		return -1;
+	}
 	
 	f_in = fopen(input , "r");
 	
@@ -95,13 +103,14 @@ int main(void){
 	}
 
 	
-	for (int i=0; i < len; ++i){
+	for (int i = 0; i < len; ++i){
 		if (fscanf(f_in, "%lf", &Array1[i])!=1){
 			printf("В файле недостаточно значений\n");
 			main_return_code = -1;
 			goto terminate_1;
 		}
 	}
+	
 	start = clock();
 	sort_insert( Array1, len);
 	end = clock();
@@ -122,10 +131,10 @@ int main(void){
 	order2 = ordered_seq(Array_rand, len_n);
 	
 	if ((order1 == Uncorr_ord) || (order2 == Uncorr_ord)){
-		printf("Последоватеьлности не упорядочены\n");
+		printf("Последовательности не упорядочены\n");
 		goto terminate_2;
 	}else{
-		printf("Последоватеьлности упорядочены по неубыванию\n");
+		printf("Последовательности упорядочены по неубыванию\n");
 	}
 	
 	for (int i = 0; i< len; i++){

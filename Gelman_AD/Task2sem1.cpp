@@ -2,15 +2,55 @@
 #include<stdlib.h>
 #include<math.h>
 
+int armin(double b, double c, double average, FILE* input);
+int armin(double b, double c, double average, FILE* input)
+{
+    int n;
+    double current;
+    double sum;
+    double a;
+
+    sum = 0;
+    n = 1;
+
+    while (fscanf(input, "%d", &a) == 1)
+    {
+        if (b > a && b > c) 
+        {
+            sum += b;
+            current = a;
+            a = b;
+            b = current;
+            n++;
+        }
+        else
+        {
+            if (b < a && b < c)
+            {
+                sum += b;
+                current = a;
+                a = b; 
+                b = current;
+                n++
+            }
+        }
+    }
+
+    average = sum / n;
+    printf("average of constant section of the sequence: %f\n", average);
+    return 0;
+}
+
 int main(void) 
 {
 
-    int a;
-    int sum;
-    int previos;
-    float average;
+    double a;
+    double b;
+    double c;
+    double average;
     int n;
     FILE* input;
+
     input = fopen("input.txt", "r");
 
     if (input == NULL) 
@@ -19,27 +59,21 @@ int main(void)
         return -1;
     }
 
-    if (fscanf(input, "%d", &a) != 1) 
+    if (fscanf(inp, "%f", &b) != 1)
     {
-        printf("Unable to read first value.\n");
-        return -1;
+        printf("Unable to read the second element\n");
+        return 0;
     }
 
-    n = 1;
-    sum = a;
-    previos = a;
-
-    while (fscanf(input, "%d", &a) == 1) 
+    if (fscanf(inp, "%f", &c) != 1)
     {
-        if (a != previos) {
-            sum += a;
-            n++;
-            previos = a;
-        }
+        printf("Unable to read the third element\n");
+        return 0;
     }
+
+    armin(b, c, average, input);
 
     fclose(input);
-    average = sum / n;
-    printf("average of constant section of the sequence: %f\n", average);
     return 0;
+
 }
