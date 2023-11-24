@@ -29,15 +29,11 @@ int main(void) {
 
       if (fscanf (file, "%d", &first)!= 1) {
             printf("файл пуст\n");
-        return -1;
+        return -2;
       }
     curSum = first;
     maxSum = curSum;
      while ((temp = fscanf(file, "%d", &next_elem) != EOF)) {
-            if (temp != 1){
-                printf("ошибка\n");
-                return -2;
-            }
             if (curSum < 0) {
                 curSum = 0;
             }
@@ -48,3 +44,4 @@ int main(void) {
     }
      return maxSum;
  }
+
