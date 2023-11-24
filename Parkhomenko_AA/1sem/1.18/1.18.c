@@ -1,9 +1,10 @@
+// 18.Найти сумму четных элементов во всех возрастающих участках целой последовательности.
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 
 int OSHIBKA = 0;
-int NE_VOZR = 0;
 
 int opred_sum_chet_elem (FILE *f);
 
@@ -11,16 +12,20 @@ int opred_sum_chet_elem (FILE *f);
 int opred_sum_chet_elem (FILE *f)
 {
     int tek, pred, sum = 0, schit_tek;
+    int sum_dop = 0;
 //tek используется для хранения текущего считанного числа из файла
 //pred используется для хранения предыдущего считанного числа из файла
 //sum используется для хранения суммы четных чисел в последовательности
+//sum_dop будет являться первым четным числом из возрастающей последовательности (это число стоит после возрастающей последовательности(с ней образует невозр. посл-ть) или монотонной)
  
     if (fscanf(f, "%d", &pred) != 1) {
         OSHIBKA = -1;
         return -1;
     }
 
-    if (pred%2 == 0) sum += pred;
+    if (pred%2 == 0) {
+        sum_dop = pred;
+    }
 
     while ((schit_tek = fscanf(f, "%d", &tek)) != EOF) {
         if (schit_tek != 1) {
@@ -28,14 +33,16 @@ int opred_sum_chet_elem (FILE *f)
             return -1;
         }
         
-        if (tek > pred) {
-            NE_VOZR = 1;
-            if (tek%2 == 0) { sum += tek; }
+        if (tek <= pred){
+            if (tek%2 == 0) {
+                sum_dop = tek;
+            }
         }
-        else {
-            if(tek < pred) {
-                if ((NE_VOZR != 1) && (pred%2 == 0)) { sum += pred; }
-            NE_VOZR = 1;
+        if (tek > pred) {
+            sum = sum + sum_dop;
+            sum_dop = 0;
+            if (tek%2 == 0) { 
+                sum += tek; 
             }
         }
         pred = tek;
@@ -58,11 +65,8 @@ int main(void) {
     if (OSHIBKA == -1) {
 		printf("Некорректный файл\n"); //пустой или есть буквы  
     }
-   // else if (NE_VOZR == 1) {
-	//	printf("Последовательность не возрастает\n");
-   // }
 	else {
-		printf("Сумма чётных элементов в возрастающих участках целой последовательности равна: %d\n", sum_ravna);
+		printf("Сумма чётных элементов  во всех возрастающих участках целой последовательности равна: %d\n", sum_ravna);
 	}
 	
     fclose(f);

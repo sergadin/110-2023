@@ -60,10 +60,16 @@ int main(void){
 	int len = 0, order1 = 0, order2 = 0, len_n, main_return_code = 0;
 	
 	printf("Введите имя входного файла: \n");
-	scanf("%s" , input);
+	if (scanf("%s" , input)!=1){
+		printf("Вы ввели некорректные значения\n");
+		return -1;
+	}
 	
 	printf("Введите длину случайного массива: \n");
-	scanf("%d", &len_n);
+	if (scanf("%d", & len_n)!=1){
+		printf("Вы ввели некорректные значения\n");
+		return -1;
+	}
 	
 	f_in = fopen(input , "r");
 	

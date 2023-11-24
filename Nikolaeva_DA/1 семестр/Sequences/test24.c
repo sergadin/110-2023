@@ -1,10 +1,10 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 FILE* data;
-int det_number(const char* name);
+int det_number(FILE* data);
 //Функция определяет порядковый номер первого максимального числа
 
 
-int det_number(const char* name)
+int det_number(FILE* data)
 {
 	int current = 0;
 	int index = 0;
@@ -17,7 +17,7 @@ int det_number(const char* name)
        cnt = 1;
 	while (fscanf(data, "%d", &current) ==1){
 		cnt++;
-		if (max_val<current){
+		if (max_val < current){
 			max_val = current;
 			index = cnt;
 		}
@@ -27,9 +27,10 @@ int det_number(const char* name)
 }
 
  int main(void){
+      FILE *answer;
+      int r;
+      answer = fopen("output.txt", "w");
       data = fopen("input.txt", "r");
-	FILE *answer = fopen("output.txt", "w");
-	int max_val;
  
        if (!answer){// Проверка есть ли ansver
 		printf("What?");
@@ -40,7 +41,7 @@ int det_number(const char* name)
        
 	    return -1;
 	
-   int r = det_number("input.txt");
+       r = det_number(data);
  
        if (!feof(data))//Проверка достижения конца файла
       {
@@ -55,4 +56,4 @@ return -2;
   }
   fclose(answer);
   return 0;
-}
+ }
