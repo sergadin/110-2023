@@ -5,16 +5,20 @@
 #include <stdlib.h>
 
 int sdvig_i_schet_itog_len(int *mas, int len);
-//преобразует массив mas: если какое-то значение встречается несколько раз, 
-//то оставляет только первый такой элемент, а от остальных избавляется, 
-//сдвигая оставшиеся элементы массива влево
+//преобразует массив mas: если какое-то значение встречается несколько раз, то оставляет
+//только первый такой элемент, а от остальных избавляется, сдвигая оставшиеся элементы массива влево
 //также считает итоговую длину (itog_len) изменённого массива mas
 
 
 int sdvig_i_schet_itog_len(int *mas, int len)
 {
 	int itog_len = len;
-
+	int pos_nast_nul = -1;  //позиция первого элемента в массиве, равного ("настоящему") нулю
+	
+	int schet_prohod_el = -1;   //доп счётчик, обозначает позиции в неизменённом массиве
+								//благодоря ему будем определять, в какой момент нам надо 
+								//"пропустить" настоящий первый ноль
+	
 	if (len == 0) {
         printf("net massiva, len = 0\n");
         return itog_len;
@@ -24,6 +28,47 @@ int sdvig_i_schet_itog_len(int *mas, int len)
         return itog_len;
     }
 	
+	for (int i = 0; i < len; i++) { 
+		for (int j = (i + 1); j < len; j++) {
+			if ((i == 0)  && (mas[i] == 0)) {
+				pos_nast_nul = 0;    //запоминаем позицию, где втретили "настоящий" первый ноль
+			}
+			if ((i == 0) && (mas[j] == 0) && (pos_nast_nul == -1)){
+				pos_nast_nul = j;    //запоминаем позицию, где втретили настоящий ноль при первом прохождении массива
+			}
+			if (mas[i] == mas [j]) {
+				mas[j] = 0;  //присваиваем дубликатам значение нуля
+			}
+		}
+	}
+	
+	for (int k = 0; k < len; k++) {		 // будем двигать массив
+		schet_prohod_el++;
+		if (pos_nast_nul != -1) {		 // если у нас есть "настоящий" ноль
+			if (mas[k] == 0){	 //если встретили любой 0
+				if (schet_prohod_el != pos_nast_nul) { 	// если не наткнулись на позицию "настоящего" нуля, то двигаем массив
+					for (int f = k; f < (len - 1); f++) {
+						mas[f] = mas[f + 1];
+					}
+					len--;
+					k = k - 1;
+				}
+			}
+		}
+		else { // если нету "настоящего" нуля, то просто двигаем массив, натыкаясь на созданные нули
+			if (mas[k] == 0){
+				for (int f = k; f < (len - 1); f++) {
+					mas[f] = mas[f + 1];
+				}
+				len--;
+				k = k - 1;
+			}
+		}
+	}
+	
+	itog_len = len;
+	
+/*	
 	for (int i = 0; i < len; i++) {
 		for (int j = (i + 1); j < len; j++) {
 			if (mas[i] == mas [j]) {
@@ -39,6 +84,7 @@ int sdvig_i_schet_itog_len(int *mas, int len)
 	}
 	
 	itog_len = len;
+*/
 	
 	return itog_len;
 }
@@ -89,10 +135,16 @@ int main(void) {
 	
 	itog_len_ravna = sdvig_i_schet_itog_len(mas, len);
 	
-	fprintf(file_out, "itog_len = %d\n", itog_len_ravna);
+	printf("itog_len = %d\n", itog_len_ravna);
+	for (int h = 0; h < itog_len_ravna; h++) {
+		printf("%d ", mas[h]);
+	}
+	
+/*	fprintf(file_out, "itog_len = %d\n", itog_len_ravna);
 	for (int h = 0; h < itog_len_ravna; h++) {
 		fprintf(file_out, "%d ", mas[h]);
 	}
+*/
 	
 	if (len != 0) {
 		printf("rezultat napechatan \n");	
