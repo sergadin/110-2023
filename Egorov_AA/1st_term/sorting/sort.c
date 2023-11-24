@@ -2,17 +2,29 @@
 #include <stdlib.h>
 #include <time.h>
 
-
+// меняет значения двух переменных местами
 void swap(int* a, int* b);
-void swap_sort(int* arr, int len);
-void merge(int* arr, int left, int mid, int right);
-void merge_sort(int* arr, int left, int right);
-int compare(const int* i, const int* j);
-int check_sorted_array(int* arr, int len);
-void generate_array(int* arr, int len);
-void read_array(int* arr, int len, FILE* input);
-void sorting_time_test(int* arr, int len, FILE* input);
 
+// сортировка обменами в порядке возрастания 
+void swap_sort(int* arr, int len);
+
+// слияние двух массивов, сортируя элементы в порядке возрастания
+void merge(int* arr, int left, int mid, int right, int* error);
+
+// сортировка слиянием
+void merge_sort(int* arr, int left, int right, int* error);
+
+// сравнение двух элементов на равенство(вспомог. функ. для qsort)
+int compare(const int* i, const int* j);
+
+// проверка массива на упорядоченность
+int check_sorted_array(int* arr, int len);
+
+// генерация массива заданной длины
+void generate_array(int** arr, int len, int* error);
+
+// тест на время сортировки массива длины N, 2N, 4N, 8N
+void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* error);
 
 
 void swap(int* a, int* b) {
@@ -39,12 +51,16 @@ void swap_sort(int* arr, int len) {
 }
 
 
-void merge(int* arr, int left, int mid, int right) {
+void merge(int* arr, int left, int mid, int right, int* error) {
 	int i = 0, j = 0, k = left;
 	int l_size = mid + 1 - left, r_size = right - mid;
 
 	int* l_array = (int*)malloc(l_size * sizeof(int));
+	if (l_array == NULL)
+		*error = -1;
 	int* r_array = (int*)malloc(r_size * sizeof(int));
+	if (r_array == NULL)
+		*error = -1;
 
 	for (int q = 0; q < l_size; q++)
 		l_array[q] = arr[left + q];
@@ -71,14 +87,14 @@ void merge(int* arr, int left, int mid, int right) {
 }
 
 
-void merge_sort(int* arr, int left, int right) {
+void merge_sort(int* arr, int left, int right, int* error) {
 	if (left < right) {
 		int mid = left + (right - left) / 2;
 
-		merge_sort(arr, left, mid);
-		merge_sort(arr, mid + 1, right);
+		merge_sort(arr, left, mid, error);
+		merge_sort(arr, mid + 1, right, error);
 
-		merge(arr, left, mid, right);
+		merge(arr, left, mid, right, error);
 	}
 }
 
@@ -98,74 +114,81 @@ int check_sorted_array(int* arr, int len) {
 }
 
 
-void generate_array(int* arr, int len) {
+void generate_array(int** arr, int len, int* error) {
+	*arr = (int*)malloc(len * sizeof(int));
+	if ((*arr) == NULL)
+		*error = -1;
+
 	srand(time(NULL));
 	for (int i = 0; i < len; i++)
-		arr[i] = rand();
+		(*arr)[i] = rand();
 }
 
 
-void read_array(int* arr, int len, FILE* input) {
-	for (int i = 0; i < len; i++)
-		fscanf(input, "%d", &arr[i]);
-}
-
-
-void sorting_time_test(int* arr, int len, FILE* input) {
+void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* error) {
 	double swap_time, merge_time, qsort_time;
 	clock_t swap_start, swap_end, merge_start,
 			merge_end, qsort_start, qsort_end;
+
+	generate_array(&arr, len, error);
+	arr_copy = (int*)malloc(len * sizeof(int));
+	if (arr_copy == NULL)
+		*error = -1;
+	for (int i = 0; i < len; i++)
+		arr_copy[i] = arr[i];
+
+	printf("\nN: %d\n", len);
 
 	swap_start = clock();
 	swap_sort(arr, len);
 	swap_end = clock();
 	swap_time = ((double)(swap_end - swap_start)) / CLOCKS_PER_SEC;
 
-	if (check_sorted_array(arr, len)) {
-		printf("%lf miliseconds", swap_time);
-	}
+	if (check_sorted_array(arr, len))
+		printf("%.3lf seconds\n", swap_time);
 
-	read_array(arr, len, input);
+	for (int i = 0; i < len; i++)
+		arr[i] = arr_copy[i];
 
 	merge_start = clock();
-	merge_sort(arr, 0, len - 1);
+	merge_sort(arr, 0, len - 1, error);
 	merge_end = clock();
+
 	merge_time = ((double)(merge_end - merge_start)) / CLOCKS_PER_SEC;
 
-	if (check_sorted_array(arr, len)) {
-		printf("%lf miliseconds", merge_time);
-	}
+	if (check_sorted_array(arr, len))
+		printf("%.3lf seconds\n", merge_time);
 
-	read_array(arr, len, input);
+	for (int i = 0; i < len; i++)
+		arr[i] = arr_copy[i];
 
 	qsort_start = clock();
 	qsort(arr, len, sizeof(int), compare);
 	qsort_end = clock();
 	qsort_time = ((double)(qsort_end - qsort_start)) / CLOCKS_PER_SEC;
 
-	if (check_sorted_array(arr, len)) {
-		printf("%lf miliseconds", qsort_time);
+	if (check_sorted_array(arr, len))
+		printf("%.3lf seconds\n", qsort_time);
+
+	free(arr);
+	free(arr_copy);
+	if (len <= (4 * base_len)) {
+		sorting_time_test(arr, arr_copy, 2 * len, base_len, error);
 	}
 }
 
 
 int main() {
-	FILE* input;
-	int len;
-
-	input = fopen("input.txt", "r");
+	int* arr = NULL, * arr_copy = NULL;
+	int len, error = 0;
 
 	printf("enter length of the array to fill it with random numbers\n");
 	scanf("%d", &len);
 
-	int* arr = (int*)malloc(len * sizeof(double));
+	sorting_time_test(arr, arr_copy, len, len, &error);
 
-	generate_array(arr, len);
-
-	for (int i = 0; i < len; i++)
-		fscanf(input, "%d", arr[i]);
-
-	sorting_time_test(arr, len, input);
+	if (error)
+		printf("memory allocation error\n");
 
 	return 0;
 }
