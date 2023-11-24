@@ -3,10 +3,10 @@
 
 //I read elements from the file and figure out the lengh of the array
 
-void shiftrightk(double* mas, int lngth);
+void shiftrightk(double* mas, int lngth, int K);
 //shiftrightK shifts the array "mas" in a cycle, every element shifts to the right
 
-void shiftrightk(double* mas, int lngth)
+void shiftrightk(double* mas, int lngth, int K)
 {
 	double finel;
 
@@ -66,7 +66,7 @@ int main(void)
 		return -1;
 	}
 
-	mas = (double*)malloc((lngh) * sizeof(double));
+	mas = (double*)malloc((lngth) * sizeof(double));
 
 	if (mas == NULL) 
 	{
@@ -101,7 +101,7 @@ int main(void)
 
 	//Shifting the array K times to the right
 
-	shiftrightk(mas, lngth);
+	shiftrightk(mas, lngth, K);
 
 	for (int i = 0; i < lngth; i++)
 	{
