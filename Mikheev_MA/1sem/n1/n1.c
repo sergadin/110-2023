@@ -1,43 +1,48 @@
 #include <stdio.h>
+#define er_read -1
+#define er_open -2
+#define success 0
+
+
+int last_num(FILE *input, int* num);
+int last_num(FILE *input, int* num)//функция определяет номер последнего числа, который равен минимуму последовательности
+{
+    int i=1;//счетчик чисел
+    int rd;//переменная rd создана для проверки корректности данных файла
+    double scan, min;
+    rd = fscanf(input, "%lf", &min);
+    if(rd != 1){
+            return er_read;
+    }
+    while((rd = fscanf(input, "%lf", &scan)) != EOF ){
+        if(rd != 1){
+            return er_read;
+        }
+        i = i + 1;
+        if(min >= scan){
+            min = scan;
+            *num = i;
+        }
+    }
+    return success;
+}
+
 
 int main(void)
 {
-    int x, y, z, read, num, cur=0;
-    FILE *input, *output;
+   FILE *input;
+    int res;
+    int num=1;//номер конечного числа
     input = fopen("input.txt", "r");
     if(input == NULL){
         printf("Не удалось открыть файл\n");
-        return -1;
+        return er_open;
     }
-    fscanf(input, "%d %d", &x, &y);
-    if (x == 0){
-        printf("Указана некорректная последовательность\n");
-        return -1;
+    res = last_num(input, &num);
+    if(res == er_read){
+        printf("Ошибка введенной последовательности\n");
+        return er_read;
     }
-    z = x;
-    while(y != 0){
-        read = fscanf(input, "%d", &y);
-        if(read == 1){
-            if(x >= y && y != 0){
-                cur = cur + 1;
-                num = cur;
-                x = y;
-            }
-            else{
-                cur = cur + 1;
-            }
-        }
-        else{
-            printf("Ошибка введенной последовательности\n");
-            return -1;
-        }
-    }
-    output = fopen("output.txt", "w");
-    if(x == z && num < 1){
-        fprintf(output, "Номер наименьшего - %d\n", num);
-    }
-    else{
-        fprintf(output, "Номер наименьшего - %d\n", num + 1);
-    }
-    return 0;
+    printf("Номера числа %d \n", num);
+    return success;
 }

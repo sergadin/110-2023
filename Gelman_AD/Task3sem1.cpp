@@ -10,7 +10,7 @@ int incrsect(bool check, float a, float b, FILE* inp)
 
     while (fscanf(inp, "%f", &b) > 0)
     {
-        if (a < b)
+        if (a > b)
         {
             if (check)
             {
