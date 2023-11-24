@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include<<stdlib.h>>
+#include<stdlib.h>
 
 //I read elements from the file and figure out the lengh of the array
 
@@ -10,7 +10,7 @@ void shiftrightk(double* mas, int lngth)
 {
 	double finel;
 
-	if (lntgh == 0)
+	if (lngth == 0)
 	{
 		printf("No array, lngth = 0\n");
 		return;
@@ -21,14 +21,19 @@ void shiftrightk(double* mas, int lngth)
 		return;
 	}
 
-	finel = mas[lngth - 1];    //save the last element of the array
 
-	for (int i = lngth - 1; i > 0; i--)
-	{		//shift elements to the right
-		mas[i] = mas[i - 1];
+	for (int i = 0; i < K; i++)
+	{
+		finel = mas[lngth - 1];    //save the last element of the array
+
+		for (int i = lngth - 1; i > 0; i--)
+		{		//shift elements to the right
+			mas[i] = mas[i - 1];
+		}
+
+		mas[0] = finel;
 	}
 
-	mas[0] = finel;
 }
 
 
@@ -86,14 +91,17 @@ int main(void)
 	//Reading K, entered from the keyboard
 
 	printf("Enter the value of shifting the array\n");
-	fscanf(&K);
+
+	scanf("%d",  & K);
+
+	if (K > lngth)
+	{
+		printf("Enter the fewer value of K\n");
+	}
 
 	//Shifting the array K times to the right
 
-	for (int K = 0; K)
-	{
-		shiftrightk(mas, lngth);
-	}
+	shiftrightk(mas, lngth);
 
 	for (int i = 0; i < lngth; i++)
 	{
