@@ -27,18 +27,28 @@ int main(void) {
 		fclose(input);
 		return -2;
 	}
-	if (!fscanf(input, "%d", &deg)) {
+	if (fscanf(input, "%d", &deg) != 1) {
 		printf("Input value error\n");
+		fclose(input);
+		fclose(output);
 		return -3;
 	}
 	arr = (int*)malloc((deg + 1) * sizeof(int));
 	if (arr == NULL) {
 		printf("Memory allocation error\n");
+		fclose(input);
+		fclose(output);
 		return -4;
 	}
 	coefficients(deg, arr);
 	for (int i = 0; i <= deg; i++) {
-		fprintf(output, "%d  ", arr[i]);
+		if (fprintf(output, "%d  ", arr[i]) != 1) {
+			printf("input value error");
+			fclose(input);
+			fclose(output);
+			free(arr);
+			return -5;
+		}
 	}
 	fclose(input);
 	fclose(output);

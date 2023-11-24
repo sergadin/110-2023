@@ -25,15 +25,18 @@ int Counter(FILE* inp_f) {
     
     px = x;
     
-	lc_k = 1;
-	lc_sm = px;
+	lc_k = 0;
+	lc_sm = 0;
 
-	//считаем превый постоянный участок
-	while ((fscanf(inp_f, "%d", &x) == 1) && (x == px)) {
+	while (x == px) {
 
 		lc_k += 1;
 		lc_sm += x;
 		px = x;
+
+		if (fscanf(inp_f, "%d", &x) != 1) {
+			return Error_Invalid_Data;
+		}
 	}
 
     gl_k = lc_k;
@@ -42,7 +45,7 @@ int Counter(FILE* inp_f) {
 	px = x;
 
 	lc_k = 1;
-	lc_sm = x;
+	lc_sm = px;
     
     //идем по файлу пока мы можем считовать файл
 	while (fscanf(inp_f, "%d", &x) == 1) {
@@ -51,6 +54,8 @@ int Counter(FILE* inp_f) {
 		if (x == px) {
 			lc_k += 1;
 			lc_sm += x;
+		}
+		else {
 
 			//проверяем, что локальная сумма больше глобальной
 			if (lc_sm > gl_sm) {
@@ -63,12 +68,8 @@ int Counter(FILE* inp_f) {
 				gl_k = lc_k;
 			}
 
-		}
-
-		else {
 			lc_k = 1;
 			lc_sm = x;
-
 		}
 
 		px = x;
@@ -77,6 +78,17 @@ int Counter(FILE* inp_f) {
 	//проверяем, что в файл закончился (все строки считали правильно)
 	if (!feof(inp_f)) {
 		return Error_Invalid_Data;
+	}
+
+	//проверяем, что локальная сумма больше глобальной
+	if (lc_sm > gl_sm) {
+		gl_sm = lc_sm;
+		gl_k = lc_k;
+	}
+
+	//проверяем, что при равной сумме локальный счетчик больше глобальной
+	if ((lc_sm == gl_sm) && (lc_k > gl_k)) {
+		gl_k = lc_k;
 	}
 
 	//возращаем результат функции (наибольшое количество элементов в постоянном участке целой последовательности с наибольшей суммой элементов этого участка)
