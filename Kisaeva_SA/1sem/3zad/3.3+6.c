@@ -1,8 +1,6 @@
 //3.3 сортировка просеиванием  (медленная сортировка)
 //3.6 быстрая сортировка (quicksort)  (быстрая сортировка)
 
-#include <malloc.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -10,7 +8,7 @@
 #define UPOR 1
 #define NEUPOR -1
 
-void random(int len, int *arr1, int *arr2, int *arr3); //генерирование рандомного массива
+void random_arr(int len, int *arr1, int *arr2, int *arr3); //генерирование рандомного массива
 void pros_sort(int *arr1, int len); //3.3 сортировка просеиванием
 void quick_sort(int *arr2, int first, int last);  //3.6 быстрая сортировка
 int test_upor(int *arr, int len); //проверка упорядоченности массива
@@ -18,7 +16,7 @@ int comp(const int *a, const int *b); // вспомогательная функ
 
 
 //генерирование рандомного массива:
-void random(int len, int *arr1, int *arr2, int *arr3) {
+void random_arr(int len, int *arr1, int *arr2, int *arr3) {
 	int r;
 	for(int i = 0; i < len; i++){
 		r = rand()% 1000;		 //rand()% 1000 если хотим рандомное int число в диапазоне от 0 до 999
@@ -122,10 +120,8 @@ int main(void) {
 	}
 	
 	for (int i = 0; i < 4; i++) { //цикл для просмотра разных длин рандомных массивов
-		len = len * pow(2,i);
-		
 		//заполнение массивов случайными целыми числами:
-		random(len, arr1, arr2, arr3);
+		random_arr(len, arr1, arr2, arr3);
 		
 		//выполняем "медленную" сортировку просеиванием:
 		start_1 = clock();
@@ -184,6 +180,8 @@ int main(void) {
 //			}
 //			printf("\n");
 		printf("\n");
+
+		len = len * 2;
 	}
     
     free(arr1);
