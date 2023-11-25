@@ -71,7 +71,7 @@ void merge(int* arr, int* temp, int left, int mid, int right) {
 
 	while (i < l_size)
 		arr[k++] = temp[i++];
-	
+
 	while (j < r_size)
 		arr[k++] = temp[l_size + j++];
 
@@ -97,7 +97,7 @@ int compare(const void* i, const void* j)
 
 
 int check_sorted_array(int* arr, int len) {
-	for (int i = 0; i < (len-1); i++) {
+	for (int i = 0; i < (len - 1); i++) {
 		if (arr[i] > arr[i + 1])
 			return 0;
 	}
@@ -107,9 +107,11 @@ int check_sorted_array(int* arr, int len) {
 
 void generate_array(int** arr, int len, int* error) {
 	*arr = (int*)malloc(len * sizeof(int));
-	if ((*arr) == NULL)
+	if ((*arr) == NULL) {
 		*error = -1;
-    
+		exit(0);
+	}
+
 	srand(time(NULL));
 	for (int i = 0; i < len; i++)
 		(*arr)[i] = rand();
@@ -119,13 +121,22 @@ void generate_array(int** arr, int len, int* error) {
 void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* error) {
 	double swap_time, merge_time, qsort_time;
 	clock_t swap_start, swap_end, merge_start,
-			merge_end, qsort_start, qsort_end;
-    int temp[len];
+		merge_end, qsort_start, qsort_end;
+	int* temp;
+
+	temp = (int*)malloc(len * sizeof(int));
+	if (temp == NULL) {
+		*error = -1;
+		exit(0);
+	}
 
 	generate_array(&arr, len, error);
+
 	arr_copy = (int*)malloc(len * sizeof(int));
-	if (arr_copy == NULL)
+	if (arr_copy == NULL) {
 		*error = -1;
+		exit(0);
+	}
 	for (int i = 0; i < len; i++)
 		arr_copy[i] = arr[i];
 
@@ -145,7 +156,6 @@ void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* erro
 	merge_start = clock();
 	merge_sort(arr, temp, 0, len - 1);
 	merge_end = clock();
-
 	merge_time = ((double)(merge_end - merge_start)) / CLOCKS_PER_SEC;
 
 	if (check_sorted_array(arr, len))
@@ -162,6 +172,7 @@ void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* erro
 	if (check_sorted_array(arr, len))
 		printf("%.3lf seconds\n", qsort_time);
 
+	free(temp);
 	free(arr);
 	free(arr_copy);
 	if (len <= (4 * base_len)) {
