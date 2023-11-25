@@ -20,7 +20,28 @@ int ShiftTheArrayByPositionK(int* arr, int len, int k) {
 
 	k %= len;
 
-	arr = arr[-k:] + arr[:-k];
+    int i;
+    int j;
+    int cnt = 0;
+    int c;
+    
+    //перебор всех вохможных цепоцек
+    for (int i0 = 0; cnt < len; i0++) {
+        
+        i = i0;
+        c = a[i];
+        
+        for (j = ((i + k)%len); j != i0; j = ((j + k)%len)) {
+            a[i] = a[j];
+            cnt++;
+            i = j;
+        }
+        
+        a[i] = c;
+        cnt++;
+    
+    }
+    
 }
 
 
@@ -77,12 +98,9 @@ int main(void) {
 	printf("Enter the number by which you want to shift all array elements:\n");
 	scanf("%d", &k);
 
-	printf("%d - k\n", k);
-
 	for (int i = 0; i < len; i++) {
 		printf("%d ", arr[i]);
 	}
-	printf("\n");
 
 	code = ShiftTheArrayByPositionK(arr, len, k);
 
@@ -94,20 +112,6 @@ int main(void) {
 	for (int i = 0; i < len; i++) {
 		printf("%d ", arr[i]);
 	}
-
-	return 101010;
-
-
-
-
-
-
-
-
-
-
-
-
 
 	printf("Enter the name of the output file:\n");
 	scanf("%s", fo);
