@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <math.h>
+float Function (FILE * vvod, char nazvanie[1000])
+{
+  int current;
+  int previous1;
+  int previous2;
+  int counter = 0;
+  float sum = 0;
+  float arifm = 0;
+
+  vvod = fopen (nazvanie, "r");
+  if (fscanf (vvod, "%d", &current) == EOF)
+    return 0;
+  previous1 = current;
+  previous2 = previous1 - 1;
+  while (!feof (vvod))
+    {
+      fscanf (vvod, "%d", &current);
+      if (previous1 == current && previous2 != current)
+	{
+	  counter ++;
+	  sum += current;
+	}
+      previous2 = previous1;
+      previous1 = current;
+    }
+  if (counter != 0)
+    arifm = sum / counter;
+  return (arifm);
+}
+
+int Proverka (FILE * vvod, char nazvanie[1000])
+{
+  int current;
+  int previous1;
+  int previous2;
+  int counter = 0;
+
+  vvod = fopen (nazvanie, "r");
+  if (fscanf (vvod, "%d", &current) == EOF)
+    return -1;
+    {
+      previous1 = current;
+      previous2 = previous1 - 1;
+      while (!feof (vvod))
+	{
+	  fscanf (vvod, "%d", &current);
+
+	  if (previous1 == current && previous2 != current)
+	    {
+	      counter ++;
+	    }
+	  previous2 = previous1;
+	  previous1 = current;
+	}
+    }
+  return (counter);
+}
+
+
+int main (void)
+{
+  FILE *vvod;
+  char nazvanie[1000];
+
+  printf ("Введите название файла: ");
+  scanf ("%s", nazvanie);
+
+
+  vvod = fopen (nazvanie, "r");
+  if (vvod == NULL)
+    {
+      printf ("Не удалось открыть файл");
+      return -1;
+    }
+  fclose (vvod);
+
+  if (Proverka (vvod, nazvanie) == -1)
+    printf ("Файл пустой");
+  else if (Proverka (vvod, nazvanie) == 0)
+    printf
+      ("В последовательности нет постоянных участков");
+  else
+    printf ("%f", Function (vvod, nazvanie));
+  return 0;
+}

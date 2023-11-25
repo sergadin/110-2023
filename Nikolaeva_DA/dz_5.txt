@@ -1,0 +1,47 @@
+﻿#include <stdio.h>
+
+int count(const char* name, double A, double e);
+//Функция считывает количество вхождений A в файл с точностью до e
+double fabs_(double a);
+
+double fabs_(double a) {
+ if (a < 0)
+    return -a;
+ else 
+    return a;
+}
+
+int count(const char* name, double A, double e){
+  double el;
+  int cnt = 0;
+  FILE* data;
+  
+  data = fopen(name, "r");
+  if (!data)
+    return -1;
+  while (fscanf(data, "%lf", &el)==1){
+       if (fabs_(el - A) <= e) cnt++;
+  }
+  if (!feof(data))
+  {
+       fclose(data);
+       return -2;
+  }
+  fclose(data);
+  return cnt;
+}
+int main(void) {
+  FILE *answer = fopen("output.txt", "w");
+  double x, e;
+  scanf("%lf%lf", &x, &e);
+  if (!answer) {
+      printf("What?");
+      return -1;
+  }
+  if (fprintf(answer, "%d", count("input.txt", x, e)) == 0) {
+      printf("NO SUCCESS!!");
+      return -2;
+  }
+  fclose(answer);
+  return 0;
+}
