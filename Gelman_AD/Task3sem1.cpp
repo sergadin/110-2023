@@ -7,23 +7,29 @@ int incrsect(float a, FILE* inp)
 {
     int n = 0;
     float b;
-    bool check = 1;
+    bool check = 1; //the sequence is increasing
+    //check = 0 => the sequence is decreasing
 
     while (fscanf(inp, "%f", &b) > 0)
     {
         if (a > b)
         {
-            if (check)
+            if (check) //the sequence is increasing
             {
                 n++;
                 check = 0;
             }
         }
-        else
+        else //(a < b)
         {
             check = 1;
         }
         a = b;
+    }
+
+    if (check == 1)
+    {
+        n++;
     }
 
     printf("Number of increasing sequence sections = %d\n", n);
