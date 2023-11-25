@@ -42,7 +42,7 @@ int NumberSearch(int* arr, int len, int y)
     
     if (c == len)
     {
-        return -1;
+        return Result_Answer_N0;
     }
     
     return i;
@@ -123,7 +123,7 @@ int main(void)
 
 	printf("The result is uploaded to the file '%s'\n", fo);
 
-	if (code == -1)
+	if (code == Result_Answer_N0)
     {
         fprintf(out_f, "There is no number (%d) to in this array ", y);
     }
