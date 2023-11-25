@@ -3,7 +3,7 @@
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-int compute_max_len_of_incr (FILE *input, ERR *error);      //вычисляет кол-во элементов самой длинной подпоследовательности
+int compute_max_len_of_incr (FILE *input, ERR *error);      //вычисляет кол-во элементов самой длинной возрастающей подпоследовательности
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
 int compute_max_len_of_incr (FILE *input, ERR *error)
@@ -32,7 +32,7 @@ int main (void)
         test_file(input, &error);
         test_file(output, &error);
         len = compute_max_len_of_incr (input, &error);
-	fprintf ( output, "answ = %d \n", len);
+	fprintf ( output, "количество элементов самой длинной возрастающей последовательности = %d \n", len);
         fclose (input);
         fclose (output);
         if ( error == E_DATA)

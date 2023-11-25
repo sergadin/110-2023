@@ -2,17 +2,18 @@
 #include<stdlib.h>
 #include<math.h>
 
-int armin(int a, int b, int c, float average, FILE* input);
-int armin(int a, int b, int c, float average, FILE* input)
+int armin(double a, double b, double average, FILE* input);
+int armin(double a, double b, double average, FILE* input)
 {
     int n;
-    int current;
-    int sum;
+    double current;
+    double sum;
+    double c;
 
     sum = 0;
     n = 1;
 
-    while (fscanf(input, "%d", &a) == 1)
+    while (fscanf(input, "%d", &c) == 1)
     {
         if (b > a && b > c) 
         {
@@ -33,6 +34,9 @@ int armin(int a, int b, int c, float average, FILE* input)
                 n++
             }
         }
+
+        a = b;
+        b = current;
     }
 
     average = sum / n;
@@ -43,12 +47,10 @@ int armin(int a, int b, int c, float average, FILE* input)
 int main(void) 
 {
 
-    int a;
-    int b;
-    int c;
-    int sum;
-    int current;
-    float average;
+    double a;
+    double b;
+    double c;
+    double average;
     int n;
     FILE* input;
 
@@ -60,10 +62,10 @@ int main(void)
         return -1;
     }
 
-    if (fscanf(input, "%d", &a) != 1) 
+    if (fscanf(inp, "%f", &a) != 1)
     {
-        printf("Unable to read first value.\n");
-        return -1;
+        printf("Unable to read the first element\n");
+        return 0;
     }
 
     if (fscanf(inp, "%f", &b) != 1)
@@ -72,13 +74,7 @@ int main(void)
         return 0;
     }
 
-    if (fscanf(inp, "%f", &c) != 1)
-    {
-        printf("Unable to read the third element\n");
-        return 0;
-    }
-
-    armin(a, b, c, average, input);
+    armin(a, b, average, input);
 
     fclose(input);
     return 0;

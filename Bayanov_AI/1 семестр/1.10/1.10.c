@@ -1,10 +1,10 @@
 
-
 #include <stdio.h>
 #include <math.h>
-int The_number_of_different_numbers_in_the_sequence (FILE * input, char file_name[1000]);
+int The_number_of_different_numbers_in_the_sequence (FILE * input);
 
-int The_number_of_different_numbers_in_the_sequence (FILE * input, char file_name[1000])
+int
+The_number_of_different_numbers_in_the_sequence (FILE * input)
 {
   int current;
   int previous;
@@ -16,7 +16,7 @@ int The_number_of_different_numbers_in_the_sequence (FILE * input, char file_nam
   while (!feof (input))
     {
       if (fscanf (input, "%d", &current) == 0)
-	  return -1;
+	return -1;
       if (previous > current)
 	{
 	  return -1;
@@ -31,7 +31,8 @@ int The_number_of_different_numbers_in_the_sequence (FILE * input, char file_nam
   return counter;
 }
 
-int main (void)
+int
+main (void)
 {
   FILE *input;
   char file_name[1000];
@@ -45,10 +46,9 @@ int main (void)
       return -1;
     }
 
-  answer = The_number_of_different_numbers_in_the_sequence (input, file_name);
+  answer = The_number_of_different_numbers_in_the_sequence (input);
   if (answer == -1)
-    printf
-      ("The file does not meet the condition of the task");
+    printf ("The file does not meet the condition of the task");
   if (answer > 0)
     printf ("%d", answer);
   return 0;
