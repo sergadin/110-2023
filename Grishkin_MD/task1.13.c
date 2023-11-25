@@ -13,7 +13,10 @@ int main(void) {
     result = findLastMinIndex(finput);
 
     foutput = fopen ("output.txt", "w");
-
+    if (foutput == NULL) {
+	    printf("не удалось открыть файл для вывода\n");
+	    return 2;
+    }
     if (result == -1) {
 	   printf("файл пуст\n");
     }
@@ -25,8 +28,12 @@ int main(void) {
     return 0; 
 } 
  
-int findLastMinIndex(FILE* finput) { 
-    int number, min, index = 0, lastIndex = -1; 
+int findLastMinIndex(FILE* finput) {
+
+    int number;
+    int min;
+    int index = 0;
+    int lastIndex = -1; 
      
     if (fscanf(finput, "%d", &min) != 1) { 
         printf("Файл пуст.\n"); 
@@ -39,8 +46,8 @@ int findLastMinIndex(FILE* finput) {
             min = number; 
             index++;
 	}
-            lastIndex = index;  	
-    }
-     
+        lastIndex = index;	
+     }
+
     return lastIndex; 
 }

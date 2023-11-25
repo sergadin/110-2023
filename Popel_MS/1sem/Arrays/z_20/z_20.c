@@ -10,19 +10,9 @@ int combinate_arrays(double *Array1, double *Array2, double *Array3, int len1, i
 	
 	int ind_1 = 0, ind_2 = 0;
 	for (int i = 0; i < (len1 + len2); ++i){
-		if (ind_1 < len1){
-			if (ind_2 < len2){
-				if (Array1[ind_1] <= Array2[ind_2]){
-					Array3[i] = Array1[ind_1];
-					ind_1 += 1;
-				}else{
-					Array3[i] = Array2[ind_2];
-					ind_2 += 1;
-				}
-			}else{
-				Array3[i] = Array1[ind_1];
-				ind_1 += 1;
-			}
+		if ((ind_1 < len1) && ((ind_2 >= len2) || (Array1[ind_1] <= Array2[ind_2]))){
+			Array3[i] = Array1[ind_1];
+			ind_1 += 1;
 		}else{
 			Array3[i] = Array2[ind_2];
 			ind_2 += 1;
@@ -35,7 +25,6 @@ int combinate_arrays(double *Array1, double *Array2, double *Array3, int len1, i
 int main(void){
 	
 	double *Array1 = NULL, *Array2 = NULL, *Array3 = NULL;
-	double last_val = 0.;
 	char input[50];
 	FILE *f_in, *f_out; 
 	int len1 = 0, len2 = 0,  main_return_code = 0;

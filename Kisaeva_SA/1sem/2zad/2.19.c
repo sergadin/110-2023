@@ -5,29 +5,49 @@
 #include <math.h>
 
 int bi_search(double *mas, int len, double x);
-// Определяет позицию в массиве для числа x, чтобы массив оставался неубывающим
+// Определяет позицию (itog_pos) в массиве для числа x, чтобы массив оставался неубывающим
 
 
 int bi_search(double *mas, int len, double x) {
 	int lev = 0;      // левая грацица
 	int prav = len - 1;  // правая граница
+	int mid; // середина отрезка
+	int itog_pos = -1;
 	
 	if (len == 0) {
 		printf("error, net massiva, len = 0 \n");
-		return -1;
+		itog_pos = 0;
+		return itog_pos;
+	}
+	
+	if (x < mas[0]) {
+		itog_pos = 0;
+		return itog_pos;
+	}
+	else if (x > mas[len - 1]) {
+		itog_pos = len;
+		return itog_pos;
 	}
 
 	while (lev <= prav) {
-		if (mas[(lev + prav) / 2] > x) {
-			prav = ((lev + prav) / 2) - 1;
-		} 
-		else if (mas[(lev + prav) / 2] < x) {
-			lev = ((lev + prav) / 2) + 1;
+		mid = (lev + prav) / 2;
+		if ((x > mas[mid]) && (x < mas[mid + 1])){
+			itog_pos = mid + 1;
+			break;
 		}
+		if (mas[mid] > x) {
+			prav = mid - 1;
+		} 
+		if (mas[mid] < x) {
+			lev = mid + 1;
+		} 
 		else {
-			return ((lev + prav) / 2);
+			itog_pos = mid;
+			break;
 		}
 	}
+	
+	return itog_pos;
 }
 
 
@@ -90,7 +110,7 @@ int main(void) {
 	scanf("%lf", &x);
 	
 	position = bi_search(mas, len, x);
-	fprintf(file_out, "position  %d", position);
+	fprintf(file_out, "position  %d\n", position);
 	
 	if (len != 0) {
 		printf("rezultat napechatan \n");	

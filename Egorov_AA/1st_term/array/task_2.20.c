@@ -2,84 +2,123 @@
 #include <stdlib.h>
 
 
-void union(int* arr_a, int* arr_b, int len_a, int len_b);
+void unite_set(int* arr_a, int* arr_b, int* arr_c,
+	int len_a, int len_b);
 
 
-void union(int* arr_a, int* arr_b, int len_a, int len_b) {
-	int count = 0;
-	for (int i = 0; i < len_a; i++) {
-		for (int j = 0; j < len_b; j++) {
-			if (arr_a[i] == arr_b[j]) {
-				count++;
-				break;
-			}
-		}
-	}
-	if (count == len_a) {
-		if (len_a == len_b) {
-			printf("A equals B\n");
+void unite_set(int* arr_a, int* arr_b, int* arr_c,
+	int len_a, int len_b) {
+	int a = 0, b = 0, c = 0;
+	while ((a < len_a) && (b < len_b)) {
+		if (a < b) {
+			arr_c[c] = arr_a[a];
+			c++;
+			a++;
 		}
 		else {
-			printf("A does not equal B\n");
+			arr_c[c] = arr_b[b];
+			c++;
+			b++;
 		}
-		printf("A is a subset of B\n");
 	}
-	else {
-		printf("A does not equal B\nA is not a subset of B\n");
+	while (a < len_a) {
+		arr_c[c] = arr_a[a];
+		c++;
+		a++;
+	}
+	while (b < len_b) {
+		arr_c[c] = arr_b[b];
+		c++;
+		b++;
 	}
 }
 
 int main(void) {
-	FILE* input_1, * input_2;
-	int* arr_a, * arr_b;
+	FILE* input_1, * input_2, * output;
+	int* arr_a, * arr_b, * arr_c;
 	int len_a, len_b, code;
+
 	if ((input_1 = fopen("input_1.txt", "r")) == NULL) {
 		printf("Failed to open first input file\n");
 		code = -1;
-		goto stop_4;
+		goto stop_7;
 	}
 	if ((input_2 = fopen("input_2.txt", "r")) == NULL) {
 		printf("Failed to open second input file\n");
 		code = -2;
-		goto stop_3;
+		goto stop_6;
 	}
+	if ((output = fopen("output.txt", "w")) == NULL) {
+		printf("Failed to open output file\n");
+		code = -3;
+		goto stop_5;
+	}
+
 	if (!fscanf(input_1, "%d", &len_a)) {
 		printf("first input value error\n");
-		code = -3;
-		goto stop_2;
+		code = -4;
+		goto stop_4;
 	}
 	if (!fscanf(input_2, "%d", &len_b)) {
 		printf("second input value error\n");
-		code = -4;
-		goto stop_2;
+		code = -5;
+		goto stop_4;
 	}
+
 	arr_a = (int*)malloc((len_a + 1) * sizeof(int));
 	arr_b = (int*)malloc((len_b + 1) * sizeof(int));
+	arr_c = (int*)malloc((len_a + len_b) * sizeof(int));
+
 	if (arr_a == NULL) {
 		printf("Memory allocation error\n");
-		code = -5;
-		goto stop_1;
+		code = -6;
+		goto stop_4;
 	}
 	if (arr_b == NULL) {
 		printf("Memory allocation error\n");
-		code = -6;
-		goto stop_1;
+		code = -7;
+		goto stop_3;
 	}
+	if (arr_c == NULL) {
+		printf("Memory allocation error\n");
+		code = -8;
+		goto stop_2;
+	}
+
 	for (int i = 0; i < len_a; i++) {
-		fscanf(input_1, "%d", &arr_a[i]);
+		if ((fscanf(input_1, "%d", &arr_a[i])) != 1) {
+			printf("input value error\n");
+			code = -9;
+			goto stop_1;
+		}
 	}
 	for (int i = 0; i < len_b; i++) {
-		fscanf(input_2, "%d", &arr_b[i]);
+		if ((fscanf(input_2, "%d", &arr_b[i])) != 1) {
+			printf("input value error\n");
+			code = -10;
+			goto stop_1;
+		}
 	}
-	union(arr_a, arr_b, len_a, len_b);
+
+	unite_set(arr_a, arr_b, arr_c, len_a, len_b);
+
+	for (int i = 0; i < (len_a + len_b); i++) {
+		fprintf(output, "%d ", arr_c[i]);
+	}
+
 	code = 0;
 	stop_1:
-	free(arr_a);
-	free(arr_b);
+	free(arr_c);
 	stop_2:
-	fclose(input_2);
+	free(arr_b);
 	stop_3:
-	fclose(input_1);
+	free(arr_a);
 	stop_4:
+	fclose(output);
+	stop_5:
+	fclose(input_2);
+	stop_6:
+	fclose(input_1);
+	stop_7:
 	return code;
 }

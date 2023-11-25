@@ -6,8 +6,8 @@
 #define success 0 //все хорошо
 
 
-int COMPARE(FILE *input);
-int COMPARE(FILE *input) //функция проверяет равенство чисел последовательности с точностью до e(в данном случае e=0.1)
+int compare(FILE *input);
+int compare(FILE *input) //функция проверяет равенство чисел последовательности с точностью до e(в данном случае e=0.1)
 {
     double e = 0.1;
     double scan_1, scan_2; //scan_1 и scan_2 числа которые сравнивает программа
@@ -36,7 +36,6 @@ int COMPARE(FILE *input) //функция проверяет равенство 
             return not_success;
         }
     }
-    printf("fgquqfiu");
     return success;
     
 }
@@ -51,7 +50,7 @@ int main(void)
         printf("Не удалось открыть файл\n");
         return er_open;
     }
-    res = COMPARE(input);
+    res = compare(input);
     if(res == er_read){
         printf("Ошибка введенной последовательности\n");
         return er_read;
