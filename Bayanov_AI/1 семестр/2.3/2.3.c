@@ -26,6 +26,8 @@ int
 main (void)
 {
   int size;
+  float check;
+  float Q;
   double *array = NULL;
   FILE *vvod = fopen ("input", "r");
   FILE *vivod = fopen ("output", "w");
@@ -43,9 +45,27 @@ main (void)
       return -1;
     }
 
-  if (fscanf (vvod, "%d", &size) != 1)
+  if (fscanf (vvod, "%f", &check) != 1)
     {
       printf ("The file does not meet the condition of the task\n");
+      fclose (vvod);
+      fclose (vivod);
+      return -1;
+    }
+
+  if (0 > check)
+    {
+      printf ("The length of the array is incorrect \n");
+      fclose (vvod);
+      fclose (vivod);
+      return -1;
+    }
+
+  size = check;
+
+  if (size < check)
+    {
+      printf ("The length of the array is incorrect \n");
       fclose (vvod);
       fclose (vivod);
       return -1;
@@ -72,7 +92,17 @@ main (void)
 	  return -1;
 	}
     }
+
+  while (!feof (vvod))
+    if (fscanf (vvod, "%f", &Q) != -1)
+      {
+	printf ("The file does not meet the condition of the task\n");
+	return -1;
+      }
+
+
   Cyclic_shift (array, size);
+
   for (int i = 1; i < size + 1; i++)
     fprintf (vivod, "%lf ", array[i]);
 

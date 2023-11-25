@@ -1,37 +1,47 @@
 #include <stdio.h>
 
-int findMaxSum(FILE *fin);
-int result;
-int main(void) {
-	FILE *fout, *fin;
-    fin = fopen("input.txt", "r");
+int findMaxSum(FILE *file);
 
-    if (fin == NULL) {
-        printf("Не удалось открыть файл!\n");
+int main(void) {
+    int result;
+
+	FILE *file = fopen("input.txt", "r");
+
+    if (file == NULL) {
+        printf("Не удалось открыть файл\n");
         return -1;
     }
-    result = findMaxSum(fin);
+    result = findMaxSum(file);
 
-    fout = fopen("output.txt", "w");
-    fprintf(fout , "Максимальная сумма подряд идущих элементов: %d\n", result);
+    printf("Максимальная сумма подряд идущих элементов: %d\n", result);
 
-    fclose(fout);
-    fclose(fin);
+    fclose(file);
+
     return 0;
 }
 
-int findMaxSum(FILE *fin) { 
-    int maxSum = -10000;
-    int currentSum = 0;
-    int number;
+ int findMaxSum(FILE *file) {
+    int temp;
+    int maxSum;
+    int curSum;
+    int first;
+    int next_elem;
 
-    while (fscanf(fin, "%d", &number) == 1) {
-        currentSum += number;
-        if (currentSum > maxSum) {
-            maxSum = currentSum;
-        }
+      if (fscanf (file, "%d", &first)!= 1) {
+            printf("файл пуст\n");
+        return -2;
+      }
+    curSum = first;
+    maxSum = curSum;
+     while ((temp = fscanf(file, "%d", &next_elem) != EOF)) {
+            if (curSum < 0) {
+                curSum = 0;
+            }
+    curSum += next_elem;
+    if (curSum > maxSum){
+        maxSum = curSum;
+       }
     }
-
-    return maxSum;
-}
+     return maxSum;
+ }
 
