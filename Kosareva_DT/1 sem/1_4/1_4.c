@@ -14,22 +14,18 @@ int how_much(FILE *f) {
 		printf("%d\n", count);
 		return 0;
 	}
-	check = fscanf(f, "%d", &new);
-        if (check == 0) {
-                printf("Ошибка данных\n");
-                return -2;
-        }
-	while (check == 1) {
-		if (new > last) count++;
+    while ((check = fscanf(f, "%d", &new)) && check == 1) {
+		if (new > last)
+            count++;
 		last = new;
-		check = fscanf(f, "%d", &new);
-        	if (check == 0) {
-                	printf("Ошибка данных\n");
-                	return -2;
-        	}
 	}
+	
+	if (check == 0) {
+        printf("Ошибка данных\n");
+        return -2;
+    }
+	
 	printf("%d\n", count);
-	fclose(f);
 	return 0;
 }
 int main(void) {
@@ -43,5 +39,6 @@ int main(void) {
 		return -1;
 	}
 	how_much(f);
+	fclose(f);
     return 0;
 }

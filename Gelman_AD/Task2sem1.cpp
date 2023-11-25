@@ -2,38 +2,42 @@
 #include<stdlib.h>
 #include<math.h>
 
-int armin(double b, double c, double average, FILE* input);
-int armin(double b, double c, double average, FILE* input)
+int armin(int number1, int number2, FILE* input);
+int armin(int number1, int number2, FILE* input)
 {
     int n;
+    double average;
     double current;
     double sum;
-    double a;
+    int number3;;
 
     sum = 0;
     n = 1;
 
-    while (fscanf(input, "%d", &a) == 1)
+    while (fscanf(input, "%d", &number3) == 1)
     {
-        if (b > a && b > c) 
+        if (number2 > number1 && number2 > number3) 
         {
-            sum += b;
-            current = a;
-            a = b;
-            b = current;
+            sum += number2;
+            current = number1;
+            number1 = number2;
+            number2 = current;
             n++;
         }
         else
         {
-            if (b < a && b < c)
+            if (number2 < number1 && number2 < number3)
             {
-                sum += b;
-                current = a;
-                a = b; 
-                b = current;
+                sum += number2;
+                current = number1;
+                number1 = number2; 
+                number2 = current;
                 n++
             }
         }
+
+        number1 = number2;
+        number2 = current;
     }
 
     average = sum / n;
@@ -44,11 +48,8 @@ int armin(double b, double c, double average, FILE* input)
 int main(void) 
 {
 
-    double a;
-    double b;
-    double c;
-    double average;
-    int n;
+    int number1;
+    int number2;
     FILE* input;
 
     input = fopen("input.txt", "r");
@@ -59,19 +60,19 @@ int main(void)
         return -1;
     }
 
-    if (fscanf(inp, "%f", &b) != 1)
+    if (fscanf(inp, "%f", &number1) != 1)
+    {
+        printf("Unable to read the first element\n");
+        return 0;
+    }
+
+    if (fscanf(inp, "%f", &number2) != 1)
     {
         printf("Unable to read the second element\n");
         return 0;
     }
 
-    if (fscanf(inp, "%f", &c) != 1)
-    {
-        printf("Unable to read the third element\n");
-        return 0;
-    }
-
-    armin(b, c, average, input);
+    armin(number1, number2, input);
 
     fclose(input);
     return 0;

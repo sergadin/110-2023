@@ -2,10 +2,11 @@
 #include<stdio.h>
 #include<stdbool.h>
 
-int incrsect(bool check, float a, float b, FILE* inp);
-int incrsect(bool check, float a, float b, FILE* inp)
+int incrsect(float a, FILE* inp);
+int incrsect(float a, FILE* inp)
 {
     int n = 0;
+    float b;
     bool check = 1;
 
     while (fscanf(inp, "%f", &b) > 0)
@@ -31,9 +32,7 @@ int incrsect(bool check, float a, float b, FILE* inp)
 
 int main() 
 {
-    int n = 0;
-    bool check = 1;
-    float a, b;
+    float a;
     FILE* inp;
 
     inp = fopen("input.txt", "r");
@@ -50,7 +49,7 @@ int main()
         return 0;
     }
 
-    incrsect(check, a, b, inp);
+    incrsect(a, inp);
 
     fclose(inp);
     return 0;
