@@ -9,13 +9,13 @@ void swap(int* a, int* b);
 void swap_sort(int* arr, int len);
 
 // слияние двух массивов, сортируя элементы в порядке возрастания
-void merge(int* arr, int left, int mid, int right, int* error);
+void merge(int* arr, int* temp, int left, int mid, int right);
 
 // сортировка слиянием
-void merge_sort(int* arr, int left, int right, int* error);
+void merge_sort(int* arr, int* temp, int left, int right);
 
 // сравнение двух элементов на равенство(вспомог. функ. для qsort)
-int compare(const int* i, const int* j);
+int compare(const void* i, const void* j);
 
 // проверка массива на упорядоченность
 int check_sorted_array(int* arr, int len);
@@ -51,57 +51,48 @@ void swap_sort(int* arr, int len) {
 }
 
 
-void merge(int* arr, int left, int mid, int right, int* error) {
+void merge(int* arr, int* temp, int left, int mid, int right) {
 	int i = 0, j = 0, k = left;
 	int l_size = mid + 1 - left, r_size = right - mid;
 
-	int* l_array = (int*)malloc(l_size * sizeof(int));
-	if (l_array == NULL)
-		*error = -1;
-	int* r_array = (int*)malloc(r_size * sizeof(int));
-	if (r_array == NULL)
-		*error = -1;
-
 	for (int q = 0; q < l_size; q++)
-		l_array[q] = arr[left + q];
+		temp[q] = arr[left + q];
 	for (int q = 0; q < r_size; q++)
-		r_array[q] = arr[mid + q + 1];
+		temp[l_size + q] = arr[mid + q + 1];
 
 	while ((i < l_size) && (j < r_size)) {
-		if (l_array[i] < r_array[j]) {
-			arr[k++] = l_array[i++];
+		if (temp[i] < temp[l_size + j]) {
+			arr[k++] = temp[i++];
 		}
 		else {
-			arr[k++] = r_array[j++];
+			arr[k++] = temp[l_size + j++];
 		}
 	}
 
 	while (i < l_size)
-		arr[k++] = l_array[i++];
+		arr[k++] = temp[i++];
 	
 	while (j < r_size)
-		arr[k++] = r_array[j++];
+		arr[k++] = temp[l_size + j++];
 
-	free(l_array);
-	free(r_array);
 }
 
 
-void merge_sort(int* arr, int left, int right, int* error) {
+void merge_sort(int* arr, int* temp, int left, int right) {
 	if (left < right) {
 		int mid = left + (right - left) / 2;
 
-		merge_sort(arr, left, mid, error);
-		merge_sort(arr, mid + 1, right, error);
+		merge_sort(arr, temp, left, mid);
+		merge_sort(arr, temp, mid + 1, right);
 
-		merge(arr, left, mid, right, error);
+		merge(arr, temp, left, mid, right);
 	}
 }
 
 
-int compare(const int* i, const int* j)
+int compare(const void* i, const void* j)
 {
-	return *i - *j;
+	return (*(int*)i - *(int*)j);
 }
 
 
@@ -118,7 +109,7 @@ void generate_array(int** arr, int len, int* error) {
 	*arr = (int*)malloc(len * sizeof(int));
 	if ((*arr) == NULL)
 		*error = -1;
-
+    
 	srand(time(NULL));
 	for (int i = 0; i < len; i++)
 		(*arr)[i] = rand();
@@ -129,6 +120,7 @@ void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* erro
 	double swap_time, merge_time, qsort_time;
 	clock_t swap_start, swap_end, merge_start,
 			merge_end, qsort_start, qsort_end;
+    int temp[len];
 
 	generate_array(&arr, len, error);
 	arr_copy = (int*)malloc(len * sizeof(int));
@@ -151,7 +143,7 @@ void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* erro
 		arr[i] = arr_copy[i];
 
 	merge_start = clock();
-	merge_sort(arr, 0, len - 1, error);
+	merge_sort(arr, temp, 0, len - 1);
 	merge_end = clock();
 
 	merge_time = ((double)(merge_end - merge_start)) / CLOCKS_PER_SEC;
@@ -178,7 +170,7 @@ void sorting_time_test(int* arr, int* arr_copy, int len, int base_len, int* erro
 }
 
 
-int main() {
+int main(void) {
 	int* arr = NULL, * arr_copy = NULL;
 	int len, error = 0;
 
