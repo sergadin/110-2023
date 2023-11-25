@@ -14,7 +14,7 @@ void random(int len, int *arr1, int *arr2, int *arr3); //генерирован�
 void pros_sort(int *arr1, int len); //3.3 сортировка просеиванием
 void quick_sort(int *arr2, int first, int last);  //3.6 быстрая сортировка
 int test_upor(int *arr, int len); //проверка упорядоченности массива
-int comp (const int *a, const int *b); // вспомогательная функция для реализации qsort
+int comp(const int *a, const int *b); // вспомогательная функция для реализации qsort
 
 
 //генерирование рандомного массива:
@@ -112,12 +112,12 @@ int main(void) {
 		printf ("Memory error arr1\n");
 		return -1;
 	}
-	if (arr1 == NULL) {
+	if (arr2 == NULL) {
 		printf ("Memory error arr2\n");
 		return -1;
 	}
-	if (arr1 == NULL) {
-		printf ("Memory error arr2\n");
+	if (arr3 == NULL) {
+		printf ("Memory error arr3\n");
 		return -1;
 	}
 	
