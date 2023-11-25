@@ -13,10 +13,9 @@ int quantity_elements_greater_previous(FILE* input)
     {
         return -1;
     }
-    fscanf(input, "%lf", &prev_number);
     while (fscanf(input, "%lf", & cur_number) == 1)
     {
-        if (cur_number < prev_number)
+        if (cur_number > prev_number)
         {
             cnt ++;
         }
