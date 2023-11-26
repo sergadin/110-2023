@@ -26,7 +26,13 @@ int main(void) {
     int* arr;
     fscanf(file, "%d", &lenght); 
     arr = malloc(lenght * sizeof(int));
-
+      
+    if (arr == NULL) {
+        printf("память не выделена\n");
+        fclose(file);
+        ;
+        return -1;
+    }
     for (int i = 0; i < lenght; i++) {
         fscanf(file, "%d", &arr[i]);
     }
