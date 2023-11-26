@@ -9,12 +9,12 @@ int isLucky(int arr[], int size)
 	int k = -1;
 
 	//Вычисляем сумму всех элементов массива
-	for (int i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 	{
 		sum1 += arr[i];
 	}
 	// Проверяем каждую позицию k
-	for (int i = 0; i < size; i++)
+	for (i = 0; i < size; i++)
 	{
 		sum2 += arr[i];
 		sum1 -= arr[i];
@@ -25,13 +25,13 @@ int isLucky(int arr[], int size)
 			break;
 		}
 	}
-	return (k != -1)
+	return (k != -1);
 }
 int main(void)
 {
 	FILE *inputFile, *outputFile;
 	int arr[MAX_SIZE];
-	int size, num;
+	int size, num, i;
 	//Открываем файлы для чтения и записи
 	inputFile = fopen("input.txt","r");
 	outputFile = fopen("output.txt","w");
@@ -41,8 +41,8 @@ int main(void)
 		return 1;
 	}
 	// Считываем размер и элементы массива из файла 
-	fscanf(inputFile,"%d",&size)
-	for (int i = 0; i < size; i++)
+	fscanf(inputFile,"%d",&size);
+	for (i = 0; i < size; i++)
 	{
 		fscanf(inputFile, "%d", &num);
 		arr[i]=num;
