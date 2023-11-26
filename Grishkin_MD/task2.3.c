@@ -22,27 +22,27 @@ int main(void) {
         return 1;
     }
 
-    int length;
+    int lenght;
     int* arr;
-    fscanf(file, "%d", &length); 
+    fscanf(file, "%d", &lenght); 
     arr = malloc(lenght * sizeof(int));
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < lenght; i++) {
         fscanf(file, "%d", &arr[i]);
     }
 
     fclose(file);
 
     printf("Исходный массив: ");
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
 
-    reverseArray(arr, length);  
+    reverseArray(arr, lenght);  
 
     printf("Переставленный массив: ");
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
