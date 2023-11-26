@@ -1,6 +1,5 @@
 #include <stdio.h>
-#define MAX_SIZE 100 // Максимальный размер массива
-
+#include <stdlib.h>
 // Функция для проверки является ли массив счастливым
 int isLucky(int arr[], int size);
 int isLucky(int arr[], int size)
@@ -30,7 +29,7 @@ int isLucky(int arr[], int size)
 int main(void)
 {
 	FILE *inputFile, *outputFile;
-	int arr[MAX_SIZE];
+	int* arr = NULL;
 	int size, num, i;
 	//Открываем файлы для чтения и записи
 	inputFile = fopen("input.txt","r");
@@ -48,12 +47,14 @@ int main(void)
 		arr[i]=num;
 	}
 	//Проверяем является ли массив счастливым
+	arr=(int*) malloc(size*sizeof(int));
 	int isLuckyArray = isLucky(arr, size);
 	//Выводим результат в файл
 	fprintf(outputFile, "%s", isLuckyArray ? "Счастливый массив" : "Несчастливый массив");
 	//Закрываем файлы
 	fclose(inputFile);
 	fclose(outputFile);
+	free(arr);
 
 	return 0;
 }
