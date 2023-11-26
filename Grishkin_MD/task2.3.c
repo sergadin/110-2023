@@ -25,7 +25,7 @@ int main(void) {
     int length;
     int* arr;
     fscanf(file, "%d", &length); 
-    arr = malloc(n * sizeof(int));
+    arr = malloc(lenght * sizeof(int));
 
     for (int i = 0; i < length; i++) {
         fscanf(file, "%d", &arr[i]);
