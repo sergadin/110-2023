@@ -9,6 +9,10 @@ void shiftrightk(double* mas, int lngth, int K);
 void shiftrightk(double* mas, int lngth, int K)
 {
 	double finel;
+	int i;
+	int n;
+	int m = n / 2;
+	double c;
 
 	if (lngth == 0)
 	{
@@ -21,17 +25,11 @@ void shiftrightk(double* mas, int lngth, int K)
 		return;
 	}
 
-
-	for (int i = 0; i < K; i++)
+	for (i = 0; i < m; i++)
 	{
-		finel = mas[lngth - 1];    //save the last element of the array
-
-		for (int i = lngth - 1; i > 0; i--)
-		{		//shift elements to the right
-			mas[i] = mas[i - 1];
-		}
-
-		mas[0] = finel;
+		c = mas[i];
+		mas[i] = mas[n - i - 1];
+		mas[n - i - 1] = c;
 	}
 
 }
