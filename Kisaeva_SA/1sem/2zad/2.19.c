@@ -11,7 +11,7 @@ int bi_search(double *mas, int len, double x);
 int bi_search(double *mas, int len, double x) {
 	int lev = 0;      // левая грацица
 	int prav = len - 1;  // правая граница
-	int mid; // середина массива
+	int mid; // середина отрезка
 	int itog_pos = -1;
 	
 	if (len == 0) {

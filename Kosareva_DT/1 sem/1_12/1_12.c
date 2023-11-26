@@ -2,7 +2,7 @@
 
 int first_maximum(FILE *f);
 int first_maximum(FILE *f) {
-	int number, now, max, new_digit, check;
+	int position_max, position_now, max, new_digit, check;
 	
 	check = fscanf(f, "%d", &new_digit);
 	if (check != 1) {
@@ -11,30 +11,18 @@ int first_maximum(FILE *f) {
 	}
 
 	max = new_digit;
-	number = 1;
-	now = 2;
+	position_max = 1;
+    position_now = 1;
 
-	check = fscanf(f, "%d", &new_digit);
-        if (check == 0) {
-                printf("Ошибка данных\n");
-                return -2;
-        }
-
-	while (check == 1) {
+	while ((check = fscanf(f, "%d", &new_digit)) && check == 1) {
+        position_now += 1;
 		if (new_digit > max) {
 			max = new_digit;
-			number = now;
+			position_max = position_now;
 		}
-
-		check = fscanf(f, "%d", &new_digit);
-        	if (check == 0) {
-                	printf("Ошибка данных\n");
-        	        return -2;
-	        }
-		now++;
 	}
 	
-	printf("%d\n", number);
+	printf("%d\n", position_max);
 	return 0;
 }
 int main(void) {
@@ -47,6 +35,8 @@ int main(void) {
 		printf("Не удалось открыть файл\n");
 		return -1;
 	}
-	return first_maximum(f);
+	first_maximum(f);
+    fclose(f);
+    return 0;
 }
 
