@@ -10,7 +10,29 @@
 int LenSet(int* arr, int len);
 void ShiftTheArrayByPositionK(int* arr, int len, int k);
 int Check(int* arr, int len, int i0);
+void SelectionSort(int* num, int size);
 
+
+
+//функци€ сортировки пр€мым выбором
+void SelectionSort(int* num, int size)
+{
+	int min, temp; // дл€ поиска минимального элемента и дл€ обмена
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		min = i; // запоминаем индекс текущего элемента
+		// ищем минимальный элемент чтобы поместить на место i-ого
+		for (int j = i + 1; j < size; j++)  // дл€ остальных элементов после i-ого
+		{
+			if (num[j] < num[min]) // если элемент меньше минимального,
+				min = j;       // запоминаем его индекс в min
+		}
+		temp = num[i];      // мен€ем местами i-ый и минимальный элементы
+		num[i] = num[min];
+		num[min] = temp;
+	}
+}
 
 
 //функци€ провер€ет, если в массиве р€дом два одинаковых числа
@@ -62,7 +84,7 @@ void ShiftTheArrayByPositionK(int* arr, int len, int k)
 }
 
 
-//функци€ возращает длину введенго массива без повтор€ющих элементов идущих подр€д
+//функци€ возращает длину введенго массива без повтор€ющих элементов
 int LenSet(int* arr, int len)
 {
 
@@ -71,6 +93,8 @@ int LenSet(int* arr, int len)
 		printf("Error:The array is empty\n");
 		return Error_Array_Empty;
 	}
+
+	SelectionSort(arr, len);
 
 	int itoglen = len;
 	int kpovtor;
@@ -96,6 +120,7 @@ int LenSet(int* arr, int len)
 
 	return itoglen;
 }
+
 
 
 int main(void)
