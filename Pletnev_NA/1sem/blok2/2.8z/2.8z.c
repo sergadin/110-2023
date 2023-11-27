@@ -7,11 +7,85 @@
 #define Error_Array_Empty -333
 #define Result_Answer 222
 
-int ShiftTheArrayByPositionK(int* arr, int len, int k);
+int LenSet(int* arr, int len);
+void ShiftTheArrayByPositionK(int* arr, int len, int k);
+int Check(int* arr, int len, int i0);
+void SelectionSort(int* num, int size);
 
 
-//функция сдвигает элементы массива на k позиций вправо
-int ShiftTheArrayByPositionK(int* arr, int len, int k)
+
+//функция сортировки прямым выбором
+void SelectionSort(int* num, int size)
+{
+	int min, temp; // для поиска минимального элемента и для обмена
+
+	for (int i = 0; i < size - 1; i++)
+	{
+		min = i; // запоминаем индекс текущего элемента
+		// ищем минимальный элемент чтобы поместить на место i-ого
+		for (int j = i + 1; j < size; j++)  // для остальных элементов после i-ого
+		{
+			if (num[j] < num[min]) // если элемент меньше минимального,
+				min = j;       // запоминаем его индекс в min
+		}
+		temp = num[i];      // меняем местами i-ый и минимальный элементы
+		num[i] = num[min];
+		num[min] = temp;
+	}
+}
+
+
+//функция проверяет, если в массиве рядом два одинаковых числа
+int Check(int* arr, int len, int i0)
+{
+	for (int i = i0; i < len; i++)
+	{
+		if (arr[i + 1] == arr[i])
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+
+//функция сдвигает элементы массива на k позиций влево
+void ShiftTheArrayByPositionK(int* arr, int len, int k)
+{
+
+	int i;			// предедущий индекс элемента
+	int j;			// текущий индекс элемента
+	int cnt = 0;	// счетчик действий
+	int c;			// хранение первого элемента в цикле
+
+	k %= len;
+
+	if (k == 0)
+	{
+		return;
+	}
+
+	//сдвиг эллементов влево
+	for (int i0 = 0; cnt < len; i0++)
+	{
+		i = i0;
+		c = arr[i];
+		for (j = ((i + k) % len); j != i0; j = ((j + k) % len))
+		{
+			arr[i] = arr[j];
+			cnt++;
+			i = j;
+		}
+		arr[i] = c;
+		cnt++;
+	}
+
+}
+
+
+//функция возращает длину введенго массива без повторяющих элементов
+int LenSet(int* arr, int len)
 {
 
 	if (arr == NULL)
@@ -20,48 +94,45 @@ int ShiftTheArrayByPositionK(int* arr, int len, int k)
 		return Error_Array_Empty;
 	}
 
-	k %= len;
-	k = len - k;
+	SelectionSort(arr, len);
 
-	int i;			// предедущий индекс элемента
-	int j;			// текущий индекс элемента
-	int cnt = 0;	// счетчик действий
-	int c;			// хранение первого элемента в цикле
+	int itoglen = len;
+	int kpovtor;
+	int check = 1;
+	int i;
 
-	//сдвиг эллементов влево
-	for (int i0 = 0; cnt < len; i0++)
+	for (int i0 = 0; ((Check(arr, itoglen, i0) != 0) && (i0 < itoglen - 1)); i0++)
 	{
 
 		i = i0;
-		c = arr[i];
-
-		for (j = ((i + k) % len); j != i0; j = ((j + k) % len))
+		while (arr[i + 1] == arr[i])
 		{
-			arr[i] = arr[j];
-			cnt++;
-			i = j;
+			i++;
 		}
 
-		arr[i] = c;
-		cnt++;
+		kpovtor = i - i0;
+		itoglen -= kpovtor;
+
+		ShiftTheArrayByPositionK(arr, i0 + kpovtor + 1, i0 + 1);
+		ShiftTheArrayByPositionK(arr, len, kpovtor);
 
 	}
 
-	return Result_Answer;
-
+	return itoglen;
 }
 
 
-int main(void) {
+
+int main(void)
+{
 
 	FILE* inp_f;		// файл наших значений для обработки
 	FILE* out_f;		// файл для вывода ответа
 	char fi[30];		// вспомогательная перемнная для ввода имени файла наших значений
 	char fo[30];		// вспомогательная перемнная для для ввода имени файла ответ
-	int code = 0;		// резултат фнукции
+	int code;		// резултат фнукции
 	int* arr = NULL;	// наш массив для работы
 	int len;			// длина нашего массива
-	int k;				// число на которое нужно сдвинуть элементы массива
 
 	printf("Enter the name of the input file:\n");
 	scanf("%s", fi);
@@ -104,16 +175,10 @@ int main(void) {
 	//закрыли файл для чтения
 	fclose(inp_f);
 
-	if (code != 0) {
-		return code;
-	}
+	code = LenSet(arr, len);
 
-	printf("Enter the number by which you want to shift all array elements:\n");
-	scanf("%d", &k);
-
-	code = ShiftTheArrayByPositionK(arr, len, k);
-
-	if (code != Result_Answer) {
+	if (code < 0)
+	{
 		return code;
 	}
 
@@ -125,7 +190,10 @@ int main(void) {
 
 	printf("The result is uploaded to the file '%s'\n", fo);
 
-	for (int i = 0; i < len; i++) {
+	fprintf(out_f, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
+
+	for (int i = 0; i < code; i++)
+	{
 		fprintf(out_f, "%d ", arr[i]);
 	}
 
@@ -133,5 +201,6 @@ int main(void) {
 	fclose(out_f);
 	free(arr);
 
-	return code;
+	return Result_Answer;
 }
+
