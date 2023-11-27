@@ -2,29 +2,29 @@
 #include <math.h>
 #include <stdlib.h>
 
-int function(FILE *input);        //Функция, выполняющая вычисление номера числа, равного X.
+int find_last_number_of_X(FILE *input);        //Функция, выполняющая вычисление номера последнего числа, равного X.
 
-int function(FILE *input) {
-    double a = 0;
-    double x = 7;
+int find_last_number_of_X(FILE *input) {
+    double current = 0;
+    double X = 7;
     double epsilon = 0.001;
-    int count = 0;
-    int n = 0;
+    int current_number = 0;
+    int number_of_X = 0;
 
-    if (fscanf(input, "%lf", &a) != 1) {
+    if (fscanf(input, "%lf", &current) != 1) {
         printf("Не удается считать элемент\n");
 			return -1;
     }
 
-    count++;
-    if (fabs(x - a) <= epsilon) {
-        n = count;
+    current_number++;
+    if (fabs(X - current) <= epsilon) {
+        number_of_X = current_number;
     }
 
-    while (fscanf(input, "%lf", &a) == 1) {
-        count++;
-        if (fabs(x - a) <= epsilon) {
-            n = count;
+    while (fscanf(input, "%lf", &current) == 1) {
+        current_number++;
+        if (fabs(X - current) <= epsilon) {
+            number_of_X = current_number;
         }
     } 
 
@@ -33,11 +33,11 @@ int function(FILE *input) {
 		return -1;
 	}
 
-    return n;
+    return number_of_X;
 }
 
 int main() {
-    int y;
+    int last_number_of_X;
     FILE *input;
 
     input = fopen("/Users/dmitrij/Desktop/Учеба/task5/test5.txt", "r");
@@ -47,12 +47,12 @@ int main() {
 		return -1;
 	}
 
-    y = function(input);
+    last_number_of_X = find_last_number_of_X(input);
 
-    if (y == 0) {
+    if (last_number_of_X == 0) {
         printf("В последовательности нет чисел равных X\n");
-    } else if (y > 0) {
-        printf("Номер последнего числа, равного X: %d\n", y);
+    } else if (last_number_of_X > 0) {
+        printf("Номер последнего числа, равного X: %d\n", last_number_of_X);
     }
 
     fclose(input);
