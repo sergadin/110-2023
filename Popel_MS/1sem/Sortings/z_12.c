@@ -5,6 +5,9 @@
 #define Uncorr_ord -1
 #define Corr_ord 0
 
+//Функция sort_bin сортирует числа по количеству единиц в двиочной записи. 
+//Функция sorting_comparing сравнивает скорости сортировок qsort и sort_bin.
+
 int compare(const void* i, const void* j);
 int ordered_seq(int *arr, int len);
 int bin1(int num);
@@ -29,9 +32,9 @@ int ordered_seq(int *arr, int len){
 }
 
 int bin1(int num){
-	int count=0;
-	while (num>0){
-		if (num&1){
+	int count = 0;
+	while (num > 0){
+		if (num & 1){
 			count++;
 		}
 		num = num >> 1;
@@ -42,7 +45,7 @@ int bin1(int num){
 int rand_array(int *arr, int len){
 	srand(time(NULL));
 	
-	for (int i=0; i < len; i++){
+	for (int i = 0; i < len; i++){
 		arr[i] = rand();
 	}
 	return 0;
@@ -52,12 +55,12 @@ int sort_bin(int *arr, int len, int *bin_arr){
 	int c, d;
 	
 	
-	for (int i=0; i<len; i++){
-		for (int j=i+1; j<len; j++){
-			if (bin_arr[i]>bin_arr[j]){
+	for (int i = 0; i < len; i++){
+		for (int j = i+1; j < len; j++){
+			if (bin_arr[i] > bin_arr[j]){
 				c = bin_arr[i];
 				bin_arr[i] = bin_arr[j];
-				bin_arr[j]= c;
+				bin_arr[j] = c;
 				d = arr[i];
 				arr[i] = arr[j];
 				arr[j] = d;
@@ -75,11 +78,11 @@ void sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_
     clock_t st_bin, end_bin, sec_bin, st_q, end_q, sec_q;
     int answ;
 	rand_array(arr, len);
-	for (int i =0; i<len; i++){
+	for (int i =0; i < len; i++){
         arr_copy[i] = arr[i];
     }
     
-    for (int i=0; i<len; i++){
+    for (int i = 0; i < len; i++){
 		bin_arr[i] = bin1(arr[i]);
 	}
     st_q = clock();
@@ -97,7 +100,7 @@ void sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_
         arr[i] = arr_copy[i];
     }
     
-    for (int i=0; i<len; i++){
+    for (int i = 0; i < len; i++){
 		bin_arr[i] = bin1(arr[i]);
 	}
     
@@ -124,7 +127,7 @@ int main(void){
 	
 	f_out = fopen("output.txt","w");
 	
-	if (f_out== NULL){
+	if (f_out == NULL){
 		printf("Файл не открывается\n");
 		return -1;
 	}	
@@ -150,7 +153,7 @@ int main(void){
 	}
 	
 	fprintf(f_out,"Сортировки:\n                     Qsort               Бинарные\n");
-    for (int i = len; i>0; i=i/2){
+    for (int i = len; i>0; i = i/2){
         sorting_comparing(arr_rand, arr_copy, i, f_out, bin_arr);
     }
 	printf("Ответ записан в файл output.txt\n");
