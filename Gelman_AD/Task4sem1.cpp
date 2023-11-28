@@ -10,8 +10,7 @@ void shiftrightk(double* mas, int lngth, int K)
 {
 	double finel;
 	int i;
-	int n;
-	int m = n / 2;
+	int m = lngth / 2;
 	double c;
 
 	if (lngth == 0)
@@ -24,13 +23,13 @@ void shiftrightk(double* mas, int lngth, int K)
 	{     //no elements to shift (only 1 element)
 		return;
 	}
-
 	for (i = 0; i < m; i++)
 	{
-		c = mas[i];
-		mas[i] = mas[n - i - 1];
-		mas[n - i - 1] = c;
+			c = mas[i];
+			mas[i] = mas[lngth - i - 1];
+			mas[lngth - i - 1] = c;
 	}
+
 
 }
 
