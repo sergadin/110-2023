@@ -29,7 +29,6 @@ int main(void) {
     if (arr == NULL) {
         printf("память не выделена\n");
         fclose(file);
-        ;
         return -1;
     }
     for (int i = 0; i < lenght; i++) {
@@ -54,3 +53,4 @@ int main(void) {
     free(arr);
     return 0;
 }
+
