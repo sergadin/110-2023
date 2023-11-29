@@ -32,7 +32,7 @@ int main(void) {
       }
     curSum = first;
     maxSum = curSum;
-     while (fscanf(file, "%d", &next) == 1)) {
+     while (fscanf(file, "%d", &next) == 1) {
             if (curSum < 0) {
                 curSum = 0;
             }
