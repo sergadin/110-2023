@@ -51,7 +51,7 @@ int main(void) {
     for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
-    printf("\n");
-
+    printf("\n"); 
+    free(arr);
     return 0;
 }
