@@ -11,10 +11,15 @@
 
 int compare(const void* i, const void* j);
 int ordered_seq(int *arr, int len);
+int ordered_bin_seq(int *arr, int len);
 int bin1(int num);
 int rand_array(int *arr, int len);
 int sort_bin(int *arr, int len, int *bin_arr);
 int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr);
+void heap_sort(int *arr, int len);
+void go_up(int *arr, int k);
+void go_down(int *arr, int k);
+void swap(int *a, int *b);
 
 int compare(const void* i, const void* j){
     return (*(int*)i - *(int*)j);
@@ -32,14 +37,26 @@ int ordered_seq(int *arr, int len){
 	return Corr_ord;
 }
 
+int ordered_bin_seq(int *arr, int len){
+    int a;
+	int lv = bin1(arr[0]);
+	for (int i = 1; i < len; i++){
+        a = bin1(arr[0]);
+		if (lv > a){
+			return Uncorr_ord;
+		}
+		lv = a;
+	}
+	return Corr_ord;
+}
+
 int bin1(int num){
 	int count = 0;
-	while (num > 0){
-		if (num & 1){
-			count++;
-		}
-		num = num >> 1;
-	}
+    
+	while (num) {
+        num &= (num - 1);
+        count+=1;
+    }
 	return count;
 }
 
@@ -52,32 +69,66 @@ int rand_array(int *arr, int len){
 	return 0;
 }
 
-int sort_bin(int *arr, int len, int *bin_arr){
-	int c, d;
-	
-	
-	for (int i = 0; i < len; i++){
-		for (int j = i+1; j < len; j++){
-			if (bin_arr[i] > bin_arr[j]){
-				c = bin_arr[i];
-				bin_arr[i] = bin_arr[j];
-				bin_arr[j] = c;
-				d = arr[i];
-				arr[i] = arr[j];
-				arr[j] = d;
-			}
+void swap(int *a, int *b){
+	int c = *a;
+	*a = *b;
+	*b = c;
+}
+
+void go_up(int *arr, int k){
+	int j, a1, a2;
+	while(k > 0){
+		j = (k - 1) / 2;
+        a1 = bin1(arr[k]);
+        a2 = bin1(arr[j]);
+		if (a1 > a2) {
+			swap(arr + k, arr + j);
+		}
+		else {
+			break;
+		}
+		k = j;
+	}
+}
+void go_down(int *arr, int k){
+	int i, i1, i2, a1, a2, a;
+	if (k < 2) {
+		return;
+	}
+	for (i = 0; i < k; ) {
+		i1 = 2 * i + 1;
+		i2 = i1 + 1;
+        a1 = bin1(arr[i1]);
+        a2 = bin1(arr[i2]);
+        a = bin1(arr[i]);
+		if (i1 >= k) {
+			break;
+		}
+		if ((i2 < k) && (a1 < a2)) {
+			i1 = i2;
+		}
+		if (a < a1) {
+			swap(arr+i, arr+i1);
+			i = i1;
+		} else {
+			break;
 		}
 	}
-	if (ordered_seq(bin_arr, len) == Uncorr_ord){
-		return Uncorr_ord;
-	    }
-	
-	return Corr_ord;
+}
+
+void heap_sort(int *arr, int len){
+	int k;
+	for (k = 1; k < len; k++){
+		go_up(arr, k);
+	}
+	for (k = len - 1; k > 0; k--){
+		swap(arr, arr+k);
+		go_down(arr, k);
+	}
 }
 
 int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr){
     clock_t st_bin, end_bin, sec_bin, st_q, end_q, sec_q;
-    	int answ;
     	arr_copy = (int *)malloc(len*sizeof(int));
 	if (arr_copy == NULL){
 		printf("Оперативная память не выделена\n");
@@ -91,6 +142,7 @@ int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_a
 		return mem_err;
 	}
 	rand_array(arr, len);
+    
 	for (int i =0; i<len; i++){
         	arr_copy[i] = arr[i];
     	}
@@ -106,25 +158,22 @@ int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_a
         printf("Не отсoртировано\n");
     }
     else{
-        fprintf(f_out, "Длина массива: %d   время: %ld    ", len, sec_q);
+        fprintf(f_out, "\tДлина массива: %7d   время: %10ld    ", len, sec_q);
     }
     
     for (int i = 0; i<len; i++){
         arr[i] = arr_copy[i];
     }
     
-    for (int i=0; i<len; i++){
-		bin_arr[i] = bin1(arr[i]);
-	}
-    
     st_bin = clock();
-    answ = sort_bin(arr, len, bin_arr);
+    heap_sort(arr, len);
     end_bin = clock();
     sec_bin = (double)(end_bin-st_bin);
-    if (answ == Uncorr_ord){
-    	printf("Не отсoртировано\n");
-    }else{
-    fprintf(f_out, "время: %ld\n", sec_bin);
+    if (ordered_bin_seq(arr, len) == Uncorr_ord){
+        printf("Не отсoртировано\n");
+    }
+    else{
+        fprintf(f_out, "время: %10ld    \n", sec_bin);
     }
     free(arr_copy);
     free(bin_arr);
@@ -156,8 +205,8 @@ int main(void){
 	
 	
 	
-	fprintf(f_out,"Сортировки:\n                     Qsort               Бинарные\n");
-    for (int i = len; i>0; i = i/2){
+	fprintf(f_out,"Сортировки:\n                                       Qsort                 Бинарные\n");
+    for (int i = 1; i<=len; i = i*2){
         if(sorting_comparing(arr_rand, arr_copy, i, f_out, bin_arr)==mem_err){
         	printf("Оперативная память не выделена\n");
 		main_return_code = -1;
