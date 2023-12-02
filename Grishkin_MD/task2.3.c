@@ -20,14 +20,14 @@ int main(void) {
     int* arr;
     FILE* file = fopen("input.txt", "r");
     if (file == NULL) {
-        printf("Ошибка открытия файла.\n");
+        printf("ne udalos'ortrit' file \n");
         return 1;
     }
     fscanf(file, "%d", &lenght);
     arr = malloc(lenght * sizeof(int));
 
     if (arr == NULL) {
-        printf("память не выделена\n");
+        printf("memory error\n");
         fclose(file);
         return -1;
     }
@@ -37,7 +37,7 @@ int main(void) {
 
     fclose(file);
 
-    printf("Исходный массив: ");
+    printf("array: ");
     for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
@@ -45,7 +45,7 @@ int main(void) {
 
     reverseArray(arr, lenght);
 
-    printf("Переставленный массив: ");
+    printf("Reversed array: ");
     for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
@@ -53,5 +53,3 @@ int main(void) {
     free(arr);
     return 0;
 }
-
-

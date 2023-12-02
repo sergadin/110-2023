@@ -6,7 +6,7 @@ void increment(int* arr, int size);
 void increment(int* arr, int size) 
 {
     int carry = 1; // "Перенос" единицы
-    for (int i = size - 1; i >= 0; i--) 
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
         int sum = arr[i] + carry; // Сумма текущей цифры и "переноса"
         arr[i] = sum % 10; // Записываем только остаток от деления на 10
@@ -15,10 +15,11 @@ void increment(int* arr, int size)
 }
 
 // Функция для вычитания единицы из числа
-void decrement(int* arr, int size) 
+void decrement(int* arr, int size);
+void decrement(int* arr, int size)
 {
     int borrow = 1; // "Заем" единицы
-    for (int i = size - 1; i >= 0; i--) 
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
         int diff = arr[i] - borrow; // Разность текущей цифры и "займа"
         if (diff < 0) 
@@ -36,16 +37,18 @@ void decrement(int* arr, int size)
 int main(void) 
 {
     FILE* inputFile = fopen("input.txt", "r"); // Открываем файл для чтения
+    FILE* outputFile;
+    int size;
+    int *arr = NULL;
     if (inputFile == NULL) 
     {
         printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл
         return 1; // Завершаем программу с ошибкой
     }
 
-    int size;
     fscanf(inputFile, "%d", &size); // Считываем размер массива из файла
 
-    int* arr = (int*)malloc(size * sizeof(int)); // Выделяем память под массив
+    arr = (int*)malloc(size * sizeof(int)); // Выделяем память под массив
     if (arr == NULL) 
     {
         printf("Ошибка при выделении памяти\n"); // Выводим ошибку, если не удалось выделить память
@@ -70,7 +73,7 @@ int main(void)
 
     increment(arr, size); // Прибавляем единицу к числу
 
-    FILE* outputFile = fopen("output.txt", "w"); // Открываем файл для записи
+    outputFile = fopen("output.txt", "w"); // Открываем файл для записи
     if (outputFile == NULL) 
     {
         printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл

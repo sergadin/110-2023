@@ -8,12 +8,7 @@ int length(FILE *f) {
 	max_sum = 0;
 	new_sum = 0;
 	prev = 0;
-	check = fscanf(f, "%d", &new);
-	if (check == 0) {
-		printf("Ошибка данных\n");
-		return -2;
-	}
-	while (check == 1) {
+	while ((check = fscanf(f, "%d", &new)) && (check == 1)) {
 		if (new == prev) {
 			new_length++;
 			new_sum += new;
@@ -27,12 +22,12 @@ int length(FILE *f) {
 			new_sum = new;
 			prev = new;
 		}
-		check = fscanf(f, "%d", &new);
-		if (check == 0) {
-                	printf("Ошибка данных\n");
-                	return -2;
-		}
+		prev = new;
 	}
+	if (check == 0) {
+        prinf("Ошибка данных\n");
+        return -2;
+    }
 	printf("%d\n", max_length);
 	fclose(f);
 	return 0;
