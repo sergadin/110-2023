@@ -5,7 +5,7 @@
 #include <math.h>
 #define PROST_V_KONZE 1
 #define NET_PROST_V_KONZE -1
-int kol = 0; //длина массива
+int kol = 0; // = длина массива минус один
 
 int razl(int *mas, int N);
 // функция разложения натурального числа на простые множители
@@ -27,8 +27,13 @@ int razl(int *mas, int N) { // вернуть массив
     }
 	
 	if (izmen_N > 1) {
-        kol++;
-        mas[kol] = izmen_N;
+        if (kol == 0) { // число само простое
+			mas[kol] = izmen_N;
+		}
+		else{
+			kol++;
+			mas[kol] = izmen_N;
+		}
         return PROST_V_KONZE;
 	}
 	return NET_PROST_V_KONZE;
