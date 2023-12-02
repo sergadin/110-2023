@@ -22,7 +22,7 @@ int compare(const void* i, const void* j){
 }
 
 int ordered_seq(int *arr, int len){
-	double last_val = arr[0];
+	int last_val = arr[0];
 	for (int i = 1; i < len; i++){
 		if (last_val > arr[i]){
 			return Uncorr_ord;
@@ -128,12 +128,13 @@ int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_a
     }
     free(arr_copy);
     free(bin_arr);
+    return 0;
 }
 
 int main(void){
 	FILE *f_out;
 	int len, *arr_rand = NULL, *bin_arr=NULL, *arr_copy = NULL; 
-	int answ, main_return_code = 0;
+	int main_return_code = 0;
 	
 	
 	printf("Введите максимальную длину случайного массива:\n");
@@ -171,5 +172,5 @@ int main(void){
 	terminate:
 	
 	fclose(f_out);
-	return 0;
+	return main_return_code;
 }
