@@ -57,7 +57,9 @@ int change(FILE *f, int n, char *str) {
 
 	//Работа с массивом
 
-	if (n > 0) last = a[0]/2;
+	if (n > 0) {
+        last = a[0]/2;
+    }
 	for (i=1; i<n-1; i++) {
 		new = a[i]/2;
 		a[i] = last + a[i+1]/2;
