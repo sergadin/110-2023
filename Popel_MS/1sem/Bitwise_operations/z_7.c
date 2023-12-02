@@ -2,59 +2,29 @@
 #include <math.h>
 #include <stdlib.h>
 #define DIRECT_err -1
-#define SIZE (sizeof(unsigned int)*8)-1
+#define SIZE (sizeof(unsigned int)*8)
 int direct;
 //Эта функция делает циклический сдвиг битового представления числа вправо или влево (в зависимости от введенного в консоль значения)
 //на указанное число элементов
-int degree(unsigned num, int deg);
-int count_rank_number(unsigned num);
-int cycle_byte_shift( unsigned num, int swap);
+unsigned int cycle_byte_shift( unsigned num, int swap);
 int to_bin(unsigned num);
-
-int degree(unsigned num, int deg){
-	int new_num = 1;
-	for (int i = 0; i<deg; i++){
-		new_num*=num;
-	}
-	return new_num;
-}
 
 
 
 int to_bin(unsigned int num){
-    int count=0;
-    int *bin_arr = NULL;
-    int len = count_rank_number(num);
-    bin_arr = (int *)malloc(len*sizeof(int));
-
-    
-    while(num!=0 || count!=len){
-        bin_arr[len - 1- count] =(num%2);
-        count+=1;
-        num = num/2;
-    }
-    for (int i=0; i<len; i++){
-        printf("%d ",bin_arr[i]);
-        
-        
+    for (int k = SIZE -1 ; k>=0; k--){
+    	if ((1 << k) & num){
+    		printf("%d", 1);
+    	}else{
+    		printf("%d", 0);
+    	}
     }
     printf("\n");
-    free(bin_arr);
     return 0;
 }
 
-int count_rank_number(unsigned num){
-	int count = 0;
-	int deb = num;
-	while (deb > 0){
-		deb /= 2;
-		count += 1;
-	}
-	return count;
-}
 
-int cycle_byte_shift( unsigned num, int swap){
-	int len = count_rank_number((unsigned) num);
+unsigned int cycle_byte_shift( unsigned num, int swap){
 	
 	printf("Введите направление сдвига (введите '0, если влево' или '1, если вправо'): ");
 	scanf("%d", &direct);
@@ -64,16 +34,16 @@ int cycle_byte_shift( unsigned num, int swap){
 	}
 	
 	if (direct == 0){
-		return ((num & (degree(2, len)-1)) << swap) | ((num & degree(2,(SIZE-swap))) >> ((SIZE - swap)%(SIZE+1)));
+		return ((num << swap) | (num >> (SIZE - swap)));
 	}else{
-		return ((num & degree(2, swap)) >> swap) | ((num  & (degree(2, swap)-1))) << (((SIZE - swap)%(SIZE+1)));
+		return ((num >> swap) | (num << (SIZE - swap)));
 	}
 }
 
 int main(void){
 	int num;
 	int swap;
-	int answ;
+	unsigned int answ;
 	
 	printf("Введите целое число:");
 	scanf("%d", &num);
@@ -86,16 +56,16 @@ int main(void){
 	answ = cycle_byte_shift((unsigned) num, swap);
 	if (answ != DIRECT_err){
 		if (direct == 0){
-			printf("Вот сдвинутое влево на %d число %d: %d\n", swap, num, answ);
+			printf("Вот сдвинутое влево на %d число %d: %u\n", swap, num, answ);
             printf("%d - ", num);
             to_bin(num);
-            printf("%d - ", answ);
+            printf("%u - ", answ);
             to_bin(answ);
 		}else{
-			printf("Вот сдвинутое вправо на %d число %d: %d\n", swap, num, answ);
+			printf("Вот сдвинутое вправо на %d число %d: %u\n", swap, num, answ);
             printf("%d - ", num);
             to_bin(num);
-            printf("%d - ", answ);
+            printf("%u - ", answ);
             to_bin(answ);
 		}
 		
