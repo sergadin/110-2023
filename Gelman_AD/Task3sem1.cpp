@@ -2,27 +2,34 @@
 #include<stdio.h>
 #include<stdbool.h>
 
-int incrsect(bool check, float a, float b, FILE* inp);
-int incrsect(bool check, float a, float b, FILE* inp)
+int incrsect(float a, FILE* inp);
+int incrsect(float a, FILE* inp)
 {
     int n = 0;
-    bool check = 1;
+    float b;
+    bool check = 1; //the sequence is increasing
+    //check = 0 => the sequence is decreasing
 
     while (fscanf(inp, "%f", &b) > 0)
     {
         if (a > b)
         {
-            if (check)
+            if (check) //the sequence is increasing
             {
                 n++;
                 check = 0;
             }
         }
-        else
+        else //(a < b)
         {
             check = 1;
         }
         a = b;
+    }
+
+    if (check == 1)
+    {
+        n++;
     }
 
     printf("Number of increasing sequence sections = %d\n", n);
@@ -31,9 +38,7 @@ int incrsect(bool check, float a, float b, FILE* inp)
 
 int main() 
 {
-    int n = 0;
-    bool check = 1;
-    float a, b;
+    float a;
     FILE* inp;
 
     inp = fopen("input.txt", "r");
@@ -50,7 +55,7 @@ int main()
         return 0;
     }
 
-    incrsect(check, a, b, inp);
+    incrsect(a, inp);
 
     fclose(inp);
     return 0;
