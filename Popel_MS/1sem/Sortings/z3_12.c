@@ -5,8 +5,7 @@
 #define Uncorr_ord -1
 #define Corr_ord 0
 #define mem_err -2
-
-//Функция sort_bin сортирует числа по количеству единиц в двиочной записи. 
+ 
 //Функция sorting_comparing сравнивает скорости сортировок qsort и sort_bin.
 
 int compare(const void* i, const void* j);
@@ -14,7 +13,6 @@ int ordered_seq(int *arr, int len);
 int ordered_bin_seq(int *arr, int len);
 int bin1(int num);
 int rand_array(int *arr, int len);
-int sort_bin(int *arr, int len, int *bin_arr);
 int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr);
 void heap_sort(int *arr, int len);
 void go_up(int *arr, int k);
