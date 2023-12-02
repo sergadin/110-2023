@@ -64,9 +64,9 @@ int cycle_byte_shift( unsigned num, int swap){
 	}
 	
 	if (direct == 0){
-		return ((num & (degree(2, len)-1))%(SIZE+1) << swap) | ((num & degree(2,(SIZE-swap))) >> ((SIZE - swap)%(SIZE+1)));
+		return ((num & (degree(2, len)-1)) << swap) | ((num & degree(2,(SIZE-swap))) >> ((SIZE - swap)%(SIZE+1)));
 	}else{
-		return ((num & degree(2, swap))%(SIZE+1) >> swap) | ((num  & (degree(2, swap)-1))) << (((SIZE - swap)%(SIZE+1)));
+		return ((num & degree(2, swap)) >> swap) | ((num  & (degree(2, swap)-1))) << (((SIZE - swap)%(SIZE+1)));
 	}
 }
 
