@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define OK 1
+#define NOT_OK -1
+FILE* data;
+
+
+
+int dense(int *array, int N);
+
+
+int dense(int *array, int N){
+       int a;
+       int b;
+       int cnt;
+
+       printf("введите число a");
+       scanf("%d\n", &a);
+       printf("введите число b");
+       scanf("%d\n", &b);
+
+       for(int i=1; i < N; i++){
+	       if ((array[i] >= a) && (array[i] <=b)){
+		       cnt++;
+		       for(int j=i; j<N; j++){
+			       if(array[j]==array[i]){
+				       array[j] = a - 1;
+			       }
+		       }
+	       }
+       }
+       
+       if (cnt == b - a + 1) 
+	       return OK;
+       else
+	       return NOT_OK;
+}
+int main(void){
+	int itog;
+	int n;
+	FILE *answer;
+	int *array = NULL;
+    answer = fopen("output.txt", "w");
+
+	if (!answer) {     //Проверка существует ли answer
+        printf("What?");
+        return -1;
+	}
+	
+    data = fopen("input1.txt", "r");
+
+  	if (!data) {     //Проверка есть ли data
+        printf("ERR"); 
+        return -1;
+	}
+	
+	if (fscanf(data, "%d", &n)!=1){//Проверяем, считалось ли число
+		printf("no values\n");
+		return -1;
+	}
+	
+	array = (int *)malloc(n*sizeof(int));
+	for (int i = 0; i < n; i++){
+		if(fscanf(data, "%d", &array[i]) != 1) {
+			printf("FGH");
+			return -1;
+		}// считался ли элемент
+	}
+
+	for (int i = 0; i < n;i++){
+		printf("%d\n", array[i]);
+	}
+	
+	fclose(data);
+	itog = dense(array, n);
+	
+	if (itog == OK) {
+		printf("плотный");
+dou	}
+	if (itog == NOT_OK){
+		printf("не плотный");
+
+	}
+
+  	fclose(answer);
+    return 0;
+}
+
+
+
+

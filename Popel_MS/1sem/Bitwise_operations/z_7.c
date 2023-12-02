@@ -9,7 +9,7 @@ int direct;
 int degree(unsigned num, int deg);
 int count_rank_number(unsigned num);
 int cycle_byte_shift( unsigned num, int swap);
-
+int to_bin(unsigned num);
 
 int degree(unsigned num, int deg){
 	int new_num = 1;
@@ -17,6 +17,30 @@ int degree(unsigned num, int deg){
 		new_num*=num;
 	}
 	return new_num;
+}
+
+
+
+int to_bin(unsigned int num){
+    int count=0;
+    int *bin_arr = NULL;
+    int len = count_rank_number(num);
+    bin_arr = (int *)malloc(len*sizeof(int));
+
+    
+    while(num!=0 || count!=len){
+        bin_arr[len - 1- count] =(num%2);
+        count+=1;
+        num = num/2;
+    }
+    for (int i=0; i<len; i++){
+        printf("%d ",bin_arr[i]);
+        
+        
+    }
+    printf("\n");
+    free(bin_arr);
+    return 0;
 }
 
 int count_rank_number(unsigned num){
@@ -40,9 +64,9 @@ int cycle_byte_shift( unsigned num, int swap){
 	}
 	
 	if (direct == 0){
-		return ((num & (degree(2, len)-1)) << swap) | ((num & degree(2,(SIZE-swap))) >> ((SIZE - swap)%(SIZE+1)));
+		return ((num & (degree(2, len)-1))%(SIZE+1) << swap) | ((num & degree(2,(SIZE-swap))) >> ((SIZE - swap)%(SIZE+1)));
 	}else{
-		return ((num & degree(2, swap)) >> swap) | ((num  & (degree(2, swap)-1))) << (((SIZE - swap)%(SIZE+1)));
+		return ((num & degree(2, swap))%(SIZE+1) >> swap) | ((num  & (degree(2, swap)-1))) << (((SIZE - swap)%(SIZE+1)));
 	}
 }
 
@@ -56,13 +80,23 @@ int main(void){
 	
 	printf("Введите сдвиг:");
 	scanf("%d", &swap);
+    
+
 	
 	answ = cycle_byte_shift((unsigned) num, swap);
 	if (answ != DIRECT_err){
 		if (direct == 0){
 			printf("Вот сдвинутое влево на %d число %d: %d\n", swap, num, answ);
+            printf("%d - ", num);
+            to_bin(num);
+            printf("%d - ", answ);
+            to_bin(answ);
 		}else{
 			printf("Вот сдвинутое вправо на %d число %d: %d\n", swap, num, answ);
+            printf("%d - ", num);
+            to_bin(num);
+            printf("%d - ", answ);
+            to_bin(answ);
 		}
 		
 	}
