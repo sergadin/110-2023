@@ -7,8 +7,8 @@
 
 bool opred_bit(int ch, int j);
 void write(int ch); 
-unsigned int i_byte(unsigned int N, int i); // определяет байт под номером i
-unsigned int rewrite(unsigned int N, unsigned int Q, int i);
+unsigned long i_byte(unsigned long N, int i); // определяет байт под номером i
+unsigned long rewrite(unsigned long N, unsigned char Q, int i);
 
 
 void write(int ch) {
@@ -32,21 +32,21 @@ bool opred_bit(int ch, int j) {
 	return (ch & (1 << j));
 }
 
-unsigned int i_byte(unsigned int N,  int i) {
-	unsigned int answer;
+unsigned long i_byte(unsigned long N,  int i) {
+	unsigned long answer;
 
-	answer = N << (8 * (3 - i)); // сдвинули нужный байт в самый левый байт(третий) (чистка левых байтов (относит. нужного байта))
-	answer = answer >> 24; // сделали нужный байт самым правым(нулевым) (чистка правых байтов (относит. нужного байта))
+	answer = N << (8 * (sizeof(int) - 1 - i)); // сдвинули нужный байт в самый левый байт(третий) (чистка левых байтов (относит. нужного байта))
+	answer = answer >> 8*(sizeof(int) - 1); // сделали нужный байт самым правым(нулевым) (чистка правых байтов (относит. нужного байта))
 
 	return answer;
 }
 
-unsigned int rewrite(unsigned int N, unsigned int Q, int i) {
-	unsigned int nov_byte, star_byte, izmen_N;
+unsigned long rewrite(unsigned long N, unsigned char Q, int i) {
+	unsigned long nov_byte, star_byte, izmen_N;
 	
 	nov_byte = Q << (8 * i); 
-	star_byte = N << (8 * (3 - i));
-	star_byte = star_byte >> 24;
+	star_byte = N << (8 * (sizeof(int) - 1 - i));
+	star_byte = star_byte >> 8*(sizeof(int) - 1);
 	star_byte = star_byte << (8 * i);
 	izmen_N = N - star_byte + nov_byte;
 	
@@ -55,14 +55,14 @@ unsigned int rewrite(unsigned int N, unsigned int Q, int i) {
 
 
 int main (void) {
-	unsigned int N; // считываем число с консоли
+	unsigned long N; // считываем число с консоли
 	int act; // номер команды
 	int i; // индекс(номер) байта
-	unsigned int Q; // число, на которое мы заменяем i-ый байт  (Q =[0;255])
+	unsigned char Q; // число, на которое мы заменяем i-ый байт
 	unsigned int answer;
 
 	printf("vvedite chislo N \n");
-	if (scanf ("%u", &N) != 1) {
+	if (scanf ("%lu", &N) != 1) {
 		printf ("not korr N \n");
 		return -1;
 	}
@@ -80,7 +80,7 @@ int main (void) {
 	if (act == 1) {
 		printf ("vvedite index byte i ( i = {0,1,2,3} )\n");
 		if ((scanf ("%d", &i) != 1) || (i > 3) || (i < 0)) {
-			printf("not korr index i");
+			printf("not korr index i\n");
 			return -1;
 		}
 		
@@ -95,7 +95,7 @@ int main (void) {
 
 	if (act == 2) {
 		printf ("vvedite natur chislo Q < 256\n");
-        if ((scanf ("%u", &Q) != 1) || (Q >= 256) || (Q <= 0)) {
+        if ((scanf ("%hhu", &Q) != 1)) {
 			printf ("not korr Q \n");
 			return -1;
 		}
