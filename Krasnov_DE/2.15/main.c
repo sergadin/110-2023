@@ -41,19 +41,12 @@ int main(void){
         return -2;
     }
 
-    size = Sdvig(arr, size);
-    arr = (int *)realloc(arr, size * sizeof(int));
-    if(arr == NULL){
-        printf("memory error 2");
-        return -3;
-    }
+    Sdvig(arr, size);
 
     for(i = 0; i < size; i++){
         printf("%d ", arr[i]);
     }
 
-    printf("\n");
-    printf("%d", size);
     fclose(f1);
     free(arr);
 
@@ -65,21 +58,21 @@ int main(void){
 
 
 int Sdvig(int arr[], int lgth){
-    int i,j,k;
+    int i,k;
     int index;
     int len;
-    for(i = 0; i < lgth; i++ ){
-        for(j = lgth - 1; j > i; j--){
-            if(arr[j] == arr[i]){
-                index = j;
-                len = lgth;
-                for(k = index; k < len - 1; k++){
-                    arr[k] = arr[k+1];
-                }
-                lgth--;
+    int b;
+    for(i = lgth - 1; i > 0; i--){
+        if(arr[i] < 0 ){
+            index = i;
+            len = lgth;
+            b=arr[i];
+            for(index; index < len - 2; index++){
+                arr[index] = arr[index+1];
+                arr[len-1]=b;
             }
+            lgth--;
         }
     }
-    return lgth;
+    return ;
 }
-
