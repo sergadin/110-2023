@@ -47,7 +47,7 @@ int rand_array(int *arr, int len){
 	srand(time(NULL));
 	
 	for (int i = 0; i < len; i++){
-		arr[i] = rand();
+		arr[i] = rand()%1000;
 	}
 	return 0;
 }
