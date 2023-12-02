@@ -10,14 +10,20 @@ int compute_max_len_of_incr (FILE *input, ERR *error)
 {
         int len = 1, quan = 1;
         double curr = 0, prev = 0;
-        test_file_input_double(input, & curr, error);
+        test_file_input_double (input, & curr, error);
         prev = curr;
-        while ((test_file_input_double(input, & curr, error) == 0))
+        while ((test_file_input_double (input, & curr, error) == 0))
 	{
-		if ( prev < curr ) { quan++; }
-		else if ( len < quan ) { len = quan, quan = 1; }
+		if (prev < curr) { quan++; }
+		else if (len < quan) 
+		{ 
+			len = quan;
+			quan = 1;
+		}
+		else { quan = 1; }
 		prev = curr;
 	}
+	if (len < quan) { len = quan; }
 	return len;
 }
 
@@ -29,20 +35,20 @@ int main (void)
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
-        test_file(input, &error);
-        test_file(output, &error);
+        test_file (input, &error);
+        test_file (output, &error);
         len = compute_max_len_of_incr (input, &error);
-	fprintf ( output, "количество элементов самой длинной возрастающей последовательности = %d \n", len);
+	fprintf (output, "количество элементов самой длинной возрастающей последовательности = %d \n", len);
         fclose (input);
         fclose (output);
-        if ( error == E_DATA)
+        if (error == E_DATA)
         {
-                printf ( "ошибка при открытии файла \n" );
+                printf ("ошибка при открытии файла \n");
                         return -1;
         }
-        if ( error == E_IO)
+        if (error == E_IO)
         {
-                printf ( "ошибка при чтении файла \n" );
+                printf ("ошибка при чтении файла \n");
                 return -1;
         }
         return 0;
