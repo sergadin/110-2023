@@ -15,16 +15,25 @@ int Delete(FILE *f, int n, char *str) {
 	}
 	fclose(f);
 
+    i = 0;
+    while (i < n) {
+        j = 0;
+        while(a[j] != a[i]) {
+            ++j;
+        }
+        if (j != i) {
+            n--;
+            for (j=i; j<n; j++) {
+                a[j] = a[j+1];
+            }
+        }
+        i++;
+    }
+    
 	f = fopen(str, "w");
 	fprintf(f, "%d ", n);
 	for (i=0; i<n; i++) {
-		j=0;
-		while (a[j] != a[i]) {
-			j++;
-		}
-		if (j == i) {
-			fprintf(f, "%d ", a[i]);
-		}
+		fprintf(f, "%d ", a[i]);
 	}
 	return 0;
 }

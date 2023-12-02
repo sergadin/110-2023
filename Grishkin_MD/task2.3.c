@@ -16,36 +16,40 @@ void reverseArray(int arr[], int length) {
     }
 }
 int main(void) {
+    int lenght;
+    int* arr;
     FILE* file = fopen("input.txt", "r");
     if (file == NULL) {
-        printf("Ошибка открытия файла.\n");
+        printf("ne udalos'ortrit' file \n");
         return 1;
     }
+    fscanf(file, "%d", &lenght);
+    arr = malloc(lenght * sizeof(int));
 
-    int length;
-    int* arr;
-    fscanf(file, "%d", &length); 
-    arr = malloc(n * sizeof(int));
-
-    for (int i = 0; i < length; i++) {
+    if (arr == NULL) {
+        printf("memory error\n");
+        fclose(file);
+        return -1;
+    }
+    for (int i = 0; i < lenght; i++) {
         fscanf(file, "%d", &arr[i]);
     }
 
     fclose(file);
 
-    printf("Исходный массив: ");
-    for (int i = 0; i < length; i++) {
+    printf("array: ");
+    for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
 
-    reverseArray(arr, length);  
+    reverseArray(arr, lenght);
 
-    printf("Переставленный массив: ");
-    for (int i = 0; i < length; i++) {
+    printf("Reversed array: ");
+    for (int i = 0; i < lenght; i++) {
         printf("%d ", arr[i]);
     }
     printf("\n");
-
+    free(arr);
     return 0;
 }
