@@ -5,14 +5,14 @@
 #include <math.h>
 #include <stdbool.h>
 
-bool opred_bit(int ch, int j);
-void write(int ch); 
+bool opred_bit(unsigned long ch, int j);
+void write(unsigned long ch); 
 unsigned long i_byte(unsigned long N, int i); // определяет байт под номером i
 unsigned long rewrite(unsigned long N, unsigned char Q, int i);
 
 
-void write(int ch) {
-    int max_bit = sizeof(int) * 8;  // 4 * 8
+void write(unsigned long ch) {
+    int max_bit = sizeof(ch) * 8;  // 4 * 8
 	
 	for (int j = max_bit - 1; j >= 0; j--) {
 		if ( (((j + 1) % 8) == 0) && (j != (max_bit - 1)) ) {
@@ -28,15 +28,15 @@ void write(int ch) {
 	printf ("\n");
 }
 
-bool opred_bit(int ch, int j) {
+bool opred_bit(unsigned long ch, int j) {
 	return (ch & (1 << j));
 }
 
 unsigned long i_byte(unsigned long N,  int i) {
 	unsigned long answer;
 
-	answer = N << (8 * (sizeof(int) - 1 - i)); // сдвинули нужный байт в самый левый байт(третий) (чистка левых байтов (относит. нужного байта))
-	answer = answer >> 8*(sizeof(int) - 1); // сделали нужный байт самым правым(нулевым) (чистка правых байтов (относит. нужного байта))
+	answer = N << (8 * (sizeof(N) - 1 - i)); // сдвинули нужный байт в самый левый байт(третий) (чистка левых байтов (относит. нужного байта))
+	answer = answer >> 8*(sizeof(N) - 1); // сделали нужный байт самым правым(нулевым) (чистка правых байтов (относит. нужного байта))
 
 	return answer;
 }
@@ -45,8 +45,8 @@ unsigned long rewrite(unsigned long N, unsigned char Q, int i) {
 	unsigned long nov_byte, star_byte, izmen_N;
 	
 	nov_byte = Q << (8 * i); 
-	star_byte = N << (8 * (sizeof(int) - 1 - i));
-	star_byte = star_byte >> 8*(sizeof(int) - 1);
+	star_byte = N << (8 * (sizeof(N) - 1 - i));
+	star_byte = star_byte >> 8*(sizeof(N) - 1);
 	star_byte = star_byte << (8 * i);
 	izmen_N = N - star_byte + nov_byte;
 	
