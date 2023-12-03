@@ -3,6 +3,12 @@
 #include <math.h>
 #include <stdbool.h>
 
+typedef struct
+{
+	double x;
+	double y;
+}Point;
+
 double min(double a, double b);
 Point vector(Point a, Point b);
 double scalar_product(Point a, Point b, Point c, Point d);
@@ -11,11 +17,6 @@ double point_distance(Point a, Point b);
 double segment_point_distance(Point a, Point b, Point c);
 bool is_cross(Point p1, Point p2, Point m1, Point m2);
 
-typedef struct
-{
-	double x;
-	double y;
-}Point;
 
 double min(double a, double b){
 	if (a < b){
