@@ -21,24 +21,30 @@ int addition(FILE *f, int n, char *str) {
 	}
 	fclose(f);
 	
-	one = 1;
-	for (i=n-1; i>=0; i--) {
-		a[i] += one;
-		one = a[i]/10;
-		a[i] = a[i]%10;
-	}
-
-	f = fopen(str, "w");
-	one = 0;
-	for (i=0; i<n; i++) {
-		if (a[i] > 0) {
-			one = 1;
-		}
-		if (one == 1) {
-			fprintf(f, "%d ", a[i]);
-		}
-	}
-	return 0;
+    one = 1;
+    for (i=n-1; i>0; i--) {
+        a[i] += one;
+        one = a[i] / 10;
+        a[i] = a[i] % 10;
+    }
+    
+        one = 0;
+        while (a[one] == 0) {
+            one++;
+        }
+        n-=one;
+        
+        for (i=0; i<n; i++) {
+            a[i] = a[i+one];
+        }
+        
+        f = fopen(str, "w");
+        fprintf(f, "%d ", n);
+        
+        for (i=0; i<n; i++){
+            fprintf(f, "%d ", a[i]);
+        }
+        return 0;
 }
 
 int subtraction(FILE *f, int n, char *str) {
@@ -57,57 +63,64 @@ int subtraction(FILE *f, int n, char *str) {
                 }
         }
         fclose(f);
-
+        
         one = 1;
-        for (i=n-1; i>=0; i--) {
-                a[i] += 10-one;
-                one = 1 - a[i]/10;
-                a[i] = a[i]%10;
+        for (i=n-1; i>0; i--) {
+            a[i] += 10 - one;
+            one = 1 - a[i]/10;
+            a[i] = a[i] % 10;
         }
 
+        one = 1;
+        while (a[one] == 0) {
+            one++;
+        }
+        n-=one;
+        
+        for (i=0; i<n; i++) {
+            a[i] = a[i+one];
+        }
+        
         f = fopen(str, "w");
-        one = 0;
-        for (i=1; i<n; i++) {
-                if (a[i] > 0) {
-                        one = 1;
-                }
-                if (one == 1) {
-                        fprintf(f, "%d ", a[i]);
-                }
+        fprintf(f, "%d ", n);
+        
+        for (i=0; i<n; i++){
+            fprintf(f, "%d ", a[i]);
         }
         return 0;
 }
 
 int main(void) {
-        int check, n, action;
+    int check, n, action;
         FILE *f;
         char str[60];
 
-        check = scanf("%s", str);
-        if (check == 0) {
-                printf("Не указано имя массива\n");
-                return -2;
-        }
-        if (check == -1) {
-                printf("Ошибка данных1\n");
-                return -2;
-        }
+    check = scanf("%s", str);
+    if (check == 0) {
+        printf("Не указано имя массива\n");
+        return -2;
+    }
+    if (check == -1) {
+        printf("Ошибка данных1\n");
+        return -2;
+    }
 
-        f = fopen(str, "r");
-        if (f == NULL) {
-                printf("Не удалось открыть файл\n");
-                return -1;
-        }
+    f = fopen(str, "r");
+    if (f == NULL) {
+        printf("Не удалось открыть файл\n");
+        return -1;
+    }
 
-        check = fscanf(f, "%d", &n);
-        if (check == -1) {
-                printf("Не указана длинна массива\n");
-                return -2;
-        }
-        if (check == 0) {
-                printf("Ошибка данных2\n");
-                return -2;
-        }
+    check = fscanf(f, "%d", &n);
+    if (check == -1) {
+        printf("Не указана длинна массива\n");
+        return -2;
+    }
+    if (check == 0) {
+        printf("Ошибка данных2\n");
+        return -2;
+    }
+    n++;
 
 	check = scanf("%d", &action);
 	if (check == 0) {
@@ -132,6 +145,6 @@ int main(void) {
 		}
 	}
 
-        fclose(f);
+    fclose(f);
 }
 

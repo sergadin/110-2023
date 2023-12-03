@@ -65,17 +65,17 @@ void ShiftTheArrayByPositionK(int* arr, int len, int k)
 //функци€ возращает длину введенго массива без повтор€ющих элементов идущих подр€д
 int LenSet(int* arr, int len)
 {
-
+    
+    int itoglen = len;
+	int kpovtor;
+	int i;
+    
+    
 	if (arr == NULL)
 	{
 		printf("Error:The array is empty\n");
 		return Error_Array_Empty;
 	}
-
-	int itoglen = len;
-	int kpovtor;
-	int check = 1;
-	int i;
 
 	for (int i0 = 0; ((Check(arr, itoglen, i0) != 0) && (i0 < itoglen - 1)); i0++)
 	{

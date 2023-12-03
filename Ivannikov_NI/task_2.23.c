@@ -1,98 +1,93 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Функция, которая прибавляет единицу к числу
-void increment(char* number, int length);
-void increment(char* number, int length) 
+// Функция для прибавления единицы к числу
+void increment(int* arr, int size);
+void increment(int* arr, int size) 
 {
-    int carry = 1; // Перенос из старшего разряда, начальное значение - 1
-    // Обрабатываем разряды числа, начиная с младшего
-    for (int i = length - 1; i >= 0 && carry; i--) 
+    int carry = 1; // "Перенос" единицы
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
-        int digit = number[i] - '0'; // Преобразуем символ в число
-        number[i] = (digit + carry) % 10 + '0'; // Пересчитываем разряд
-        carry = (digit + carry) / 10; // Обновляем перенос
-    }
-    
-    // Если все разряды были обработаны, но перенос остался, добавляем его в начало числа
-    if (carry) 
-    {
-        printf("Overflow occurred.\n");
-        return;
+        int sum = arr[i] + carry; // Сумма текущей цифры и "переноса"
+        arr[i] = sum % 10; // Записываем только остаток от деления на 10
+        carry = sum / 10; // Определяем новый "перенос"
     }
 }
 
-// Функция, которая вычитает единицу из числа
-void decrement(char* number, int length);
-void decrement(char* number, int length) 
+// Функция для вычитания единицы из числа
+void decrement(int* arr, int size);
+void decrement(int* arr, int size)
 {
-    int carry = -1; // Перенос из старшего разряда, начальное значение - (-1)
-    // Обрабатываем разряды числа, начиная с младшего
-    for (int i = length - 1; i >= 0 && carry; i--) 
+    int borrow = 1; // "Заем" единицы
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
-        int digit = number[i] - '0'; // Преобразуем символ в число
-        number[i] = (digit + carry + 10) % 10 + '0'; // Пересчитываем разряд
-        carry = (digit + carry + 10) / 10 - 1; // Обновляем перенос
-    }
-    
-    // Если все разряды были обработаны, но перенос остался, значит число было меньше нуля
-    if (carry) 
-    {
-        printf("Underflow occurred.\n");
-        return;
+        int diff = arr[i] - borrow; // Разность текущей цифры и "займа"
+        if (diff < 0) 
+        { // Если разность отрицательная, значит нужно занять 1 из следующего разряда
+            arr[i] = diff + 10; // Добавляем 10 для получения корректного значения разности
+            borrow = 1; // "Заимствование" 1
+        } else 
+        {
+            arr[i] = diff; // В противном случае просто записываем разность
+            break; // И выходим из цикла
+        }
     }
 }
 
 int main(void) 
 {
-    FILE *input_file = fopen("input.txt", "r"); // Открытие файла для чтения
-    FILE *output_file = fopen("output.txt", "w"); // Открытие файла для записи
-
-    if (input_file == NULL || output_file == NULL) 
+    FILE* inputFile = fopen("input.txt", "r"); // Открываем файл для чтения
+    FILE* outputFile;
+    int size;
+    int *arr = NULL;
+    if (inputFile == NULL) 
     {
-        printf("Failed to open files.\n");
-        return 1;
-    }
-    
-    // Чтение длины массива из файла
-    int length;
-    if (fscanf(input_file, "%d", &length) != 1) 
-    {
-        printf("Failed to read array length from file.\n");
-        return 1;
-    }
-    
-    // Выделение памяти для массива
-    char* number = (char*)malloc((length+1)*sizeof(char));
-    if (number == NULL) 
-    {
-        printf("Memory allocation failed.\n");
-        return 1;
-    }
-    
-    // Чтение числа из файла
-    if (fscanf(input_file, "%s", number) != 1) 
-    {
-        printf("Failed to read number from file.\n");
-        return 1;
+        printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл
+        return 1; // Завершаем программу с ошибкой
     }
 
-    // Прибавление единицы
-    increment(number, length);
+    fscanf(inputFile, "%d", &size); // Считываем размер массива из файла
 
-    // Вывод в файл
-    fprintf(output_file, "%s", number);
+    arr = (int*)malloc(size * sizeof(int)); // Выделяем память под массив
+    if (arr == NULL) 
+    {
+        printf("Ошибка при выделении памяти\n"); // Выводим ошибку, если не удалось выделить память
+        fclose(inputFile); // Закрываем файл
+        return 1; // Завершаем программу с ошибкой
+    }
 
-    // Вычитание единицы
-    decrement(number, length);
+    for (int i = 0; i < size; i++) 
+    {
+        int digit;
+        if (fscanf(inputFile, "%1d", &digit) != 1) // Считываем по одной цифре из файла
+        { 
+            printf("Ошибка при чтении данных из файла\n"); // Выводим ошибку, если считывание не удалось
+            fclose(inputFile); // Закрываем файл
+            free(arr); // Освобождаем память
+            return 1; // Завершаем программу с ошибкой
+        }
+        arr[i] = digit; // Записываем считанную цифру в массив
+    }
 
-    // Вывод в файл
-    fprintf(output_file, "\n%s", number);
-    
-    // Освобождение памяти и закрытие файлов
-    free(number);
-    fclose(input_file);
-    fclose(output_file);
-    
-    return 0;
+    fclose(inputFile); // Закрываем файл
+
+    increment(arr, size); // Прибавляем единицу к числу
+
+    outputFile = fopen("output.txt", "w"); // Открываем файл для записи
+    if (outputFile == NULL) 
+    {
+        printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл
+        free(arr); // Освобождаем память
+        return 1; // Завершаем программу с ошибкой
+    }
+
+    for (int i = 0; i < size; i++) 
+    {
+        fprintf(outputFile, "%d", arr[i]); // Записываем каждую цифру в файл
+    }
+
+    fclose(outputFile); // Закрываем файл
+    free(arr); // Освобождаем память
+
+    return 0; // Завершаем программу без ошибок
 }
