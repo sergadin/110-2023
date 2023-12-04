@@ -20,6 +20,13 @@ int NumberSearch(int* arr, int len, int y)
     int i = ir;        // -индекс на текущем моменте проверки
     int c = 0;         // -счетчик
     
+    if (arr == NULL)
+	{
+		printf("Error:The array is empty\n");
+		return Error_Array_Empty;
+	}
+    
+    
     while ((arr[i] != y) && (c != len))
     {
         
@@ -114,6 +121,11 @@ int main(void)
 	scanf("%d", &y);
 
 	code = NumberSearch(arr, len, y);
+    
+    if (code == Error_Array_Empty) 
+    {
+		return code;
+	}
 
 	printf("Enter the name of the output file:\n");
 	scanf("%s", fo);
