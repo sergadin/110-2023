@@ -18,8 +18,9 @@ int findMostSignificantBitPosition(unsigned int num)
     return position; // Возвращаем позицию самой старшей единицы
 }
 
-int main() 
+int main(void) 
 {
+    int position;
     FILE* outputFile;
     unsigned int number;
     
