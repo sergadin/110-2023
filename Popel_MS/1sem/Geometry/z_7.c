@@ -11,6 +11,7 @@ typedef struct
 
 double min(double a, double b);
 Point vector(Point a, Point b);
+void to_gnuplot(Point *coords, int len1, int len2, FILE *f_out);
 double scalar_product(Point a, Point b, Point c, Point d);
 double oblique_product(Point a, Point b, Point c, Point d);
 double point_distance(Point a, Point b);
@@ -31,6 +32,28 @@ Point vector(Point a, Point b){
 	ab.x = (b.x-a.x);
 	ab.y = (b.y - a.y);
 	return ab;
+}
+
+void to_gnuplot(Point *coords, int len1, int len2, FILE *f_out){
+	Point first1=coords[0], first2=coords[len1];
+	int len_m;
+	
+	if (len1>len2){
+		len_m = len1;
+	}else{
+		len_m = len2;
+	}
+	
+	for (int i = 0; i<len_m; i++){
+		if (i<len1 && i<len2){
+			fprintf(f_out, "%lf %lf %lf %lf\n", coords[i].x, coords[i].y, coords[len1+i].x, coords[len1+i].y);
+		}else if (i<len1 && i>=len2){
+			fprintf(f_out, "%lf %lf %lf %lf\n", coords[i].x, coords[i].y, first2.x, first2.y);
+		}else if (i>=len1 && i<len2){
+			fprintf(f_out, "%lf %lf %lf %lf\n", first1.x, first1.y, coords[len1+i].x, coords[len1+i].y);
+		}
+	}
+	fprintf(f_out, "%lf %lf %lf %lf\n", first1.x, first1.y, first2.x, first2.y);
 }
 
 double scalar_product(Point a, Point b, Point c, Point d){
@@ -103,7 +126,7 @@ double segment_distance(Point a, Point b, Point c, Point d){
 }
 
 int main(void){
-	FILE *f_in;
+	FILE *f_in, *f_out;
 	Point *coords = NULL;
 	int len1, len2;
 	double min_dist = 1000000000,thing = 0.;
@@ -111,6 +134,13 @@ int main(void){
 	f_in = fopen("input.txt", "r");
 	if (f_in == NULL){
 		printf("Файл не открывается\n");
+		return -1;
+	}
+	
+	f_out = fopen("output.txt", "w");
+	if (f_in == NULL){
+		printf("Файл не открывается\n");
+		fclose(f_in);
 		return -1;
 	}
 	
@@ -122,6 +152,7 @@ int main(void){
 		printf("Оперативная память не выделена\n");
 		goto terminate;
 	}
+	
 	for (int i=0; i<(len1+len2); i++){
 		fscanf(f_in, "%lf%lf", &coords[i].x, &coords[i].y);
 	}
@@ -132,14 +163,15 @@ int main(void){
 			min_dist = min(min_dist, segment_distance(coords[i], coords[(i+1)%len1], coords[len1+j], coords[len1+(j+1)%len2]));
 			if (min_dist==0.){
 				printf("Многоугольники пересекаются\n");
-				fclose(f_in);
-				free (coords);
+				goto terminate_1;
 				return 0;
 			}
 		}
 	}
 	
 	printf("Расстояние между многоугольниками: - %lf\n", min_dist);
+	terminate_1:
+	to_gnuplot(coords, len1, len2, f_out);
 	free  (coords);
 	terminate:
 	fclose(f_in);
