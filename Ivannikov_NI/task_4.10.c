@@ -23,8 +23,9 @@ void printSubsets(int N, FILE *file)
     }
 }
 
-int main() 
+int main(void) 
 {
+    int N;
     
     // Открытие файлов для чтения и записи
     FILE *input = fopen("input.txt", "r");
