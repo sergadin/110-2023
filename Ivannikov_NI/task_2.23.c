@@ -5,6 +5,19 @@
 void increment(int* arr, int size);
 void increment(int* arr, int size) 
 {
+	for (int i = size - 1; i >= 0; i--)
+	{
+		if(arr[i] < 9) 
+		{ 
+			arr[i]++;
+			break;
+		}
+		if (arr[i] == 9) 
+		{
+			arr[i] = 0;
+		}
+	}
+
     int carry = 1; // "Перенос" единицы
     for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
@@ -18,15 +31,30 @@ void increment(int* arr, int size)
 void decrement(int* arr, int size);
 void decrement(int* arr, int size)
 {
+	
+	for (int i = size - 1; i >= 0; i--)
+	{
+		if (arr[i] > 0) 
+		{
+			arr[i]--;
+			break;
+		}
+		if (arr[i] == 0) 
+		{
+			arr[i] = 9;
+		}
+	}
+	
     int borrow = 1; // "Заем" единицы
     for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
         int diff = arr[i] - borrow; // Разность текущей цифры и "займа"
-        if (diff < 0) 
-        { // Если разность отрицательная, значит нужно занять 1 из следующего разряда
+        if (diff < 0) // Если разность отрицательная, значит нужно занять 1 из следующего разряда
+        { 
             arr[i] = diff + 10; // Добавляем 10 для получения корректного значения разности
             borrow = 1; // "Заимствование" 1
-        } else 
+        } 
+        else 
         {
             arr[i] = diff; // В противном случае просто записываем разность
             break; // И выходим из цикла
@@ -55,8 +83,10 @@ int main(void)
         fclose(inputFile); // Закрываем файл
         return 1; // Завершаем программу с ошибкой
     }
+	
+	arr[0] = 0;
 
-    for (int i = 0; i < size; i++) 
+    for (int i = 1; i < size + 1; i++)
     {
         int digit;
         if (fscanf(inputFile, "%1d", &digit) != 1) // Считываем по одной цифре из файла
@@ -71,7 +101,7 @@ int main(void)
 
     fclose(inputFile); // Закрываем файл
 
-    increment(arr, size); // Прибавляем единицу к числу
+    increment(arr, size + 1); // Прибавляем единицу к числу
 
     outputFile = fopen("output.txt", "w"); // Открываем файл для записи
     if (outputFile == NULL) 
@@ -80,11 +110,17 @@ int main(void)
         free(arr); // Освобождаем память
         return 1; // Завершаем программу с ошибкой
     }
-
-    for (int i = 0; i < size; i++) 
+	
+	if (arr[0] == 0) // если значение arr[0] не изменилось, то не будем его записывать в файл вывода
     {
-        fprintf(outputFile, "%d", arr[i]); // Записываем каждую цифру в файл
-    }
+		for (int i = 1; i < size + 1; i++)
+			fprintf(outputFile, "%d", arr[i]);
+	}
+	else 
+    {
+		for (int i = 0; i < size + 1; i++)
+			fprintf (outputFile, "%d", arr[i]); 
+	}
 
     fclose(outputFile); // Закрываем файл
     free(arr); // Освобождаем память
