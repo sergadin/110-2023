@@ -20,7 +20,7 @@ int main(void) {
     longToCharArray(number, byteArray);
     printf("long to char array: ");
     for (int i = 0; i < sizeof(long); i++) {
-        printf("%c \n", byteArray[i]);
+        printf("%d \n", byteArray[i]);
     }
     printf("\n");
 
