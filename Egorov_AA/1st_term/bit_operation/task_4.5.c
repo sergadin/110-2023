@@ -1,10 +1,12 @@
 #include <stdio.h>
 
+
 void longToCharArray(long num, unsigned char* byteArray) {
     for (int i = 0; i < sizeof(long); i++) {
         byteArray[i] = (num >> (8 * (sizeof(long) - i - 1)));
     }
 }
+
 
 long charArrayToLong(char* byteArray) {
     long num = 0;
@@ -13,6 +15,7 @@ long charArrayToLong(char* byteArray) {
     }
     return num;
 }
+
 
 int main(void) {
     long number = 29458723; // Пример числа
