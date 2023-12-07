@@ -1,5 +1,8 @@
 #include <stdio.h>
 
+void longToCharArray(long num, unsigned char* byteArray);
+long charArrayToLong(char* byteArray);
+
 
 void longToCharArray(long num, unsigned char* byteArray) {
     for (int i = 0; i < sizeof(long); i++) {
