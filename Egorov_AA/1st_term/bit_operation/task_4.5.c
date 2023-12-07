@@ -14,7 +14,7 @@ long charArrayToLong(char* byteArray) {
     return num;
 }
 
-int main() {
+int main(void) {
     long number = 29458723; // Пример числа
     unsigned char byteArray[sizeof(long)];
     longToCharArray(number, byteArray);
