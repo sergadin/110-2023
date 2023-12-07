@@ -5,19 +5,6 @@
 void increment(int* arr, int size);
 void increment(int* arr, int size) 
 {
-	for (int i = size - 1; i >= 0; i--)
-	{
-		if(arr[i] < 9) 
-		{ 
-			arr[i]++;
-			break;
-		}
-		if (arr[i] == 9) 
-		{
-			arr[i] = 0;
-		}
-	}
-
     int carry = 1; // "Перенос" единицы
     for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
@@ -31,20 +18,6 @@ void increment(int* arr, int size)
 void decrement(int* arr, int size);
 void decrement(int* arr, int size)
 {
-	
-	for (int i = size - 1; i >= 0; i--)
-	{
-		if (arr[i] > 0) 
-		{
-			arr[i]--;
-			break;
-		}
-		if (arr[i] == 0) 
-		{
-			arr[i] = 9;
-		}
-	}
-	
     int borrow = 1; // "Заем" единицы
     for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
