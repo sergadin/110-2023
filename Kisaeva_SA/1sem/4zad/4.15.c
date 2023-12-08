@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define PROST_V_KONZE 1
-#define NET_PROST_V_KONZE -1
-int kol = 0; //длина массива
 
 int razl(int *mas, int N);
 // функция разложения натурального числа на простые множители
@@ -13,6 +10,7 @@ int razl(int *mas, int N);
 
 int razl(int *mas, int N) { // вернуть массив
 	int izmen_N = N;
+    int kol = 0;
 	int st; // степень простого множителя
     
     for (int i = 2; i < pow(N, 0.5) + 1; i++) {
@@ -27,11 +25,11 @@ int razl(int *mas, int N) { // вернуть массив
     }
 	
 	if (izmen_N > 1) {
-        kol++;
-        mas[kol] = izmen_N;
-        return PROST_V_KONZE;
+		mas[kol] = izmen_N;
+        mas[kol+1] = 1;
 	}
-	return NET_PROST_V_KONZE;
+    kol = kol + 2;
+	return kol;
 }
 
 
@@ -39,7 +37,7 @@ int main(void) {
 	int N; // натуральное число, считываемое с клавиатуры
 	FILE *file_out = fopen("output.txt", "w");
     int* mas = NULL;
-    int razl_na_mnoz;
+    int kol_del;
 	
 	if (file_out == NULL) {
 		printf("error opening the file_out");
@@ -62,28 +60,15 @@ int main(void) {
 		return -1;
 	}
 	
-	razl_na_mnoz = razl(mas, N);	
-    
-    fprintf(file_out, "%d = 1", N);
-    
-    if (razl_na_mnoz == NET_PROST_V_KONZE) {
-        for (int i = 0; i < kol; i++){
+	kol_del = razl(mas, N);	
+        
+    for (int i = 0; i < kol_del; i += 2){
+        if(i > 0)
             fprintf(file_out, " * ");
-            fprintf(file_out, "%d^", mas[i]);   // простой множитель
-            fprintf(file_out, "%d", mas[i+1]);   // степень простого множителя
-            i++;
-        }
+        fprintf(file_out, "%d^", mas[i]);   // простой множитель
+        fprintf(file_out, "%d", mas[i+1]);   // степень простого множителя
     }
-    else {
-        for (int i = 0; i < kol-1; i++){
-            fprintf(file_out, " * ");
-            fprintf(file_out, "%d^", mas[i]);   // простой множитель
-            fprintf(file_out, "%d", mas[i+1]);   // степень простого множителя
-            i++;
-        }
-        fprintf(file_out, " * ");
-        fprintf(file_out, "%d", mas[kol]);   // простой множитель
-    }
+    fprintf(file_out, "\n");
 
 	fclose(file_out);
 	return 0;
