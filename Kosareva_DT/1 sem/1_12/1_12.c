@@ -21,6 +21,10 @@ int first_maximum(FILE *f) {
 			position_max = position_now;
 		}
 	}
+	if (check == 0) {
+        printf ("Ошибка данных\n");
+        return -2;
+    }
 	
 	printf("%d\n", position_max);
 	return 0;
