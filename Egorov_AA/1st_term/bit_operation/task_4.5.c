@@ -1,37 +1,58 @@
 #include <stdio.h>
 
-void longToCharArray(long num, unsigned char* byteArray);
-long charArrayToLong(char* byteArray);
+
+unsigned char getByte(long number, int i, int* error);
+long changeByte(long number, int i, unsigned char newValue, int* error);
 
 
-void longToCharArray(long num, unsigned char* byteArray) {
-    for (int i = 0; i < sizeof(long); i++) {
-        byteArray[i] = (num >> (8 * (sizeof(long) - i - 1)));
+unsigned char getByte(long number, int i, int* error) {
+
+    if (i < 1 || i > sizeof(long)) {
+        printf("wrong index\n");
+        *error = 1;
     }
+
+    unsigned char byte = (number >> ((i - 1) * 8)) & 0xFF;
+
+    return byte;
 }
 
 
-long charArrayToLong(char* byteArray) {
-    long num = 0;
-    for (int i = 0; i < sizeof(long); i++) {
-        num += ((long)(byteArray[i]) << (8 * (sizeof(long) - i - 1)));
+long changeByte(long number, int i, unsigned char newValue, int* error) {
+
+    if (i < 1 || i > sizeof(long)) {
+        printf("wrong index\n");
+        *error = 1;
     }
-    return num;
+
+    number &= ~(0xFF << ((i - 1) * 8));
+    number |= ((long)newValue << ((i - 1) * 8));
+
+    return number;
 }
 
 
-int main(void) {
-    long number = 29458723; // Пример числа
-    unsigned char byteArray[sizeof(long)];
-    longToCharArray(number, byteArray);
-    printf("long to char array: ");
-    for (int i = 0; i < sizeof(long); i++) {
-        printf("%d \n", byteArray[i]);
-    }
-    printf("\n");
+int main() {
+    long number = 0x12345678;
+    int i = 4, error = 0;
+    unsigned char newValue = 0b1101111;
 
-    long new_number = charArrayToLong(byteArray);
-    printf("char array to long: %ld\n", new_number);
+    printf("given long number - %lx\n\n", number);
+    if (error) {
+        printf("wrong index\n\n");
+        error = 0;
+    }
+    else {
+        printf("%ith byte's value - %d\n\n", i, getByte(number, i, &error));
+    }
+
+    printf("given long number - %lx\n\nwill change %ith byte's value to %d\n\n", number, i, newValue);
+    if (error) {
+        printf("wrong index\n\n");
+    }
+    else {
+        printf("new number - %lx\n\n", changeByte(number, i, newValue, &error));
+    }
 
     return 0;
 }
