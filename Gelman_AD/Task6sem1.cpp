@@ -1,23 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int combinate_arrays(double* Array1, double* Array2, double* Array3, int len1, int len2);
+//Array union
+int combinate_arrays(double* mas1, double* mas2, double* mas3, int lngth1, int lngth2);
 
-int combinate_arrays(double* Array1, double* Array2, double* Array3, int len1, int len2) 
+int combinate_arrays(double* mas1, double* mas2, double* mas3, int lngth1, int lngth2) 
 {
+	int first_index = 0; 
+	int second_index = 0;
 
-	int ind_1 = 0, ind_2 = 0;
-	for (int i = 0; i < (len1 + len2); ++i) 
+	for (int i = 0; i < (lngth1 + lngth2); ++i) 
 	{
-		if ((ind_1 < len1) && ((ind_2 >= len2) || (Array1[ind_1] <= Array2[ind_2]))) 
+		if ( (first_index < lngth1) && (second_index >= lngth2) ) 
 		{
-			Array3[i] = Array1[ind_1];
-			ind_1 += 1;
+			mas3[i] = mas1[first_index]; //The first element from the first array goes to the third array
+			first_index += 1; //Continuing the process
 		}
-		else 
+		else //all of the first array has gone to the third array
 		{
-			Array3[i] = Array2[ind_2];
-			ind_2 += 1;
+			mas3[i] = mas2[second_index]; //The first element from the second array goes to the third array
+			second_index += 1; //Continueing the process
 		}
 	}
 
@@ -27,130 +29,131 @@ int combinate_arrays(double* Array1, double* Array2, double* Array3, int len1, i
 int main(void) 
 {
 
-	double* Array1 = NULL, * Array2 = NULL, * Array3 = NULL;
+	double* mas1 = NULL;
+	double* mas2 = NULL;
+	double* mas3 = NULL; //array union
 	char input[50];
-	FILE* f_in, * f_out;
-	int len1 = 0, len2 = 0, main_return_code = 0;
+	FILE* file_in = fopen("input.txt", "r");
+	FILE* file_out = fopen("output.txt", "w");
+	int lngth1 = 0;
+	int lngth2 = 0;
+	int  main_return_code = 0;
+	int i;
 
-	printf("Введите имя входного файла: \n");
-	scanf("%s", input);
-	f_in = fopen(input, "r");
-
-	if (f_in == NULL) 
+	//Checking opening files
+	if (file_in == NULL) 
 	{
-		printf("Файл не открывается\n");
+		printf("Unable to open the file input.txt\n");
 		return -1;
 	}
 
-	f_out = fopen("output.txt", "w");
-
-	if (f_out == NULL) 
+	if (file_out == NULL) 
 	{
-		printf("Файл не открывается\n");
-		fclose(f_in);
+		printf("Unable to open the file output.txt\n");
+		fclose(file_in);
 		return -1;
 	}
 
-	if (fscanf(f_in, "%d%d", &len1, &len2) != 2) 
+	if (fscanf(file_in, "%d", &lngth1) != 1)
 	{
-		printf("Файл пуст\n");
-		main_return_code = -1;
-		goto terminate_1;
-
+		printf("Unable to read the file\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 	}
 
-	Array1 = (double*)malloc(len1 * sizeof(double));
+	//Checking the arrays
+	mas1 = (double*)malloc(lngth1 * sizeof(double));
 
-	if (Array1 == NULL) 
+	if (mas1 == NULL)
 	{
-		printf("Оперативная память не выделена\n");
-		main_return_code = -1;
-		goto terminate_1;
+		printf("Memory error\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 	}
 
-	Array2 = (double*)malloc(len2 * sizeof(double));
+	mas2 = (double*)malloc(lngth2 * sizeof(double));
 
-	if (Array2 == NULL) 
+	if (mas2 == NULL)
 	{
-		printf("Оперативная память не выделена\n");
-		main_return_code = -1;
-		goto terminate_2;
+		printf("Memory error\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 	}
 
-	Array3 = (double*)malloc((len1 + len2) * sizeof(double));
+	mas3 = (double*)malloc((lngth1 + lngth2) * sizeof(double));
 
-	if (Array3 == NULL) 
+	if (mas3 == NULL)
 	{
-		printf("Оперативная память не выделена\n");
-		main_return_code = -1;
-		goto terminate_3;
+		printf("Memory error\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 	}
 
-	for (int i = 0; i < len1; ++i) 
+	//Checking wether the array is nondecreasing
+	for (int i = 0; i < lngth1; i++)
 	{
-		if (fscanf(f_in, "%lf", &Array1[i]) != 1) 
+		if (fscanf(file_in, "%lf", &mas1[i]) != 1)
 		{
-			printf("В файле недостаточно значений либо значения не корректны\n");
-			main_return_code = -1;
-			goto terminate;
+			printf("Problems with array (1)\n");
+			free(mas1);
+			fclose(file_in);
+			fclose(file_out);
+			return -1;
 		}
-
+	}
 		if (i >= 1) 
 		{
-			if (Array1[i] < Array1[i - 1]) 
+			if (mas1[i] < mas1[i - 1]) 
 			{
-				printf("В файле значения не неубывают\n");
+				printf("The sequence of the array (1) is not nondecreasing\n");
 				main_return_code = -1;
-				goto terminate;
+				free(mas1);
 			}
 		}
-	}
 
-	for (int i = 0; i < len2; ++i) 
+
+	for (int i = 0; i < lngth2; i++)
 	{
-		if (fscanf(f_in, "%lf", &Array2[i]) != 1) 
+		if (fscanf(file_in, "%lf", &mas2[i]) != 1)
 		{
-			printf("В файле недостаточно значений либо значения не корректны\n");
-			main_return_code = -1;
-			goto terminate;
-		}
-
-		if (i >= 1) 
-		{
-			if (Array2[i] < Array2[i - 1]) 
-			{
-				printf("В файле значения не неубывают\n");
-				main_return_code = -1;
-				goto terminate;
-			}
+		printf("Problems with array (2)\n");
+		free(mas2);
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 		}
 	}
 
-	combinate_arrays(Array1, Array2, Array3, len1, len2);
-
-	for (int i = 0; i < (len1 + len2); i++) 
+	if (i >= 1)
 	{
-		fprintf(f_out, "%lf\n", Array3[i]);
+		if (mas2[i] < mas2[i - 1])
+		{
+		printf("The sequence of the array(2) is not nondecreasing\n");
+		main_return_code = -1;
+		free(mas2);
+		}
+	}
+
+	//Array union
+	combinate_arrays(mas1, mas2, mas3, lngth1, lngth2);
+
+	for (int i = 0; i < (lngth1 + lngth2); i++) 
+	{
+		fprintf(file_out, "%lf\n", mas3[i]);
 
 	}
 
-	printf("Ответ выведен в файл output.txt\n");
+	printf("The result is printed\n");
 
-	terminate:
+	free(mas3);
+	free(mas2);
+	free(mas1);
 
-	free(Array3);
-
-	terminate_3:
-
-	free(Array2);
-
-	terminate_2:
-
-	free(Array1);
-
-	terminate_1:
-
-	fclose(f_in);
-	fclose(f_out);
+	fclose(file_in);
+	fclose(file_out);
 	return main_return_code;
 }
