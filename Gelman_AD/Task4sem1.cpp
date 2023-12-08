@@ -8,10 +8,8 @@ void shiftrightk(double* mas, int lngth, int K);
 
 void shiftrightk(double* mas, int lngth, int K)
 {
-	double finel;
 	int i;
-	int m = lngth / 2;
-	double c;
+	int c;
 
 	if (lngth == 0)
 	{
@@ -19,19 +17,39 @@ void shiftrightk(double* mas, int lngth, int K)
 		return;
 	}
 
+	//no elements to shift (only 1 element)
 	if (lngth == 1)
-	{     //no elements to shift (only 1 element)
+	{     
 		return;
 	}
-	for (i = 0; i < m; i++)
+
+	//Reverse all array
+	for (i = 0; i < lngth; i++)
 	{
-			c = mas[i];
-			mas[i] = mas[lngth - i - 1];
-			mas[lngth - i - 1] = c;
+		c = mas[i];
+		mas[i] = mas[lngth - i - 1];
+		mas[lngth - i - 1] = c;
 	}
 
+	//Reverse the first part of the array (before the Kth element)
+	for (i = 0; i < K; i++)
+	{
+		c = mas[i];
+		mas[i] = mas[lngth - i - 1];
+		mas[lngth - i - 1] = c;
+	}
 
+	//Reverse the second part of the Array (after the Kth element)
+	for (i = K; i < lngth; i++)
+	{
+		c = mas[i];
+		mas[i] = mas[lngth - i - 1];
+		mas[lngth - i - 1] = c;
+	}
+
+		return 0;
 }
+
 
 
 int main(void) 
@@ -91,10 +109,7 @@ int main(void)
 
 	scanf("%d",  & K);
 
-	if (K > lngth)
-	{
-		printf("Enter the fewer value of K\n");
-	}
+	K %= lngth;
 
 	//Shifting the array K times to the right
 
