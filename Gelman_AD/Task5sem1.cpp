@@ -2,158 +2,130 @@
 #include <math.h>
 #include <stdlib.h>
 
-int LenSet(int* arr, int len);
-void ShiftByK(int* arr, int len, int k);
-
-void ShiftByK(int* arr, int len, int k) // shifting the array K times to the right
+int LngthSet(int* mas, int lngth);
+int LngthSet(int* mas, int lngth)
 {
 
-	int i;	
-	int firstel;
-	int j;			
-	int cnt = 0;	
-	int c;			
-
-	k %= len;
-
-	if (k == 0)
-	{
-		return;
-	}
-
-	for (i = i0; i < len; i++) // one element in the array
-	{
-		if (arr[i + 1] == arr[i])
-		{
-			return 1;
-		}
-	}
-
-	for (i0 = 0; cnt < len; i0++)
-	{
-		i = i0;
-		c = arr[i];
-		for (j = ((i + k) % len); j != i0; j = ((j + k) % len))
-		{
-			arr[i] = arr[j];
-			cnt++;
-			i = j;
-		}
-		arr[i] = c;
-		cnt++;
-	}
-
-
-}
-
-
-int LenSet(int* arr, int len)
-{
-
-	int itoglen = len;
-	int kpovtor;
+	int finlngth = lngth;
+	int dublicate;
 	int i;
 
-
-	if (arr == NULL)
-	{
-		printf("Error:The array is empty\n");
-		return Error_Array_Empty;
-	}
-
-	for (int i0 = 0; ((Check(arr, itoglen, i0) != 0) && (i0 < itoglen - 1)); i0++)
+	for (int firstel = 0; firstel < finlngth - 1; firstel++)
 	{
 
-		i = i0;
-		while (arr[i + 1] == arr[i])
+		i = firstel;
+
+		while (mas[i + 1] == mas[i])
 		{
 			i++;
 		}
 
-		kpovtor = i - i0;
-		itoglen -= kpovtor;
+		dublicate = i - firstel; //removing dublicates
+		finlngth -= dublicate;
 
-		ShiftTheArrayByPositionK(arr, i0 + kpovtor + 1, i0 + 1);
-		ShiftTheArrayByPositionK(arr, len, kpovtor);
+		ShiftByK(mas, firstel + dublicate + 1, firstel + 1); //Shifting the array after deliting dublicates
+
+		ShiftByK(mas, lngth, dublicate);
 
 	}
 
-	return itoglen;
+	return finlngth;
 }
 
+void ShiftByK(int* mas, int lngth, int dublicate); // shifting the array K = dublicate times to the right
+void ShiftByK(int* mas, int lngth, int dublicate)
+{
+	int shiftIndex = (lngth - dublicate) % lngth;
+	int temp; //temporary index
+
+	for (i = 0; i < lngth; i++)
+	{
+		temp = mas[i];
+
+		// Count the index after shifting the array
+		int newIndex = (i + shiftIndex) % lngth;
+		mas[i] = mas[newIndex];
+		mas[newIndex] = temp;
+	}
+}
 
 int main(void)
 {
-
-	FILE* inp_f;		
-	FILE* out_f;		
+	FILE* file_in = fopen("input.txt", "r");
+	FILE* file_out = fopen("output.txt", "w");		
 	char fi[30];		
 	char fo[30];		
 	int code;		
-	int* arr = NULL;	
-	int len;			
+	int* mas = NULL;	
+	int lngth;		
 
-	printf("Enter the name of the input file:\n");
-	scanf("%s", fi);
+	//Checking the files 
 
-	inp_f = fopen(fi, "r");
-
-	if (inp_f == NULL)
+	if (file_in == NULL)
 	{
-		printf("Error: The file '%s' does not exist\n", fi);
-		return Error_File_NOT_Exist;
+		printf("Unable to open the file input.txt\n", file_in);
+		fclose(file_in);
+		return -1;
 	}
 
-	if (fscanf(inp_f, "%d", &len) != 1)
+	if (file_out == NULL)
 	{
-		printf("Error: Invalid data entry. Check the file '%s'\n", fi);
-		return Error_Invalid_Data;
+		printf("Unable to open the file output.txt\n");
+		fclose(file_out);
+		return -1;
 	}
 
-	arr = (int*)malloc((len + 1) * sizeof(int));
-
-	if (arr == NULL)
+	if (fscanf(file_in, "%d", &lngth) != 1)
 	{
-		printf("Error: RAM is not allocated\n");
-		return Error_Unallocated_Memory;
+		printf("Unable to read the file\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
 	}
 
-	for (int i = 0; i < len; i++)
-	{
+	mas = (double*)malloc((lngth) * sizeof(double));
 
-		if (fscanf(inp_f, "%d", &arr[i]) != 1)
+	if (mas == NULL)
+	{
+		printf("Memory error\n");
+		fclose(file_in);
+		fclose(file_out);
+		return -1;
+	}
+
+	for (int i = 0; i < lngth; i++)
+	{
+		if (fscanf(file_in, "%lf", &mas[i]) != 1)
 		{
-			printf("Error: Invalid data entry. Check the file '%s'\n", fi);
-			return Error_Invalid_Data;
+			printf("Problems with array\n");
+			free(mas);
+			fclose(file_in);
+			fclose(file_out);
+			return -1;
 		}
-
 	}
 
-	fclose(inp_f);
-
-	code = LenSet(arr, len);
+	//Array function
+	code = LngthSet(mas, lngth); 
 
 	if (code < 0)
 	{
 		return code;
 	}
 
-	printf("Enter the name of the output file:\n");
-	scanf("%s", fo);
+	printf("The result is uploaded to the file '%s'\n", file_out);
 
-	out_f = fopen(fo, "w");
+	fprintf(file_out, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
 
-	printf("The result is uploaded to the file '%s'\n", fo);
-
-	fprintf(out_f, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
+	//Final result in the file output.txt
 
 	for (int i = 0; i < code; i++)
 	{
-		fprintf(out_f, "%d ", arr[i]);
+		fprintf(file_out, "%d ", mas[i]);
 	}
 
-	fclose(out_f);
-	free(arr);
+	fclose(file_out);
+	free(mas);
 
-	return Result_Answer;
+	return 0;
 }
