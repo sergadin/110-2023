@@ -1,1 +1,2 @@
-2.000000 
+Number of elements in the array without repetitions 1
+The array itself without repetitions: 0 

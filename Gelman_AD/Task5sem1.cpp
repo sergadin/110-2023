@@ -2,6 +2,24 @@
 #include <math.h>
 #include <stdlib.h>
 
+void ShiftByK(int* mas, int lngth, int dublicate); // shifting the array K = dublicate times to the right
+void ShiftByK(int* mas, int lngth, int dublicate)
+{
+	int shiftIndex = (lngth - dublicate) % lngth;
+	int temp; //temporary index
+	int i;
+
+	for (i = 0; i < lngth; i++)
+	{
+		temp = mas[i];
+
+		// Count the index after shifting the array
+		int newIndex = (i + shiftIndex) % lngth;
+		mas[i] = mas[newIndex];
+		mas[newIndex] = temp;
+	}
+}
+
 int LngthSet(int* mas, int lngth);
 int LngthSet(int* mas, int lngth)
 {
@@ -23,30 +41,14 @@ int LngthSet(int* mas, int lngth)
 		dublicate = i - firstel; //removing dublicates
 		finlngth -= dublicate;
 
-		ShiftByK(mas, firstel + dublicate + 1, firstel + 1); //Shifting the array after deliting dublicates
+		//Shifting the array after deliting dublicates
 
+		ShiftByK(mas, firstel + dublicate + 1, firstel + 1);
 		ShiftByK(mas, lngth, dublicate);
 
 	}
 
 	return finlngth;
-}
-
-void ShiftByK(int* mas, int lngth, int dublicate); // shifting the array K = dublicate times to the right
-void ShiftByK(int* mas, int lngth, int dublicate)
-{
-	int shiftIndex = (lngth - dublicate) % lngth;
-	int temp; //temporary index
-
-	for (i = 0; i < lngth; i++)
-	{
-		temp = mas[i];
-
-		// Count the index after shifting the array
-		int newIndex = (i + shiftIndex) % lngth;
-		mas[i] = mas[newIndex];
-		mas[newIndex] = temp;
-	}
 }
 
 int main(void)
@@ -83,7 +85,7 @@ int main(void)
 		return -1;
 	}
 
-	mas = (double*)malloc((lngth) * sizeof(double));
+	mas = (int*)malloc((lngth) * sizeof(int));
 
 	if (mas == NULL)
 	{
@@ -113,7 +115,7 @@ int main(void)
 		return code;
 	}
 
-	printf("The result is uploaded to the file '%s'\n", file_out);
+	printf("The result is uploaded to the file output.txt\n", file_out);
 
 	fprintf(file_out, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
 
