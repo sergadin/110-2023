@@ -47,7 +47,6 @@ void shiftrightk(double* mas, int lngth, int K)
 		mas[lngth - i - 1] = c;
 	}
 
-		return 0;
 }
 
 
