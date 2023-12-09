@@ -54,10 +54,10 @@ int LngthSet(int* mas, int lngth)
 int main(void)
 {
 	FILE* file_in = fopen("input.txt", "r");
-	FILE* file_out = fopen("output.txt", "w");		
-	int code;		
-	int* mas = NULL;	
-	int lngth;		
+	FILE* file_out = fopen("output.txt", "w");
+	int code;
+	int* mas = NULL;
+	int lngth;
 
 	//Checking the files 
 
@@ -106,7 +106,7 @@ int main(void)
 	}
 
 	//Array function
-	code = LngthSet(mas, lngth); 
+	code = LngthSet(mas, lngth);
 
 	if (code < 0)
 	{
