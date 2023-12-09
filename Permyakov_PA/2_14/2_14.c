@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-int x_segments_changement(float* array, const int length, const float x, const char* output_name);
+int x_segments_changement(float* array, int length, float x);
 
 int main(int argc, char** argv)
 {
@@ -12,8 +12,8 @@ int main(int argc, char** argv)
     float x;
     float* array;
     int length;
-    if (argc != 4){
-        printf("incorrect number of arguments. need three arguments - x, input and output filenames\n");
+    if (argc != 3){
+        printf("incorrect number of arguments. need three arguments - x and input filename\n");
 	    return 1;
     }
     sscanf(argv[1], "%f", &x);
@@ -34,7 +34,7 @@ int main(int argc, char** argv)
             return 2;
 		}
 	}
-    ans = x_segments_changement(array, length, x, output_filename);
+    ans = x_segments_changement(array, length, x);
     if (ans == -2){
 	    printf("can't open input file\n");
 	    return 3;
@@ -47,37 +47,41 @@ int main(int argc, char** argv)
     	printf("can't open output file\n");
 	    return 5;
     }
-    printf("Elemnts changed.\n");
-    free(array);
+    printf("Elements changed.\n");
+    for (int i = 0; i < length; i++){
+        printf("%f\n", array[i]);
+    }
     fclose(inputfile);
     return 0;
 }
 
-int x_segments_changement(float* array, const int length, const float x)
+int x_segments_changement(float* array, int length, float x)
 {
     FILE* output;
     int start = -2;
     for (int j = 0; j < (length); j++){
-        if ((fabs(array[j] - x) < 0.000001) && (start == -2)){
-            start = j - 1;
+        if (fabs(array[j] - x) < 0.00001){
+            if (start == -2){
+                start = j - 1;
+            }
+            if (j == (length - 1)) {
+                for (int k = start + 1; k < (length); k++){
+                    array[k] = 0.5 * (0 + array[start]);
+                }
+            }
         }
         else if ((fabs(array[j] - x) > 0) && (start != -2)){
-	    if (start == -1){
-	        for (int k = start; k < j; k++){
-                array[k] = 0.5 * (0 + array[j]);
-            	}
-	    }
-	    else if (j == length - 1){
-	    	for (int k = start; k < j; k++){
-                array[k] = 0.5 * (0 + array[j]);
+            if (start == -1){
+                for (int k = start + 1; k < j; k++){
+                    array[k] = 0.5 * (0 + array[j]);
                 }
-	    }
-	    else {
-            for (int k = start; k < j; k++){
-                array[k] = 0.5 * (array[start] + array[j]);
             }
-            start = -1;
-	    }
+            else {
+                for (int k = start + 1; k < j; k++){
+                    array[k] = 0.5 * (array[start] + array[j]);
+                }
+            }
+        start = -2;
         }
     }
     return 0;
