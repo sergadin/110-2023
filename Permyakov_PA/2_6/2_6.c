@@ -94,7 +94,6 @@ int sets_interseption(const int* array1, const int* array2, const int length1, c
     int i = 0;
     int j = 0;
     int counter = 0;
-    int len3;
     outputfile = fopen(output_filename, "w");
     if (outputfile == NULL){
         return -5;

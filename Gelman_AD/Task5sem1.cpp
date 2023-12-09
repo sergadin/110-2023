@@ -55,8 +55,6 @@ int main(void)
 {
 	FILE* file_in = fopen("input.txt", "r");
 	FILE* file_out = fopen("output.txt", "w");		
-	char fi[30];		
-	char fo[30];		
 	int code;		
 	int* mas = NULL;	
 	int lngth;		
@@ -65,7 +63,7 @@ int main(void)
 
 	if (file_in == NULL)
 	{
-		printf("Unable to open the file input.txt\n", file_in);
+		printf("Unable to open the file input.txt\n");
 		fclose(file_in);
 		return -1;
 	}
@@ -97,7 +95,7 @@ int main(void)
 
 	for (int i = 0; i < lngth; i++)
 	{
-		if (fscanf(file_in, "%lf", &mas[i]) != 1)
+		if (fscanf(file_in, "%d", &mas[i]) != 1)
 		{
 			printf("Problems with array\n");
 			free(mas);
@@ -115,7 +113,7 @@ int main(void)
 		return code;
 	}
 
-	printf("The result is uploaded to the file output.txt\n", file_out);
+	printf("The result is uploaded to the file output.txt\n");
 
 	fprintf(file_out, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
 
