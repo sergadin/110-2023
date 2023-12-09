@@ -1,52 +1,54 @@
 #include <stdio.h>
-  
+#include <stdlib.h>
+
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-double compute_max_dev (FILE *input, ERR *error);      //вычисляет максимальное отклонение от среднего арифметического последовательности
+int repl_elem (double *arr, int len);      //убирает повторяющиеся части
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-double compute_max_dev (FILE *input, ERR *error)
+int repl_elem (double *arr, int len)
 {
-        int quan = 1;
-        double curr, max, min, summ, aver;
-        test_file_input_double(input, & curr, error);
-	max = curr;
-	min = curr;
-	summ = curr;
-        while ((test_file_input_double(input, & curr, error) == 0))
+        int i;
+	double c = arr[0], t;
+        for (i = 1; i < len-1; i++)
         {
-                summ += curr;
-		if (curr > max) {max = curr;}
-		if (curr < min) {min = curr;}
-		quan ++;
+		t = arr[i];
+		arr [i] = (arr[i+1] + c) / 2;
+		c = t;
         }
-        aver = summ / quan;
-	if (max - aver < aver - min) {return aver - min;}
-	else {return max - aver;}
+        return 0;
 }
 
 
 int main (void)
 {
-        double max_dev;
+        int i;
+        double *arr, len;
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
         output = fopen ("output.txt", "w");
         test_file(input, &error);
         test_file(output, &error);
-	if (feof (input) != 0) { error = E_IO; }
-        max_dev = compute_max_dev(input, &error);
-        fprintf (output, "answ = %f \n", max_dev);
+	test_file_input_double (input, &len, &error);
+	len = (int) len;
+        arr = (double *)malloc(len*sizeof(double));
+        for (i = 0; i < len; i++) { test_file_input_double (input, &arr[i], &error); }
+        repl_elem (arr, len);
+	for (i = 0; i < len; i++)
+	{
+        	fprintf (output, "%lf ", arr[i]);
+	}
+        free(arr);
         fclose (input);
         fclose (output);
-        if (error == E_DATA)
+        if ( error == E_DATA)
         {
                 printf ( "ошибка при открытии файла \n" );
                         return -1;
         }
-        if (error == E_IO)
+        if ( error == E_IO)
         {
                 printf ( "ошибка при чтении файла \n" );
                 return -1;
