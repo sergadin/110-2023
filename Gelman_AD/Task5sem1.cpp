@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include<stdlib.h>
 
 //Removing duplicates from t he array
 
-void remove_duplicates(int mas, int lngth) 
+void remove_duplicates(double* mas, int lngth);
+void remove_duplicates(double* mas, int lngth) 
 {
     int i;
     int j = 0;
@@ -25,7 +27,7 @@ int main(void)
 {
     FILE* file_in = fopen("input.txt", "r");
     FILE* file_out = fopen("output.txt", "w");
-    int mas = NULL; //array
+    double* mas = NULL; //array
     int lngth; //the length of the array
 
 	//Checking the files
