@@ -22,6 +22,11 @@ int main(void){
 
     arr = (int *)malloc(size * sizeof(int));
 
+    if (arr == NULL){
+        printf("memory error 1");
+        return -2;
+    }
+
     for(i = 0; i < size; i++){
         flag = fscanf(f1, "%d", &arr[i]);
         if(flag != 1){
@@ -34,12 +39,6 @@ int main(void){
         printf("%d ", arr[i]);
     }
     printf("\n");
-
-
-    if (arr == NULL){
-        printf("memory error 1");
-        return -2;
-    }
 
     Sdvig(arr, size);
 
@@ -58,21 +57,19 @@ int main(void){
 
 
 int Sdvig(int arr[], int lgth){
-    int i,k;
-    int index;
+    int i;
     int len;
     int b;
     for(i = lgth - 1; i > 0; i--){
         if(arr[i] < 0 ){
-            index = i;
             len = lgth;
             b=arr[i];
-            for(index; index < len - 2; index++){
-                arr[index] = arr[index+1];
-                arr[len-1]=b;
+            for(i; i < len - 1; i++){
+                arr[i] = arr[i+1];
             }
+            arr[len-1]=b;
             lgth--;
         }
     }
-    return ;
+    return 0;
 }
