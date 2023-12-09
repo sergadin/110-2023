@@ -5,11 +5,11 @@
 #define ER_MEMORY -2
 
 
-int segment(double *mas, int length);  //  функция заменяет элементы каждого x-отрезка на полусумму элементов, прилегающих к этому отрезку справа и слева.
+int segment(int *mas, int length);  //  функция заменяет элементы каждого x-отрезка на полусумму элементов, прилегающих к этому отрезку справа и слева.
 
-int segment(double *mas, int length){
+int segment(int *mas, int length){
     
-    double cur, min = 0, max;
+    int cur, min = 0, max;
     int j=0;
     int i=0;
     
@@ -25,6 +25,9 @@ int segment(double *mas, int length){
             while(mas[j] == cur){
                 mas[j] = 0.5 * (min + max);
                 j--;
+                if(j == (length -1)){
+                    mas[j] = 0.5 * min;
+                }
             }
             min = cur;
             i++;
@@ -38,7 +41,7 @@ int main(void)
 {
     FILE* input;
     FILE* output;
-    double *mas = NULL;  // массив
+    int *mas = NULL;  // массив
     int length;  // длина массива 
     int i=0;  // счетчик
     int res;  // результат работы функции
@@ -61,7 +64,7 @@ int main(void)
         return ER_READ;
     }
     
-    mas = (double*) malloc((length) * sizeof(double));
+    mas = (int*) malloc((length) * sizeof(int));
     
     if(mas == NULL){
         printf("Ошибка памяти\n");
@@ -70,7 +73,7 @@ int main(void)
     }
     
     for(i = 0; i < length; i++){
-        if((fscanf(input, "%lf", &mas[i])) != 1){
+        if((fscanf(input, "%d", &mas[i])) != 1){
             printf("Ошибка чтения файла\n");
             free(mas);
             return ER_READ;
@@ -82,7 +85,7 @@ int main(void)
     
     if(res == SUCCESS){
         for(i = 0; i < length; i++){
-            fprintf(output, "%lf ", mas[i]);
+            fprintf(output, "%d ", mas[i]);
         }
         fprintf(output, "\n");
         free(mas);
