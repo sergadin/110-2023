@@ -2,32 +2,39 @@
 #include<stdio.h>
 #include<stdbool.h>
 
-int incrsect(float a, FILE* inp);
-int incrsect(float a, FILE* inp)
+int incrsect(FILE* inp);
+int incrsect(FILE* inp)
 {
     int n = 0;
+    float a;
     float b;
-    bool check = 1; //the sequence is increasing
+    bool nonincr = 1; //the sequence is increasing
     //check = 0 => the sequence is decreasing
+
+    if (fscanf(inp, "%f", &a) != 1)
+    {
+        printf("Unable to read the first element\n");
+        return 0;
+    }
 
     while (fscanf(inp, "%f", &b) > 0)
     {
         if (a > b)
         {
-            if (check) //the sequence is increasing
+            if (nonincr) //the sequence is increasing
             {
                 n++;
-                check = 0;
+                nonincr = 0;
             }
         }
-        else //(a < b)
+        else //(a <= b)
         {
-            check = 1;
+            nonincr = 1;
         }
         a = b;
     }
 
-    if (check == 1)
+    if (nonincr == 1)
     {
         n++;
     }
@@ -38,7 +45,6 @@ int incrsect(float a, FILE* inp)
 
 int main() 
 {
-    float a;
     FILE* inp;
 
     inp = fopen("input.txt", "r");
@@ -48,14 +54,8 @@ int main()
         printf("Unable to open file\n");
         return 0;
     }
-    
-    if (fscanf(inp, "%f", &a) != 1) 
-    {
-        printf("Unable to read the first element\n");
-        return 0;
-    }
 
-    incrsect(a, inp);
+    incrsect(inp);
 
     fclose(inp);
     return 0;

@@ -6,7 +6,7 @@ void increment(int* arr, int size);
 void increment(int* arr, int size) 
 {
     int carry = 1; // "Перенос" единицы
-    for (int i = size - 1; i >= 0; i--) 
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
         int sum = arr[i] + carry; // Сумма текущей цифры и "переноса"
         arr[i] = sum % 10; // Записываем только остаток от деления на 10
@@ -15,17 +15,19 @@ void increment(int* arr, int size)
 }
 
 // Функция для вычитания единицы из числа
-void decrement(int* arr, int size) 
+void decrement(int* arr, int size);
+void decrement(int* arr, int size)
 {
     int borrow = 1; // "Заем" единицы
-    for (int i = size - 1; i >= 0; i--) 
+    for (int i = size - 1; i >= 0; i--) // Обрабатываем разряды числа, начиная с младшего
     {
         int diff = arr[i] - borrow; // Разность текущей цифры и "займа"
-        if (diff < 0) 
-        { // Если разность отрицательная, значит нужно занять 1 из следующего разряда
+        if (diff < 0) // Если разность отрицательная, значит нужно занять 1 из следующего разряда
+        { 
             arr[i] = diff + 10; // Добавляем 10 для получения корректного значения разности
             borrow = 1; // "Заимствование" 1
-        } else 
+        } 
+        else 
         {
             arr[i] = diff; // В противном случае просто записываем разность
             break; // И выходим из цикла
@@ -36,24 +38,28 @@ void decrement(int* arr, int size)
 int main(void) 
 {
     FILE* inputFile = fopen("input.txt", "r"); // Открываем файл для чтения
+    FILE* outputFile;
+    int size;
+    int *arr = NULL;
     if (inputFile == NULL) 
     {
         printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл
         return 1; // Завершаем программу с ошибкой
     }
 
-    int size;
     fscanf(inputFile, "%d", &size); // Считываем размер массива из файла
 
-    int* arr = (int*)malloc(size * sizeof(int)); // Выделяем память под массив
+    arr = (int*)malloc(size * sizeof(int)); // Выделяем память под массив
     if (arr == NULL) 
     {
         printf("Ошибка при выделении памяти\n"); // Выводим ошибку, если не удалось выделить память
         fclose(inputFile); // Закрываем файл
         return 1; // Завершаем программу с ошибкой
     }
+	
+	arr[0] = 0;
 
-    for (int i = 0; i < size; i++) 
+    for (int i = 1; i < size + 1; i++)
     {
         int digit;
         if (fscanf(inputFile, "%1d", &digit) != 1) // Считываем по одной цифре из файла
@@ -68,20 +74,26 @@ int main(void)
 
     fclose(inputFile); // Закрываем файл
 
-    increment(arr, size); // Прибавляем единицу к числу
+    increment(arr, size + 1); // Прибавляем единицу к числу
 
-    FILE* outputFile = fopen("output.txt", "w"); // Открываем файл для записи
+    outputFile = fopen("output.txt", "w"); // Открываем файл для записи
     if (outputFile == NULL) 
     {
         printf("Ошибка при открытии файла\n"); // Выводим ошибку, если не удалось открыть файл
         free(arr); // Освобождаем память
         return 1; // Завершаем программу с ошибкой
     }
-
-    for (int i = 0; i < size; i++) 
+	
+	if (arr[0] == 0) // если значение arr[0] не изменилось, то не будем его записывать в файл вывода
     {
-        fprintf(outputFile, "%d", arr[i]); // Записываем каждую цифру в файл
-    }
+		for (int i = 1; i < size + 1; i++)
+			fprintf(outputFile, "%d", arr[i]);
+	}
+	else 
+    {
+		for (int i = 0; i < size + 1; i++)
+			fprintf (outputFile, "%d", arr[i]); 
+	}
 
     fclose(outputFile); // Закрываем файл
     free(arr); // Освобождаем память
