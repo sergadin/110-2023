@@ -10,17 +10,23 @@ int main(void){
     int size, i, flag, l;
     int *arr;
     f1 = fopen("input.txt","r");
+
     if(f1 == NULL){
         printf("oshibka chteniya");
         return -1;
     }
 
     if(fscanf(f1, "%d", &size) != 1){
-        printf("file pust or size not int");
+        printf("file pust");
         return -1;
     }
 
     arr = (int *)malloc(size * sizeof(int));
+
+     if (arr == NULL){
+        printf("memory error 1");
+        return -2;
+    }
 
     for(i = 0; i < size; i++){
         flag = fscanf(f1, "%d", &arr[i]);
@@ -34,12 +40,6 @@ int main(void){
         printf("%d ", arr[i]);
     }
     printf("\n");
-
-
-    if (arr == NULL){
-        printf("memory error 1");
-        return -2;
-    }
 
     size = Sdvig(arr, size);
     arr = (int *)realloc(arr, size * sizeof(int));
@@ -65,16 +65,14 @@ int main(void){
 
 
 int Sdvig(int arr[], int lgth){
-    int i,j,k;
-    int index;
+    int i,j;
     int len;
     for(i = 0; i < lgth; i++ ){
         for(j = lgth - 1; j > i; j--){
             if(arr[j] == arr[i]){
-                index = j;
                 len = lgth;
-                for(k = index; k < len - 1; k++){
-                    arr[k] = arr[k+1];
+                for(j; j < len - 1; j++){
+                    arr[j] = arr[j+1];
                 }
                 lgth--;
             }

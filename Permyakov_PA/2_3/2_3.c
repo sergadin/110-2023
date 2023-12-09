@@ -1,61 +1,60 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-int right_cyclically_array_shift_by_one(const char* input_name, const char* output_name);
+int right_cyclically_array_shift_by_one(int* array, int length);
 
 int main(int argc, char** argv)
 {
     FILE* inputfile;
     char* input_filename;
-    char* output_filename;
     int ans;
     int* array;
     int length;
-    int cnt = 0;
-    if (argc != 3){
-        printf("incorrect number of arguments. need two arguments - input and output filenames\n");
+    if (argc != 2){
+        printf("incorrect number of arguments. need one argument - input filename\n");
 	    return -1;
-    }
-    input_filename = argv[1];
-    output_filename = argv[2];
+    }   
+    input_filename = argv[1];  
     inputfile = fopen(input_filename, "r");
-    fscanf(input_filename, "%d", length);
-    while (fscanf(input_filename, "%d", array[i])){
-        i++;
-        cnt++;
+    array = (int*)malloc((length) * sizeof(int));
+    if (array == NULL){
+        printf("memory allocation error\n");
+        return 6;
     }
-    
-    if (cnt != length){
-        printf("incorrect array length :(\n");
-        return 4;
+    if (!fscanf(inputfile, "%d", &length)) {
+		printf("input file error\n");
+		return 2;
     }
-    ans = right_cyclically_array_shift_by_one(input_filename, output_filename);
+    for (int i = 0; i < length; i++) {
+		if (fscanf(inputfile, "%d", &array[i]) != 1) {
+			printf("input data error\n");
+			return 2;
+		}
+	}
+    ans = right_cyclically_array_shift_by_one(array, length);
     if (ans == -2){
 	    printf("can't open input file\n");
 	    return 2;
     }
     if (!feof(inputfile)){
-    	printf("incorrect input data - nondigit stuff\n");
+    	printf("incorrect input data - nondigit stuff or incorrct length\n");
 	    return 3;
     }
-    fclose(inputfile);
-    if (ans == -5){
-    	printf("can't open output file\n");
-	    return 5;
+    printf("Array shifted.\n");
+    for (int i = 0; i < (length); i++){
+        printf("%d\n", array[i]);
     }
-    printf("Array shifted.\n")
+    fclose(inputfile);
     return 0;
 }
-int right_cyclically_array_shift_by_one(const int* array, const int length, const char* output_name)
+
+int right_cyclically_array_shift_by_one(int* array, int length)
 {
-    FILE *outputfile;
-    outputfile = fopen(output_name, "w");
-    if (outputfile == NULL){
-        return -5;
+    int elem = 0;
+    elem = array[length - 1];
+    for (int i = 1; i < (length); i++){
+        array[length - i] = array[length - i - 1];
     }
-    fprintf(outputfile, "%d", array[length - 1]);
-    for (int i = 1; i < length, i++){
-        fprintf(outputfile, "%d", array[i])
-    }
-    fclose(outputfile);
+    array[0] = elem;
     return 0;
 }

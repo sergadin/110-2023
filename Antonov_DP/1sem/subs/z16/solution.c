@@ -36,7 +36,7 @@ int main (void)
         output = fopen ("output.txt", "w");
         test_file(input, &error);
         test_file(output, &error);
-	if ( feof (input) == 0) { error = E_IO; }
+	if (feof (input) != 0) { error = E_IO; }
         max_dev = compute_max_dev(input, &error);
         fprintf (output, "answ = %f \n", max_dev);
         fclose (input);
