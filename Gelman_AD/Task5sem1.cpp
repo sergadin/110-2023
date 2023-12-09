@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include<stdlib.h>
 
-//Removing duplicates from t he array
+//Removing duplicates from the array
 
-void remove_duplicates(double* mas, int lngth);
-void remove_duplicates(double* mas, int lngth) 
+int remove_duplicates(double* mas, int lngth);
+int remove_duplicates(double* mas, int lngth) 
 {
     int i;
     int j = 0;
@@ -21,6 +21,7 @@ void remove_duplicates(double* mas, int lngth)
     }
     // Updating the length of the array
     lngth = j + 1;
+	return lngth;
 }
 
 int main(void) 
