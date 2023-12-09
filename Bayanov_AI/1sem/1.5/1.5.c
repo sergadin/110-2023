@@ -15,11 +15,9 @@ int Number_Search (FILE * input, float X)
 	{
 		return 0;
 	}
-         if(element - X < 0.00001 && element >= X)
-                        answer = 1;
+	if(fabs(element - X) < 0.00001)
+		answer = 1;
 
-         if (X - element < 0.00001 && element <= X)
-                        answer = 1;
 
 	while (!feof (input))
 	{
@@ -29,10 +27,7 @@ int Number_Search (FILE * input, float X)
 		{
 			return 0;
 		}
-		if (element - X < 0.00001 && element >= X)
-			answer = 1;
-
-		if (X - element < 0.00001 && element <= X)
+		if (fabs(element - X) < 0.00001)
 			answer = 1;
 	}
 
