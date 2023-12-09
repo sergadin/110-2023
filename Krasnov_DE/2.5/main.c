@@ -27,7 +27,7 @@ int main(){
     }
 
     if((flag=fscanf(f1,"%d",&size_1))!=1){
-        printf("first file pust or size not int");
+        printf("first file pust");
         return -1;
     }
 
@@ -65,7 +65,7 @@ int main(){
         }
     }
 
-    size_3=size_1+size_2;
+    size_3 = size_1 + size_2;
 
     arr_3=(int *)malloc(size_3 * sizeof(int));
 
@@ -78,6 +78,7 @@ int main(){
         arr_3[i]=arr_1[i];
         printf("%d ",arr_3[i]);
     }
+
     printf("\n");
 
     for(i = 0; i < size_2; i++){
@@ -85,7 +86,9 @@ int main(){
         printf("%d ",arr_3[i+size_1]);
     }
     printf("\n");
+
     size = DeleteItem(arr_3,size_3);
+
     arr_3 = (int *)realloc(arr_3, size * sizeof(int));
     if(arr_3 == NULL){
         printf("memory error 3");
@@ -97,24 +100,22 @@ int main(){
     }
     fclose(f1);
     fclose(f2);
+    free(arr_1);
+    free(arr_2);
     free(arr_3);
-
-
 
     return 0;
 }
 
 
 int DeleteItem(int arr[], int lgth){
-    int i,j,k,len;
-    int index;
+    int i, j, len;
     for(i=0; i < lgth; i++ ){
         for(j = lgth - 1; j > i; j--){
             if(arr[j]==arr[i]){
-                index = j;
                 len=lgth;
-                for(k = index; k < len - 1; k++){
-                    arr[k]=arr[k+1];
+                for(j; j < len - 1; j++){
+                    arr[j]=arr[j+1];
                 }
                 lgth--;
             }
