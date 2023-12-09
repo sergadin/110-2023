@@ -59,17 +59,12 @@ int main(void){
 	answer = sdvig_k((unsigned) number, change);
 	if (answer != OSHIBKA){
 		
-			printf(" сдвинутое влево на %d число %d: %u\n", change, number, answer);
+			printf(" произведён сдвиг %d число %d: %u\n", change, number, answer);
             printf("%d  ", number);
             shislo_b_dv(number);
             printf("%u  ", answer);
             shislo_b_dv(answer);
-		}else{
-			printf(" сдвинутое вправо на %d число %d: %u\n", change, number, answer);
-            printf("%d  ", number);
-            shislo_b_dv(number);
-            printf("%u  ", answer);
-            shislo_b_dv(answer);
+
 		}
 
 	return 0;
