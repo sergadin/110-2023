@@ -38,7 +38,7 @@ void findLongestUnion(FILE *inputFile, FILE *outputFile)
     fprintf(outputFile, "%d\n", maxEnd - maxStart);
 }
 
-int main(void) 
+int main(void)
 {
     FILE *inputFile, *outputFile;
     
