@@ -23,7 +23,7 @@ void printSubsets(int N, FILE *file)
     }
 } 
 
-int main(void) 
+int main(void)
 {
     int N;
     
