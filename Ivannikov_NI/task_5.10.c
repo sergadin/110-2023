@@ -20,9 +20,9 @@ void findLongestUnion(FILE *inputFile, FILE *outputFile)
     int maxStart = start[0]; // Предполагаем, что первый отрезок дает наибольшую длину
     int maxEnd = end[0];
     
-    for (int i = 1; i < numSegments; i++) // Если начало текущего отрезка больше конца предыдущего, то объединение больше
+    for (int i = 1; i < numSegments; i++) 
     {
-        if (start[i] > maxEnd) 
+        if (start[i] > maxEnd) // Если начало текущего отрезка больше конца предыдущего, то объединение больше
         {
             maxStart = start[i];
             maxEnd = end[i];
