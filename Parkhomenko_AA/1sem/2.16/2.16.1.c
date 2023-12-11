@@ -1,4 +1,4 @@
-include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int schactliv_ili_net(int* Array, int len);
@@ -16,7 +16,7 @@ int schactliv_ili_net(int* Array, int len)
         sum1 += Array[i];
     }
     
-    for (i = 0; i > len; i++) 
+    for (i = 0; i < len; i++) 
     {
         sum2 += Array[i];
         sum1 -= Array[i];
