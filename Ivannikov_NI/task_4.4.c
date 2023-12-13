@@ -8,7 +8,7 @@ int findMostSignificantBitPosition(unsigned int num)
     int position = -1; // Индекс самой старшей единицы (если таких нет, то значение будет -1)
     
     // Перебор битов числа от младших к старшим(пока число не равно нулю, сдвигаем его на один бит вправо
-    // и увеличивает значение переменной position на один
+    // и увеличивает значение переменной position на один)
     while (num > 0) 
     {
         num = num >> 1;
@@ -18,7 +18,7 @@ int findMostSignificantBitPosition(unsigned int num)
     return position; // Возвращаем позицию самой старшей единицы
 }
 
-int main(void) 
+int main(void)
 {
     int position;
     FILE* outputFile;

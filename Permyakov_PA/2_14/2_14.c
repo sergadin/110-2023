@@ -19,6 +19,10 @@ int main(int argc, char** argv)
     sscanf(argv[1], "%f", &x);
     input_filename = argv[2];
     inputfile = fopen(input_filename, "r");
+    if (!inputfile){
+        printf("incorrect inputfile\n");
+        return 7;
+    }
     array = (float*)malloc((length) * sizeof(float));
     if (array == NULL){
         printf("memory allocation error\n");

@@ -31,8 +31,9 @@ int main(int argc, char** argv)
     if ((!sscanf(argv[1], "%d", &N)) || (!sscanf(argv[2], "%d", &T))){
         printf("Invalid input data - need natural numbers for length and testing times");
     }
-    array = ArrayGenerator(N);
     for (int i = 0; i < T; i++){
+        printf("%d\n", i + 1);
+        array = ArrayGenerator(N * pow(2, i));
         SortingTimeComparing(array, N * pow(2, i));
     }
 }
@@ -125,38 +126,38 @@ int SortingTimeComparing(int* array, int N)
     slow_transposing_sort(array, N);
     end = clock();
     if (!SortedChecker(array, N)) {
-    	printf("массив не отсортирован");
+    	printf("array isnt sorted.\n");
         free(array);
         free(array2);
         free(array3);
     	return 1;
     }
     used_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Время выполнения сортировки обменом: %f с\n", used_time);
+    printf("Sorting time by changing: %f sec\n", used_time);
     start = clock();
     quicksort(array2, 0, N - 1);
     end = clock();
     if (!SortedChecker(array2, N)) {
-    	printf("массив не отсортирован");
+    	printf("array isnt sorted.\n");
         free(array);
         free(array2);
         free(array3);
     	return 2;
     }
     used_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Время выполнения быстрой сортировки: %f с\n", used_time);
+    printf("Quicksorting time: %f sec\n", used_time);
     start = clock();
     qsort(array3, N, sizeof(int), compare);
     end = clock();
     if (!SortedChecker(array3, N)) {
-    	printf("массив не отсортирован");
+    	printf("array isnt sorted");
         free(array);
         free(array2);
         free(array3);
     	return 3;
     }
     used_time = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("Время выполнения встроенной сортировки: %f с\n", used_time);
+    printf("built-in sorting time: %f sec\n", used_time);
     free(array);
     free(array2);
     free(array3);
