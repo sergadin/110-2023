@@ -6,7 +6,7 @@ int bites_inverse(int N, int i, int j);
 int main(int argc, char** argv){
     int i;
     int j;
-    int N;
+    long int N;
     int c;
     if (argc != 4){
         printf("incorrect number of arguments. need tree arguments: number for inverting and inverse borders\n");
