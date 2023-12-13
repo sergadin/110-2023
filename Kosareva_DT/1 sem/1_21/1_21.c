@@ -31,7 +31,7 @@ int length(FILE *f) {
 	if (new[0]*new[1] > max[0]*max[1]) {
             max[0] = new[0];
             max[1] = new[1];
-    }
+        }
 	if (check == 0) {
         printf("Ошибка данных\n");
         return -2;
@@ -52,5 +52,5 @@ int main(void) {
                 return -1;
         }
         length(f);
-    return 0;
+        return 0;
 }

@@ -34,32 +34,11 @@ int main(void){
 
 
 int quantity(FILE*f1){
-    int staroe, pred, tek;
+    float staroe=0.5, pred=0.5, tek;
     int amount = 0;
     int flag ;
     int k=0;
-    flag = fscanf(f1, "%d", &staroe);
-    if(flag != EOF){
-        if (flag != 1){
-            return -1;
-        }
-        k++;
-    }
-
-    flag=fscanf(f1, "%d", &pred);
-
-    if(flag != EOF){
-        if (flag != 1){
-            return -1;
-        }
-        k++;
-    }
-
-    if(pred== staroe){
-        amount=amount+2;
-    }
-
-    while((flag = fscanf(f1, "%d", &tek)) != EOF ){//öèêë ñ÷èòûâàþùèé âñå ÷èñëà èç ïîñëåäîâàòåëüíîñòè
+    while((flag=fscanf(f1, "%d", &tek))!=EOF ){//öèêë ñ÷èòûâàþùèé âñå ÷èñëà èç ïîñëåäîâàòåëüíîñòè
         if(flag != 1){
             return -1;
         }
