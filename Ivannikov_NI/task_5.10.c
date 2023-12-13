@@ -1,64 +1,84 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-// Функция для вычисления объединения отрезков наибольшей длины
-void findLongestUnion(FILE *inputFile, FILE *outputFile);
-void findLongestUnion(FILE *inputFile, FILE *outputFile) 
+// Структура для представления отрезка 
+typedef struct 
 {
-    int numSegments;
-    fscanf(inputFile, "%d", &numSegments); // Считываем количество отрезков из файла ввода
-    
-    int start[numSegments]; // Массив для хранения начал отрезков
-    int end[numSegments]; // Массив для хранения концов отрезков
-    
-    // Считываем начало и конец каждого отрезка из файла ввода
-    for (int i = 0; i < numSegments; i++) 
-    {
-        fscanf(inputFile, "%d %d", &start[i], &end[i]);
-    }
-    
-    // Ищем отрезки, объединение которых дает наибольшую длину
-    int maxStart = start[0]; // Предполагаем, что первый отрезок дает наибольшую длину
-    int maxEnd = end[0];
-    
+    int start; // Начало отрезка
+    int end; // Конец отрезка
+} Segment;
+
+// Функция для вычисления максимальной длины объединения отрезков
+void findLongestSegments(Segment* segments, int numSegments);
+void findLongestSegments(Segment* segments, int numSegments) 
+{
+    // Изначально максимальная длина равна длине первого отрезка
+    int maxStart = segments[0].start; // Начальная точка наибольшего объединения
+    int maxEnd = segments[0].end; // Конечная точка наибольшего объединения 
+
+    // Проходим по оставшимся отрезкам
     for (int i = 1; i < numSegments; i++) 
     {
-        if (start[i] > maxEnd) // Если начало текущего отрезка больше конца предыдущего, то объединение больше
+        if (segments[i].start > maxEnd) // Если начальная точка отрезка больше конца предыдущего отрезка, то
         {
-            maxStart = start[i];
-            maxEnd = end[i];
-        } 
-        else if (end[i] > maxEnd) // Если конец текущего отрезка больше конца предыдущего, то обновляем конец
+            printf("(%d, %d) ", maxStart, maxEnd);
+            maxStart = segments[i].start;
+            maxEnd = segments[i].end;
+        }
+        else if (segments[i].end > maxEnd) // Иначе если конечная точка больше конца предыдущего отрезка, то
         {
-            maxEnd = end[i];
+            maxEnd = segments[i].end;
         }
     }
-    
-    // Выводим результат в файл вывода
-    fprintf(outputFile, "%d %d\n", maxStart, maxEnd);
-    fprintf(outputFile, "%d\n", maxEnd - maxStart);
+    printf("(%d, %d)\n", maxStart, maxEnd);
 }
 
-int main(void)
+int main(void) 
 {
-    FILE *inputFile, *outputFile;
-    
     // Открываем файлы ввода и вывода
-    inputFile = fopen("input.txt", "r");
-    outputFile = fopen("output.txt", "w");
-    
+    FILE* inputFile = fopen("input.txt", "r");
+    FILE* outputFile = fopen("output.txt", "w");
+
     // Проверяем успешность открытия файлов
     if (inputFile == NULL || outputFile == NULL) 
     {
-        printf("Ошибка при открытии файлов!\n");
+        printf("Error opening input or output file.\n");
         return 1;
     }
+
+    // Считывание значения numSegments из файла
+    int numSegments;
+    fscanf(inputFile, "%d", &numSegments);
     
-    // Вызываем функцию для вычисления результата
-    findLongestUnion(inputFile, outputFile);
+    if (numSegments <= 0)
+    {
+        printf("Reading error.\n");
+        return 1;
+    }
+
+    // Выделяем память
+    Segment* segments = (Segment*)malloc(numSegments * sizeof(Segment));
+    if (segments == NULL)
+    {
+        printf("Error allocating memory.\n");
+        return 1;
+    }
+
+    // Считываем значения segments[i].start и segments[i].end из файла
+    for (int i = 0; i < numSegments; i++) 
+    {
+        fscanf(inputFile, "%d %d", &segments[i].start, &segments[i].end);
+    }
+
+    // Вызов функции для нахождения максимальной длины объединения отрезков
+    findLongestSegments(segments, numSegments);
+
+    // Освобождаем память 
+    free(segments);
     
-    // Закрываем файлы
+    // Закрытие файлов
     fclose(inputFile);
     fclose(outputFile);
-    
+
     return 0;
 }
