@@ -19,8 +19,9 @@ int fillArray(Point** p, FILE* input, int n) {
 		return -1;
     	}
 
-	for (int i = 0; i < n; i++)
+	for (int i = 0; i < n; i++) {
 		fscanf(input, "%lf %lf", &(*p)[i].x, &(*p)[i].y);
+	}
 	return 0;
 }
 
@@ -48,8 +49,9 @@ int findStraight(double** a, double** b, double** c, Point* p, int n) {
 
 
 void findNewStraight(double** c, Point* p, int n, double h) {
-	for (int i = 0; i < n - 1; i++)
+	for (int i = 0; i < n - 1; i++) {
 		(*c)[i] += h * sqrt(pow(p[i + 1].x - p[i].x, 2) + pow(p[i + 1].y - p[i].y, 2));
+	}
 
 	(*c)[n - 1] += h * sqrt(pow(p[0].x - p[n - 1].x, 2) + pow(p[0].y - p[n - 1].y, 2));
 }
