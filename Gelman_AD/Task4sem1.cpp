@@ -6,20 +6,12 @@
 void shiftrightk(double* mas, int lngth, int K);
 //shiftrightK shifts the array "mas" in a cycle, every element shifts to the right
 
-void reversemas(double* mas, int right, int lngth);
-// reversemas reverses the array
-void reversemas(double* mas, int right, int lngth)
-{
-	int left;
-
-	left = mas[right];
-	mas[right] = mas[lngth - right - 1];
-	mas[lngth - right - 1] = left;
-}
-
 void shiftrightk(double* mas, int lngth, int K)
 {
-	int right;
+	double finel;
+	int i;
+	int m = lngth / 2;
+	double c;
 
 	if (lngth == 0)
 	{
@@ -27,35 +19,22 @@ void shiftrightk(double* mas, int lngth, int K)
 		return;
 	}
 
-	//no elements to shift (only 1 element)
 	if (lngth == 1)
-	{
+	{     //no elements to shift (only 1 element)
 		return;
 	}
-
-	//Reverse all array
-	for (right = 0; right < lngth; right++)
+	for (i = 0; i < m; i++)
 	{
-		reversemas(mas, right, lngth);
+			c = mas[i];
+			mas[i] = mas[lngth - i - 1];
+			mas[lngth - i - 1] = c;
 	}
 
-	//Reverse the first part of the array (before the Kth element)
-	for (right = 0; right < K; right++)
-	{
-		reversemas(mas, right, lngth);
-	}
-
-	//Reverse the second part of the Array (after the Kth element)
-	for (right = K; right < lngth; right++)
-	{
-		reversemas(mas, right, lngth);
-	}
 
 }
 
 
-
-int main(void)
+int main(void) 
 {
 	int lngth; //the length
 	int K; //We will shift the array K times to the right
@@ -63,13 +42,13 @@ int main(void)
 	FILE* file_out = fopen("output.txt", "w");
 	double* mas = NULL;
 
-	if (file_in == NULL)
+	if (file_in == NULL) 
 	{
 		printf("Unable to open the file input.txt\n");
 		return -1;
 	}
 
-	if (file_out == NULL)
+	if (file_out == NULL) 
 	{
 		printf("Unable to open the file output.txt\n");
 		fclose(file_in);
@@ -86,7 +65,7 @@ int main(void)
 
 	mas = (double*)malloc((lngth) * sizeof(double));
 
-	if (mas == NULL)
+	if (mas == NULL) 
 	{
 		printf("Memory error\n");
 		fclose(file_in);
@@ -96,7 +75,7 @@ int main(void)
 
 	for (int i = 0; i < lngth; i++)
 	{
-		if (fscanf(file_in, "%lf", &mas[i]) != 1)
+		if (fscanf(file_in, "%lf", &mas[i]) != 1) 
 		{
 			printf("Problems with array\n");
 			free(mas);
@@ -110,9 +89,12 @@ int main(void)
 
 	printf("Enter the value of shifting the array\n");
 
-	scanf("%d", &K);
+	scanf("%d",  & K);
 
-	K %= lngth;
+	if (K > lngth)
+	{
+		printf("Enter the fewer value of K\n");
+	}
 
 	//Shifting the array K times to the right
 
