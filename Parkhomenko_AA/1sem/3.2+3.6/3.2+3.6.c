@@ -8,7 +8,7 @@
 #define NESORT -1
 
 void random_arr(int len, int *arr1, int *arr2, int *arr3); //генерирование рандомного массива
-void pyz_sort(int *arr1, int len); //сортировка просеиванием
+void pyz_sort(int *arr1, int len); //сортировка пузырьком
 void quick_sort(int *arr2, int first, int last);  //быстрая сортировка
 int test_ypor(int *arr, int len); //проверка упорядоченности массива
 int comp(const int *a, const int *b); // вспомогательная функция для реализации qsort
@@ -25,7 +25,7 @@ void random_arr(int len, int *arr1, int *arr2, int *arr3) {
 	}
 }
 
-// медленная сортировка просеиванием:
+// медленная сортировка пузырьком:
 void pyz_sort(int *arr1, int len) {
 	int c;
     int i = 0;
