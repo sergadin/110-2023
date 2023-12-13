@@ -21,6 +21,8 @@ int deriv_and_polinom(FILE* input, double* deriv, double* polinom)
     }
     return 0;
 }
+
+
 int main(void)
 {
     FILE* input;
