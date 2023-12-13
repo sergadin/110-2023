@@ -1,71 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <malloc.h>
 
-
-int Function(float arr[/*x*/], int x);
+void Sort(int arr[], int lgth);
+int Sdvig(int arr[/*x*/], int lgth);
 
 int main(void){
     FILE *f1;
-    FILE *f2;
     int size, i, flag, l;
     int *arr;
-    int quantity_not_zero=0;
-    int quantity=0;
     f1 = fopen("input.txt","r");
-    f2 = fopen("input.txt","r");
-
-    if(f1==NULL){
+    if(f1 == NULL){
         printf("oshibka chteniya");
         return -1;
     }
-
-    while((flag = fscanf(f2, "%d", &l)) != EOF){
-        if(flag != 1){
-            printf("est not int");
-            return -1;
-        }
-        quantity++;
-    }
-
-    if(fscanf(f1, "%d", &size)!=1){
+    if(fscanf(f1, "%d", &size) != 1){
         printf("file pust");
         return -1;
     }
-
-    if(quantity <= size){
-        printf("kol-vo elementov < razmera massiva");
-        return -1;
-    }
-
-    arr=(int *)malloc(size * sizeof(int));
-
-    if (arr == NULL){
+    arr = (int *)malloc(size * sizeof(int));
+     if (arr == NULL){
         printf("memory error 1");
         return -2;
     }
-
     for(i = 0; i < size; i++){
-        fscanf(f1, "%d", &arr[i]);
+        flag = fscanf(f1, "%d", &arr[i]);
+        if(flag != 1){
+            printf("est not int or kol-vo elementov<razmera ");
+            return -1;
+        }
     }
-
-    quantity_not_zero = Zanulenie(arr,size);
-    Function(arr, size);
-    size = quantity_not_zero;
-    arr=(int *)realloc(arr, size * sizeof(int));
+    for(i = 0; i < size; i++){
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    size = Sdvig(arr, size);
+    arr = (int *)realloc(arr, size * sizeof(int));
     if(arr == NULL){
         printf("memory error 2");
         return -3;
     }
-
     for(i = 0; i < size; i++){
         printf("%d ", arr[i]);
     }
     printf("\n");
     printf("%d", size);
     fclose(f1);
-    fclose(f2);
     free(arr);
 
 
@@ -73,38 +53,39 @@ int main(void){
 }
 
 
-
-int Function(float arr[/*x*/], int x){
-    int j = 0;
-    for (int i = 0; i < x; ++i) {
-        if (arr[i] != 1.5) {
-            assert(j <= i);
-            arr[j++] = arr[i];
+void Sort(int arr[], int lgth){
+    int i;
+    int j;
+    for (int i = 0; i < lgth - 1; i++){
+        for (int j = (lgth - 1); j > i; j--){
+            if (arr[j - 1] > arr[j]){
+                int temp = arr[j - 1];
+                arr[j - 1] = arr[j];
+                arr[j] = temp;
+            }
         }
-    }
-    for (; j < x; ++j) {
-        arr[j] = 1.5;
     }
 }
 
 
-
-int Zanulenie(float arr[], int x){
-    int n, i, quantity_not_zero;
-    for(i = 0; i < x; i++){
-        for(n = 1; n + i < x; n++){
-            if(arr[i] == arr[i + n])
-                arr[n + i]= 1.5;
-
+int Sdvig(int arr[], int lgth){
+    int i=0;
+    int len;
+    int k;
+    Sort(arr, lgth);
+    while(i < lgth-1){
+        if(arr[i+1] == arr[i]){
+            len = lgth;
+            for(k = i; k < len - 1; k++){
+                arr[k]=arr[k+1];
+            }
+            lgth--;
+        }
+        else{
+            i++;
         }
     }
-    for(i = 0; i < x; i++){
-        if(arr[i] != 1.5){
-            quantity_not_zero++;
-        }
-    }
-    return quantity_not_zero;
-
+    return lgth;
 
 }
 
