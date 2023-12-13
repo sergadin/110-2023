@@ -4,6 +4,20 @@
 #define ERROR -1
 
 
+int Insert_sort(float *arr, int len);
+void swap(float *a, float *b);
+void go_up(float *arr, int k);
+void go_down(float *arr, int k);
+void heap_sort(float *arr, int len);
+void fill_random_arr(float *arr, int len);
+int check_sorted(float *arr, int len);
+int compare(const void* i, const void* j);
+float get_Insertsort_time(float *arr, int len);
+float get_qsort_time(float *arr, int len);
+float get_heapsort_time(float *arr, int len);
+void sorting_time(int len)
+
+
 int Insert_sort(float *arr, int len){
     int newElement, location;
 
