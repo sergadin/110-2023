@@ -1,72 +1,47 @@
 #include <stdio.h>
 #include <math.h>
-int max_number_of_element(FILE* input);
-int deriv_and_polinom(FILE* input)
+int deriv_and_polinom(FILE* input, double* deriv, double* polinom);
+int deriv_and_polinom(FILE* input, double* deriv, double* polinom)
 {
-    int len;
-    int qua_of_cur_el = 0, max_qua_of_cur_el = 0, max_el = 0;
-    if (fscanf(input, "%d", &len))
+    double coef = 0, x = 0;
+    *polinom = 0;
+    *deriv = 0;
+    if (fscanf(input, "%lf", &x) != 1)
     {
         return -1;
     }
-    int arr[len];
-    int i = 0;
-    while (fscanf(input, "%d", &arr[i]) && i < len)
+    while (fscanf(input, "%lf", &coef) && (!feof(input)))
     {
-        i++;
+        *deriv = *deriv * x + *polinom;
+        *polinom = *polinom * x + coef;
     }
-    if (!feof);
+    if (!feof(input))
     {
         return -2;
     }
-    if (i == len)
-    {
-        return -3;
-    }
-    for(int i = 0; i < len; i++)
-    {
-        for (int j = i + 1; j < len; j++)
-        {
-            if (arr[i] == arr[j])
-            {
-                qua_of_cur_el ++;
-            }
-        }
-        if (max_qua_of_cur_el < qua_of_cur_el)
-        {
-            max_qua_of_cur_el = qua_of_cur_el;
-            max_el = arr[i];
-        }
-    }
-    
-    return max_el;
+    return 0;
 }
 int main(void)
 {
     FILE* input;
-    int res;
+    int check;
+    double deriv, polinom;
     input = fopen("input.txt", "r");
     if (!input)
     {
-        printf("cant open input file");
+        printf("cant open input file\n");
+        return -1;
     }
-    res = max_number_of_element(input);
-    if (res == -1)
+    check = deriv_and_polinom(input, &deriv, &polinom);
+    if (check == -1)
     {
-        printf("input file is empty");
+        printf("input file is empty\n");
     }
-    if (res == -2)
+    if (check == -2)
     {
-        printf("incorrect type of input data");
+        printf("incorrect type of input data\n");
     }
-    if (res == -3)
-    {
-        printf("nuber of elements is more then expected");
-    }
-    else
-    {
-        printf("%d", res);
-    }
+    printf("%lf %lf", deriv, polinom);
     fclose(input);
     return 0;
 }
