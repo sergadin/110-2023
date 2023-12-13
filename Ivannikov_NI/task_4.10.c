@@ -14,16 +14,16 @@ void printSubsets(int N, FILE *file)
         // Вывод текущего подмножества в файл
         for (int j = 0; j < N; j++) 
         {
-            if (i & (1 << j)) 
+            if (i & (1 << j)) // Если j-й бит числа i равен 1, то элемент j принадлежит подмножеству
             {
                 fprintf(file, "%d ", j + 1);
             }
         }
         fprintf(file, "\n");
     }
-}
+} 
 
-int main(void) 
+int main(void)
 {
     int N;
     

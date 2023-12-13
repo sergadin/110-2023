@@ -11,15 +11,40 @@ int segment(int *mas, int length);  // функция получает на вх
 
 int segment(int *mas, int length)
 {
-    int j=0;  // счетчик
+    int j = 0;  // счетчик
+    int min;
+    int max;
+    int count = 0;
     
-    while(j < (length - 1)){
-        if((mas[j] + 1) == mas[j + 1]){
-            j++;
+    min = mas[0];
+    max = mas[0];
+    
+    for(j = 0; j < length; j++){
+        if(max < mas[j]){
+            max = mas[j];
         }
-        else{
-            return NOT_SUCCESS;
+        if(min > mas[j]){
+            min = mas[j];
         }
+    }
+    
+    
+    int x = min; // переменная создана для прогона по отрезку
+    
+    while(x <= max){
+        while(j < length){
+            //printf("j %d\n mas %d\n x %d\n", mas[j], x);
+            if((j == (length - 1)) && (x != mas[j])){
+                return NOT_SUCCESS;
+            }
+            if((x != mas[j]) && (j < (length - 1))){
+                j++;
+                continue;
+            }
+            break;
+        }
+        x++;
+        j = 0;
     }
     return SUCCESS;
 }

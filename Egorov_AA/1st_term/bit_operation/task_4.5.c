@@ -6,13 +6,13 @@ long changeByte(long number, int i, unsigned char newValue, int* error);
 
 
 unsigned char getByte(long number, int i, int* error) {
-
-    if (i < 0 || i >= sizeof(long)) {
+    unsigned char byte;
+    if (i < 0 || i >= (int)sizeof(long)) {
         printf("wrong index\n");
         *error = 1;
     }
 
-    unsigned char byte = (number >> (i * 8)) & 0xFF;
+    byte = (number >> (i * 8)) & 0xFF;
 
     return byte;
 }
@@ -20,7 +20,7 @@ unsigned char getByte(long number, int i, int* error) {
 
 long changeByte(long number, int i, unsigned char newValue, int* error) {
 
-    if (i < 0 || i >= sizeof(long)) {
+    if (i < 0 || i >= (int)sizeof(long)) {
         printf("wrong index\n");
         *error = 1;
     }
@@ -32,10 +32,10 @@ long changeByte(long number, int i, unsigned char newValue, int* error) {
 }
 
 
-int main() {
+int main(void) {
     long number = 0x12345678;
-    int i = 4, error = 0;
-    unsigned char newValue = 0b1101111;
+    int i = 3, error = 0;
+    unsigned char newValue = 111;
 
     printf("given long number - %lx\n\n", number);
     if (error) {

@@ -45,7 +45,7 @@ Point vector(Point a, Point b){
 
 void to_output(Point *coords, int len1, int len2, FILE *f_out1, FILE *f_out2, Point p_st, Point p_end){
 	Point first1 = coords[0], first2 = coords[len1];
-	int len_m, count = 0;
+	int len_m;
 	
 	if (len1>len2){
 		len_m = len1;
@@ -141,7 +141,8 @@ bool is_cross(Point p1, Point p2, Point m1, Point m2){
 	on_seg3 = scalar_product(p1, m1, p1, m2);
 	on_seg4 = scalar_product(p2, m1, p2, m2);
 	
-	if ((on_seg1 <= 0 && obl1 == 0) || (on_seg2 <= 0 && obl2 == 0) || (on_seg3 <= 0 && obl3 == 0) || (on_seg4 <= 0 && obl4 == 0)){
+	if ((on_seg1 <= 0 && obl1 <= 0 && obl1 >= 0) || (on_seg2 <= 0 && obl2 <= 0 && obl2 >= 0) 
+        || (on_seg3 <= 0 && obl3 >= 0 && obl3 <= 0) || (on_seg4 <= 0 && obl4 >= 0 && obl4 <= 0)){
 		on_seg = 1;
 	}
 	if ((obl1*obl2 < 0 && obl3*obl4 < 0) || on_seg == 1){
@@ -189,25 +190,25 @@ int main(void){
 	FILE *f_in, *f_out1, *f_out2, *gnuplt;
 	Point *coords = NULL;
 	Point dist_st, dist_end;
-	Segm dist1, dist2;
+	Segm dist1;
 	int len1, len2;
-	double min_dist = 1000000000, thing = 0.;
+	double min_dist = 1000000000;
 	
-	f_in = fopen("input.txt", "r");
+	f_in = fopen("input_7.txt", "r");
 	if (f_in == NULL){
 		printf("Файл не открывается\n");
 		return -1;
 	}
 	
 	f_out1 = fopen("output1.txt", "w");
-	if (f_in == NULL){
+	if (f_out1 == NULL){
 		printf("Файл не открывается\n");
 		fclose(f_in);
 		return -1;
 	}
 	
 	f_out2 = fopen("output2.txt", "w");
-	if (f_in == NULL){
+	if (f_out2 == NULL){
 		printf("Файл не открывается\n");
 		fclose(f_in);
 		fclose(f_out1);
@@ -249,7 +250,7 @@ int main(void){
 				dist_st = dist1.y;
 				dist_end = dist1.z;
 			}
-			if (min_dist==0.){
+			if (min_dist<=0.){
 				dist_st.x = 0;
 				dist_st.y = 0;
 				dist_end.x = 0;

@@ -1,79 +1,47 @@
 #include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
+#include<stdlib.h>
 
-void ShiftByK(int* mas, int lngth, int dublicate); // shifting the array K = dublicate times to the right
-void ShiftByK(int* mas, int lngth, int dublicate)
+//Removing duplicates from the array
+
+int remove_duplicates(double* mas, int lngth);
+int remove_duplicates(double* mas, int lngth) 
 {
-	int shiftIndex = (lngth - dublicate) % lngth;
-	int temp; //temporary index
-	int i;
+    int i;
+    int j = 0;
 
-	for (i = 0; i < lngth; i++)
-	{
-		temp = mas[i];
-
-		// Count the index after shifting the array
-		int newIndex = (i + shiftIndex) % lngth;
-		mas[i] = mas[newIndex];
-		mas[newIndex] = temp;
-	}
+    // Scanning the array
+    for (i = 1; i < lngth; i++) 
+    {
+        // If a = b, we skip b 
+        if (mas[i] != mas[j]) 
+        {
+            j++;
+            mas[j] = mas[i];
+        }
+    }
+    // Updating the length of the array
+    lngth = j + 1;
+	return lngth;
 }
 
-int LngthSet(int* mas, int lngth);
-int LngthSet(int* mas, int lngth)
+int main(void) 
 {
+    FILE* file_in = fopen("input.txt", "r");
+    FILE* file_out = fopen("output.txt", "w");
+    double* mas = NULL; //array
+    int lngth; //the length of the array
 
-	int finlngth = lngth;
-	int dublicate;
-	int i;
-
-	for (int firstel = 0; firstel < finlngth - 1; firstel++)
-	{
-
-		i = firstel;
-
-		while (mas[i + 1] == mas[i])
-		{
-			i++;
-		}
-
-		dublicate = i - firstel; //removing dublicates
-		finlngth -= dublicate;
-
-		//Shifting the array after deliting dublicates
-
-		ShiftByK(mas, firstel + dublicate + 1, firstel + 1);
-		ShiftByK(mas, lngth, dublicate);
-
-	}
-
-	return finlngth;
-}
-
-int main(void)
-{
-	FILE* file_in = fopen("input.txt", "r");
-	FILE* file_out = fopen("output.txt", "w");		
-	char fi[30];		
-	char fo[30];		
-	int code;		
-	int* mas = NULL;	
-	int lngth;		
-
-	//Checking the files 
-
+	//Checking the files
 	if (file_in == NULL)
 	{
-		printf("Unable to open the file input.txt\n", file_in);
-		fclose(file_in);
+		printf("Unable to open the file input.txt\n");
 		return -1;
 	}
 
 	if (file_out == NULL)
 	{
 		printf("Unable to open the file output.txt\n");
-		fclose(file_out);
+		fclose(file_in);
 		return -1;
 	}
 
@@ -85,7 +53,7 @@ int main(void)
 		return -1;
 	}
 
-	mas = (int*)malloc((lngth) * sizeof(int));
+	mas = (double*)malloc((lngth) * sizeof(double));
 
 	if (mas == NULL)
 	{
@@ -107,27 +75,24 @@ int main(void)
 		}
 	}
 
-	//Array function
-	code = LngthSet(mas, lngth); 
+    // Removing duplicates
+    remove_duplicates(mas, lngth);
 
-	if (code < 0)
+    // Printing the result
+
+	for (int i = 0; i < lngth; i++)
 	{
-		return code;
+		fprintf(file_out, "%lf ", mas[i]);
 	}
 
-	printf("The result is uploaded to the file output.txt\n", file_out);
-
-	fprintf(file_out, "Number of elements in the array without repetitions %d\nThe array itself without repetitions: ", code);
-
-	//Final result in the file output.txt
-
-	for (int i = 0; i < code; i++)
+	if (lngth != 0)
 	{
-		fprintf(file_out, "%d ", mas[i]);
+		printf("The result is printed\n");
 	}
 
-	fclose(file_out);
 	free(mas);
+	fclose(file_in);
+	fclose(file_out);
 
-	return 0;
+    return 0;
 }
