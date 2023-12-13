@@ -1,6 +1,6 @@
 reset
-set yrange [-15:15]
-set xrange[-22:22]
+set yrange [-5:5]
+set xrange[-10:10]
 set xzeroaxis lt -1
 set yzeroaxis lt -1
 unset border
