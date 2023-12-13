@@ -4,16 +4,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#define EPS 0.005
+#define ERROR -1
 
 typedef struct {
    double x;
    double y;
    double R;
+   int grow;
 } Circle;
 
 int read_file(FILE *file_in, Circle **circles);
-void radius_grow(Circle *circles, int kol_centre);
+void find_radius(Circle *circles, int kol_centre);
 
 
 int read_file(FILE *file_in, Circle **circles) {
@@ -24,29 +25,29 @@ int read_file(FILE *file_in, Circle **circles) {
 	
 	if (fscanf(file_in, "%lf", &elem) != 1) {
 		printf("file pust / ne tot tip u pervogo elementa\n");
-		return -1;
+		return ERROR;
 	}
 	
 	while((scan_el = fscanf(file_in, "%lf", &elem)) != EOF) {
 		if (scan_el != 1) { 
 			printf("ne tot tip u elementov\n");
-			return -1;
+			return ERROR;
 		}
 		kol_el++;
 	}
 	
-	if ((kol_el%2) != 0) {
+	if ((kol_el % 2) != 0) {
 		printf("error, kol_el nechet\n");
-		return -1;
+		return ERROR;
 	}
 	
 	kol_centre = kol_el / 2;
 	
-	arr = (Circle *)malloc((kol_centre*2) * sizeof(Circle));
+	arr = (Circle *)malloc((kol_centre) * sizeof(Circle));
 	
 	if (arr == NULL) {
 		printf("memory error\n");
-		return -1;
+		return ERROR;
 	}
 	
 	rewind(file_in);
@@ -54,7 +55,7 @@ int read_file(FILE *file_in, Circle **circles) {
 	for(int i = 0; i < kol_centre; i++) {
 		fscanf(file_in, "%lf %lf", &arr[i].x, &arr[i].y);
 		arr[i].R = 0;
-		arr[i + kol_centre].R = -1;
+		arr[i].grow = 1;
 	}
 	
 	*circles = arr;
@@ -62,40 +63,45 @@ int read_file(FILE *file_in, Circle **circles) {
 }
 
 
-void radius_grow(Circle *circles, int kol_centre) {
-	double r1, r2, sum_r, distance;
-	double pnt1_x, pnt2_x, pnt1_y, pnt2_y;
+void find_radius(Circle *circles, int kol_centre) {
+	int index_i = -1, index_j = -1;
+	double distance = 0, radius = 0;
+	double min_radius = -1;
 	
 	for(int i = 0; i < kol_centre; i++) {
-		pnt1_x = circles[i].x;
-		pnt1_y = circles[i].y;
-		r1 = circles[i].R;
-		for(int j = i + 1; j < kol_centre; j++) {
-			pnt2_x = circles[j].x;
-			pnt2_y = circles[j].y;
-			r2 = circles[j].R;
-			sum_r = r1 + r2;
-			distance = sqrt(pow(pnt1_x - pnt2_x, 2) + pow(pnt1_y - pnt2_y, 2));
-			if ((sum_r > distance) || (fabs(sum_r - distance) < (EPS/10.0))) {
-				circles[i + kol_centre].R = r1;
-				circles[j + kol_centre].R = r2;
+		if (circles[i].grow == 1) { // если ещё не нашли конечный радиус у конкретной окружности
+			for(int j = 0; j < kol_centre; j++) {
+				if (i != j) {
+					distance = sqrt(pow(circles[i].x - circles[j].x, 2) + pow(circles[i].y - circles[j].y, 2)); // расстояние между центрами
+					if (circles[j].grow == 0) { // если сравниваем с окр-тью, которая нашла свой конечный радиус
+						radius = distance - circles[j].R; 
+					}
+					else {
+						radius = distance / 2.0;
+					}
+					if (min_radius < 0) {
+						min_radius = radius;
+						index_i = i;
+					} 
+					else if (radius < min_radius) {
+						min_radius = radius;
+						index_i = i;
+						index_j = j;
+					}
+				}
 			}
 		}
 	}
 	
-	for(int i = 0; i < kol_centre; i++) {
-		if(circles[i + kol_centre].R < 0.0) {
-			circles[i].R += EPS;
-		}
-	}
-	
-	for(int i = kol_centre; i < 2 * kol_centre; i++) {
-		if(circles[i].R < 0.0) {
-			radius_grow(circles, kol_centre);
+	if (index_i != -1) {
+		circles[index_i].R = min_radius;
+		circles[index_i].grow = 0;
+		if ((index_j != -1) && (circles[index_j].grow == 1)) {
+			circles[index_j].R = min_radius;
+			circles[index_j].grow = 0; 
 		}
 	}
 }
-
 
 
 int main(void) {
@@ -104,22 +110,22 @@ int main(void) {
     Circle *circles;
 	
     file_in = fopen("input.txt", "r");
-    if(file_in == NULL) {
+    if (file_in == NULL) {
 		printf("error opening the file_in\n");
         return -1;
     }
 	
 	file_out = fopen("output.txt", "w");
-	if(file_in == NULL) {
-		printf("error opening the file_in\n");
+	if (file_out == NULL) {
+		printf("error opening the file_out\n");
 		fclose(file_in);
         return -1;
     }
 	
 	kol_centre = read_file(file_in, &circles);
 	
-    if (kol_centre == -1) {
-        printf("ne prochit file_in \n");
+    if (kol_centre == ERROR) {
+        printf("error in file_in \n");
 		fclose(file_in);
 		fclose(file_out);
 		free(circles);
@@ -133,14 +139,17 @@ int main(void) {
 		free(circles);
         return 0;
     }
-
-	radius_grow(circles, kol_centre);
 	
 	for(int i = 0; i < kol_centre; i++) {
-		fprintf(file_out, "центр (%lf ; %lf) и R = %lf \n", circles[i].x, circles[i].y, circles[i + kol_centre].R);
-		fprintf(file_out, "\n");
+		find_radius(circles, kol_centre);
+	}
+	
+	for(int i = 0; i < kol_centre; i++) {
+		fprintf(file_out, "центр (%lf ; %lf) и R = %lf \n", circles[i].x, circles[i].y, circles[i].R);
 		fprintf(file_out, "\n");
 	}
+	
+	printf("rezultat napechatan\n");
 	
     fclose(file_in);
 	fclose(file_out);
