@@ -4,7 +4,6 @@
 #include <time.h>
 #define Uncorr_ord -1
 #define Corr_ord 0
-#define mem_err -2
 
 //Функция sort_bin сортирует числа по количеству единиц в двиочной записи. 
 //Функция sorting_comparing сравнивает скорости сортировок qsort и sort_bin.
@@ -14,7 +13,7 @@ int ordered_seq(int *arr, int len);
 int bin1(int num);
 int rand_array(int *arr, int len);
 int sort_bin(int *arr, int len, int *bin_arr);
-int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr);
+void sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr);
 
 int compare(const void* i, const void* j){
     return (*(int*)i - *(int*)j);
@@ -22,7 +21,7 @@ int compare(const void* i, const void* j){
 }
 
 int ordered_seq(int *arr, int len){
-	int last_val = arr[0];
+	double last_val = arr[0];
 	for (int i = 1; i < len; i++){
 		if (last_val > arr[i]){
 			return Uncorr_ord;
@@ -47,7 +46,7 @@ int rand_array(int *arr, int len){
 	srand(time(NULL));
 	
 	for (int i = 0; i < len; i++){
-		arr[i] = rand()%1000;
+		arr[i] = rand();
 	}
 	return 0;
 }
@@ -75,27 +74,15 @@ int sort_bin(int *arr, int len, int *bin_arr){
 	return Corr_ord;
 }
 
-int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr){
+void sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_arr){
     clock_t st_bin, end_bin, sec_bin, st_q, end_q, sec_q;
-    	int answ;
-    	arr_copy = (int *)malloc(len*sizeof(int));
-	if (arr_copy == NULL){
-		printf("Оперативная память не выделена\n");
-		return mem_err;
-	}
-	
-	bin_arr = (int *)malloc(len*sizeof(int));
-	if (bin_arr == NULL){
-		printf("Оперативная память не выделена\n");
-		free(arr_copy);
-		return mem_err;
-	}
+    int answ;
 	rand_array(arr, len);
-	for (int i =0; i<len; i++){
-        	arr_copy[i] = arr[i];
-    	}
+	for (int i =0; i < len; i++){
+        arr_copy[i] = arr[i];
+    }
     
-    for (int i=0; i<len; i++){
+    for (int i = 0; i < len; i++){
 		bin_arr[i] = bin1(arr[i]);
 	}
     st_q = clock();
@@ -113,7 +100,7 @@ int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_a
         arr[i] = arr_copy[i];
     }
     
-    for (int i=0; i<len; i++){
+    for (int i = 0; i < len; i++){
 		bin_arr[i] = bin1(arr[i]);
 	}
     
@@ -126,15 +113,13 @@ int sorting_comparing(int *arr, int *arr_copy, int len, FILE * f_out, int *bin_a
     }else{
     fprintf(f_out, "время: %ld\n", sec_bin);
     }
-    free(arr_copy);
-    free(bin_arr);
-    return 0;
+    
 }
 
 int main(void){
 	FILE *f_out;
 	int len, *arr_rand = NULL, *bin_arr=NULL, *arr_copy = NULL; 
-	int main_return_code = 0;
+	int answ, main_return_code = 0;
 	
 	
 	printf("Введите максимальную длину случайного массива:\n");
@@ -154,23 +139,33 @@ int main(void){
 		goto terminate;
 	}
 	
-	
+	bin_arr = (int *)malloc(len*sizeof(int));
+	if (bin_arr == NULL){
+		printf("Оперативная память не выделена\n");
+		main_return_code = -1;
+		goto terminate_1;
+	}
+	arr_copy = (int *)malloc(len*sizeof(int));
+	if (arr_copy == NULL){
+		printf("Оперативная память не выделена\n");
+		main_return_code = -1;
+		goto terminate_2;
+	}
 	
 	fprintf(f_out,"Сортировки:\n                     Qsort               Бинарные\n");
     for (int i = len; i>0; i = i/2){
-        if(sorting_comparing(arr_rand, arr_copy, i, f_out, bin_arr)==mem_err){
-        	printf("Оперативная память не выделена\n");
-		main_return_code = -1;
-		goto terminate_1;
-        }
+        sorting_comparing(arr_rand, arr_copy, i, f_out, bin_arr);
     }
 	printf("Ответ записан в файл output.txt\n");
 	
+	free(arr_copy);
+	terminate_2:
+	free(bin_arr);
 	terminate_1:
 	free(arr_rand);
 	
 	terminate:
 	
 	fclose(f_out);
-	return main_return_code;
+	return 0;
 }
