@@ -9,7 +9,7 @@ int test_file_input_double (FILE *input, double *num, ERR *error);      //про
 double compute_max_dev (FILE *input, ERR *error)
 {
         int quan = 1;
-        double curr, max, min, summ, aver;
+        double curr = 0, max, min, summ, aver;
         test_file_input_double(input, & curr, error);
 	max = curr;
 	min = curr;
@@ -36,7 +36,6 @@ int main (void)
         output = fopen ("output.txt", "w");
         test_file(input, &error);
         test_file(output, &error);
-	if ( feof (input) == 0) { error = E_IO; }
         max_dev = compute_max_dev(input, &error);
         fprintf (output, "answ = %f \n", max_dev);
         fclose (input);

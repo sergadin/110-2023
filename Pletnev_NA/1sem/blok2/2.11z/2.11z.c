@@ -13,12 +13,7 @@ int ShiftTheArrayByPositionK(int* arr, int len, int k);
 //функция сдвигает элементы массива на k позиций вправо
 int ShiftTheArrayByPositionK(int* arr, int len, int k)
 {
-    
-    int i;			// предедущий индекс элемента
-	int j;			// текущий индекс элемента
-	int cnt = 0;	// счетчик действий
-	int c;			// хранение первого элемента в цикле
-    
+
 	if (arr == NULL)
 	{
 		printf("Error:The array is empty\n");
@@ -28,6 +23,12 @@ int ShiftTheArrayByPositionK(int* arr, int len, int k)
 	k %= len;
 	k = len - k;
 
+	int i;			// предедущий индекс элемента
+	int j;			// текущий индекс элемента
+	int cnt = 0;	// счетчик действий
+	int c;			// хранение первого элемента в цикле
+
+	//сдвиг эллементов влево
 	for (int i0 = 0; cnt < len; i0++)
 	{
 

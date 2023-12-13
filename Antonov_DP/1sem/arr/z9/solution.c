@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
+  
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
@@ -26,12 +26,8 @@ int rem_rep_parts (double *arr, int len)
 	int i, j = 0;	//i нужно для цикла, а j - вспомагательная переменная
 	for (i = 1; i < len; i++)
 	{
-		if (fabs(arr[i-j]-arr[i-j-1]) < e)
-		{
-		       	arr[i-j] = 0;
-			rotate (i-j, len, arr);
-			j++; 
-		}
+		if (arr[i-j]-arr[i-j-1] < e)
+		{ arr[i-j] = 0,rotate (i-j, len, arr), j++; }
 	}
 	return j;
 }
