@@ -1,0 +1,12 @@
+reset
+set yrange [-15:15]
+set xrange[-22:22]
+set xzeroaxis lt -1
+set yzeroaxis lt -1
+unset border
+unset tics
+set ytics axis -99999,1,99999 font "Helvetica, 4" scale 0.5
+set xtics axis -99999,1,99999 font "Helvetica, 4" scale 0.5
+set grid
+set title "Geometry task" font "Helvetica Bold, 20"
+plot "input.txt" using 1:2 with lines title "first polygon" lc rgb "blue", "output.txt" with lines title "second polygon" lc rgb "red"
