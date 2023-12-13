@@ -2,31 +2,24 @@
 #include <stdlib.h>
 #include <math.h>
 
-int max_number_of_element(int len, int* arr);
-int max_number_of_element(int len, int* arr)
+void put_elements_with_even_index_in_front(int len, int* arr);
+void put_elements_with_even_index_in_front(int len, int* arr)
 {
-    int qua_of_cur_el = 0, max_qua_of_cur_el = 0, max_el = 0;
-    for (int i = 0; i < len; i++) {
-        for (int j = i + 1; j < len; j++)
+    for(int i = 0; i <= (len - 1) / 2; i++)
+    {
+        for(int j = 2 * i; j > i; j--)
         {
-            if (arr[i] == arr[j])
-            {
-                qua_of_cur_el++;
-            }
-        }
-        if (max_qua_of_cur_el < qua_of_cur_el)
-        {
-            max_qua_of_cur_el = qua_of_cur_el;
-            max_el = arr[i];
+            int a = 0;
+            a = arr[j - 1];
+            arr[j - 1] = arr[j];
+            arr[j] = a;
         }
     }
-    return max_el;
 }
 
 int main(void)
 {
     FILE* input;
-    int res;
     int len = 0;
     int* arr = NULL;
     input = fopen("input.txt", "r");
@@ -52,8 +45,11 @@ int main(void)
     {
         fscanf(input, "%d", &arr[i]);
     }
-    res = max_number_of_element(len, arr);
-    printf("%d\n", res);
+    put_elements_with_even_index_in_front(len, arr);
+    for(int i = 0; i < len; i++)
+    {
+        printf("%d ", arr[i]);
+    }
     free(arr);
     fclose(input);
     A:
