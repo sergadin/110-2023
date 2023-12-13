@@ -1,6 +1,0 @@
-O memAddr:  0x21c00a0 memSize: 0 allocAddr:   0x4015cc freeAddr:   0x4016f2 # memory overwritten beyond allocated 0 bytes
-# 4 byte beyond area:
-# 01 00 00 00 
-# abort; DUMP of current state
-# total allocation requests:      1 ; max. mem used 0 kBytes
-# leak      0 Bytes	:-)
