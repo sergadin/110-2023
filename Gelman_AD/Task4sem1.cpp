@@ -7,7 +7,7 @@ void shiftrightk(double* mas, int lngth, int K);
 //shiftrightK shifts the array "mas" in a cycle, every element shifts to the right
 
 void reversemas(double* mas, int right, int left);
-//
+// reversemas reverses the array
 void reversemas(double* mas, int right, int left)
 {
 	for (right = right; right < left; right++)
@@ -50,8 +50,6 @@ void shiftrightk(double* mas, int lngth, int K)
 	left = lngth;
 	reversemas(mas, right, left);
 }
-
-
 
 int main(void)
 {
