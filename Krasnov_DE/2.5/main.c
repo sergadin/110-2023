@@ -1,19 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <time.h>
 
+
+
+int compare(const void* i, const void* j){
+    return (*(int*)i - *(int*)j);
+}
 
 int main(){
     FILE *f1;
     FILE *f2;
-    int size_1, size_2, size_3;
+    int size_1, size_2;
     int *arr_1;
     int *arr_2;
-    int *arr_3;
     int i;
     int flag;
     int size;
-    f1 = fopen("input(1).txt","r");
+    f1 = fopen("test.txt","r");
     f2 = fopen("input(2).txt","r");
 
     if(f1==NULL){
@@ -65,62 +70,64 @@ int main(){
         }
     }
 
-    size_3 = size_1 + size_2;
+    Intersection(arr_1, arr_2, size_1, size_2);
 
-    arr_3=(int *)malloc(size_3 * sizeof(int));
-
-    if(arr_3 == NULL){
-        printf("memory error 3");
-        return -3;
-    }
-
-    for(i = 0; i < size_1; i++){
-        arr_3[i]=arr_1[i];
-        printf("%d ",arr_3[i]);
-    }
-
-    printf("\n");
-
-    for(i = 0; i < size_2; i++){
-        arr_3[i+size_1]=arr_2[i];
-        printf("%d ",arr_3[i+size_1]);
-    }
-    printf("\n");
-
-    size = DeleteItem(arr_3,size_3);
-
-    arr_3 = (int *)realloc(arr_3, size * sizeof(int));
-    if(arr_3 == NULL){
-        printf("memory error 3");
-        return -1;
-    }
-
-    for(i=0; i < size; i++){
-        printf("%d ",arr_3[i]);
-    }
     fclose(f1);
     fclose(f2);
     free(arr_1);
     free(arr_2);
-    free(arr_3);
 
     return 0;
 }
 
 
-int DeleteItem(int arr[], int lgth){
-    int i, j, len;
-    for(i=0; i < lgth; i++ ){
-        for(j = lgth - 1; j > i; j--){
-            if(arr[j]==arr[i]){
-                len=lgth;
-                for(j; j < len - 1; j++){
-                    arr[j]=arr[j+1];
-                }
-                lgth--;
+void Intersection(int arr_1[], int arr_2[], int size_1, int size_2){
+    int size_3;
+    int *arr_3;
+    int i, j;
+    int k;
+    clock_t start, end;
+
+    size_3 = size_1 + size_2;
+    arr_3=(int *)malloc(size_3 * sizeof(int));
+    if(arr_3 == NULL){
+        printf("memory error 3");
+        return -3;
+    }
+    for(i = 0; i < size_1; i++){
+        arr_3[i]=arr_1[i];
+    }
+    for(i = 0; i < size_2; i++){
+        arr_3[i+size_1]=arr_2[i];
+    }
+
+    start = clock();
+	qsort(arr_3, size_3, sizeof(int), compare);
+
+    i=0;
+    while(i < size_3-1){
+        if(arr_3[i+1] == arr_3[i]){
+            for(k = i; k < size_3 - 1; k++){
+                arr_3[k]=arr_3[k+1];
             }
+            size_3--;
+        }
+        else{
+            i++;
         }
     }
-    return lgth;
+    end = clock();
 
+    printf("%.31f\n", ((float)(end-start))/CLOCKS_PER_SEC);
+    for(i=0; i < size_3; i++){
+        printf("%d ",arr_3[i]);
+    }
+    free(arr_3);
 }
+
+
+
+
+
+
+
