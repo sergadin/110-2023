@@ -16,6 +16,7 @@ void put_elements_with_even_index_in_front(int len, int* arr)
         }
     }
 }
+
 int main(void)
 {
     FILE* input;

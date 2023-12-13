@@ -33,6 +33,7 @@ void x_interval(int len, int x, int* arr)
         }
     }
 }
+
 int main(void)
 {
     FILE* input;

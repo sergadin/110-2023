@@ -23,7 +23,6 @@ int max_number_of_element(int len, int* arr)
     return max_el;
 }
 
-
 int main(void)
 {
     FILE* input;
