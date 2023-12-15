@@ -8,12 +8,12 @@ int main(void) {
 	FILE *file = fopen("input.txt", "r");
 
     if (file == NULL) {
-        printf("ne udalos' otkrit' file\n");
+        printf("Не удалось открыть файл\n");
         return -1;
     }
     result = findMaxSum(file);
 
-    printf("MaxSum: %d\n", result);
+    printf("Максимальная сумма подряд идущих элементов: %d\n", result);
 
     fclose(file);
 
@@ -27,12 +27,12 @@ int main(void) {
     int next;
 
       if (fscanf (file, "%d", &first) != 1) {
-            printf("file is empty\n");
+            printf("файл пуст\n");
         return -2;
       }
     curSum = first;
     maxSum = curSum;
-     while (fscanf(file, "%d", &next) == 1) {
+     while (fscanf(file, "%d", &next) == 1)) {
             if (curSum < 0) {
                 curSum = 0;
             }
@@ -43,3 +43,4 @@ int main(void) {
     }
      return maxSum;
  }
+
