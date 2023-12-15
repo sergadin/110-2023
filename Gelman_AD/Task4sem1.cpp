@@ -6,22 +6,22 @@
 void shiftrightk(double* mas, int lngth, int K);
 //shiftrightK shifts the array "mas" in a cycle, every element shifts to the right
 
-void reversemas(double* mas, int right, int left);
-//
-void reversemas(double* mas, int right, int left)
+void reversemas(double* mas, int left, int right);
+// reversemas reverses the array
+void reversemas(double* mas, int left, int right)
 {
-	for (right = right; right < left; right++)
+	for (left = left; left < right; left++)
 	{
-		left = mas[right];
-		mas[right] = mas[left - right - 1];
-		mas[left - right - 1] = left;
+		right = mas[left];
+		mas[left] = mas[right - left - 1];
+		mas[right - left - 1] = right;
 	}
 }
 
 void shiftrightk(double* mas, int lngth, int K)
 {
-	int right;
 	int left;
+	int right;
 
 	if (lngth == 0)
 	{
@@ -36,22 +36,20 @@ void shiftrightk(double* mas, int lngth, int K)
 	}
 
 	//Reverse all array
-	right = 0;
-	left = lngth;
-	reversemas(mas, right, left);
+	left = 0;
+	right = lngth;
+	reversemas(mas, left, right);
 
 	//Reverse the first part of the array (before the Kth element)
-	right = 0;
-	left = K;
-	reversemas(mas, right, left);
+	left = 0;
+	right = K;
+	reversemas(mas, left, right);
 
 	//Reverse the second part of the Array (after the Kth element)
-	right = K;
-	left = lngth;
-	reversemas(mas, right, left);
+	left = K;
+	right = lngth;
+	reversemas(mas, left, right);
 }
-
-
 
 int main(void)
 {
