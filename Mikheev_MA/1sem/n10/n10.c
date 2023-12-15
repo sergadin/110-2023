@@ -3,7 +3,7 @@
 #define ER_READ -1
 #define ER_OPEN -2
 
-int square(int b){ // вспомогательная функция создана, чтобы возводить число в квадрат
+int square(int b){ // вспомогательная функция создана, что возводить число в квадрат
     return b = b*b;
 }
 
@@ -45,11 +45,13 @@ int main(void)
   
   if((fscanf(input, "%d", &a)) != 1){
       printf("Ошибка чтения файла\n");
+      fclose(input);
       return ER_READ;
   }
   
     if((fscanf(input, "%d", &n)) != 1){
       printf("Ошибка чтения файла\n");
+      fclose(input);
       return ER_READ;
   }
 
@@ -59,4 +61,3 @@ int main(void)
   
   return SUCCESS;
 }
-
