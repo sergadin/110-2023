@@ -10,7 +10,7 @@ typedef struct {
 int fillArray(Point** p, FILE* input, int n);
 int findStraight(double** a, double** b, double** c, Point* p, int n);
 void findNewStraight(double** c, Point* p, int n, double h);
-int getNewPolygon(double** a, double** b, double** c, Point** p1, Point** p2, int n, int h);
+int getNewPolygon(double** a, double** b, double** c, Point** p1, Point** p2, int n, double h);
 
 
 int fillArray(Point** p, FILE* input, int n) {
@@ -57,7 +57,7 @@ void findNewStraight(double** c, Point* p, int n, double h) {
 }
 
 
-int getNewPolygon(double** a, double** b, double** c, Point** p1, Point** p2, int n, int h) {
+int getNewPolygon(double** a, double** b, double** c, Point** p1, Point** p2, int n, double h) {
 	if (findStraight(&*a, &*b, &*c, *p1, n)) {
 		return -1;
 	}

@@ -10,6 +10,7 @@ int rotate (int place, int len, double *arr);	//переносит элемен�
 
 int rotate (int place, int len, double *arr)
 {
+<<<<<<< HEAD
 	int i;
 	double c = arr[place];
 	for (i = place; i < len-1; i++)
@@ -28,6 +29,17 @@ int rem_rep_parts (double *arr, int len)
 	{
 		if (arr[i-j]-arr[i-j-1] < e)
 		{ arr[i-j] = 0,rotate (i-j, len, arr), j++; }
+=======
+	int i, p = 1, lenp = 1;	//i нужно для цикла, а j - вспомагательная переменная
+	for (i = 1; i < len; i++)
+	{
+		if ( arr[i] != arr[i-1] )
+		{
+		       	arr[p] = arr[i];
+			lenp++;
+			p++;
+		}
+>>>>>>> ff381eb (изменение решения 9-ой задачи и добавлено частичное решение 20-ой задачи.)
 	}
 	return j;
 }
@@ -35,8 +47,13 @@ int rem_rep_parts (double *arr, int len)
 
 int main (void)
 {
+<<<<<<< HEAD
         int len, i, j;
 	double *arr;
+=======
+        int len, i;
+	int *arr;
+>>>>>>> ff381eb (изменение решения 9-ой задачи и добавлено частичное решение 20-ой задачи.)
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
