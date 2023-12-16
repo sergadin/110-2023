@@ -26,14 +26,14 @@ int main(int argc, char** argv)
         printf("incorrect inputfile\n");
         return 3;
     }
+    if (!fscanf(inputfile, "%d", &length)) {
+		printf("input data error\n");
+        return 5;
+    }
     array = (float*)malloc((length) * sizeof(float));
     if (array == NULL){
         printf("memory allocation error\n");
         return 4;
-    }
-    if (!fscanf(inputfile, "%d", &length)) {
-		printf("input data error\n");
-        return 5;
     }
     for (int i = 0; i < length; i++) {    
         if (fscanf(inputfile, "%f", &array[i]) != 1){
@@ -55,6 +55,7 @@ int main(int argc, char** argv)
         printf("%f\n", array[i]);
     }
     fclose(inputfile);
+    free(array);
     return 0;
 }
 
@@ -62,30 +63,29 @@ int x_segments_changement(float* array, int length, float x)
 {
     FILE* output;
     int start = -2;
+    int start_num;
+    int end_num;
     for (int j = 0; j < (length); j++){
         if (fabs(array[j] - x) < 0.00001){
             if (start == -2){
                 start = j - 1;
             }
-            if (j == (length - 1)) {
-                for (int k = start + 1; k < (length); k++){
-                    array[k] = 0.5 * (0 + array[start]);
-                }
-            }
         }
-        else if ((fabs(array[j] - x) > 0) && (start != -2)){
+        if (((fabs(array[j] - x) > 0) && (start != -2)) || ((fabs(array[j] - x) < 0.00001) && (j == (length - 1)))){
+            start_num = array[start];
+            end_num = array[j];
             if (start == -1){
-                for (int k = start + 1; k < j; k++){
-                    array[k] = 0.5 * (0 + array[j]);
-                }
+                start_num = 0;
             }
-            else {
-                for (int k = start + 1; k < j; k++){
-                    array[k] = 0.5 * (array[start] + array[j]);
-                }
+            if (j == (length - 1)){
+                end_num = 0;
+                j = length;
+            }
+            for (int k = start + 1; k < j; k++){
+                array[k] = 0.5 * (start_num + end_num);
             }
         start = -2;
         }
-    }
     return 0;
+    }
 }
