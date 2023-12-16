@@ -10,7 +10,7 @@ int Sdvig(int arr[/*x*/], int lgth);
 
 int main(void){
     FILE *f1;
-    int size, i, flag, l;
+    int size, i, flag;
     int *arr;
     f1 = fopen("input.txt","r");
     if(f1 == NULL){
@@ -59,8 +59,8 @@ int main(void){
 void Sort(int arr[], int lgth){
     int i;
     int j;
-    for (int i = 0; i < lgth - 1; i++){
-        for (int j = (lgth - 1); j > i; j--){
+    for ( i = 0; i < lgth - 1; i++){
+        for (j = (lgth - 1); j > i; j--){
             if (arr[j - 1] > arr[j]){
                 int temp = arr[j - 1];
                 arr[j - 1] = arr[j];

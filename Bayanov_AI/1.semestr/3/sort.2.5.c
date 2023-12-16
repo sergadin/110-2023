@@ -1,5 +1,4 @@
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -78,15 +77,15 @@ Slianie (int *array, int *left, int *right, int dlina_left, int dlina_right)
 	k++;
       }
 
-  for (i; i < dlina_left; i++)
+  for (int q = i; q < dlina_left; q++)
     {
-      array[k] = left[i];
+      array[k] = left[q];
       k++;
     }
 
-  for (j; j < dlina_right; j++)
+  for (int h = j; h < dlina_right; h++)
     {
-      array[k] = right[j];
+      array[k] = right[h];
       k++;
     }
   return (1);
@@ -97,15 +96,18 @@ Slianie (int *array, int *left, int *right, int dlina_left, int dlina_right)
 int
 Slianie_Sort (int *array, int size)
 {
-  if (size < 2)
-    return 1;
-
   int *left;
   int *right;
   int mid = size / 2;
   left = (int *) malloc ((mid) * sizeof (int));
   right = (int *) malloc ((size - mid) * sizeof (int));
-
+  
+  if (size < 2)
+  {
+    free (left);
+     free (right);
+    return 1;
+  }
   for (int i = 0; i < mid; i++)
     left[i] = array[i];
   for (int i = mid; i < size; i++)
@@ -128,11 +130,21 @@ main (void)
   int *array_2 = NULL;
   int *array_3 = NULL;
   int size;
+  int N;
+  double time_work_1 = 0.0;
+  double time_work_2 = 0.0;
+  double time_work_3 = 0.0;
+
+  clock_t begin_1;
+  clock_t begin_2;
+  clock_t begin_3;
+  clock_t end_1;
+  clock_t end_2;
+  clock_t end_3;
 
   printf ("Enter N: ");
   scanf ("%d", &size);
-
-  int N = size;
+   N = size;
   array_1 = (int *) malloc ((8 * N) * sizeof (int));
   array_2 = (int *) malloc ((8 * N) * sizeof (int));
   array_3 = (int *) malloc ((8 * N) * sizeof (int));
@@ -152,42 +164,32 @@ main (void)
       return 0;
     }
 
-  double time_work_1 = 0.0;
-  double time_work_2 = 0.0;
-  double time_work_3 = 0.0;
-
-  clock_t begin_1;
-  clock_t begin_2;
-  clock_t begin_3;
-  clock_t end_1;
-  clock_t end_2;
-  clock_t end_3;
 
   for (int i = 0; i < 4; i++)
     {
       printf ("N = %d\n", size);
       random_array (array_1, array_2, array_3, size);
-      clock_t begin_1 = clock ();
+       begin_1 = clock ();
       Puzrk_Sort (array_1, size);
-      clock_t end_1 = clock ();
+       end_1 = clock ();
       time_work_1 = (double) (end_1 - begin_1) / CLOCKS_PER_SEC;
       if (Check_array (array_1, size) == -1)
 	printf ("Bubble sort error\n");
       else
 	printf ("Bubble sort time: %lf\n", time_work_1);
 
-      clock_t begin_2 = clock ();
+       begin_2 = clock ();
       Slianie_Sort (array_2, size);
-      clock_t end_2 = clock ();
+       end_2 = clock ();
       time_work_2 = (double) (end_2 - begin_2) / CLOCKS_PER_SEC;
       if (Check_array (array_2, size) == -1)
 	printf ("Merge sort error\n");
       else
 	printf ("Merge sort time: %lf\n", time_work_2);
 
-      clock_t begin_3 = clock ();
+       begin_3 = clock ();
       qsort (array_3, size, sizeof (int), comp);
-      clock_t end_3 = clock ();
+       end_3 = clock ();
       time_work_3 = (double) (end_3 - begin_3) / CLOCKS_PER_SEC;
       if (Check_array (array_3, size) == -1)
 	printf ("qsort error\n");
