@@ -49,11 +49,6 @@ double edge_distance(edge u, edge v)
     double* distances;
     double minimum;
     int counter = 0;
-    distances = (double*)malloc((8)*sizeof(double));
-    if (distances == NULL){
-        printf("memory allocation error\n");
-        return -1.0;
-    }
     point a = u.s1;
     point b = u.s2;
     point c = v.s1;
@@ -68,6 +63,11 @@ double edge_distance(edge u, edge v)
     point bc = vector(b, c);
     point cb = vector(c, b);
     point da = vector(d, a);
+    distances = (double*)malloc((8)*sizeof(double));
+    if (distances == NULL){
+        printf("memory allocation error\n");
+        return -1.0;
+    }
     distances[0] = point_distance(a, b);
     distances[1] = point_distance(c, d);
     distances[2] = point_distance(a, c);
@@ -105,7 +105,7 @@ double edge_distance(edge u, edge v)
     }
     else {
         for (int i = 0; i < 8; i++){
-            if ((distances[i] != 0) && (distances[i] < minimum)){
+            if ((distances[i] > 0) && (distances[i] < minimum)){
                 minimum = distances[i];
             }
         }
@@ -131,7 +131,6 @@ double polygon_distance(int length1, edge* polygon1, int length2, edge* polygon2
 int main(int argc, char** argv){
     FILE* input;
     char* inputfilename;
-    char* outputfilename;
     double res;
     int length1;
     int length2;
@@ -141,6 +140,7 @@ int main(int argc, char** argv){
         printf("incorrect number of arguments. need one: input filename\n");
         return -1;
     }
+    inputfilename = argv[1];
     input = fopen(inputfilename, "r");
     if (input == NULL){
         printf("incorrect input file\n");
@@ -207,7 +207,7 @@ int main(int argc, char** argv){
         polygon2[i + 1].s1.y = polygon2[i].s2.y;
     }
     res = polygon_distance(length1, polygon1, length2, polygon2);
-    if (res != 0){
+    if (res > 0){
         printf("%lf\n", res);
     }
     else {

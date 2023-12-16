@@ -26,14 +26,14 @@ int main(int argc, char** argv)
         printf("incorrect inputfile\n");
         return 3;
     }
+    if (!fscanf(inputfile, "%d", &length)) {
+		printf("input data error\n");
+        return 5;
+    }
     array = (float*)malloc((length) * sizeof(float));
     if (array == NULL){
         printf("memory allocation error\n");
         return 4;
-    }
-    if (!fscanf(inputfile, "%d", &length)) {
-		printf("input data error\n");
-        return 5;
     }
     for (int i = 0; i < length; i++) {    
         if (fscanf(inputfile, "%f", &array[i]) != 1){
@@ -55,6 +55,7 @@ int main(int argc, char** argv)
         printf("%f\n", array[i]);
     }
     fclose(inputfile);
+    free(array);
     return 0;
 }
 
