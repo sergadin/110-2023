@@ -1,7 +1,9 @@
 #include <stdio.h>
 
+int isIntersect(int x1, int y1, int x2, int y2);
 // Функция, проверяющая пересечение двух отрезков
 int isIntersect(int x1, int y1, int x2, int y2) {
+    
     // Если отрезки имеют общую точку или перекрываются, то возвращаем 1
     if ((x1 <= y1 && x2 >= y1) && (x2 >= y2 && x1 <= y2)) {
         return 1;
@@ -9,6 +11,7 @@ int isIntersect(int x1, int y1, int x2, int y2) {
     return 0;
 }
 
+int isCovered(int n, int intervals[][2], int a, int b);
 // Функция, проверяющая покрытие объединения отрезков заданным отрезком
 int isCovered(int n, int intervals[][2], int a, int b) {
     for (int i = 0; i < n; i++) {
@@ -19,11 +22,13 @@ int isCovered(int n, int intervals[][2], int a, int b) {
     return 1; // Если все отрезки пересекаются с заданным, то возвращаем 1
 }
 
-int main() {
+int main(void) {
+    int a;
+    int b;
     int n; // Количество отрезков
+    int intervals[n][2];
     printf("Введите количество отрезков: ");
     scanf("%d", &n);
-    int intervals[n][2]; // Массив отрезков
 
     // Ввод отрезков
     for (int i = 0; i < n; i++) {
@@ -31,7 +36,7 @@ int main() {
         scanf("%d %d", &intervals[i][0], &intervals[i][1]);
     }
 
-    int a, b; // Заданный отрезок
+    // Заданный отрезок
     printf("Введите начало и конец заданного отрезка: ");
     scanf("%d %d", &a, &b);
 

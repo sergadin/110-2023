@@ -17,7 +17,7 @@ int get_quantity(int x){
 }
 
 
-main (void){
+int main(void){
     FILE *output;
     int x;
     int quantity;

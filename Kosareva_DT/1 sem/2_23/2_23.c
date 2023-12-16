@@ -10,8 +10,6 @@ int main(void) {
         FILE *f;
         int *a = NULL;
 	
-	printf("1\n");
-	
         check = scanf("%d", &n);
         if (check == -1) {
                 printf("Не указана длина массива\n");
@@ -21,8 +19,6 @@ int main(void) {
                 printf("Ошибка данных\n");
                 return -2;
         }
-        
-        printf("2\n");
 
         f = fopen("a", "r");
         if (f == NULL) {
@@ -30,10 +26,8 @@ int main(void) {
                 return -1;
         }
         
-        printf("3\n");
-        
-	a = (int *)malloc((n+1)*sizeof(int));
-	for (i=1; i<n+1; i++) {
+        a = (int *)malloc((n+1)*sizeof(int));
+        for (i=1; i<n+1; i++) {
                 check = fscanf(f, "%1d", &a[i]);
                 if (check != 1) {
                 	free(a);
@@ -43,14 +37,12 @@ int main(void) {
                 }
         }
         
-        printf("4\n");
-        
         fclose(f);
         
         check = scanf("%d", &action);
         if (check == -1) {
                 printf("Не указано действие\n");
-                free(a)
+                free(a);
                 return -2;
         }
         if (check == 0) {
@@ -59,16 +51,16 @@ int main(void) {
                 return -2;
         }
         
-	if (action == 1) {
-		addition(a, n);
-	}
-	else if (action == -1) {
-		subtraction(a, n);
-	}
-	else {
-		printf("Ошибка данных\n");
-                return -2;
+        if (action == 1) {
+            addition(a, n);
         }
+        else if (action == -1) {
+            subtraction(a, n);
+        }
+        else {
+            printf("Ошибка данных\n");
+                    return -2;
+            }
         
         f = fopen("a", "w");
        	i = 0;
@@ -89,10 +81,10 @@ int addition(int *a, int n) {
 	int i = n;
 	a[0] = 0;
 	
-	while (i>0) {
+	while (i>=0) {
 		if (a[i] < 9) {
 			a[i]++;
-			i = 0;
+			break;
 		}
 		else {
 			a[i] = 0;
@@ -108,16 +100,16 @@ int subtraction(int *a, int n) {
       	a[0] = 1;
       	
       	while (i>0) {
-		if (a[i] > 0) {
-			a[i]--;
-			i = 0;
-		}
-		else {
-			a[i] = 0;
-			i--;
-		}
-	}
-	a[0] = 0;
-	
-	return 0;
+            if (a[i] > 0) {
+                a[i]--;
+                i = 0;
+            }
+            else {
+                a[i] = 9;
+                i--;
+            }
+        }
+        a[0] = 0;
+        
+        return 0;
 }

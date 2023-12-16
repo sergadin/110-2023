@@ -4,13 +4,15 @@
 #include <time.h>
 
 int Intersection(int arr_1[], int arr_2[], int size_1, int size_2);
+int compare(const void* i, const void* j);
+
 
 int compare(const void* i, const void* j){
     return (*(int*)i - *(int*)j);
 }
 
 
-int main(){
+int main(void){
     FILE *f1;
     FILE *f2;
     int size_1, size_2;
