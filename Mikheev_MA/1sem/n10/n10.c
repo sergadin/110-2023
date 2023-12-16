@@ -9,22 +9,22 @@ int square(int b){ // вспомогательная функция создан
     
 int degree(int a, int res, int n){ // функция на входе получает число а и степень n,в результате возвращает число a^n
     int i, j; // счетчики
-    if(n & 1){
-        n = n >> 1;
-        res = a;
-    }
-    else{
-        n = n >> 1;
-    }
+//    if(n & 1){
+//        n = n >> 1;
+//        res = a;
+//    }
+//    else{
+//        n = n >> 1;
+//    }
   
     int b = a;
   
-    for(i = 1; i < (sizeof(int) * 8); i++){
-        b = square(b);
+    for(i = 0; i < (sizeof(int) * 8); i++){
         if (n & 1){
             res = res * b;
         }
         n = n >> 1;
+        b = square(b);
     }
     return res;
 }
