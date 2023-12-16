@@ -30,7 +30,7 @@ int good_elem(double *A, double *B, int len1, int len2){
 
 
 int main(void){
-    int len1, len2, len, main_term; 
+    int len1, len2, len, main_term=0; 
     FILE *f_in_A, *f_in_B, *f_out;
     double *arrA = NULL, *arrB = NULL;
     
