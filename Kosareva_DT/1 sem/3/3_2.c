@@ -111,29 +111,30 @@ int sorted(int *a, int n) {
 
 int main(void) {
 	int n, i;
-	double t1, t2, t3;
+	//double t1;
+	double t2, t3;
 	int *a = NULL;
 	int *b = NULL;
 	int *c = NULL;
 	scanf("%d", &n);
 	
-	a = (int *)malloc(n*8*sizeof(int));
-	b = (int *)malloc(n*8*sizeof(int));
-	c = (int *)malloc(n*8*sizeof(int));
+	a = (int *)malloc(n*32*sizeof(int));
+	b = (int *)malloc(n*32*sizeof(int));
+	c = (int *)malloc(n*32*sizeof(int));
 	
-	for (i=0; i<4; i++) {
+	for (i=0; i<6; i++) {
 		randomise(a, b, c, n);
 		
-		t1 = bubblesort(a, n);
+		//t1 = bubblesort(a, n);
 		t2 = quicksort(b, 0, n-1);
 		t3 = standard(c, n);
 		
-		if (sorted(a, n)) {
-			printf("Пузырьковая - %lf при длине %d\n", t1, n);
-		}
-		else {
-			printf("Пузырьковая провалилась при длине %d\n", n);
-		}
+		//if (sorted(a, n)) {
+		//	printf("Пузырьковая - %lf при длине %d\n", t1, n);
+		//}
+		//else {
+		//	printf("Пузырьковая провалилась при длине %d\n", n);
+		//}
 		if (sorted(b, n)) {
 			printf("Быстрая - %lf при длине %d\n", t2, n);
 		}
