@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
+
 #define ERROR -1
 
 
-int Insert_sort(float *arr, int len);
+void Insert_sort(float *arr, int len);
 void swap(float *a, float *b);
 void go_up(float *arr, int k);
 void go_down(float *arr, int k);
@@ -18,15 +20,13 @@ float get_heapsort_time(float *arr, int len);
 void sorting_time(int len);
 
 
-int Insert_sort(float *arr, int len){
+void Insert_sort(float *arr, int len){
     int newElement, location;
 
-    for (int i = 1; i < len; i++)
-    {
+    for (int i = 1; i < len; i++){
         newElement = arr[i];
         location = i - 1;
-        while(location >= 0 && arr[location] > newElement)
-        {
+        while(location >= 0 && arr[location] > newElement){
             arr[location+1] = arr[location];
             location = location - 1;
         }
@@ -182,19 +182,11 @@ void sorting_time(int len) {
 	float *arr;
 	arr = (float *)malloc(len * sizeof(float));
 	fill_random_arr(arr, len);
-	insert_time = get_Insertsort_time(arr,len);
-	if(insert_time == -1){
-            printf("insertsort failed");
-	}
+	insert_time = get_Insertsort_time(arr,len); 
+    
 	qsort_time = get_qsort_time(arr, len);
-	if(qsort_time == -1){
-            printf("qsort failed");
-	}
+	
 	heapsort_time = get_heapsort_time(arr, len);
-	if(heapsort_time == -1){
-            printf("heapsort failed");
-	}
-
 	printf("len=%d:",len);
 	printf(" insert time = %.10f ms; ",insert_time * pow(10,3));
 	printf(" qsort time = %.10f ms;",qsort_time * pow(10,3));
