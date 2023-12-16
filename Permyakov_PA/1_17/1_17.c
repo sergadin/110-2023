@@ -29,19 +29,19 @@ int increasing_parts_counter(const char* name)
     int previous;
     int present;
     int counter = 0;
-    int flag = 0;
+    int increasing = 0;
     fp = fopen(name, "r");
     if (!fp){
         return -2;
     }
     fscanf(fp, "%d", &previous);
     while (fscanf(fp, "%d", &present) == 1){
-        if ((present > previous) & (flag == 0)){
-            flag = 1;
+        if ((present > previous) && (increasing == 0)){
+            increasing = 1;
             counter++;
         }
-        if ((present <= previous) & (flag == 1)){
-            flag = 0;
+        if ((present <= previous) && (increasing == 1)){
+            increasing = 0;
         }
         previous = present;
     }
