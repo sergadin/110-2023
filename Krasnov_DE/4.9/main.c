@@ -31,15 +31,16 @@ long long int exponentiation(long long int a, int n){
 
 int main(void){
     FILE *output;
-    long long int x;
+    int x;
     int N;
+    long long int a;
     output = fopen ("output.txt", "w");
     if(output == NULL){
         printf("Error open file\n");
         return -1;
     }
     printf("vvedi chislo:");
-    if((scanf("%lld",&x)) != 1){
+    if((scanf("%d",&x)) != 1){
         printf("vvedeno ne int chislo\n");
         return -1;
     }
@@ -50,9 +51,9 @@ int main(void){
         return -1;
     }
 
-    x = exponentiation(x,N);
+    a = exponentiation(x,N);
 
-    fprintf(output,"%lld",x);
+    fprintf(output,"%lld",a);
     return 0;
 }
 
