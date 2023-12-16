@@ -5,7 +5,7 @@ int func(FILE *IN){
     int insideIncreased = 0;
     int numIncreased=0,numNonIncreased = 0;
     int lenNonIncreased;
-    if (scanf(IN,"%lf",&prev) != 1){//некорректное считывание 
+    if (fscanf(IN,"%lf",&prev) != 1){//некорректное считывание 
         printf("File empty\n");
         return -1;
     }
@@ -18,7 +18,8 @@ int func(FILE *IN){
                 if(lenNonIncreased > 1)
                     ++numNonIncreased;
             }
-        } else{
+	}
+       	else {
             if (insideIncreased){
                 insideIncreased = 0;
                 lenNonIncreased = 0;
@@ -34,12 +35,12 @@ int func(FILE *IN){
 }
 int main(void){
     FILE *IN,*OUT;
+    int res;
     IN=fopen("input.txt","r");
     if (IN == NULL){
         printf("File input.txt not opened\n");
         return -1;
     }
-    int res;
     res=func(IN);
     fclose(IN);
     if (res!=0)
