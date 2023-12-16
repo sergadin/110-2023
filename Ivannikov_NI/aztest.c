@@ -12,6 +12,10 @@ void readArrayFromFile(const char* filename, double** array, int*  length)
 
 	fscanf(file, "%d", length);
 	*array = malloc(*length * sizeof(double));
+	if (*array == NULL)
+	{
+		printf("Memory error\n");
+	}
 
 	for (int i = 0; i < *length; i++)
 	{
