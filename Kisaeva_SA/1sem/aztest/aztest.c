@@ -37,7 +37,8 @@ int main(void) {
 	FILE *out;
     double *mas_A = NULL;
     double *mas_B = NULL;
-    double scan_A, scan_B, el_A, el_B;
+    int  scan_A, scan_B;
+    double el_A, el_B;
     
     in_A = fopen("inA.txt", "r");
 	if (in_A == NULL) {
@@ -76,7 +77,7 @@ int main(void) {
 		return -1;
 	}
     
-    while (scan_A = fscanf(in_A,"%lf", &el_A) != EOF) {
+    while ((scan_A = fscanf(in_A,"%lf", &el_A)) != EOF) {
         if (scan_A != 1) {
             printf("error with elements in file_A");
             fclose(in_A);
@@ -94,7 +95,7 @@ int main(void) {
         return -1;
     }
     
-    while (scan_B = fscanf(in_B,"%lf", &el_B) != EOF) {
+    while ((scan_B = fscanf(in_B,"%lf", &el_B)) != EOF) {
     if (scan_B != 1) {
         printf("error with elements in file_B");
         fclose(in_A);
@@ -140,7 +141,7 @@ int main(void) {
     }
     
     kol_horosh_el_in_A = elem_in_file_A_horosh(mas_A, mas_B, len_A, len_B);
-    if (kol_horosh_el_in_A = 0) {
+    if (kol_horosh_el_in_A == 0) {
         printf("net horosh el in file_A\n");
         free(mas_A);
         free(mas_B);
