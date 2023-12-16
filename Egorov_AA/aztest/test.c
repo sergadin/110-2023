@@ -47,27 +47,27 @@ int main(void) {
 	if ((inb = fopen("inB.txt", "r")) == NULL){
         printf("nety inb\n");
 		fclose(ina);
-		return -2;
+		return -1;
 	}
 	if ((out = fopen("output.txt", "w")) == NULL){
         
         printf("nety out\n");
 		fclose(ina);
 		fclose(inb);
-		return -3;
+		return -1;
 	}
 	
 	if (fscanf(ina, "%d", &len_a) != 1){
         fclose(ina);
         fclose(inb);
         fclose(out);
-        return -4;
+        return -1;
     }
     if (fscanf(inb, "%d", &len_b) != 1){
         fclose(ina);
         fclose(inb);
         fclose(out);
-        return -5;
+        return -1;
     }
     
     if (correctLen(len_a, len_b, ina, inb)){
@@ -76,7 +76,7 @@ int main(void) {
         fclose(ina);
         fclose(inb);
         fclose(out);
-        return -6;
+        return -1;
     }
     
     arr_a = (double*)malloc(len_a * sizeof(double));
@@ -84,7 +84,7 @@ int main(void) {
         fclose(ina);
         fclose(inb);
         fclose(out);
-        return -7;
+        return -1;
     }
     arr_b = (double*)malloc(len_b * sizeof(double));
     if (arr_b == NULL) {
@@ -92,7 +92,7 @@ int main(void) {
         fclose(inb);
         fclose(out);
         free(arr_a);
-        return -8;
+        return -1;
     }
     
     rewind(ina);
@@ -108,7 +108,7 @@ int main(void) {
         fclose(out);
         free(arr_a);
         free(arr_b);
-        return -9;
+        return -1;
         }
     }
     
@@ -120,7 +120,7 @@ int main(void) {
         fclose(out);
         free(arr_a);
         free(arr_b);
-        return -10;
+        return -1;
         }
     }
     
