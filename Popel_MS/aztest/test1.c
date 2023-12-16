@@ -10,6 +10,7 @@ int good_elem(double *A, double *B, int len1, int len2){
         if (i<len2){
             summa+=B[i];
             //printf("%lf\n", summa);
+        }
             if (A[i]>summa){
                 //printf("ok - A[%d] - %lf\n", i, A[i]);
                 A[count] = A[i];
@@ -17,9 +18,7 @@ int good_elem(double *A, double *B, int len1, int len2){
                 
             }
             
-        }else{
-            A[i] = 0.;
-        }
+
 
         
     }
@@ -56,12 +55,12 @@ int main(void){
         fclose(f_in_B);
         return -1;
     }
-     if ((fscanf(f_in_A, "%d", &len1)!=1) || len1==0){
+     if ((fscanf(f_in_A, "%d", &len1)!=1) || len1<=0){
          printf("uncorrect len\n");
          main_term = -1;
          goto term;
         }
-    if ((fscanf(f_in_B, "%d", &len2)!=1) || len2 ==0){
+    if ((fscanf(f_in_B, "%d", &len2)!=1) || len2 <=0){
          printf("uncorrect len\n");
          main_term = -1;
          goto term;
