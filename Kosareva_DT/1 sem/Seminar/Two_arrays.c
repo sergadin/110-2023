@@ -19,8 +19,8 @@ int good(double *a, double *b, int n, int m) {
     }
     new = 1;
     
-    for (i=1; i<n; i++) {
-        if (a[i] > b[min(m-1, i-1)]) {
+    for (i=0; i<n; i++) {
+        if (a[i] > b[min(m-1, i)]) {
             a[new] = a[i];
             new++;
         }
@@ -35,23 +35,15 @@ int main(void) {
     double *b = NULL;
     int i, n, m, check;
     
-    f = fopen("input.txt", "r");
+    f = fopen("a", "r");
     if (f == NULL) {
         return -1;
     }
-    
     check = fscanf(f, "%d", &n);
     if (check != 1) {
         return -1;
     }
-    check = fscanf(f, "%d", &m);
-    if (check != 1) {
-        return -1;
-    }
-    
     a = (double *)malloc(n*sizeof(double));
-    b = (double *)malloc(m*sizeof(double));
-    
     for (i=0; i<n; i++) {
         check = fscanf(f, "%lf", &a[i]);
         if (check != 1) {
@@ -60,6 +52,18 @@ int main(void) {
             return -1;
         }
     }
+    
+    fclose(f);
+    
+    f = fopen("b", "r");
+    if (f == NULL) {
+        return -1;
+    }
+    check = fscanf(f, "%d", &m);
+    if (check != 1) {
+        return -1;
+    }
+    b = (double *)malloc(m*sizeof(double));
     for (i=0; i<m; i++) {
         check = fscanf(f, "%lf", &b[i]);
         if (check != 1) {
