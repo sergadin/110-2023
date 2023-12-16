@@ -139,7 +139,7 @@ int main(void) {
     }
     fscanf(in_B, "%d", &len_B);
     for (int i = 0; i < len_B; i++) {
-        fscanf(in_A, "%lf", &mas_B[i]);
+        fscanf(in_B, "%lf", &mas_B[i]);
     }
     
     kol_horosh_el_in_A = elem_in_file_A_horosh(mas_A, mas_B, len_A, len_B);
