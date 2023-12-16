@@ -124,6 +124,7 @@ int main(void) {
         fclose(out);
         return -1;
     }
+    fscanf(in_A, "%d", &len_A);
     for (int i = 0; i < len_A; i++) {
         fscanf(in_A, "%lf", &mas_A[i]);
     }
@@ -136,6 +137,7 @@ int main(void) {
         fclose(out);
         return -1;
     }
+    fscanf(in_B, "%d", &len_B);
     for (int i = 0; i < len_B; i++) {
         fscanf(in_A, "%lf", &mas_B[i]);
     }
