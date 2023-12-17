@@ -2,49 +2,48 @@
 
 int checkBorder(unsigned int icon[32]) 
 {
-    unsigned int top = icon[0];  // Upper border of the icon
-    unsigned int bottom = icon[31]; // Lower border of the icon
+    int correct = 0;
 
-    // Checking the upper and the lower border
-    for (int i = 0; i < 32; i++) 
+    // Checking the upper border
+    if (icon[0] == 2 ^ 32 - 1)
     {
-        if (top != icon[i] || bottom != icon[i]) 
-        {
-            // If there is at least one pixel == 0 we return 0
-            return 0; 
-        }
+        correct = 1;
     }
 
-    // Checking the left and the right border
-    for (int i = 1; i < 31; i++) 
+    // Checking the lower border
+    if (icon[31] == 2 ^ 32 - 1)
     {
-        if ((icon[i] & 1) == 0 || (icon[i] & (1 << 31)) == 0) 
-        {
-            // If there is at least one pixel == 0 we return 0
-            return 0; 
-        }
+        correct = 1;
     }
 
+    // Checking the left border
+    if (icon[1] == 2 ^ 31 + 1)
+    {
+        correct = 1;
+    }
+
+    // Checking the right border
+    if (icon[30] == 2 ^ 31 + 1)
+    {
+        correct = 1;
+    }
 
     // Checking the black lines inside the frame
-    for (int i = 1; i < 31; i++)
+    for (int i = 2; i <= 29; i++) 
     {
-        for (int j = 1; j < 7; j++)
+        if ((icon[i] && ((1 << 31) || (1)) == ((1 << 31) || 1)) && (~icon[i] && ((1 << 30) || (1 << 1)) == (1 << 30) || (1 << 1)))
         {
-            if (icon[i * 8 + j] != 0)
-            {
-                return 0;
-            }
+            correct = 1;
         }
     }
-
-    return 1; // There is a black frame on the icon
+    return correct; // There is a black frame on the icon
 }
 
 int main(void) 
 {
     FILE* file = fopen("iconfile.txt", "r");
     unsigned int icon[32];
+    int correct;
 
     // Reading the icon from the file
     for (int i = 0; i < 32; i++) 
@@ -54,12 +53,14 @@ int main(void)
 
     fclose(file); 
 
-    // ѕровер€ем наличие рамки в иконке и выводим соответствующее сообщение
-    if (checkBorder(icon)) // return == 1
+    // Checking wether there is a black frame on the icon or not
+    correct = checkBorder(icon);
+
+    if (correct = 1)
     {
         printf("There is a black frame\n");
     }
-    else // return == 0
+    else // correct = 0
     {
         printf("There is no black frame on the icon\n");
     }
