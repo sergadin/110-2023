@@ -6,8 +6,8 @@
 #define UNSORTED -1
 
 void random_mas(int lngth, int* mas1, int* mas2, int* mas3); //Creating random array
-void sift_sort(int* mas1, int lngth); //Sift sorting
-void quick_sort(int* mas2, int first, int last); //Quick sorting
+void sift_sort(int* mas, int lngth); //Sift sorting
+void quick_sort(int* mas, int lngth); //Quick sorting
 int test_sort(int* mas, int lngth); //Testing wether the array is sorted
 int comp(const int* a, const int* b); //Helping function for quick_sort
 
@@ -26,58 +26,69 @@ void random_mas(int lngth, int* mas1, int* mas2, int* mas3)
 }
 
 //Sift sorting
-void sift_sort(int* mas1, int lngth) 
+void sift_sort(int* mas, int lngth) 
 {
 	int i;
+	//first == first unsorted element
+	//last == last sorted element
 
 	for (int first = 1; first < lngth; first++) 
 	{
-		for (int last = first; (last > 0) && (mas1[last] < mas1[last - 1]); last--) 
+		for (int last = first - 1; (last > 0) && (mas[last] < mas[last - 1]); last--) 
 		{
-			i = mas1[last];
-			mas1[last] = mas1[last - 1];
-			mas1[last - 1] = i;
+			i = mas[last - 1];
+			mas[last - 1] = mas[last];
+			mas[last] = i;
 		}
 	}
 }
 
 //Quick sorting
-void quick_sort(int* mas2, int first, int last) 
+void quick_sort(int* mas, int lngth) 
 {
-	//first = 0; last = lngth - 1;
-	int index;
-	int i;
+	int i = 0;
+	int j = lngth - 1;
 
-	index = mas2[(first + last) / 2];
+	// Central element of the array
+	int mid = mas[lngth / 2];
 
-	while (first <= last) 
+	// Split the array
+	do //while (i <= j)
 	{
-		while ((mas2[first] < index) && (first < last)) 
+		// Run through all elements and find elements that must go to the other side of the array
+		// On the left side of the array we skip those elements that are less than the mid one
+		while (mas[i] < mid) 
 		{
-			first++;
+			i++;
 		}
-		while ((mas2[last] > index) && (last > first)) 
+		// On the right side of the array we skip those elements that are bigger than the mid one
+		while (mas[j] > mid) 
 		{
-			last--;
+			j--;
 		}
 
-		if (first <= last) 
+		// Swap eleemnts
+		if (i <= j) 
 		{
-			i = mas2[first];
-			mas2[first] = mas2[last];
-			mas2[last] = i;
-			first++;
-			last--;
+			int tmp = mas[i];
+			mas[i] = mas[j];
+			mas[j] = tmp;
+
+			i++;
+			j--;
 		}
+	} while (i <= j);
+
+	// Recursive function if there are unsorted elements
+	if (j > 0) 
+	{
+		// Left side
+		quick_sort(mas, j + 1);
 	}
-
-	if (first < last) 
+	if (i < lngth) 
 	{
-		quick_sort(mas2, first, last);
-	}
-	if (first < last) 
-	{
-		quick_sort(mas2, first, last);
+		// Right side
+		quick_sort(&mas[i], lngth - i);
 	}
 }
 
@@ -157,7 +168,7 @@ int main(void)
 
 		//Quick sorting
 		start_2 = clock();
-		quick_sort(mas2, 0, lngth - 1);
+		quick_sort(mas2, lngth);
 		end_2 = clock();
 
 		//Sorting with the qsort function
