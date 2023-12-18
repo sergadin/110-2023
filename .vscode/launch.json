@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Admin/Desktop/git/110-2023",
-      "program": "c:/Users/Admin/Desktop/git/110-2023/build/Debug/outDebug",
+      "cwd": "c:/Users/Admin/Desktop/git/110-2023/Popel_MS/1sem/Arrays/z_2",
+      "program": "c:/Users/Admin/Desktop/git/110-2023/Popel_MS/1sem/Arrays/z_2/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
