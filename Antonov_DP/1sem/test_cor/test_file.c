@@ -5,11 +5,8 @@ typedef enum { OK = 0, E_DATA, E_IO} ERR;
 
 int test_file (FILE *input, ERR *error);
 int test_file_input_double (FILE *input, double *num, ERR *error);
-<<<<<<< HEAD
-=======
 int test_file_input_int (FILE *input, int *num, ERR *error);
 int file_read_arr (FILE *input, double *arr, int len, ERR *error);
->>>>>>> ff381eb (изменение решения 9-ой задачи и добавлено частичное решение 20-ой задачи.)
 
 int test_file_input_double (FILE *input, double *num, ERR *error)
 {
@@ -26,12 +23,7 @@ int test_file (FILE *input, ERR *error)
 	       printf ("Не удалось открыть: input.txt");
 	       *error = E_DATA;
 	}
-	{
-		return 0;
-	}
-<<<<<<< HEAD
-}	
-=======
+	return 0;
 }
 
 int test_file_input_int (FILE *input, int *num, ERR *error)
@@ -58,4 +50,3 @@ int file_read_arr (FILE *input, double *arr, int len, ERR *error)
 	}
 	return incr + decr;
 }
->>>>>>> ff381eb (изменение решения 9-ой задачи и добавлено частичное решение 20-ой задачи.)
