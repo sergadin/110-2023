@@ -11,47 +11,25 @@ int file_read_arr (FILE *input, double *arr, int len, ERR *error);	//считы�
 
 int merge_arr (double *arr1, double *arr2, int len1, int len2)
 {
-        int i = 0, j = 0, p = 0;	//i - индекс arr1, j - индекс arr2, p - вспомагательный индекс
+        int i = len1 - 1, j = 0;	//i - индекс arr1, j - индекс arr2, p - вспомагательный индекс
 	double save = 0;	//save - сохраняет элемент для перемещения в другой массив
-	for ( i = 0; (i < len1) && (j < len2); i++)
+	while ((i == -1) || (arr1[i] > arr2[0])) { i--; }
+	i++;
+	while (i < len1)
 	{
-		if ((arr1[i] > arr2[j]) && ((arr2[p] > arr2[j]) || (p == j)) )
+		if (arr1[i] > arr2[0])
 		{
 			save = arr1[i];
-			arr1[i] = arr2[j];
-			arr2[j] = save;
-			j++;
-		}
-		else 
-		{
-			if (arr1[i] > arr2[p])
+			arr1[i] = arr2[0];
+			arr2[0] = save;
+			for (j = 0 ;(j < (len2 - 1)) && (arr2[j] > arr2[j+1]) ; j++)
 			{
-				save = arr1[i];
-				arr1[i] = arr2[p];
-				arr2[p] = save;
-				p++;
+				save = arr2[j];
+				arr2[j] = arr2[j+1];
+				arr2[j+1] = save;
 			}
 		}
-		if ((p >= j) || (p == len2)) { p = 0; }
-	}
-	p = j;
-	for (i = 0; i < len2; i++)
-	{
-		if ((arr2[i] > arr2[j]) && ((p == len2) || (arr2[j] <= arr2[p])))
-		{
-			save = arr2[i];
-                        arr2[i] = arr2[j];
-                        arr2[j] = save;
-                        j++;
-		}
-		else if (arr2[j] > arr2[p])
-		{
-			save = arr2[i];
-			arr2[i] = arr2[p];
-			arr2[p] = save;
-			p++;
-		}
-		if (j == len2) { j = i+1; }
+		i++;
 	}
 	return 0;
 }
