@@ -77,13 +77,13 @@ void quick_sort(int* mas, int lngth)
 			i++;
 			j--;
 		}
-	} while (i <= j);
+	} while (i < j);
 
 	// Recursive function if there are unsorted elements
 	if (j > 0) 
 	{
 		// Left side
-		quick_sort(mas, j + 1);
+		quick_sort(mas, j - 1);
 	}
 	if (i < lngth) 
 	{
