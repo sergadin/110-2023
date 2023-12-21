@@ -111,7 +111,12 @@ int main ( void)
 	int result;
 
 	printf("Введите начало и конец отрезка\n");
-	scanf("%lf %lf", &a, &b);
+	if(scanf("%lf %lf", &a, &b) != 1) 
+	
+	{
+    printf("Неверные входные данные\n");
+    return -1;
+}
 	if (a > b)
 	{
 		printf("Неверные входные данные\n");
