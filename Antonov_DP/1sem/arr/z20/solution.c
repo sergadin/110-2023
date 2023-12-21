@@ -11,25 +11,24 @@ int file_read_arr (FILE *input, double *arr, int len, ERR *error);	//считы�
 
 int merge_arr (double *arr1, double *arr2, int len1, int len2)
 {
-        int i = 0, j = 0, p = 0;	//i - индекс arr1, j - индекс arr2, p - вспомагательный индекс
+        int i = len1 - 1, j = 0;	//i - индекс arr1, j - индекс arr2, p - вспомагательный индекс
 	double save = 0;	//save - сохраняет элемент для перемещения в другой массив
-	while ( (i < len1) && (j < len2) )
+	while ((i == -1) || (arr1[i] > arr2[0])) { i--; }
+	i++;
+	while (i < len1)
 	{
-		if ((arr1[i] > arr2[j]) && ((arr2[p] > arr2[j]) || (p == j)) )
+		if (arr1[i] > arr2[0])
 		{
 			save = arr1[i];
-			arr1[i] = arr2[j];
-			arr2[j] = save;
-			j++;
+			arr1[i] = arr2[0];
+			arr2[0] = save;
+			for (j = 0 ;(j < (len2 - 1)) && (arr2[j] > arr2[j+1]) ; j++)
+			{
+				save = arr2[j];
+				arr2[j] = arr2[j+1];
+				arr2[j+1] = save;
+			}
 		}
-		else if (arr1[i] > arr2[p])
-		{
-			save = arr1[i];
-			arr1[i] = arr2[p];
-			arr2[p] = save;
-			p++;
-		}
-		if (p == j) { p = 0; }
 		i++;
 	}
 	return 0;
@@ -47,9 +46,17 @@ int main (void)
         test_file(input, &error);
         test_file(output, &error);
 	test_file_input_int(input, &len1, &error);
-	file_read_arr (input, arr1, len1, &error);
+	arr1 = (double *)malloc(len1 * sizeof(double));
+	for ( i = 0; i < len1; i ++)
+        {
+                test_file_input_double(input, &arr1[i], &error);
+        }
 	test_file_input_int(input, &len2, &error);
-	file_read_arr (input, arr2, len2, &error);
+	arr2 = (double *)malloc(len2 * sizeof(double));
+        for ( i = 0; i < len2; i ++)
+        {
+                test_file_input_double(input, &arr2[i], &error);
+        }
 	merge_arr(arr1, arr2, len1, len2);
         for ( i = 0; i < len1; i ++)
         {

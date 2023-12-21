@@ -1,34 +1,44 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-  
+
 typedef enum { OK = 0, E_DATA, E_IO } ERR;
 
 int test_file (FILE *input, ERR *error);        //проверяет нормально ли открылся файл
-int rem_rep_parts (double *arr, int len);      //убирает повторяющиеся части
+int pyramid_sort (double *arr, int len);      //сортирует пузырьковым методом
 int test_file_input_double (FILE *input, double *num, ERR *error);      //проверяет правильность ввода из файла вещественного числа
 
-int rem_rep_parts (double *arr, int len)
+int pyramid_sort (double *arr, int len)
 {
-	double e = 0.001, save;	//маленькое эпсилон для сравнения чисел типа double
-	int i, j = 0;	//i нужно для цикла, а j - вспомагательная переменная
-	save
-	for (i = 1; i < len; i++)
+        int i, j, p = 1;
+        double save;
+	while (p < len)
 	{
-		if ( fabs(arr[i] - arr[i-1]) > e)
+		for (i = 0; i < ((int) len / 2) - 1; i++)
 		{
-			arr[j] = arr[i];
-			j++;
+			j = (2 * i) + 1;
+			if ((arr[i] < arr[j]) && (arr[j + 1] < arr[j]))
+			{
+				save = arr[i];
+				arr[i] = arr[j];
+				arr[j] = save;
+				}
+			else if ((arr[i] < arr[j + 1]))
+			{
+				save = arr[i];
+				arr[i] = arr[j + 1];
+				arr[j + 1] = save;
+			}
 		}
+		p = p * 2;
 	}
-	return j;
+	return 0;
 }
 
 
 int main (void)
 {
         int len, i;
-	double *arr;
+        double *arr;
         ERR error = OK;
         FILE *input, *output;
         input = fopen ("input.txt", "r");
@@ -36,16 +46,15 @@ int main (void)
         test_file(input, &error);
         test_file(output, &error);
         fscanf(input, "%d", &len);
-	arr = (double *)malloc(len*sizeof(double));
-	for (i = 0; i < len; i++) { test_file_input_double(input, &arr[i], &error); }
-	len = rem_rep_parts (arr, len);
-	fprintf(output, "%d \n", len + 1);
-	fprintf(output, "%lf \n", save);
-	for (i = 0; i < len; i++)
-	{
-		fprintf(output, "%lf \n", arr[i]);
-	}
-	free(arr);
+        arr = (double *)malloc(len*sizeof(double));
+        for (i = 0; i < len; i++) { test_file_input_double(input, &arr[i], &error); }
+        pyramid_sort (arr, len);
+        fprintf(output, "%d \n", len);
+        for (i = 0; i < len; i++)
+        {
+                fprintf(output, "%lf \n", arr[i]);
+        }
+        free(arr);
         fclose (input);
         fclose (output);
         if ( error == E_DATA)

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#define MINIMUM_NOT_FOUND -1
 
 typedef struct
 {
@@ -36,7 +37,7 @@ double scalar_product(point v, point u)
 
 double volume_product(point v, point u)
 {
-    return fabs(v.x * u.y - v.y * u.x);
+    return (v.x * u.y - v.y * u.x);
 }
 
 double point_distance(point a, point b)
@@ -72,55 +73,63 @@ double edge_distance(edge u, edge v)
     distances[1] = point_distance(c, d);
     distances[2] = point_distance(a, c);
     distances[3] = point_distance(b, d);
-    if (scalar_product(ac, cd) * scalar_product(ad, cd) < 0){
-        distances[4] = (volume_product(ac, ad) / distances[1]);
-        counter++;
-    }
-    else {
-        distances[4] = 0;
-    }
-    if (scalar_product(bc, cd) * scalar_product(bd, cd) < 0){
-        distances[5] = (volume_product(bc, bd) / distances[1]);
-        counter++;
-    }
-    else {
-        distances[5] = 0;
-    }
-    if (scalar_product(ca, ab) * scalar_product(cb, ab) < 0){
-        distances[6] = (volume_product(ca, cb) / distances[0]);
-        counter++;
-    }
-    else {
-        distances[6] = 0;
-    }
-    if (scalar_product(da, ab) * scalar_product(db, ab) < 0){
-        distances[7] = (volume_product(da, db) / distances[0]);
-        counter++;
-    }
-    else {
-        distances[7] = 0;
-    }
-    if (counter == 4){
+    minimum = distances[0];
+    if (((volume_product(ab, ac) * volume_product(ab, ad)) < 0) && ((volume_product(cd, ca) * volume_product(cd, cb)) < 0)){
         return 0;
     }
+    if ((volume_product(ab, ac) <= 0) && (volume_product(ab, ac) >= 0) && (scalar_product(ca, cb) <= 0)){
+        return 0;
+    }
+    if ((volume_product(ab, ad) <= 0) && (volume_product(ab, ad) >= 0) && (scalar_product(da, db) <= 0)){
+        return 0;
+    }
+    if ((volume_product(cd, ca) <= 0) && (volume_product(cd, ca) >= 0) && (scalar_product(ac, ad) <= 0)){
+        return 0;
+    }
+    if ((volume_product(cd, cb) <= 0) && (volume_product(cd, cb) >= 0) && (scalar_product(bc, bd) <= 0)){
+        return 0;
+    }
+    if (scalar_product(ac, cd) * scalar_product(ad, cd) < 0){
+        distances[4] = fabs(volume_product(ac, ad) / distances[1]);
+    }
     else {
-        for (int i = 0; i < 8; i++){
-            if ((distances[i] > 0) && (distances[i] < minimum)){
-                minimum = distances[i];
-            }
+        distances[4] = -1;
+    }
+    if (scalar_product(bc, cd) * scalar_product(bd, cd) < 0){
+        distances[5] = fabs(volume_product(bc, bd) / distances[1]);
+    }
+    else {
+        distances[5] = -1;
+    }
+    if (scalar_product(ca, ab) * scalar_product(cb, ab) < 0){
+        distances[6] = fabs(volume_product(ca, cb) / distances[0]);
+    }
+    else {
+        distances[6] = -1;
+    }
+    if (scalar_product(da, ab) * scalar_product(db, ab) < 0){
+        distances[7] = fabs(volume_product(da, db) / distances[0]);
+    }
+    else {
+        distances[7] = -1;
+    }
+    for (int i = 0; i < 8; i++){
+        if ((distances[i] > 0) && (distances[i] < minimum)){
+            minimum = distances[i];
         }
     }
+    free(distances);
     return minimum;
 }
 
 double polygon_distance(int length1, edge* polygon1, int length2, edge* polygon2)
 {
-    double min = -1;
+    double min = MINIMUM_NOT_FOUND;
     double d;
     for (int i = 0; i < length1; i++){
         for (int j = 0; j < length2; j++){
             d = edge_distance(polygon1[i], polygon2[j]);
-            if ((d < min) || (min < 0)){
+            if ((d < min) || (min == MINIMUM_NOT_FOUND)){
                 min = d;
             }
         }
