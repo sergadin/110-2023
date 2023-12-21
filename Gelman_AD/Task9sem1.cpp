@@ -31,10 +31,30 @@ int checkBorder(unsigned int icon[32])
     // Checking the black lines inside the frame
     for (int i = 2; i <= 29; i++) 
     {
-        if ((icon[i] && ((1 << 31) || (1)) == ((1 << 31) || 1)) && (~icon[i] && ((1 << 30) || (1 << 1)) == (1 << 30) || (1 << 1)))
-        {
-            correct = 1;
-        }
+            if (icon[i] && ((1 << 31) || (1)) == (1 << 31))
+            {
+                if (icon[i] && ((1 << 30) || (1 << 1)) == (1 << 30))
+                {
+                    correct = 1;
+                }
+                // first if or second if = correct
+                if (icon[i] && ((1 << 30) || (1 << 1)) == (1 << 1))
+                {
+                    correct = 1;
+                }
+            }
+            if (icon[i] && ((1 << 31) || (1)) == 1)
+            {
+                if (icon[i] && ((1 << 30) || (1 << 1)) == (1 << 30))
+                {
+                    correct = 1;
+                }
+                // first if or second if = correct
+                if (icon[i] && ((1 << 30) || (1 << 1)) == (1 << 1))
+                {
+                    correct = 1;
+                }
+            }
     }
     return correct; // There is a black frame on the icon
 }
