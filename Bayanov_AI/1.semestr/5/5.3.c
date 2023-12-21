@@ -1,10 +1,3 @@
-/******************************************************************************
-
-                            Online C Compiler.
-                Code, Compile, Run and Debug C program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
 
 #include <stdio.h>
 #include<stdlib.h>
@@ -150,5 +143,7 @@ int main(void)
      }
    angle = Viewing_angle(point_x, point_y, quantity);
     printf("%lf ", angle);
+    free(point_x);
+    free(point_y);
     return 0;
 }
