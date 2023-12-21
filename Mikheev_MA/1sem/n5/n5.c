@@ -28,8 +28,13 @@ int segment(double *mas, int length){
         if(eps(&mas[i], &x) == MORE_EPS){
             continue;
         }
+        if(i = 0){
+            min = 0;
+        }
+        else{
+            min = mas[i - 1];
+        }
         
-        min = mas[i - 1];
         j = i;
         
         while(eps(&mas[j], &x) == LESS_EPS){
@@ -38,6 +43,9 @@ int segment(double *mas, int length){
         max = mas[j];
         
         for(k = j - 1; k >= i; k--){
+            if(k == length - 1){
+                max = 
+            }
             mas[k] = (max + min) / 2;
         }
         
