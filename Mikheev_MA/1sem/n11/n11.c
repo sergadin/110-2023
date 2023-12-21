@@ -66,8 +66,8 @@ double result_segment_right(double *mas_right, int length){ // максимум 
     double max = mas_right[0];
     
     for(i = 0; i < (length / 2) - 1; i++){
-        if (mas_right[i + 1] > mas_right[i]){
-            max = mas_right[i + 1];
+        if (mas_right[i] > max){
+            max = mas_right[i];
         }
     }
     return max;
@@ -92,6 +92,8 @@ int inclusion_of_segment(double max, double min, double *mas_right, double *mas_
     
     double vacuum_min; // минимумы и максимумы "пробелов"
     double vacuum_max;
+    
+    //printf("левая граница %lf\nправая граница%lf\n", min, max);
     
     
     if((a < min) || (b > max)){
