@@ -65,12 +65,15 @@ int main(void)
     output = fopen("output.txt", "w");
     if(output == NULL){
         printf("Ошибка чтения файла\n");
+        fclose(input);
         return ER_READ;
     }
     
     
     if((fscanf(input, "%d", &length)) != 1){
         printf("Ошибка введенного массива\n");
+        fclose(input);
+        fclose(output);
         return ER_READ;
     }
     
@@ -78,6 +81,8 @@ int main(void)
     
     if(mas == NULL){
         printf("Ошибка памяти\n");
+        fclose(input);
+        fclose(output);
         free(mas);
         return ER_MEMORY;
     }
@@ -85,6 +90,8 @@ int main(void)
     for(i = 0; i < length; i++){
         if((fscanf(input, "%lf", &mas[i])) != 1){
             printf("Ошибка чтения файла\n");
+            fclose(input);
+            fclose(output);
             free(mas);
             return ER_READ;
         }
@@ -98,6 +105,8 @@ int main(void)
             fprintf(output, "%lf ", mas[i]);
         }
         fprintf(output, "\n");
+        fclose(input);
+        fclose(output);
         free(mas);
         return SUCCESS;
     }
