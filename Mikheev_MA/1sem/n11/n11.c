@@ -105,16 +105,16 @@ int inclusion_of_segment(double max, double min, double *mas_right, double *mas_
             if(high < mas_right[i + 1]){
                 high = mas_right[i + 1];
             }
-            break;
+            continue;
         }
         
         vacuum_max = low;
         vacuum_min = high;
         
-        //printf("minimum %lf\nmaximum %lf\n", vacuum_min, vacuum_max);
+        printf("minimum %lf\nmaximum %lf\n\n", vacuum_min, vacuum_max);
         
         if(((vacuum_min < b || eps(&vacuum_min, &b) == LESS_EPS) && (vacuum_min > a || eps(&vacuum_min, &a) == LESS_EPS))   
-        ||   ((vacuum_max < b || eps(&vacuum_max, &b) == LESS_EPS) && (vacuum_min > a ||  eps(&vacuum_min, &a) == LESS_EPS))){
+        ||   ((vacuum_max < b || eps(&vacuum_max, &b) == LESS_EPS) && (vacuum_max > a ||  eps(&vacuum_min, &a) == LESS_EPS))){
             return NOT_SUCCESS;
         }
         
