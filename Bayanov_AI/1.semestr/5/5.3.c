@@ -124,7 +124,7 @@ int main(void)
     scanf("%lf", &X);
     printf("Enter Y: ");
      scanf("%lf", &Y);
-    input = fopen("input.txt", "r");
+    input = fopen("in.txt", "r");
     fscanf(input, "%d", &quantity);
     point_x = (double *) malloc ((quantity)* sizeof(double));
     point_y = (double *) malloc ((quantity)* sizeof(double));
