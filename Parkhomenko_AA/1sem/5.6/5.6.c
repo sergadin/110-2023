@@ -117,7 +117,7 @@ int main ( void)
 		printf("Неверные входные данные\n");
 		return -1;
 	}
-	else if (a = b)
+	else if (a == b)
 	{
 		printf("Точка не является отрезком\n");
 		return -1; 
