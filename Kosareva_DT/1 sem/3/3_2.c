@@ -16,7 +16,7 @@ double bubblesort(int *a, int n) {
 	clock_t start, end;
 	start = clock();
 	
-	for (i=n-1; i>=0; i--) {
+	for (i=n-1; i>0; i--) {
 		for (j=0; j<i; j++) {
 			if (a[j] > a[j+1]) {
 				x = a[j];
@@ -32,45 +32,51 @@ double bubblesort(int *a, int n) {
 }
 
 double quicksort(int *a, int first, int last) {
-	int i, j, x;
+	int i, j, x, middle;
 	clock_t start, end;
 	start = clock();
 	
-	if (first == last) {
+	if (first >= last) {
 		return 0;
 	}
 	i = first;
-	j = last - 1;
+	j = last;
+	middle = last;
 	while (i < j) {
-		if (a[j]<a[last] && a[i]>a[last]) {
-			x = a[j];
-			a[j] = a[i];
-			a[i] = x;
+		if (middle == i) {
+			if (a[j] < a[middle]) {
+				x = a[j];
+				a[j] = a[middle];
+				a[middle] = x;
+				middle = j;
+				i++;
+			}
+			else {
+				j--;
+			}
 		}
-		if (a[j]>=a[last]) {
-			j--;
+		else {
+			if (a[i] > a[middle]) {
+				x = a[i];
+				a[i] = a[middle];
+				a[middle] = x;
+				middle = i;
+				j--;
+			}
+			else {
+				i++;
+			}
 		}
-		if (a[i]<=a[last]) {
-			i++;
-		}
+		
 	}
-	if (a[i] > a[last]) {
-		x = a[last];
-		a[last] = a[i];
-		a[i] = x;
-	}
-	else {
-		x = a[last];
-		a[last] = a[i+1];
-		a[i+1] = x;
-	}
-	quicksort(a, first, i);
-	quicksort(a, i+1, last);
+	quicksort(a, first, middle-1);
+	quicksort(a, middle+1, last);
 	
 	end = clock();
 	
 	return (double)(end - start)/CLOCKS_PER_SEC;
 }
+
 
 double standard(int *a, int n) {
 	clock_t start, end;
@@ -118,11 +124,11 @@ int main(void) {
 	int *c = NULL;
 	scanf("%d", &n);
 	
-	a = (int *)malloc(n*32*sizeof(int));
-	b = (int *)malloc(n*32*sizeof(int));
-	c = (int *)malloc(n*32*sizeof(int));
+	a = (int *)malloc(n*1024*sizeof(int));
+	b = (int *)malloc(n*1024*sizeof(int));
+	c = (int *)malloc(n*1024*sizeof(int));
 	
-	for (i=0; i<6; i++) {
+	for (i=0; i<11; i++) {
 		randomise(a, b, c, n);
 		
 		//t1 = bubblesort(a, n);
