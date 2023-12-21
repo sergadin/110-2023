@@ -53,8 +53,8 @@ void sort_left_limit(double *mas_left, double *mas_right, int length){ // фун
 double result_segment_left(double *mas_left, int length){ // минимум среди левых границ
     double min = mas_left[0];
     int i;
-    for(i = 0; i < (length / 2) - 1; i++){
-        if (mas_left[i + 1] < mas_left[i]){
+    for(i = 0; i < (length / 2); i++){
+        if (mas_left[i] < min){
             min = mas_left[i + 1];
         }
     }
@@ -65,7 +65,7 @@ double result_segment_right(double *mas_right, int length){ // максимум 
     int i;
     double max = mas_right[0];
     
-    for(i = 0; i < (length / 2) - 1; i++){
+    for(i = 0; i < (length / 2); i++){
         if (mas_right[i] > max){
             max = mas_right[i];
         }
@@ -225,4 +225,5 @@ int main(void)
     return NOT_SUCCESS;
     
 }
+
 
