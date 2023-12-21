@@ -3,11 +3,11 @@
 int Opredeleniesquare(unsigned int icon[32], int stroka, int strnum); 
 int PoiskKvadrata(unsigned int icon[32]); 
  
-int main() { 
+int main(void) { 
     unsigned int icon[32]; 
     for (int i = 0 ; i < 32 ; i++ ) 
     { 
-        scanf_s( "%u", &icon[i] ); 
+        scanf( "%u", &icon[i] ); 
     } 
  
     int result = PoiskKvadrata(icon); 
@@ -61,7 +61,8 @@ int PoiskKvadrata(unsigned int icon[32]) {
 } 
  
 int Opredeleniesquare(unsigned int icon[32], int stroka, int strnum) { 
-    int i, j, rab, column; 
+    int i, j;
+    unsigned int rab, column; 
     for (int i = stroka + 1; i < stroka + 4; i ++)  
     { 
         column = icon[i]; 
