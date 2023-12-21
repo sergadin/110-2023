@@ -29,6 +29,7 @@ void countingSort(int arr[], int length) {
     int min = arr[0];
     int max = arr[0];
     int temp = 0;
+    int* count;
     for (int i = 1; i < length; i++){
         if (arr[i] < min){
             min = arr[i];
@@ -38,7 +39,7 @@ void countingSort(int arr[], int length) {
         }
     }
 
-    int* count = (int*)malloc((max - min + 1) * sizeof(int));
+    count = (int*)malloc((max - min + 1) * sizeof(int));
     for (int i = 0; i < max - min + 1; i++){
         count[i] = 0;
     }
@@ -47,7 +48,6 @@ void countingSort(int arr[], int length) {
         count[arr[i] - min]++;
     }
 
-    int index = 0;
     for (int i = 0; i < max - min + 1; i++){
         for (int j = 0; j < count[i]; j++){
             arr[temp++] = i + min;
@@ -65,7 +65,7 @@ int isSorted(int arr[], int length) {
 void generateRandomArray(int arr[], int length) {
     srand(time(NULL));
     for (int i = 0; i < length; i++)
-        arr[i] = rand();
+        arr[i] = rand() % 100;
 }
 
 int main(void) {
