@@ -9,7 +9,7 @@ void Generator_Array(int** main_arr, int len);
 void Copy_Array(int* copy_arr, int* main_arr, int len);
 void Time_Checks(FILE* out_f, int len);
 void Bubble_P(int* a, int len);
-int Validation_Сheck(int* a, int len);
+int Validation_Check(int* a, int len);
 void Radius_Bit_Sort(int* arr, int n, int numBits);
 int compare(const void* i, const void* j);
 
@@ -22,7 +22,7 @@ int compare(const void* i, const void* j)
 
 
 //функция проверяет на корректнотсь работы сортировки
-int Validation_Сheck(int* a, int len)
+int Validation_Check(int* a, int len)
 {
 	for (int i = 0; i < len - 1; i++)
 	{
@@ -172,7 +172,7 @@ void Time_Checks(FILE* out_f, int len)
 	end_time = clock();
 	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- screening - sorting error\n");
 	}
@@ -187,7 +187,7 @@ void Time_Checks(FILE* out_f, int len)
 	end_time = clock();
 	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- bit - sorting error\n");
 	}
@@ -201,7 +201,7 @@ void Time_Checks(FILE* out_f, int len)
 	qsort(copy_arr, len, sizeof(int), compare);
 	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- qsort - sorting error\n");
 	}
