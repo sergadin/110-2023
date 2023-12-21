@@ -95,11 +95,14 @@ double polygonDistance(Point* polygon_A, int lngth_A, Point* polygon_B, int lngt
 
 int main(void) 
 {
-    FILE* fileA = fopen("in_A", "r");
-    FILE* fileB = fopen("in_B", "r");
+    FILE* fileA;
+    FILE* fileB;
     Point* polygon_A;
     Point* polygon_B;
     int lngth_A, lngth_B;
+
+    fileA = fopen("in_A.txt", "r");
+    fileB = fopen("in_B.txt", "r");
 
     if (fileA == NULL) 
     {

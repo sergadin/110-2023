@@ -6,7 +6,7 @@ typedef enum { OK = 0, E_DATA, E_IO} ERR;
 int test_file (FILE *input, ERR *error);
 int test_file_input_double (FILE *input, double *num, ERR *error);
 int test_file_input_int (FILE *input, int *num, ERR *error);
-int file_read_arr (FILE *input, double *arr, int len, ERR *error);
+int sorted_arr (double *arr, int len);
 
 int test_file_input_double (FILE *input, double *num, ERR *error)
 {
@@ -35,18 +35,14 @@ int test_file_input_int (FILE *input, int *num, ERR *error)
         return 0;
 }
 
-int file_read_arr (FILE *input, double *arr, int len, ERR *error)
+int sorted_arr (double *arr, int len)
 {
 	int i, incr = 1, decr = -1;
-	arr = (double *)malloc(len * sizeof(double));
-	for (i = 0; i < len; i++)
-	{
-		test_file_input_double(input, &arr[i], error);
-	}
+	double e;
 	for (i = 1; i < len; i++)
 	{
-		if (arr[i-1] < arr[i]) { decr = 0; }
-		if (arr[i-1] > arr[i]) { incr = 0; }
+		if ((arr[i] - arr[i - 1]) > 0) { decr = 0; }
+		if (arr[i-1] - arr[i] > 0) { incr = 0; }
 	}
 	return incr + decr;
 }
