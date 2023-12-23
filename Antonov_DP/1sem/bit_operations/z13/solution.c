@@ -19,27 +19,49 @@ int bin_in_int(int *b, int end, int st)
 
 int symmetric_num(int *answ, int l, int r)
 {
-	int i, p, len = 0;
+	int i, len = 0, len_bin;
+	int *num_bin;
+	num_bin = (int *)malloc(8 * sizeof(int) * sizeof(int));
 	for (i = l; i < (r + 1); i++)
 	{
-		for (p = 0; (int)(i / (int)pow((double)2, (double) p)) != 0; p++) {}
-		p = p - 1;
-		if (((i % (int)pow(2, ((int)(p / 2)))) & ((int)(i % (int)pow(2, ((int)((p - 1) / 2)))))) == 0)
+		len_bin = int_bin(i, num_bin);
+		if (((bin_in_int(num_bin, (int)(len_bin / 2), 0)) == (bin_in_int(num_bin, (int)((len_bin - 1) / 2), len_bin - 1))) && (num_bin[0] == 1))
 		{
 			answ[len] = i;
 			len++;
 		}
 	}
+	free(num_bin);
 	return len;
 }
+int int_bin(int n, int *b) 
+{
+	int mask = 1;
+	int i;
+	for (i = 0; mask; i++) 
+	{
+		if (n & mask) 
+		{
+			b[i] = 1;
+		} 
+		else 
+		{
+			b[i] = 0;
+		}
+		mask = mask << 1;
+	}
+	for (i = 31; (i > 0) && (b[i] == 0); i--) {}
+	return (i + 1);
+}
+
 int main(void)
 {
-	int l, r, i, len;
+	int num, i;
 	int *answ;
 	printf("введите неотрицательные левую границу и првую границу диапозона через пробел: ");
-	if ( scanf("%d %d", &l, &r) != 2)
+	if ( scanf("%d", &num) != 1)
 	{
-	        printf("диапозон задан некорректно \n");
+		printf("диапозон задан некорректно \n");
 		return -1;
 	}
 	if ((l > r) || (l < 0) || (r < 0))
@@ -53,8 +75,6 @@ int main(void)
 	{
 		printf("%d\n", answ[i]);
 	}
-	l = 1 & ~(2);
-	printf("%d", l);
 	free(answ);
 	return 0;
 }
