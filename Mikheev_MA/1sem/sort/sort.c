@@ -19,12 +19,19 @@ void shift_down(int *mas, int k);
 void shift_up(int *mas, int k);
 void sort_heap(int *mas, int length);
 int test(FILE* output, int *mas, int length); // тест сортировок указанной длины
+int compare(const void* i, const void* j);
+
+
+
+int compare(const void* i, const void* j){
+	return (*(int*)i - *(int*)j);
+}
 
 
 
 int test(FILE* output, int *mas, int length){
-    clock_t start_1, end_1, start_2, end_2;
-    double time_1, time_2;
+    clock_t start_1, end_1, start_2, end_2, start_3, end_3;
+    double time_1, time_2, time_3 = 0;
     
     generate_random_mas(mas, length);
     start_1 = clock();
@@ -44,7 +51,17 @@ int test(FILE* output, int *mas, int length){
         return FAILED;
     }
     
-    fprintf(output, "Длина массива - %d\nВремя сортировки вставками - %lf\nВремя пирамидальной сортировки - %lf\n\n", length, time_1, time_2);
+    generate_random_mas(mas, length);
+    start_3 = clock();
+    qsort(mas, length, sizeof(int), compare);
+    end_3 = clock();
+    time_3 = (double)(end_3 - start_3) / CLOCKS_PER_SEC;
+    if(correct_sort(mas, length) == NOT_CORRECT){
+        return FAILED;
+    }
+    
+    
+    fprintf(output, "Длина массива - %d\nВремя сортировки вставками - %lf\nВремя пирамидальной сортировки - %lf\nВремя qsort - %lf\n\n", length, time_1, time_2, time_3);
 
 }
 
