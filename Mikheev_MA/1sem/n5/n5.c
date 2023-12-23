@@ -107,9 +107,9 @@ int main(void)
         fscanf(input, "%lf", &mas[i]);
     }
     
-    for(int j = 0; j < length; j++){
-        printf("%lf\n", mas[j]);
-    }
+//    for(int j = 0; j < length; j++){
+//        printf("%lf\n", mas[j]);
+//    }
     
     segment(mas, length, x);
     
