@@ -1,126 +1,124 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define SUCCESS 0
+#define SUCCESS 0 
 #define ER_READ -1
-#define ER_MEMORY -2
-#define MORE_EPS -3
-#define LESS_EPS -4
+#define ER_OPEN -2
+#define ER_MEMORY -3
 
+void segment(double *mas, int length, double x);
+int eps(double a, double b);
 
-int segment(double *mas, int length); //  функция заменяет элементы каждого x-отрезка на полусумму элементов, прилегающих к этому отрезку справа и слева.
-int eps(double *first, double * second);
-
-
-int eps(double *first, double *second){ // сравнивает 2 числа с точностью до е = 0.01
-    double eps = 0.01;
-    if(fabs(*first - *second) < eps){
-        return LESS_EPS;
+int eps(double a, double b){ // функция сравнивает числа с точностью до e
+    double e = 0.1;
+    if(fabs(a - b) < e){
+        return 1;
     }
-    return MORE_EPS;
+    return 0;
 }
 
-int segment(double *mas, int length){
-    double x = 20, min = 0, max = 0;
-    int i = 0, j = 0, k = 0;
+
+void segment(double *mas, int length, double x){ // фунция на входе получает массив, длину, значение х-отрезка, заменяет все х-отрезки на полусумму прилегающих
+    double min = 0;
+    double max = mas[1];
     
-    for(i = 0; i < length; i++){
-        if(eps(&mas[i], &x) == MORE_EPS){
+    for(int i = 0; i < length; i++){
+        if(eps(mas[i], x) != 1){
             continue;
         }
-        if(i == 0){
-            min = 0;
-        }
-        else{
-            min = mas[i - 1];
-        }
         
-        j = i;
+        min = mas[i - 1];
         
-        while(eps(&mas[j], &x) == LESS_EPS){
+        int j = i;
+        
+        while(eps(mas[j + 1], x) == 1){
             j++;
         }
         if(j == length - 1){
             max = 0;
         }
         else{
-            max = mas[j];
+            max = mas[j + 1];
         }
         
-        for(k = j - 1; k >= i; k--){
-            if(k == length - 1){
-                max = 0;
-            }
+        for(int k = j; eps(mas[k], x) == 1; k--){
             mas[k] = (max + min) / 2;
         }
         
-        i = j;
+        i = j - 1;
     }
-    return SUCCESS;
+    
 }
+
 
 
 int main(void)
 {
-    FILE* input;
-    FILE* output;
-    double *mas = NULL;  // массив
-    int length;  // длина массива 
-    int i=0;  // счетчик
-    int res;  // результат работы функции
+    FILE *input;
+    FILE *output;
+    double *mas = NULL;
+    double scan;
+    int rd;
+    int length = 0;
+    double x = 20;
+    
     
     input = fopen("input.txt", "r");
+    
     if(input == NULL){
-        printf("Ошибка чтения файла\n");
-        return ER_READ;
+        printf("Ошибка открытия файла\n");
+        return ER_OPEN;
     }
     
     output = fopen("output.txt", "w");
+    
     if(output == NULL){
-        printf("Ошибка чтения файла\n");
         fclose(input);
-        return ER_READ;
+        return ER_OPEN;
     }
     
-    
-    if((fscanf(input, "%d", &length)) != 1){
-        printf("Ошибка введенного массива\n");
-        fclose(input);
-        fclose(output);
-        return ER_READ;
-    }
-    
-    mas = (double*) malloc((length) * sizeof(double));
-    
-    if(mas == NULL){
-        printf("Ошибка памяти\n");
-        fclose(input);
-        fclose(output);
-        free(mas);
-        return ER_MEMORY;
-    }
-    
-    for(i = 0; i < length; i++){
-        if((fscanf(input, "%lf", &mas[i])) != 1){
-            printf("Ошибка чтения файла\n");
+    while((rd = fscanf(input, "%lf", &scan)) != EOF){
+        length++;
+        if(rd != 1){
             fclose(input);
             fclose(output);
-            free(mas);
             return ER_READ;
         }
     }
     
-    
-    res = segment(mas, length);
-    
-    if(res == SUCCESS){
-        for(i = 0; i < length; i++){
-            fprintf(output, "%lf ", mas[i]);
-        }
-        fprintf(output, "\n");
+    if(length == 0){
         fclose(input);
         fclose(output);
-        free(mas);
-        return SUCCESS;
+        return ER_READ;
     }
+    
+    
+    mas = (double*) malloc(length * sizeof(double*));
+    
+    if(mas == NULL){
+        fclose(input);
+        fclose(output);
+        return ER_MEMORY;
+    }
+    
+    rewind(input);
+    
+    for(int i = 0; i < length; i++){
+        fscanf(input, "%lf", &mas[i]);
+    }
+    
+    for(int j = 0; j < length; j++){
+        printf("%lf\n", mas[j]);
+    }
+    
+    segment(mas, length, x);
+    
+    for(int j = 0; j < length; j++){
+        fprintf(output, "%lf ", mas[j]);
+    }
+    
+    fclose(input);
+    fclose(output);
+    free(mas);
+    return SUCCESS;
 }
