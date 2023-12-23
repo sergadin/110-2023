@@ -2,29 +2,35 @@
 #include <stdlib.h>
 #include <math.h>
 
-int symmetric_num(int *answ, int l, int r);
+int symmetric_numbers(int *answ, int l, int r);
 int int_bin(int n, int *b);
-int bin_in_int(int *b, int end, int st);
+int symmetric_num(unsigned int num);
 
-int bin_in_int(int *b, int end, int st)
+int symmetric_num(unsigned int num)
 {
-	int i, summ = 0, j = 1;
-	for (i = st; i != end; i = i + ((end - st) / abs(end - st)))
+	unsigned int test = 0;
+	int i, j;
+	test = -1;
+	for (i = 32; (test & num) == num ; i--){ test = test >> 1;}
+	i++;
+	test = 0;
+	for (j = 0; j < (int)(i / 2); j++)
 	{
-		summ = summ + (b[i] * j);
-		j = j * 2;
+		test = (test << 1) + (1 & num);
+		num = num >> 1;
 	}
-	return summ;
+	if ((i % 2) == 1) {num = num >> 1;}
+	test = (~(test)) + 1;
+	if ((test + num) == 0) { return 1; }
+	return 0;
 }
 
-int symmetric_num(int *answ, int l, int r)
+int symmetric_numbers(int *answ, int l, int r)
 {
-	int i, p, len = 0;
+	unsigned int i, len = 0;
 	for (i = l; i < (r + 1); i++)
 	{
-		for (p = 0; (int)(i / (int)pow((double)2, (double) p)) != 0; p++) {}
-		p = p - 1;
-		if (((i % (int)pow(2, ((int)(p / 2)))) & ((int)(i % (int)pow(2, ((int)((p - 1) / 2)))))) == 0)
+		if (symmetric_num(i) == 1)
 		{
 			answ[len] = i;
 			len++;
@@ -34,7 +40,7 @@ int symmetric_num(int *answ, int l, int r)
 }
 int main(void)
 {
-	int l, r, i, len;
+	int l, r, i, len, j;
 	int *answ;
 	printf("введите неотрицательные левую границу и првую границу диапозона через пробел: ");
 	if ( scanf("%d %d", &l, &r) != 2)
@@ -48,13 +54,22 @@ int main(void)
 		return -1;
 	}
 	answ = (int *)malloc(((int)((r - l) / 2)) * sizeof(int));
-	len = symmetric_num(answ, l, r);
+	len = symmetric_numbers(answ, l, r);
 	for (i = 0; i < len; i++)
 	{
-		printf("%d\n", answ[i]);
+		printf("%d ", answ[i]);
+		for (j = 1; j < 32; j++)
+		{
+			if (j % 8 == 0)
+			{
+				printf("%d ", (answ[i] & 1));
+				answ[i] = answ[i] >> 1;
+			}
+			printf("%d", (answ[i] & 1));
+                        answ[i] = answ[i] >> 1;
+		}
+		printf("\n");
 	}
-	l = 1 & ~(2);
-	printf("%d", l);
 	free(answ);
 	return 0;
 }

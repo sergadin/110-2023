@@ -47,7 +47,7 @@ int bubble_sort (double *arr, int len)
 
 int pyramid_sort (double *arr, int len)
 {
-        int i, j, p;
+        int i, j;
         double save;
 	for (i = 0; i < len; i++)
 	{
