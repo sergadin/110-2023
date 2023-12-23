@@ -23,15 +23,24 @@ double polygonDistance(Point* polygon_A, int lngth_A, Point* polygon_B, int lngt
 double polygonDistance(Point* polygon_A, int lngth_A, Point* polygon_B, int lngth_B)
 {
     double minDistance = -1; // Minimum distance (= -1, in order to calculate the 0 distance if polygons touch)
-    int i, j;
+    double eps = 1;
+
+    while (1 + eps > 1)
+    {
+        eps /= 2;
+    }
 
     // Calculating the distance between each point of the polygon A and each point of the polygon B
-    for (i = 0; i < lngth_A; i++) 
+    for (int i = 0; i < lngth_A; i++) 
     {
-        for (j = 0; j < lngth_B; j++) 
+        for (int j = 0; j < lngth_B; j++) 
         {
             double currDistance = distance(polygon_A[i], polygon_B[j]);
-            if (minDistance == -1 || currDistance < minDistance) 
+            if ((fabs(minDistance + 1) <= eps * (fabs(minDistance) + fabs(-1))))
+            {
+                minDistance = currDistance;
+            }
+            if (currDistance < minDistance)
             {
                 minDistance = currDistance;
             }
