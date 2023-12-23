@@ -24,27 +24,33 @@ int main(void){
         return 0;
     }
 
-	while(fscanf(f, "%d", &next)!=EOF){
+	while(fscanf(f, "%d", &next)!=EOF)
+	{
 
-		if(cur > prev && cur > next){
+		if(cur > prev && cur > next)
+		{
 			sum = sum + cur;
 			count ++;
 		}
 
-		if(cur < prev && cur < next){
-                        sum = sum + cur;
-                        count ++;
-                }
+		if(cur < prev && cur < next)
+		{
+            sum = sum + cur;
+            count ++;
+        }
 
 		prev = cur;
 		cur = next;
 	}
 
-	if(count == 0){
+	if(count == 0)
+	{
 		printf("No extremums\n");
 		fclose(f);
 		return 0;
-	}else{
+	}
+	else
+	{
 		sum = sum/count;
 		printf("%lf\n", sum);
 		fclose(f);
