@@ -8,6 +8,7 @@ int max_number_of_element(int* arr, int len)
     int qua_of_cur_el = 0, max_qua_of_cur_el = 0, max_el = 0;
     for (int i = 0; i < len; i++) 
     {
+	qua_of_cur_el = 0;
         for (int j = i + 1; j < len; j++)
         {
             if (arr[i] == arr[j])
