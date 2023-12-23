@@ -21,6 +21,7 @@ int Replacing_coordinates(double *point_x, double *point_y, int quantity, double
     point_x[i] = point_x[i] - X;
     for(int i=0; i<quantity; i++)
     point_y[i] = point_y[i] - Y;
+   return 1;
 }
 
 int Sign_line(double * point_x, double *point_y, int N1, int N2)

@@ -34,11 +34,11 @@ void sift_sort(int* mas, int lngth)
 
 	for (int first = 1; first < lngth; first++) 
 	{
-		for (int last = first - 1; (last > 0) && (mas[last] < mas[last - 1]); last--) 
+		for (int last = first; (last > 0) && (mas[last] < mas[last - 1]); last--) 
 		{
-			i = mas[last - 1];
-			mas[last - 1] = mas[last];
-			mas[last] = i;
+			i = mas[last];
+			mas[last] = mas[last - 1];
+			mas[last - 1] = i;
 		}
 	}
 }
@@ -77,13 +77,13 @@ void quick_sort(int* mas, int lngth)
 			i++;
 			j--;
 		}
-	} while (i <= j);
+	} while (i < j);
 
 	// Recursive function if there are unsorted elements
 	if (j > 0) 
 	{
 		// Left side
-		quick_sort(mas, j + 1);
+		quick_sort(mas, j - 1);
 	}
 	if (i < lngth) 
 	{

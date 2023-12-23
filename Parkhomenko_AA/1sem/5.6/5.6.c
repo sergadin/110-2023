@@ -104,27 +104,37 @@ double max(double x1, double x2) //возвращает максимальное
 
 int main ( void)
 {
-	FILE *input; // входной файлы
+	FILE *input; // входной файл
 	double *array; // массив
 	int count, i; // количество отрезков и индекс для задания массива
-	double a,b;// начало и конец входного отрезка
+	double a, b; // начало и конец входного отрезка
 	int result;
 
 	printf("Введите начало и конец отрезка\n");
-	scanf("%lf %lf", &a, &b);
+	if(scanf("%lf %lf", &a, &b) != 1) 
+	
+	{
+    printf("Неверные входные данные\n");
+    return -1;
+}
 	if (a > b)
 	{
-		printf("Неверные вводимые данные\n");
+		printf("Неверные входные данные\n");
 		return -1;
+	}
+	else if (a == b)
+	{
+		printf("Точка не является отрезком\n");
+		return -1; 
 	}
 
 	input = fopen("input.txt", "r");
 	if (input == NULL) {
-		printf("НЕ удалось открыть входной файл\n");
+		printf("Не удалось открыть входной файл\n");
 		return -1;
 	}
 
-	if ((fscanf(input, "%d", &count) != 1) || ( count <= 0)) {
+	if ((fscanf(input, "%d", &count) != 1) || (count <= 0)) {
 		printf("Не удалось прочитать первый элемент\n");
 		return -1;
 	}
@@ -132,7 +142,7 @@ int main ( void)
 	count = count * 2; // длина массива
 
 	array = (double*)malloc(count * sizeof(double));
-	for ( i = 0; i < count; i++) {
+	for (i = 0; i < count; i++) {
 		if (fscanf(input, "%lf", &array[i]) != 1) {
 			printf("Первый элемент не равен длине предполагаемого массива\n");
 			return -1;
@@ -144,7 +154,7 @@ int main ( void)
 		return -1;
 	}
 
-	SORT_Search(array,count); //сортировка по началу координат
+	SORT_Search(array, count); //сортировка по началу координат
 	unite(array, count); // объединение отрезков 
 	result = coverage(array, count, a, b); // проверка на покрытие отрезка входными данными
 	if (result < 1)
@@ -156,4 +166,3 @@ int main ( void)
 	fclose(input);
 	return 0;
 }
-
