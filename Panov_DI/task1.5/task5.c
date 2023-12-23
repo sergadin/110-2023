@@ -40,7 +40,7 @@ int main() {
     int last_number_of_X;
     FILE *input;
 
-    input = fopen("/Users/dmitrij/Documents/GitHub/110-2023/Panov_DI/task1.5/test5.txt", "r");
+    input = fopen("/Users/dmitrij/Desktop/Учеба/task5/test5.txt", "r");
     if(input == NULL)
 	{
 		printf("Не удается открыть файл\n");

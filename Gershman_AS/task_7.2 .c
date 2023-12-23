@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 
-int max_number_of_element(int len, int* arr);
-int max_number_of_element(int len, int* arr)
+int max_number_of_element(int* arr, int len);
+int max_number_of_element(int* arr, int len)
 {
     int qua_of_cur_el = 0, max_qua_of_cur_el = 0, max_el = 0;
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++) 
+    {
+	qua_of_cur_el = 0;
         for (int j = i + 1; j < len; j++)
         {
             if (arr[i] == arr[j])
@@ -52,7 +54,7 @@ int main(void)
     {
         fscanf(input, "%d", &arr[i]);
     }
-    res = max_number_of_element(len, arr);
+    res = max_number_of_element(arr, len);
     printf("%d\n", res);
     free(arr);
     fclose(input);

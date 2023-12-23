@@ -38,7 +38,7 @@ int main() {
     double result;
     FILE *input;
 
-    input = fopen("/Users/dmitrij/Desktop/Учеба/task28/test28.txt", "r");
+    input = fopen("/Users/dmitrij/Documents/GitHub/110-2023/Panov_DI/task1.28/test28.txt", "r");
 
     if(input == NULL)
 	{
