@@ -9,19 +9,10 @@ void Generator_Array(int** main_arr, int len);
 void Copy_Array(int* copy_arr, int* main_arr, int len);
 void Time_Checks(FILE* out_f, int len);
 void Bubble_P(int* a, int len);
-int Validation_Сheck(int* a, int len);
-int Quick_Bit_Sort_Partition(int* a, int n, int ibit);
-bool Test_Bit(int x, int k);
+int Validation_Check(int* a, int len);
+void Radius_Bit_Sort(int* arr, int n, int numBits);
 int compare(const void* i, const void* j);
-void swap(int* a, int* b);
 
-// функция меняет значения двух переменных местами
-void swap(int* a, int* b)
-{
-	int c = *a;
-	*a = *b;
-	*b = c;
-}
 
 // сравнение двух элементов на равенство(вспомог. функ. для qsort)
 int compare(const void* i, const void* j)
@@ -31,7 +22,7 @@ int compare(const void* i, const void* j)
 
 
 //функция проверяет на корректнотсь работы сортировки
-int Validation_Сheck(int* a, int len)
+int Validation_Check(int* a, int len)
 {
 	for (int i = 0; i < len - 1; i++)
 	{
@@ -45,25 +36,41 @@ int Validation_Сheck(int* a, int len)
 }
 
 
-bool Test_Bit(int x, int k)
-{
-	return x & (1 << k);
+//функция для получения значения бита на данной позиции
+int getBit(int num, int pos) {
+	return (num >> pos) & 1;
 }
 
-//Сортировка целого массива группировкой с последовательным упорядочиванием битов
-int Quick_Bit_Sort_Partition(int* a, int n, int ibit)
+
+//Поразрядная битовая сортировка
+void Radius_Bit_Sort(int* arr, int len, int numBits)
 {
-	int i, j;
-	while (true) {
-		for (i = 0; i < n && !Test_Bit(a[i], ibit); i++);
-		for (j = n - 1; j >= 0 && Test_Bit(a[j], ibit); j--);
-		if (i == n || j == -1) return 0;
-		if (i < j) {
-			swap(a + i, a + j);
-			++i, --j;
+	const int BASE = 2; // Основание системы счисления (0 и 1)
+
+	for (int bitPos = 0; bitPos < numBits; bitPos++)
+	{
+		int* output = (int*)(malloc((len+1)*sizeof(int)));
+		int count[2] = {0};
+
+		for (int i = 0; i < len; i++) 
+		{
+			count[getBit(arr[i], bitPos)]++;
 		}
-		else {
-			return j + 1;
+
+		for (int i = 1; i < BASE; i++) 
+		{
+			count[i] += count[i - 1];
+		}
+
+		for (int i = len - 1; i >= 0; i--) 
+		{
+			output[count[getBit(arr[i], bitPos)] - 1] = arr[i];
+			count[getBit(arr[i], bitPos)]--;
+		}
+
+		for (int i = 0; i < len; i++) 
+		{
+			arr[i] = output[i];
 		}
 	}
 }
@@ -163,9 +170,9 @@ void Time_Checks(FILE* out_f, int len)
 	st_time = clock();
 	Bubble_P(copy_arr, len);
 	end_time = clock();
-	r_time = (double)(st_time - end_time);
+	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- screening - sorting error\n");
 	}
@@ -176,14 +183,11 @@ void Time_Checks(FILE* out_f, int len)
 
 	Copy_Array(copy_arr, main_arr, len);
 	st_time = clock();
-	for (int i = 0; i < len; i++)
-	{
-		Quick_Bit_Sort_Partition(copy_arr, len, i);
-	}
+	Radius_Bit_Sort(copy_arr, len, 64);
 	end_time = clock();
-	r_time = (double)(st_time - end_time);
+	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- bit - sorting error\n");
 	}
@@ -195,9 +199,9 @@ void Time_Checks(FILE* out_f, int len)
 	Copy_Array(copy_arr, main_arr, len);
 	st_time = clock();
 	qsort(copy_arr, len, sizeof(int), compare);
-	r_time = (double)(st_time - end_time);
+	r_time = (double)(end_time - st_time);
 
-	if (!(Validation_Сheck(copy_arr, len)))
+	if (!(Validation_Check(copy_arr, len)))
 	{
 		fprintf(out_f, "- qsort - sorting error\n");
 	}
@@ -213,7 +217,6 @@ void Time_Checks(FILE* out_f, int len)
 
 	return;
 }
-
 
 
 int main(void)

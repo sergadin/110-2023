@@ -4,33 +4,32 @@ int findConfig(int a, int b, int k);
 
 int findConfig(int a, int b, int k)
 {
-     int res = 1;
      int mask;
      int pos = 0;
-     int flag = 0;
+     int sovpadenie = 0;
 
-     for(int i = 0; i < k; i++) {
-        res *= 2;
-     }
-     res --;
-     for(int i = 0; i < 33-k; i++ ){
-     if((b & res) == ((a >> i) & res)){
+     mask = (1 << k) - 1;
+
+     for(int i = 0; i < sizeof(int) * 8 - k; i++ ){
+     if((b & mask) == ((a >> i) & mask)){
         pos = i + 1;
-        flag  = 1;
+        sovpadenie  = 1;
         }
      }
-     if(flag){
+     if(sovpadenie){
         return pos;
      }
-     else return 0;
+     else {
+        return 0;
+     }
 
 }
 
 int main(void)
 {
-     unsigned int a;
-     unsigned int b;
-     unsigned int k;
+     int a;
+     int b;
+     int k;
      int config;
 
      printf("vvedite chislo a:");
@@ -47,19 +46,19 @@ int main(void)
      }
 
      printf("vvedite  polozhitel'noe chislo k:");
-     if((scanf("%d", &k) != 1)|| (k < 1)) {
+     if((scanf("%d", &k) != 1)|| (k < 1) || k > sizeof(int) * 8) {
         printf("not korr k\n");
         return -1;
      }
 
      findConfig(a, b, k);
 
-     config =  findConfig(a, b, k);
+     config = findConfig(a, b, k);
 
      if(config == 0){
         printf("not found");
      }
-     else printf("%d", config);
+     else printf("position: %d", config);
 
      return 0;
 }
