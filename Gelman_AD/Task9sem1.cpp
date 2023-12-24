@@ -5,27 +5,27 @@ int checkBorder(unsigned int icon[32])
     int correct = 0;
 
     // Checking the upper border
-    if (icon[0] == ((1 << 31) | (1 << 31) - 1))
+    if (icon[0] == (1 << 32 - 1))
     {
-        correct = 1;
+        correct += 1;
     }
 
     // Checking the lower border
-    if (icon[31] == 2 ^ 32 - 1)
+    if (icon[31] == (1 << 32 - 1))
     {
-        correct = 1;
+        correct += 1;
     }
 
     // Checking the left border
-    if (icon[1] == 2 ^ 31 + 1)
+    if (icon[1] == 0)
     {
-        correct = 1;
+        correct += 1;
     }
 
     // Checking the right border
-    if (icon[30] == ((1 << 31) | (1 << 31) + 1))
+    if (icon[30] == 0)
     {
-        correct = 1;
+        correct += 1;
     }
 
     // Checking the black lines inside the frame
@@ -76,11 +76,11 @@ int main(void)
     // Checking wether there is a black frame on the icon or not
     correct = checkBorder(icon);
 
-    if (correct = 1)
+    if (correct == 1)
     {
         printf("There is a black frame\n");
     }
-    else // correct = 0
+    else // correct == 0
     {
         printf("There is no black frame on the icon\n");
     }

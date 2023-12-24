@@ -23,15 +23,24 @@ double polygonDistance(Point* polygon_A, int lngth_A, Point* polygon_B, int lngt
 double polygonDistance(Point* polygon_A, int lngth_A, Point* polygon_B, int lngth_B)
 {
     double minDistance = -1; // Minimum distance (= -1, in order to calculate the 0 distance if polygons touch)
-    int i, j;
+    double eps = 1;
+
+    while (1 + eps > 1)
+    {
+        eps /= 2;
+    }
 
     // Calculating the distance between each point of the polygon A and each point of the polygon B
-    for (i = 0; i < lngth_A; i++) 
+    for (int i = 0; i < lngth_A; i++) 
     {
-        for (j = 0; j < lngth_B; j++) 
+        for (int j = 0; j < lngth_B; j++) 
         {
             double currDistance = distance(polygon_A[i], polygon_B[j]);
-            if (minDistance == -1 || currDistance < minDistance) 
+            if ((fabs(minDistance + 1) <= eps * (fabs(minDistance) + 1)))
+            {
+                minDistance = currDistance;
+            }
+            if (currDistance < minDistance)
             {
                 minDistance = currDistance;
             }
@@ -72,19 +81,17 @@ int main(void)
     {
         printf("Unable to read the file in_A\n");
         return -1;
-        exit(-1);
     }
 
     if (fscanf(fileB, "%d", &lngth_B) != 1)
     {
         printf("Unable to read the file in_B\n");
         return -1;
-        exit(-1);
     }
 
     // Creating arrays of points for each polygon
-    polygon_A = (Point*)malloc((lngth_A) * sizeof(Point));
-    polygon_B = (Point*)malloc((lngth_B) * sizeof(Point));
+    polygon_A = (Point*)malloc((lngth_A) * sizeof(int));
+    polygon_B = (Point*)malloc((lngth_B) * sizeof(int));
 
     if (polygon_A == NULL)
     {
@@ -99,19 +106,19 @@ int main(void)
     }
 
     // Reading the coordinates of the points of the polygon A from the file in_A
-    for (int i = 0; i < lngth_A; i++)
+    for (int i = 0; i <= lngth_A; i++)
     {
-        fscanf(fileA, "%lf %lf", &polygon_A[i].x, &polygon_A[i].y);
+        fscanf(fileA, "%d %d", &polygon_A[i].x, &polygon_A[i].y);
     }
-
-    for (int i = 0; i < lngth_B; i++)
+    
+    for (int i = 0; i <= lngth_B; i++)
     {
-        fscanf(fileB, "%lf %lf", &polygon_B[i].x, &polygon_B[i].y);
+        fscanf(fileB, "%d %d", &polygon_B[i].x, &polygon_B[i].y);
     }
 
     // Calculating the distance between two polygons
     double distance = polygonDistance(polygon_A, lngth_A, polygon_B, lngth_B);
-    printf("Distance: %lf\n", distance);
+    printf("Distance: %d\n", distance);
 
     free(polygon_A);
     free(polygon_B);

@@ -1,20 +1,44 @@
 #include <stdio.h> 
  
 int Opredeleniesquare(unsigned int icon[32], int stroka, int strnum); 
-int PoiskKvadrata(unsigned int icon[32]); 
+int PoiskKvadrata(unsigned int icon[32], unsigned int* ykazcol); 
  
 int main(void) { 
-    unsigned int icon[32]; 
-    for (int i = 0 ; i < 32 ; i++ ) 
-    { 
-        scanf( "%u", &icon[i] ); 
+    FILE* txt; 
+    unsigned int icon[32], colnum, *ykazcol, i, j; 
+    char simvol; 
+    ykazcol = &colnum; 
+    txt = fopen(&txt, "in.txt", "r"); 
+    if (txt == NULL) { 
+        printf("Не удалось открыть файл\n"); 
+        return -1; 
     } 
  
-    int result = PoiskKvadrata(icon); 
+    for (int i = 0 ; i < 32 ; i++ ) 
+    { 
+        icon[i]=0; 
+    } 
+ 
+    for (i=0;i<32;i++) { 
+        for (j = 0; j < 32; j++) { 
+            simvol=fgetc(txt); 
+            printf("%c", simvol); 
+            if (simvol == '*') 
+                icon[i] = icon[i] + (1 << j); 
+        } 
+        printf("\n"); 
+        fgetc(txt); 
+    } 
+ 
+    fclose(txt); 
+     
+ 
+    int result = PoiskKvadrata(icon, ykazcol); 
  
     if (result != -1)  
     { 
-        printf("The black square is in the rows: %d - %d\n", result+1, result+4); 
+        printf("The black square is in the rows: %d - %d\n", result+1, result+6); 
+        printf("The black square is in the columns: %d - %d\n", colnum + 1, colnum + 6); 
     } 
     else  
     { 
@@ -24,110 +48,47 @@ int main(void) {
     return 0; 
 } 
  
-int PoiskKvadrata(unsigned int icon[32]) { 
+int PoiskKvadrata(unsigned int icon[32], unsigned int * ykazcol) { 
     unsigned int memory, column; 
-    int i, j,  rab, counter=0,  strnum; 
+    int i, j,  rab,  strnum; 
     for (i = 0 ; i < 32; i ++)  
     { 
-        column = icon[i]; 
+        column = 63; 
         for ( j = 0 ; j < 32; j ++ )  
         { 
-            rab = column % 2; 
-            if (rab == 0)  
+            rab = (column& icon[i]) >> j; 
+            if (rab == 63)  
             { 
-                if (counter == 0) 
+                if (Opredeleniesquare(icon, i, j)) 
                 { 
-                    strnum = j; 
-                    memory = column; 
+                    *ykazcol = j; 
+                    return i; 
                 } 
-                counter ++; 
-                if (counter == 4)  
-                { 
-                    if ( Opredeleniesquare( icon, i, strnum ) ) 
-                        return i; 
-                    counter = 0; 
-                    column = memory; 
-                } 
+                     
             } 
-            else  
-            { 
-                counter = 0; 
-            } 
-            column = column >> 1; 
+            column = column << 1; 
         } 
-        counter = 0; 
     } 
     return -1; 
 } 
  
-int Opredeleniesquare(unsigned int icon[32], int stroka, int strnum) { 
-    int i, j;
-    unsigned int rab, column; 
-    for (int i = stroka + 1; i < stroka + 4; i ++)  
+int Opredeleniesquare(unsigned int icon[32], int stroka, int col) { 
+    int i, rab, column=63; 
+    for (int i = stroka + 1; i < stroka + 6; i ++)  
     { 
-        column = icon[i]; 
-        for (int j = 0; j < 32; j++) 
+        rab = ((column<<col) & icon[i]) >> col; 
+        if (rab != 33 && (i == stroka + 1 || i == stroka + 4)) 
         { 
-            if (j == strnum) 
-            { 
-                rab = column % 2; 
-                if (rab == 1) 
-                    return 0; 
-            } 
-            if ((j == strnum + 1 || j == strnum + 2) && i < stroka + 3)  
-            { 
-                rab = column % 2; 
-                if (rab == 0) 
-                    return 0; 
-            } 
-            if ((j == strnum + 1 || j == strnum + 2) && i == stroka + 3) 
-            { 
-                rab = column % 2; 
-                if (rab == 1) 
-                    return 0; 
-            } 
-            if (j == strnum + 3)  
-            { 
-                rab = column % 2; 
-                if (rab == 1) 
-                    return 0; 
-            } 
-            column = column >> 1; 
+            return 0; 
+        } 
+        if (rab != 45 && (i == stroka + 3 || i == stroka + 2)) 
+        { 
+            return 0; 
+        } 
+        if (rab != 63 && i == stroka + 5) 
+        { 
+            return 0; 
         } 
     } 
     return 1; 
-} 
-/* 
-0 
-6 
-6 
-0 
-0 
-1 
-1 
-1 
-1 
-1 
-1 
-11 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-1 
-6 
-6 
-0 
-1 
-1 
-*/
+}
