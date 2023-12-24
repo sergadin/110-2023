@@ -14,7 +14,7 @@ int different_numbers_counter(FILE* input)
     }
     count++;
     prev = curr;
-    while (fscanf(input, "%d", &curr) != EOF) 
+    while (fscanf(input, "%d", &curr) == 1) 
     {
         if (prev > curr) 
         {
@@ -44,6 +44,7 @@ int main(void)
     if (ans == -1) 
     {
         printf("Error: the sequence does not meet the condition");
+        fclose(input);
         return -1;
     }
     if (ans > 0) 
