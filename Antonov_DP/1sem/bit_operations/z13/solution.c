@@ -2,79 +2,54 @@
 #include <stdlib.h>
 #include <math.h>
 
-int symmetric_num(int *answ, int l, int r);
-int int_bin(int n, int *b);
-int bin_in_int(int *b, int end, int st);
+int search_of_high_config(int check, int config, int quan_bit);
 
-int bin_in_int(int *b, int end, int st)
+int search_of_high_config(int check, int config, int quan_bit)
 {
-	int i, summ = 0, j = 1;
-	for (i = st; i != end; i = i + ((end - st) / abs(end - st)))
+	int i = 0, len = -1;
+	unsigned int test = (1 & config), additional = 1;
+	config = config >> 1;
+	for (i = 1; i < quan_bit; i++)
 	{
-		summ = summ + (b[i] * j);
-		j = j * 2;
+		test += ((1 << i) *(1 & config));
+		config = config >> 1;
+		additional = (additional << 1) + 1;
 	}
-	return summ;
-}
-
-int symmetric_num(int *answ, int l, int r)
-{
-	int i, len = 0, len_bin;
-	int *num_bin;
-	num_bin = (int *)malloc(8 * sizeof(int) * sizeof(int));
-	for (i = l; i < (r + 1); i++)
+	i = 1;
+	while (check > 0)
 	{
-		len_bin = int_bin(i, num_bin);
-		if (((bin_in_int(num_bin, (int)(len_bin / 2), 0)) == (bin_in_int(num_bin, (int)((len_bin - 1) / 2), len_bin - 1))) && (num_bin[0] == 1))
+		if (test == (check & additional))
 		{
-			answ[len] = i;
-			len++;
+			len = i;
 		}
+		i++;
+		check = check >> 1;
 	}
-	free(num_bin);
 	return len;
-}
-int int_bin(int n, int *b) 
-{
-	int mask = 1;
-	int i;
-	for (i = 0; mask; i++) 
-	{
-		if (n & mask) 
-		{
-			b[i] = 1;
-		} 
-		else 
-		{
-			b[i] = 0;
-		}
-		mask = mask << 1;
-	}
-	for (i = 31; (i > 0) && (b[i] == 0); i--) {}
-	return (i + 1);
 }
 
 int main(void)
 {
-	int num, i;
-	int *answ;
-	printf("введите неотрицательные левую границу и првую границу диапозона через пробел: ");
-	if ( scanf("%d", &num) != 1)
+	int config, quan_bit, answ = 0;
+	unsigned int check;
+	printf("введите через пробел целое число, в котором ищется заданная конфигурация, и целое число, в котором задана конфигурация: ");
+	if (scanf("%u %d", &check, &config) != 2)
 	{
-		printf("диапозон задан некорректно \n");
+		printf("числа заданы некорректно \n");
 		return -1;
 	}
-	if ((l > r) || (l < 0) || (r < 0))
+	printf("введите натуральное количество первых битов числа, у которого мы берём конфигурацию: ");
+	if ((scanf("%d", &quan_bit) != 1) || (quan_bit < 1) || ((config >> (quan_bit - 1))) == 0)
 	{
-		printf("диапозон задан некорректно \n");
+		printf("число задано некорректно \n");
 		return -1;
 	}
-	answ = (int *)malloc(((int)((r - l) / 2)) * sizeof(int));
-	len = symmetric_num(answ, l, r);
-	for (i = 0; i < len; i++)
+	answ = search_of_high_config(check, config, quan_bit);
+	if (answ == -1) 
 	{
-		printf("%d\n", answ[i]);
+		printf("такая конфигурация не встречается в данном числе \n");
+		return 0;
 	}
-	free(answ);
+	printf("начиная с %d-ого бита повторяется такая конфигурация \n", answ);
 	return 0;
 }
