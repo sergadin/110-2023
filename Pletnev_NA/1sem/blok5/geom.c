@@ -48,7 +48,7 @@ int CheckLines(double x1, double y1, double x2, double y2, double x3, double y3,
 			{
 				if (B2 / B1 < 0)
 				{
-					if (((Min(x3, x4) < x2) && (x2 < Max(x3, x4))) || (((Min(x1, x2) < x4) && (x4 < Max(x1, x2)))))
+					if (((Min(x3, x4) < x1) && (x1 < Max(x3, x4))) || (((Min(x1, x2) < x4) && (x4 < Max(x1, x2)))))
 					{
 						return 1;
 					}
@@ -64,7 +64,7 @@ int CheckLines(double x1, double y1, double x2, double y2, double x3, double y3,
 
 				if (A2 / A1 < 0)
 				{
-					if (((Min(y3, y4) < y2) && (y2 < Max(y3, y4))) || ((Min(y1, y2) < y4) && (y4 < Max(y1, y2))))
+					if (((Min(y3, y4) < y1) && (y1 < Max(y3, y4))) || ((Min(y1, y2) < y4) && (y4 < Max(y1, y2))))
 					{
 						return 1;
 					}
@@ -77,7 +77,7 @@ int CheckLines(double x1, double y1, double x2, double y2, double x3, double y3,
 
 			if (A2 / A1 < 0)
 			{
-				if (((Min(x3, x4) <= x2) && (x2 <= Max(x3, x4))) || (((Min(x1, x2) <= x4) && (x4 <= Max(x1, x2)))))
+				if (((Min(x3, x4) <= x1) && (x1 <= Max(x3, x4))) || (((Min(x1, x2) <= x4) && (x4 <= Max(x1, x2)))))
 				{
 					return 1;
 				}
@@ -148,6 +148,11 @@ int CheckLines(double x1, double y1, double x2, double y2, double x3, double y3,
 	}
 
 	if ((fabs(A1 * B2 - A2 * B1) <= eps) && (fabs(B1 * C2 - B2 * C1) > eps))
+	{
+		return 0;
+	}
+
+	if (((x1 - x4) <= eps) && ((y1 - y4) < eps))
 	{
 		return 0;
 	}
