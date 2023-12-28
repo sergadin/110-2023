@@ -4,6 +4,16 @@
 
 int determin_position_of_point(double x, double y, double *coor_x, double *coor_y, int len);
 int intersec_ray_segm(double x0, double y0, double a0, double b0, double x1, double y1, double a1, double b1);		//рассчитывает пересекает ли луч отрезок или нет
+int point_belon_segm(double x0, double y0, double x1, double y1, double x2, double y2);
+
+int point_belon_segm(double x0, double y0, double x1, double y1, double x2, double y2)
+{
+	if ((((x2 - x0) * (y1 - y0)) == ((y2 - y0) * (x1 - x0))) && (((0 < ((x2 - x0) * (x1 - x0))) && ((fabs(x1 - x0) - fabs(x2 - x0)) > 0)) || (fabs(x2 - x0) < 0.001)))
+	{
+		return 1;
+	}
+	return 0;
+}
 
 int intersec_ray_segm(double x0, double y0, double a0, double b0, double x1, double y1, double a1, double b1)
 {
@@ -13,7 +23,7 @@ int intersec_ray_segm(double x0, double y0, double a0, double b0, double x1, dou
 		return 0;
 	}
 	par1 = (b0 * (x0 - x1) - a0 * (y0 - y1)) / ((a1 * b0) - (a0 * b1));
-	if(fabs(a0) < 0)
+	if (fabs(a0) < eps)
 	{
 		par0 = (y1 + b1 * par1 - y0) / b0;
 	}
@@ -35,18 +45,33 @@ int determin_position_of_point(double x, double y, double *coor_x, double *coor_
 	double a0, b0, eps = 0.0001;	//координаты направляющего вектора луча и eps - маленькое число
 	a0 = ((coor_x[0] + coor_x[1]) / 2) - x;
 	b0 = ((coor_y[0] + coor_y[1]) / 2) - y;
+	if (point_belon_segm(coor_x[0], coor_y[0], coor_x[1], coor_y[1], x, y) == 1)
+        {
+        	return -1;
+        }
 	for (i = 2; i < len; i++)
 	{
-		if ((fabs(b0 * (coor_x[i] - x) - (a0 * (coor_y[i] - y))) < eps) && (a0 * (coor_x[i] - x) > 0))
+		if ((fabs(coor_x[i] - coor_x[i - 1]) > eps) && (fabs(coor_y[i] - coor_y[i - 1]) > eps))
 		{
-			count += 0;
+			if (point_belon_segm(coor_x[i - 1], coor_y[i - 1], coor_x[i], coor_y[i], x, y) == 1)
+                        {
+                                return -1;
+                        }
+			else if ((fabs(b0 * (coor_x[i] - x) - (a0 * (coor_y[i] - y))) < eps) && (a0 * (coor_x[i] - x) > 0))
+			{
+				count += 0;
+			}
+			else
+			{
+				count += intersec_ray_segm(x, y, a0, b0, coor_x[i - 1], coor_y[i - 1], coor_x[i] - coor_x[i - 1], coor_y[i] - coor_y[i - 1]);
+			}
+			printf("%d \n", count);
 		}
-		else
-		{
-			count += intersec_ray_segm(x, y, a0, b0, coor_x[i - 1], coor_y[i - 1], coor_x[i] - coor_x[i - 1], coor_y[i] - coor_y[i - 1]);
-		}
-		printf("%d \n", count);
 	}
+	if (point_belon_segm(coor_x[len -1], coor_y[len - 1], coor_x[0], coor_y[0], x, y) == 1)
+        {
+                return -1;
+        }
 	if ((fabs(b0 * (coor_x[0] - x) - (a0 * (coor_y[0] - y))) < eps) && (a0 * (coor_x[0] - x) > 0))
         {
         	count += 0;
