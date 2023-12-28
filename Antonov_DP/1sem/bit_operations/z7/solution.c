@@ -20,8 +20,7 @@ int symmetric_num(unsigned int num)
 		num = num >> 1;
 	}
 	if ((i % 2) == 1) {num = num >> 1;}
-	test = (~(test)) + 1;
-	if ((test + num) == 0) { return 1; }
+	if ((test - num) == 0) { return 1; }
 	return 0;
 }
 
