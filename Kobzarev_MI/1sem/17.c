@@ -3,6 +3,7 @@
 #include <math.h>
 
 void sort(int* arr, int len);
+int check(int* arr, int len, int b);
 int func(int* arr, int len);
 
 void sort(int* arr, int len)
@@ -24,16 +25,34 @@ void sort(int* arr, int len)
 
 int func(int* arr, int len)
 {
-    int a, i;
-    a = arr[0];
-    for (i = 0; i < len; i++) {
-        if (arr[i] != a)
-        {
-            return 0;
-        }
-        a++;
+    int a, b, i, count;
+
+    count = 0;
+
+    scanf("%d%d", &a, &b);
+
+    if (b - a < 2)
+    {
+        return -1;
     }
-    return 1;
+
+    b = b - a + 1;
+
+    for (i = 0; i < len; i++)
+    {
+        if (arr[i] == a)
+        {
+            count++;
+            a++;
+        }
+    }
+
+    if (count >= b)
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
 int main(void)
@@ -67,18 +86,22 @@ int main(void)
 
     for (i = 0; i < len; i++)
     {
-        fscanf(inp, "%int", &arr[i]);
+        fscanf(inp, "%d", &arr[i]);
     }
 
     sort(arr, len);
 
     check = func(arr, len);
 
+    if (check == -1)
+    {
+        printf("Invalid input");
+    }
     if (check == 1)
     {
         printf("YES");
     }
-    else
+    if (check == 0)
     {
         printf("NO");
     }

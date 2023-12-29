@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <math.h>
+#define NONE 0
+#define ERR -1
 
 double extr(FILE* f);
 
@@ -13,12 +15,12 @@ double extr(FILE* f)
 
 	if (fscanf(f, "%d", &prev) != 1)
 	{
-		return -1;
+		return ERR;
 	}
 
 	if (fscanf(f, "%d", &cur) != 1)
 	{
-		return -1;
+		return ERR;
 	}
 
 	while (fscanf(f, "%d", &next) == 1)
@@ -42,7 +44,7 @@ double extr(FILE* f)
 
 	if (count == 0)
 	{
-		return 0;
+		return NONE;
 	}
 	else
 	{
