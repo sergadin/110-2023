@@ -65,6 +65,7 @@ int main(void) {
 		check = fscanf(f, "%d", &dots[i]);
 		if (check != 1) {
 			printf("Ошибка\n");
+			free(dots);
 			fclose(f);
 			return -1;
 		}
@@ -72,6 +73,7 @@ int main(void) {
 	fclose(f);
 	
 	convex(dots, n);
+	free(dots);
 	
 	return 0;
 }

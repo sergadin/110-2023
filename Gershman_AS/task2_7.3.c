@@ -10,7 +10,20 @@ void qsorting(int* a, int len);
 void heap_sort(int* a, int len);
 void create_arr(int* a, int len);
 double do_sort(int* a, int len, void (*sort_function)(int* a, int len));
-int compare(const void * a1, const void * a2);
+int comp (const void *, const void *);
+
+
+int check(int* a, int len)
+{
+        for (int i = 0; i < len - 1; i++)
+        {
+            if (a[i] > a[i + 1])
+            {
+                return 0;
+            }
+        }
+        return 1;
+}
 
 
 double do_sort(int* a, int len, void (*sort_function)(int* a, int len))
@@ -24,13 +37,13 @@ double do_sort(int* a, int len, void (*sort_function)(int* a, int len))
 
 void qsorting(int* a, int len)
 {
-    qsort(a, len, sizeof(int), compare);
+    qsort(a, len, sizeof(int), comp);
 }
 
 
-int compare(const void * a1, const void * a2)  
+int comp (const void *i, const void *j)
 {
-  return ( a1 - a2 );              
+    return *(int*)i - *(int*)j;
 }
 
 
@@ -106,8 +119,22 @@ void heap_sort(int* a, int len)
 void result(int* a, int len)
 {
     double bubble_time = do_sort(a, len, bubble_sort);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
+    create_arr(a, len);
     double heap_time = do_sort(a, len, heap_sort);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
+    create_arr(a, len);
     double qsort_time = do_sort(a, len, qsorting);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
     printf("bubble sort time %lf sec\nheap sort time %lf sec\nqsort time %lf sec", bubble_time, heap_time, qsort_time);
 }
 
@@ -117,6 +144,7 @@ int main(void)
     int len = 0;
     double s, d;
     int* arr1 = NULL,* arr2 = NULL,* arr3 = NULL;
+    printf("enter len of array\n");
     if (scanf("%d", &len) != 1)
     {
         printf("incorrect len\n");
