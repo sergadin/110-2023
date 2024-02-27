@@ -20,7 +20,9 @@ int Delete_Values (double *arr, int len)
         while (arr[i + k] < 0)
         {
             if (i + k >= len)
+            {
                 return 1;
+            }
             k++;
         }
         arr[i] = arr[i + k];
@@ -34,89 +36,68 @@ int Delete_Values (double *arr, int len)
 
 int main (void)
 {
-    int len;
-    float check;
-    float Q;
-    double *arr = NULL;
     FILE *f_in, *f_out;
+    double *arr;
+    int len;
+    int cool = 0;
 
     f_in = fopen ("input.txt", "r");
     if (f_in == NULL)
     {
         printf ("err1\n");
-        return -1;
+        cool = -1;
     }
 
     f_out = fopen ("output.txt", "w");
     if (f_out == NULL)
     {
-        ("err2\n");
-        return -1;
+        printf ("err2\n");
+        cool = -1;
+        goto clean;
     }
 
-    if (fscanf (f_in, "%f", &check) != 1)
+    if (fscanf(f_in, "%d", &len)!= 1)
     {
         printf ("err3\n");
-        fclose (f_in);
-        fclose (f_out);
-        return -1;
+        cool = -1;
+        goto clean_1;
     }
 
-    if (0 > check)
-    {
-        printf ("err4\n");
-        fclose (f_in);
-        fclose (f_out);
-        return -1;
-    }
-
-    len = check;
-
-    if (len < check)
-    {
-        printf ("err5\n");
-        fclose (f_in);
-        fclose (f_out);
-        return -1;
-    }
-
-    arr = (double *) malloc ((len) * sizeof (double));
-
+    arr = (double *)malloc(len*sizeof(double));
     if (arr == NULL)
     {
-        printf ("err6\n");
-        fclose (f_in);
-        fclose (f_out);
-        return -1;
+    printf ("err4\n");
+    cool = -1;
+    goto clean_2;
     }
 
-    for (int i = 0; i < len; i++)
+    for (int i= 0; i < len; i++)
     {
-        if (fscanf (f_in, "%lf", &arr[i]) != 1)
+        if (fscanf(f_in, "%lf", &arr[i])!= 1)
         {
-            printf ("err7\n");
-            free (arr);
-            fclose (f_in);
-            fclose (f_out);
-            return -1;
+            printf ("err5\n");
+            cool = -1;
+            goto clean_2;
         }
     }
 
-    while (!feof (f_in))
-        if (fscanf (f_in, "%f", &Q) != -1)
-        {
-            printf ("err8\n");
-            return -1;
-        }
-
-
-    Delete_Values (arr, len);
+        Delete_Values (arr, len);
 
     for (int i = 0; i < len - count; i++)
         fprintf (f_out, "%lf ", arr[i]);
     fprintf (f_out, "\n%d", len - count);
+
+    clean_2:
+
     free (arr);
-    fclose (f_in);
+
+    clean_1:
+
     fclose (f_out);
-    return 0;
+
+    clean:
+    
+    fclose (f_in);
+
+    return cool;
 }
