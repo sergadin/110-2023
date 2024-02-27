@@ -7,65 +7,61 @@ int max_zna_sum(FILE *f);
 
 int max_zna_sum(FILE *f)
 {
-    double max_sum = 0.;
-    double summa = 0.;
-    double last_el;
-    double first_el;
-    int rise = 0;
-    double curr;
+    int max_sum;
+    int summ = 0;
+    int last_el;
+    int rise;
+    int curr;
     
-    if (fscanf(f, "%lf", &curr)!=1)
+    if (fscanf(f, "%d", &curr)!=1)
     {
         printf("reading error 1\n");
         return -1;
     }
     last_el = curr;
-    first_el = last_el;
-    while (fscanf(f,"%lf", & curr)== 1)
+    summ = curr;
+    while ((fscanf(f, "%d", & curr)== 1 ) && (curr >= last_el))
     {
-        if (curr > last_el)
+        summ += curr;
+        last_el = curr;
+    }
+    last_el = curr;
+    max_sum = summ;
+    summ = curr;
+    while (fscanf(f,"%d", & curr) == 1)
+    {
+        if (curr >= last_el)
         {
-        rise = 1;
-        summa += last_el;
-        }
-        else if (rise == 1 && (curr <= last_el))
-        {
-            rise = 0;
-            summa += last_el;
-            if (max_sum < summa)
+            summ += curr;
+            if (rise == 0)
             {
-                max_sum = summa;
+                summ += last_el;
             }
-            summa = 0;
+            rise = 1;
+        }
+        if (curr < last_el)
+        {
+            if(max_sum < summ)
+            {
+                max_sum = summ;
+            }
+            summ = 0;
+            rise = 0;
         }
         last_el = curr;
     }
-    if (rise == 1)
+    
+    if (max_sum < summ)
     {
-        summa += curr;
-        if (max_sum < summa)
-        {
-            max_sum = summa;
-        }
-    }
-    if (!feof(f))
-    {
-        printf("reading error\n");
-        return Reading_err;
-    }
-    if (max_sum == 0)
-    {
-        return first_el;
+        max_sum = summ;
     }
     return max_sum;
-    
-
 }
 
 int main (void)
 {
     FILE *f_in, *f_out;
-    double max_sum;
+    int max_sum;
 
     f_in = fopen ("input.txt", "r");
     if (f_in == NULL)
@@ -90,7 +86,7 @@ int main (void)
         return -1;
     }
 
-    fprintf(f_out, "Максимальная сумма возрастающей последовательности = %lf\n", max_sum);
+    fprintf(f_out, "Максимальная сумма возрастающей последовательности = %d\n", max_sum);
     fclose(f_in);
     fclose(f_out);
     return 0;
