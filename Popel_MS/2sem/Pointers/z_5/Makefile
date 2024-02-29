@@ -1,6 +1,5 @@
 all : a.out run
-
-func.o : z5.c z5.h
+z5.o : z5.c z5.h
 	gcc -c z5.c 
 
 main.o : main.c z5.h
