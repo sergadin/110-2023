@@ -33,6 +33,7 @@ static double power_func(double x){
 int main(void){
 	double res, eps = 1e-5;
 	Error err;
+	int iter;
 	
 	TestCase tests[] = {{parabola, 0.5, 3, 1.414214, NA_OK},
 	{straight_line, 5, 162, -1, NA_NO_ROOT},
@@ -41,13 +42,13 @@ int main(void){
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
-		res = chord_method(tests[n].f, tests[n].a, tests[n].b, eps, &err);
+		res = chord_method(tests[n].f, tests[n].a, tests[n].b, eps, &err, &iter);
 		if(err != tests[n].err){
 			printf("Тест №%d не пройден.\n", n + 1);
 		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) > eps)){
 			printf("Тест №%d не пройден.\n", n + 1);
 		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) < eps)){
-			printf("Тест №%d успешно пройден. Первое подходящее значение x = %lf\n", n + 1, res);
+			printf("Тест №%d успешно пройден. Первое подходящее значение x = %lf. Количество итераций: %d\n", n + 1, res, iter);
 		}else{
 			printf("Тест №%d успешно пройден.\n", n + 1);
 		}
