@@ -12,7 +12,8 @@
  */
 	
 double chord_method(RRFun f, double a, double b, double eps, Error *err){
-	double x_i, f_xi, f_a = (*f)(a), f_b = (*f)(b);
+	double x_i, f_xi, f_a = (*f)(a), f_b = (*f)(b); /*соответственно: точка пересечения с осью оХ, значение в этой точке, 
+									значение в концах отрезка*/
 	int limit = 10000000;
     if(a > b){
         *err = NA_WRNG_ORD;
