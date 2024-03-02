@@ -8,10 +8,11 @@
  *		   b - действительное число, правая граница
  *		   eps - погрешность
  *		   *err - код ошибки, по которому будет проводиться проверка
+ *		   *iter - код количества итераций
  *	Функция получает значения структуры для тестирования, проверяет правильность выполнения теста. 
  */
 	
-double chord_method(RRFun f, double a, double b, double eps, Error *err){
+double chord_method(RRFun f, double a, double b, double eps, Error *err, int *iter){
 	double x_i, f_xi, f_a = (*f)(a), f_b = (*f)(b); /*соответственно: точка пересечения с осью оХ, значение в этой точке, 
 									значение в концах отрезка*/
 	int limit = 10000000;
@@ -32,12 +33,15 @@ double chord_method(RRFun f, double a, double b, double eps, Error *err){
     f_xi = (*f)(x_i);
     if (fabs(f_b) < eps){
         *err = NA_OK;
+	*iter = 0;
         return b;
     }else if (fabs(f_a) < eps){
         *err = NA_OK;
+	*iter = 0;
         return a;
     }else if(fabs(f_xi) < eps){
         *err = NA_OK;
+	*iter = 0;
         return x_i;
     }
     while((fabs(f_xi) > eps) && (limit > 0)){
@@ -66,6 +70,7 @@ double chord_method(RRFun f, double a, double b, double eps, Error *err){
     	*err = NA_NO_ROOT;
     	return -1;
     }
+    *iter = 10000000-limit; 
     *err = NA_OK;
     return x_i;
 
