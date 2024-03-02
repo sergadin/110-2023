@@ -12,39 +12,39 @@
  */
 	
 double chord_method(RRFun f, double a, double b, double eps, Error *err){
-	double x_i,f_xi, f_a = (*f)(a), f_b = (*f)(b);
+	double x_i, f_xi, f_a = (*f)(a), f_b = (*f)(b);
 	int limit = 10000000;
-    if(a>b){
+    if(a > b){
         *err = NA_WRNG_ORD;
         return -1;
     }
-    if(fabs(f_b-f_a)<eps){
+    if(fabs(f_b - f_a) < eps){
         *err = NA_EQUAL_VAL;
         return -1;
     }
-    if (f_a*f_b>0){
+    if ((f_a * f_b) > 0){
         *err = NA_NO_ROOT;
         return -1;
         }
-    x_i = a - ((f_a*(b-a))/(f_b-f_a));
+    x_i = a - ((f_a * (b-a)) / (f_b - f_a));
 
     f_xi = (*f)(x_i);
-    if (fabs(f_b)<eps){
+    if (fabs(f_b) < eps){
         *err = NA_OK;
         return b;
-    }else if (fabs(f_a)<eps){
+    }else if (fabs(f_a) < eps){
         *err = NA_OK;
         return a;
-    }else if(fabs(f_xi)<eps){
+    }else if(fabs(f_xi) < eps){
         *err = NA_OK;
         return x_i;
     }
-    while((fabs(f_xi)>eps) && (limit>0)){
-        if ((f_xi*f_b)<=0){
+    while((fabs(f_xi) > eps) && (limit > 0)){
+        if ((f_xi * f_b) <= 0){
 
             a = x_i;
             f_a = f_xi;
-        }else if ((f_xi*f_a)<=0){
+        }else if ((f_xi * f_a)<=0){
             b = x_i;
             f_b = f_xi;
         }else{
@@ -52,16 +52,16 @@ double chord_method(RRFun f, double a, double b, double eps, Error *err){
             return -1;
         }
 
-        if(fabs(f_b-f_a)<eps){
+        if(fabs(f_b - f_a)<eps){
             *err = NA_EQUAL_VAL;
             return -1;
         }
-        x_i = a - ((f_a*(b-a))/(f_b-f_a));
+        x_i = a - ((f_a * (b-a)) / (f_b - f_a));
         f_xi = (*f)(x_i);
-        limit-=1;
+        limit -= 1;
 
     }
-    if (limit==0){
+    if (limit == 0){
     	*err = NA_NO_ROOT;
     	return -1;
     }
