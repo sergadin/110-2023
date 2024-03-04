@@ -19,8 +19,8 @@ int Mirror (unsigned int x)
         e1 = ((1 << i) & x);
         e2 = ((1 << (len - 1 - i)) & x);
 
-        x = (e2 << i) | (~(1 << i)) & x;
-        x = (e1 << (len - 1 - i)) | (~(1 << len - 1 - i)) & x;
+        x = (e2 << i) | ((~(1 << i)) & x);
+        x = (e1 << (len - 1 - i)) | ((~(1 << (len - 1 - i))) & x);
     } 
     return x;
 }
