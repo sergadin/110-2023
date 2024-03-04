@@ -5,6 +5,7 @@
 int sgn_square (int x1, int y1,int x2, int y2, int x3, int y3); //Определяет знак ориентированной площади
 int bulge (int *ver, int n); //Определяет выпуклость
 
+
 int sgn_square (int x1, int y1, int x2, int y2, int x3, int y3)
 {
     int ax, ay, bx, by;
@@ -26,7 +27,7 @@ int bulge (int *ver, int n)
     int count;
     count = 0;
 
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i = i + 2)
     {
         count = count + sgn_square (ver[i], ver[i + 1], ver[(i + 2) % n], ver[(i + 3) % n], ver[(i + 4) % n], ver[(i + 5) % n]);
     }
@@ -39,14 +40,15 @@ int bulge (int *ver, int n)
     if (count * 2 == n)
     {
         printf ("Выпуклый\n");
+
+        return 0;
     }
 
-    if (count * 2 != n)
+    else
     {
         printf ("Невыпуклый\n");
+        return 0;
     }
-
-    return 1;
 }
 
 int main (void)
@@ -58,7 +60,7 @@ int main (void)
     printf ("Введите колчество вершин которые вы хотите задействовать \n");
     check = scanf ("%d", &n);
 
-    if (check == 0)
+    if (check != 0)
     {
         printf ("Ошибка\n");
         return -1;
@@ -98,5 +100,4 @@ int main (void)
 
         return 0;
     }
-
 }
