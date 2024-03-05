@@ -60,7 +60,7 @@ int main (void)
     printf ("Введите колчество вершин которые вы хотите задействовать \n");
     check = scanf ("%d", &n);
 
-    if (check != 0)
+    if (check == 0)
     {
         printf ("Ошибка\n");
         return -1;
