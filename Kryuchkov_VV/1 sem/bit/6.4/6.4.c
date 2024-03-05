@@ -63,7 +63,7 @@ int main (void)
     int len;
 
     printf( "Введите число:\n");
-    scanf("%d", &x);
+    scanf("%u", &x);
     len = Len(x);
 
 	printf("Изначальная запись (%d):\n", x);
