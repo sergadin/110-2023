@@ -58,7 +58,7 @@ double chord_method(RRFun f, double a, double b, double eps, Error *err, int *it
         	return -1;
         }
     	x_i = a - ((f_a * (b-a)) / (f_b - f_a));
-    	x_prev = f_a;
+    	x_prev = a;
 	f_xi = (*f)(x_i);
 
     	while((fabs(x_i - x_prev) > (max(x_i, x_prev, 1.0) * eps)) && (limit>0)){
