@@ -37,7 +37,7 @@ int main(void){
 	
 	TestCase tests[] = {{parabola, 0.5, 3, 1.414214, NA_OK},
 	{straight_line, 5, 162, -1, NA_NO_ROOT},
-	{almost_zero, -(1e - 4), 1e - 4, 1e - 6, NA_OK},
+	{almost_zero, -100000, 5, 1e - 6, NA_OK},
 	{power_func, 4, 1, -1, NA_WRNG_ORD}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
