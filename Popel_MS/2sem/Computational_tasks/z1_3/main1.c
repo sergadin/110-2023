@@ -12,7 +12,7 @@ typedef struct{  /* новая переменаая-структура для п
 
 static double parabola(double x); /* Вспомогательная функция для тестирования: парабола*/
 static double straight_line(double x); /* Вспомогательная функция для тестирования: прямолинейная функция - не будет корней*/
-static double constanta(double x);  /* Вспомогательная функция для тестирования: константа - будут совпадать значения*/
+static double almost_zero(double x);  /* Вспомогательная функция для тестирования: функция со значениями вблизи нуля*/
 static double power_func(double x); /* Вспомогательная функция для тестирования: степенная функция - неправильный порядок параметров*/
 
 static double parabola(double x){
@@ -23,21 +23,21 @@ static double straight_line(double x){
 	return (x + 3);
 }
 
-static double constanta(double x){  
-	return 2;
+static double almost_zero(double x){  
+	return (100000 * (x - (1e - 6)));
 }
 static double power_func(double x){ 
 	return pow(x, 4) + 55 * x - 17;
 }
 
 int main(void){
-	double res, eps = 1e-5;
+	double res, eps = 1e-7;
 	Error err;
 	int iter;
 	
 	TestCase tests[] = {{parabola, 0.5, 3, 1.414214, NA_OK},
 	{straight_line, 5, 162, -1, NA_NO_ROOT},
-	{constanta, -4, -0.5, -1, NA_EQUAL_VAL},
+	{almost_zero, -(1e - 4), 1e - 4, 1e - 6, NA_OK},
 	{power_func, 4, 1, -1, NA_WRNG_ORD}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
