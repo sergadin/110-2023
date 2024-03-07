@@ -61,7 +61,7 @@ double chord_method(RRFun f, double a, double b, double eps, Error *err, int *it
     	x_prev = f_a;
 	f_xi = (*f)(x_i);
 
-    	while((fabs(x_i - x_prev) > max(x_i, x_prev, 1.0)) && (limit>0)){
+    	while((fabs(x_i - x_prev) > (max(x_i, x_prev, 1.0) * eps)) && (limit>0)){
         	if ((sign(f_xi)*sign(f_b))<0){
 			
 			a = x_i;
