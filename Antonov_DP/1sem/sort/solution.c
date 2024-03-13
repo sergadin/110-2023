@@ -16,12 +16,12 @@ int make_trian(double *arr, int pl)
 		save = arr[pl];
 		arr[pl] = arr[(2 * pl) + 1];
 		arr[(2 * pl) + 1] = save;
-		return 0;
+		return (2 * pl) + 1;
 	}
 	save = arr[pl];
        	arr[pl] = arr[(2 * pl) + 2];
        	arr[(2 * pl) + 2] = save;
-	return 0;
+	return (2 * pl) + 2;
 }
 
 int comp(const void *i, const void *j) { return *(double *)i - *(double *)j; }
@@ -47,27 +47,44 @@ int bubble_sort (double *arr, int len)
 
 int pyramid_sort (double *arr, int len)
 {
-        int i, j, p;
+        int i, j;
         double save;
-	if (len == 1) { return 0; }
-	for (i = len - 1; i > -1; i--)
+	for (i = 0; i < len; i++)
 	{
 		j = (2 * i) + 1;
 		if (((j + 1) < len) && ((arr[i] < arr[j + 1]) || (arr[i] < arr[j])))
 		{
 			make_trian(arr, i);
+			i = -1;
 		}
 		else if (((j + 1) == len) && (arr[i] < arr[j]))
 		{
 			save = arr[i];
 			arr[i] = arr[j];
 			arr[j] = save;
+			i = -1;
 		}
 	}
-	save = arr[0];
-	arr [0] = arr[len - 1];
-	arr[len - 1] = save;
-	pyramid_sort (arr, len - 1);
+	for (i = len - 1; i > -1; i--)
+	{
+		save = arr[0];
+		arr[0] = arr[i];
+		arr[i] = save;
+		j = 0;
+		while((((2 * j) + 2) < i) && ((arr[j] < arr[(2 * j) + 1]) || (arr[j] < arr[(2 * j) + 2])))
+		{
+			if ((((2 * j) + 1) < i) && ((arr[j] < arr[(2 * j) + 1]) || (arr[j] < arr[(2 *j) + 2])))
+       		      	{
+        	              	j = make_trian(arr, j);
+         	    	}
+		}
+		if ((((2 * j) + 2) == i) && (arr[j] < arr[(2 * j) + 1]))
+		{
+			save = arr[j];
+			arr[j] = arr[(2 * j) + 1];
+			arr[(2 * j) + 1] = save;
+		}
+	}
 	return 0;
 }
 
@@ -92,6 +109,7 @@ int main (void)
 			arr2[i] = arr1[i];
 			arr3[i] = arr1[i];
 		}
+		printf("%d \n", len);
 		t1 = clock();
 		bubble_sort(arr1, len);
 		t2 = clock();
@@ -114,7 +132,7 @@ int main (void)
         	seconds = (double)(t2 - t1) / CLOCKS_PER_SEC;
 		if (sorted_arr(arr3, len) == 1) 
 		{ 
-			printf("qsort time: %lf \n", seconds); 
+			printf("qsort time: %lf \n \n", seconds); 
 		}
 		free(arr1);
 		free(arr2);

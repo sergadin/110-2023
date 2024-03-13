@@ -1,59 +1,87 @@
 #include <stdio.h>
+#include <math.h>
+#define NONE 0
+#define ERR -1
 
-int main(void){
+double extr(FILE* f);
 
-	int prev, cur, next, count = 0;
-	double sum = 0;
-	FILE*f = fopen("input.txt","r");
+double extr(FILE* f)
+{
+	int prev, cur, next, count;
+	double sum;
 
-	if (f == NULL) 
-    {
-        printf("Error: could not open the file.\n");
-        return -1;
-    }
+	sum = 0;
+	count = 0;
 
 	if (fscanf(f, "%d", &prev) != 1)
-    {
-        printf("Cannot read the first element\n");
-        return 0;
-    }
+	{
+		return ERR;
+	}
 
-    if (fscanf(f, "%d", &cur) != 1)
-    {
-        printf("Cannot read the second element\n");
-        return 0;
-    }
+	if (fscanf(f, "%d", &cur) != 1)
+	{
+		return ERR;
+	}
 
-	while(fscanf(f, "%d", &next)!=EOF)
+	while (fscanf(f, "%d", &next) == 1)
 	{
 
-		if(cur > prev && cur > next)
+		if (cur > prev && cur > next)
 		{
 			sum = sum + cur;
-			count ++;
+			count++;
 		}
 
-		if(cur < prev && cur < next)
+		if (cur < prev && cur < next)
 		{
-            sum = sum + cur;
-            count ++;
-        }
+			sum = sum + cur;
+			count++;
+		}
 
 		prev = cur;
 		cur = next;
 	}
 
-	if(count == 0)
+	if (count == 0)
 	{
-		printf("No extremums\n");
-		fclose(f);
-		return 0;
+		return NONE;
 	}
 	else
 	{
-		sum = sum/count;
-		printf("%lf\n", sum);
+		sum = sum / count;
+		return sum;
+	}
+}
+
+int main(void) {
+	double ans;
+	FILE* f;
+	f = fopen("input.txt", "r");
+
+	if (f == NULL)
+	{
+		printf("Error: could not open the file.\n");
+		return -1;
+	}
+
+	ans = extr(f);
+
+	if (ans == 0)
+	{
+		printf("No extremums");
 		fclose(f);
 		return 0;
 	}
+
+	if (ans == -1)
+	{
+		printf("Error reading the file");
+		fclose(f);
+		return -1;
+	}
+
+	printf("%lf", ans);
+	fclose(f);
+	return 0;
+
 }
