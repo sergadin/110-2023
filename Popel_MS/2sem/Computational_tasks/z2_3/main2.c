@@ -1,5 +1,5 @@
 #include <math.h>
-#include "z_2_3.h"
+#include "z2_3.h"
 #include <stdio.h>
 
 typedef struct{  /* новая переменаая-структура для проведения теста */
@@ -24,8 +24,9 @@ static double straight_line(double x){
 	return (x + 3);
 }
 
-static double constanta(double x){  
-	return 2;
+static double constanta(double x){ 
+	x = 2;
+	return x;
 }
 static double power_func(double x){ 
 	return pow(x, 4) + 55 * x - 17;
