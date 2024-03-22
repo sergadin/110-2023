@@ -2,64 +2,60 @@
 #include "Heading.h"
 #include <stdio.h>
 
+// New structure for testing
 typedef struct 
-{  /* новая переменаая-структура для проведения теста */
-	RRFun f; //функция №1
-	double x; //действительное значение
-	double res; //ожидаемый результат
-	Error err; //адрес ошибки
+{ 
+	RRFun f; // Function
+	double x; // The element from the Domain of the Function
+	double result; // The expected result
+	Error ERROR; // The address of the error
 } TestCase;
 
-static double constant(double x); /* Вспомогательная функция для тестирования: константа*/
-static double near_to_zero(double x); /* Вспомогательная функция для тестирования: прибавляет маленькое значение (используется вблизи нуля)*/
-static double sum_1(double x);  /* Вспомогательная функция для тестирования: прибавляет к действительному числу 1*/
-static double substract_2(double x); /* Вспомогательная функция для тестирования: вычитает из действительного числа 2*/
+static double square(double x); /* Testing function: returns x to the power of 2*/
+static double cube(double x); /* Testing function: returns x to the power of 3*/
+static double sum(double x);  /* Testing function: returns x plus 1*/
 
-static double substract_2(double x) {
-	return x - 2;
+static double square(double x) 
+{
+	return x * x;
 }
 
-static double constant(double x) {
-	return x;
+static double cube(double x) 
+{
+	return x * x * x;
 }
 
-static double near_to_zero(double x) {
-	return x += 1e-5;
-}
-static double sum_1(double x) {
+static double sum(double x) 
+{
 	return x + 1;
 }
 
 int main(void) 
 {
-	double res, eps = 1e-7;
-	Error err;
+	int n = 5;
+	double x[] = { 1, 2, 3, 4, 5 };
+	double result;
+	Error ERROR;
 
-	TestCase tests[] = { {sin, cos, 0., 1, NA_OK},
-	{sin, substract_2, 0.02, 0., NA_LIMIT},
-	{constant, sin, -0.5, 0., NA_LIMIT},
-	{sum_1, near_to_zero, -10000 - (1e-6),-(1e-6), NA_OK} };
-
-	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
-	for (int n = 0; n < n_tasks; n++) 
+	// Calculation & printing results of the function square(x) 
+	for (int i = 0; i < n; i++) 
 	{
-		res = composing_with_requisition(tests[n].f, tests[n].g, tests[n].x, eps, &err);
-		if (err != tests[n].err) 
-		{
-			printf("Тест №%d не пройден.\n", n + 1);
-		}
-		else if ((err == NA_OK) && (res - tests[n].res) > eps) 
-		{
-			printf("Тест №%d не пройден.\n", n + 1);
-		}
-		else if ((err == NA_OK) && (res - tests[n].res) < eps) 
-		{
-			printf("Тест №%d успешно пройден. Первое подходящее значение у = %lf\n", n + 1, res);
-		}
-		else 
-		{
-			printf("Тест №%d успешно пройден.\n", n + 1);
-		}
+		printf("square(%d) = %d\n", x[i], square(x[i]));
 	}
+
+	printf("\n");
+
+	// Calculation & printing results of the function cube(x) 
+	for (int i = 0; i < n; i++) 
+	{
+		printf("cube(%d) = %d\n", x[i], cube(x[i]));
+	}
+
+	// Calculation & printing results of the function sum(x) 
+	for (int i = 0; i < n; i++)
+	{
+		printf("sum(%d) = %d\n", x[i], sum(x[i]));
+	}
+
 	return 0;
 }
