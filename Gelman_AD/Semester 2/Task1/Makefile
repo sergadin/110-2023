@@ -9,4 +9,4 @@ run : a.out
 	./a.out
 	
 a.out : Main.o task_1.o
-	gcc Main.o task_1o -lm
+	gcc Main.o task_1.o -lm

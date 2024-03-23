@@ -40,7 +40,7 @@ int main(void)
 	// Calculation & printing results of the function square(x) 
 	for (int i = 0; i < n; i++) 
 	{
-		printf("square(%d) = %d\n", x[i], square(x[i]));
+		printf("square(%lf) = %lf\n", x[i], square(x[i]));
 	}
 
 	printf("\n");
@@ -48,13 +48,13 @@ int main(void)
 	// Calculation & printing results of the function cube(x) 
 	for (int i = 0; i < n; i++) 
 	{
-		printf("cube(%d) = %d\n", x[i], cube(x[i]));
+		printf("cube(%lf) = %lf\n", x[i], cube(x[i]));
 	}
 
 	// Calculation & printing results of the function sum(x) 
 	for (int i = 0; i < n; i++)
 	{
-		printf("sum(%d) = %d\n", x[i], sum(x[i]));
+		printf("sum(%lf) = %lf\n", x[i], sum(x[i]));
 	}
 
 	return 0;

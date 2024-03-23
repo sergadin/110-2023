@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "z5.h"
+#include "Header.h"
 
 /*	Parameters:
 	f - real functiom (to the enter comes ONLY functions from R to R)
