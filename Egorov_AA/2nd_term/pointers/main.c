@@ -36,7 +36,7 @@ int main(void) {
 	error err;
 	double* value;
 
-	dataSet tests[] = {                                                       // тесты
+	dataSet tests[] = {                                                       // Tесты
 		{
 			(RRFun[]) {sine, cubing, reverseNum, naturalLog},         // Функции
 			pi / 2,                                                   // Аргумент
