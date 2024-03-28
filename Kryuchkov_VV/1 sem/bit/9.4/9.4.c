@@ -48,21 +48,19 @@ int exp_rais(unsigned int x, unsigned int n)
 
 int main(void)
 {
-	unsigned  int x;
-	unsigned  int n;
-	unsigned  int с;
-	int LEN;
+	unsigned int x;
+	unsigned int n;
+	unsigned int c;
 	
 	printf("Введите основание:\n");
-  	scanf("%d", &x);
+  	scanf("%u", &x);
 
   	printf("Введите степень:\n");
-  	scanf("%d", &n);
+  	scanf("%u", &n);
 	
-	LEN = Len(x);
-	с = exp_rais(x, n);
+	c = exp_rais(x, n);
 
-	printf("%d^%d = %d\n", x, n, с);
+	printf("%d^%d = %d\n", x, n, c);
 
 	return 0;
 }

@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "z_2_3.h"
+#include "z2_3.h"
 
 /*	Параметры: f - действительнозначная функция 
  *		       а - левая граница отрезка интегрирования. Должна быть меньше правой границы.
@@ -10,9 +10,9 @@
  *             *err - указатель на код ошибки.
  *      Функция подсчитывает приближенное значение интеграла функции f(x) с помощью метода Симпсона с заданным разбиением.
  */
-static double Integrate(RRFun f, double a, double b, double n, Error *err);
-static double Integrate(RRFun f, double a, double b, double n, Error *err){
-	double dx, summa, simps_sum; /* Соответственно: подотрезок разбиения, интегральная сумма.*/
+static double Integrate(RRFun f, double a, double b, double n);
+static double Integrate(RRFun f, double a, double b, double n){
+	double dx, summa; /* Соответственно: подотрезок разбиения, интегральная сумма.*/
 	int k = 4;
 	dx = (b - a) / n;
 	summa = (*f)(a) + (*f)(b);
@@ -37,10 +37,10 @@ double Simpson_method(RRFun f, double a, double b, double eps, Error *err){
         *err = NA_WRNG_ORD;
         return -1;
     }
-    s1 = Integrate(f, a, b, n, err);
+    s1 = Integrate(f, a, b, n);
     n = 2048;
-    while (fabs(s1-s2)>eps){
-        s2 = Integrate(f, a, b, n, err);
+    while (fabs(s1 - s2)>eps){
+        s2 = Integrate(f, a, b, n);
         s1 = s2;
         n = 2*n;
     }

@@ -11,7 +11,7 @@ void to_up (double *arr, int q);
 void to_down (double *arr, int q);
 int random_arr (double *arr, int len_n); //Создает массивы
 int Check (double *arr, int len); // Проверка массива
-int compar (const void *i, const void *j);
+int compare (const void *i, const void *j);
 void sorting (double *arr, double *arr_copy, int len, FILE *f_out); //Конечная функция
 
 
