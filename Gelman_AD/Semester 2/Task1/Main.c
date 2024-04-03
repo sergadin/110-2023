@@ -1,5 +1,5 @@
 #include <math.h>
-#include "Heading.h"
+#include "Header.h"
 #include <stdio.h>
 
 // New structure for testing
