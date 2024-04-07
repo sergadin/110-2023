@@ -15,7 +15,7 @@ typedef enum
 	f - real functiom (to the enter comes ONLY functions from R to R)
 	x - argument
 	ERROR - an error code for testing
-	Function gets the y-es from the test function THINK_OF_THE_HEADING and checks wether the test was completed
+	Function gets the y-es from the test function main_function and checks wether the tests were completed
 */
 
-double THINK_OF_THE_HEADING(RRFun f, double x, Error* ERROR); 
+double main_function(RRFun f, double x, Error* ERROR); 
