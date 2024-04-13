@@ -60,10 +60,10 @@ double Simpson_method(RRFun f, double a, double b, double eps, Error *err){
         n = 2*n;
 	limit -= 1;
     }
-if (limit <= 0){
+    if (limit <= 0){
 	*err = NA_LIMIT;
 	return -1;
-	}
+    }
     *err = NA_OK;
     return s2; 
 }
