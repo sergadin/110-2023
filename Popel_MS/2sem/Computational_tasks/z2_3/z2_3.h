@@ -7,6 +7,7 @@ typedef double (*RRFun)(double);
 typedef enum {
 	NA_OK, /*Нет ошибок*/
     NA_WRNG_ORD, /*Неправильный порядок введенных границ*/
+    NA_LIMIT, /*Превышение лимита итераций*/
 }Error;
 
 
