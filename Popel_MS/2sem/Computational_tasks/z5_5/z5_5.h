@@ -52,7 +52,7 @@ class Approximation{
          */
         Approximation(double *xs, double *ys, int len); /*функция аппроксимации*/
         void reset(){a_ = b_ = 0.;}
-        Approximation(){a_=0., b_ = 0.;}
+        Approximation(){a_= 0., b_ = 0.;}
         double operator()(double x) const{ /*возвращает значение в точке х приближенной линейной функции*/
             return a_ * x + b_;
         }
