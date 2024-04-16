@@ -46,7 +46,7 @@ static double Integrate(RRFun f, double a, double b, double n){
  *      Функция определяет лучшее приближение значения интергала. Используется алгоритм удвоения сетки.
  */
 double Simpson_method(RRFun f, double a, double b, double eps, Error *err){
-    double s1, s2; /*Соответственно: первая интегральная сумма, вторая интегральная сумма.*/
+    double s1, s2, limit = 1000; /*Соответственно: первая интегральная сумма, вторая интегральная сумма.*/
     int n = 1024;
     if (a >= b){
         *err = NA_WRNG_ORD;
@@ -58,6 +58,11 @@ double Simpson_method(RRFun f, double a, double b, double eps, Error *err){
         s2 = Integrate(f, a, b, n);
         s1 = s2;
         n = 2*n;
+	limit -= 1;
+	if (limit <= 0){
+		*err = NA_LIMIT;
+		return s2;
+    	}
     }
     *err = NA_OK;
     return s2; 

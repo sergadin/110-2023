@@ -35,7 +35,6 @@ double Taylor_sqrt(double x, double eps, Error *err){
         *err = NA_FORB_VAL;
         return -1;
     }
-    true_ans = sqrt(x);
     while((fabs(temp) > eps) && (limit > 0)){
     	temp *= (((-1) * (2 * n) * (2 * n - 1)) * (x - 1)) / ((n * n * 4));
         sqrt_sum += temp / (1 - 2 * n);

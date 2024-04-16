@@ -68,6 +68,8 @@ int main(void){
 			printf("Тест №%d не пройден. %lf\n", n + 1, res);
 		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) < (max(res, tests[n].res, 1.0)*eps))){
 			printf("Тест №%d успешно пройден. Значение интеграла: %lf\n", n + 1, res);
+		}else if(err == NA_LIMIT){
+			printf("Тест №%d пройден, но вычислено приближенное значение. Значение интеграла: %lf\n", n + 1, res);
 		}else{
 			printf("Тест №%d успешно пройден.\n", n + 1);
 		}
