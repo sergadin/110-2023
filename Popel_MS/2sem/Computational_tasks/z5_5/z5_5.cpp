@@ -102,7 +102,7 @@ double Min_square(RRFun f, double a, double b, int len, double eps, Error *err, 
     double *y = NULL; /*массив значений случайных х-ов данной функции*/
     FILE *f_gn; /*файл для построения графиков*/
 	
-    if(a > b){
+    if((a > b) || (fabs(b - a) < max(a, b, 1.0) * eps)){
     	*err = NA_WRNG_ORD;
     	return -1;
     } 
