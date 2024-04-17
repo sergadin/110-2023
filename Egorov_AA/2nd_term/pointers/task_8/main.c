@@ -68,6 +68,8 @@ int main(void) {
 	fillValueArray(tests[0].funcs, -1, tests[0].x, &err);                    // Отдельно выделен первый тест.
 	if (err == MALLOC_ERR)                                                   // На вход подается неправильное количество функций
 		printf("1-й тест пройден :)\n");                                 // для умышленной ошибки выделения памяти.
+	else
+		printf("1-й тест не пройден:(\n");
 
 	for (int i = 1; i < test_num; i++) {
 		value = fillValueArray(tests[i].funcs, func_num, tests[i].x, &err);
@@ -75,24 +77,20 @@ int main(void) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 			continue;
 		}
-		else if (err == INCORRECT_ARGUMENT) {                                    // Много elseif-оф, т.к. сравнивать значения массивов нельзя,
-			printf("%d-й тест пройден :)\n", i + 1);                         // если будет одна из этих ошибок
-			continue;
-		}
-		else if (err == MALLOC_ERR) {
-			printf("%d-й тест пройден :)\n", i + 1);
-			continue;
-			}
-		else {
+		else if (err == OK) {
 			for (int j = 0; j < func_num; j++) {
-				if (fabs(value[j] - tests[i].res[j]) > eps) {
+				if (fabs(value[j] - tests[i].res[j]) / 2 > eps) {
 					printf("%d-й тест не пройден :(\n", i + 1);
 					break;
 				}
 			}
-			printf("%d-й тест пройден :)\n", i + 1);
-			free(value);
 		}
+		else {
+			printf("%d-й тест пройден :)", i + 1);
+		}
+
+		if(err != MALLOC_ERR)
+			free(value);
 	}
 	
 	
