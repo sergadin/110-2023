@@ -4,17 +4,46 @@
 #include <time.h>
 
 
-double bubble_sort(int* a, int len);
+void bubble_sort(int* a, int len);
 void heapify(int* a, int len, int i);
-double heap_sort(int* a, int len);
+void qsorting(int* a, int len);
+void heap_sort(int* a, int len);
 void create_arr(int* a, int len);
-void result(int* a,int len);
-int compare(const void * a1, const void * a2);
+double do_sort(int* a, int len, void (*sort_function)(int* a, int len));
+int comp (const void *, const void *);
 
 
-int compare(const void * a1, const void * a2)  
+int check(int* a, int len)
 {
-  return ( a1 - a2 );              
+        for (int i = 0; i < len - 1; i++)
+        {
+            if (a[i] > a[i + 1])
+            {
+                return 0;
+            }
+        }
+        return 1;
+}
+
+
+double do_sort(int* a, int len, void (*sort_function)(int* a, int len))
+{
+    int start = clock(), stop;
+    sort_function(a, len);
+    stop = clock();
+    return ((double)stop - (double)start) / CLOCKS_PER_SEC;
+}
+
+
+void qsorting(int* a, int len)
+{
+    qsort(a, len, sizeof(int), comp);
+}
+
+
+int comp (const void *i, const void *j)
+{
+    return *(int*)i - *(int*)j;
 }
 
 
@@ -27,9 +56,8 @@ void create_arr(int* a, int len)
 }
 
 
-double bubble_sort(int* a, int len)
+void bubble_sort(int* a, int len)
 {
-    int start = clock(), stop;
     for(int i = 0; i < len; i++)
     {
         for(int j = i; j < len; j++)
@@ -43,8 +71,6 @@ double bubble_sort(int* a, int len)
             }
         }
     }
-    stop = clock();
-    return ((double)stop - (double)start) / CLOCKS_PER_SEC;
 }
 
 
@@ -72,9 +98,9 @@ void heapify(int* a, int len, int i)
 }
 
 
-double heap_sort(int* a, int len)
+void heap_sort(int* a, int len)
 {
-    int start = clock(), stop;
+    
     for(int i = len / 2 - 1; i >= 0; i--)
     {
         heapify(a, len, i);
@@ -87,20 +113,28 @@ double heap_sort(int* a, int len)
         a[i] = t;
         heapify(a, i, 0);
     }
-    stop = clock();
-    return ((double)stop - (double)start) / CLOCKS_PER_SEC;
 }
 
 
 void result(int* a, int len)
 {
-    double bubble_time = bubble_sort(a, len);
-    double heap_time = heap_sort(a, len);
-    double qsort_time;
-    int start = clock(), stop;
-    qsort(a, len, sizeof(int), compare);
-    stop = clock();
-    qsort_time = ((double)stop - (double)start) / CLOCKS_PER_SEC;
+    double bubble_time = do_sort(a, len, bubble_sort);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
+    create_arr(a, len);
+    double heap_time = do_sort(a, len, heap_sort);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
+    create_arr(a, len);
+    double qsort_time = do_sort(a, len, qsorting);
+    if(!check(a, len))
+    {
+        printf("error of sorting array\n");
+    }
     printf("bubble sort time %lf sec\nheap sort time %lf sec\nqsort time %lf sec", bubble_time, heap_time, qsort_time);
 }
 
@@ -110,6 +144,7 @@ int main(void)
     int len = 0;
     double s, d;
     int* arr1 = NULL,* arr2 = NULL,* arr3 = NULL;
+    printf("enter len of array\n");
     if (scanf("%d", &len) != 1)
     {
         printf("incorrect len\n");
