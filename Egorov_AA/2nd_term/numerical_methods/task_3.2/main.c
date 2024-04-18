@@ -16,17 +16,17 @@ double func3(double x);
 
 
 double func1(double x) {
-	return x * x * x + (x / 5 - 5) * (x / 5 - 5) - 200;
+	return x * x * x + (x / 5 - 5) * (x / 5 - 5) - 20;
 }
 
 
 double func2(double x) {
-	return x * x * x + (x / 5 - 5) * (x / 5 - 5) - 200;
+	return 5 * x - 2;
 }
 
 
 double func3(double x) {
-	return x * x * x + (x / 5 - 5) * (x / 5 - 5) - 200;
+	return x * x - 10 * x + 32;
 }
 
 
@@ -36,8 +36,10 @@ int main(void) {
 	double value;
 	const double eps = 1e-3;
 	dataSet tests[] = {
-		{func1, -0.5, 5, 0.803, OK},
-		{func2, -0.5, 5, 0.803, OK},
+		{func1, -0.5, 5, 3.938, OK},
+		{func2, -10, 10, -52, OK},
+		{func3, 0, 10, 7, OK},
+		{func3, -0.5, 5, 0.803, OK},
 		{func3, -0.5, 5, 0.803, OK}
 	};
 
@@ -48,7 +50,7 @@ int main(void) {
 		if (err != tests[i].err_code) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 		}
-		else if ((err == OK) && (fabs(tests[i].res - value)/2 > eps)) {
+		else if ((err == OK) && (fabs(tests[i].res - value) / 2 > eps)) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else {
