@@ -38,7 +38,7 @@ int main(void) {
 	dataSet tests[] = {
 		{func1, -0.5, 5, 3.938, OK},
 		{func2, -10, 10, -52, OK},
-		{func3, 0, 10, 7, OK},
+		{func3, -10, 10, 7, OK},
 		{func3, -0.5, 5, 0.803, OK},
 		{func3, -0.5, 5, 0.803, OK}
 	};

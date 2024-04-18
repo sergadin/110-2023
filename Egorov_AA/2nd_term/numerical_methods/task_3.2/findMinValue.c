@@ -1,8 +1,8 @@
 #include "findMinValue.h"
 
 double findMinValue(RRFun f, double a, double b, double eps, error* err) {
-	const double phi = 0.382;
-	while ((fabs(b - a) > eps * fabs(a + b) / 2) || (fabs(b - a) > eps)) {
+	const double phi = 0.38196;
+	while ((fabs((*f)(b) - (*f)(a)) > eps * fabs((*f)(a) + (*f)(b)) / 2) || (fabs((*f)(b) - (*f)(a)) > eps)) {
 		double x1, x2;
 
 		x1 = a + phi * (b - a);
@@ -16,7 +16,7 @@ double findMinValue(RRFun f, double a, double b, double eps, error* err) {
 		}
 
 	}
-	printf("Minimum: %lf\n", (a + b) / 2);
+	printf("Minimum: %lf\n", fabs((*f)(a) - (*f)(b)));
 	*err = OK;
-	return (a + b) / 2;
+	return ((*f)(a) + (*f)(b)) / 2;
 }
