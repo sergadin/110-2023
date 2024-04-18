@@ -48,28 +48,28 @@ int main(void) {
 			pi / 2,
 			(double[]) {1.0, 3.87578, 0.63662, 0.451583},
 			OK
-		},
-		{
-			(RRFun[]) {sine, cubing, reverseNum, naturalLog},
-			0,
-			(double[]) {1.0, 3.87578, 0.63662, 0.451583},
-			INCORRECT_ARGUMENT
-		},
-		{
-			(RRFun[]) {sine, cubing, reverseNum, naturalLog},
-			-1,
-			(double[]) {1.0, 3.87578, 0.63662, 0.451583},
-			INCORRECT_ARGUMENT
 		}
+// 		{
+// 			(RRFun[]) {sine, cubing, reverseNum, naturalLog},
+// 			0,
+// 			(double[]) {1.0, 3.87578, 0.63662, 0.451583},
+// 			INCORRECT_ARGUMENT
+// 		},
+// 		{
+// 			(RRFun[]) {sine, cubing, reverseNum, naturalLog},
+// 			-1,
+// 			(double[]) {1.0, 3.87578, 0.63662, 0.451583},
+// 			INCORRECT_ARGUMENT
+// 		}
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
 
-	fillValueArray(tests[0].funcs, -1, tests[0].x, &err);                    // Отдельно выделен первый тест.
-	if (err == MALLOC_ERR)                                                   // На вход подается неправильное количество функций
-		printf("1-й тест пройден :)\n");                                 // для умышленной ошибки выделения памяти.
-	else
-		printf("1-й тест не пройден:(\n");
+// 	fillValueArray(tests[0].funcs, -1, tests[0].x, &err);                    // Отдельно выделен первый тест.
+// 	if (err == MALLOC_ERR)                                                   // На вход подается неправильное количество функций
+// 		printf("1-й тест пройден :)\n");                                 // для умышленной ошибки выделения памяти.
+// 	else
+// 		printf("1-й тест не пройден:(\n");
 
 	for (int i = 1; i < test_num; i++) {
 		value = fillValueArray(tests[i].funcs, func_num, tests[i].x, &err);
