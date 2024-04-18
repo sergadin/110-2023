@@ -8,4 +8,4 @@ typedef double (*RRFun)(double x);
 // eps - точность корня
 // все данные типа double
 
-double find_root (RRFun f, double a, double b, double eps);
+double find_root (RRFun f, double a, double b, double eps, int *err);
