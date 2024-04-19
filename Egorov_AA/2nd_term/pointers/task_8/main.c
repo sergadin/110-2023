@@ -3,7 +3,6 @@
 // Заданные функции
 double sine(double x);
 double cubing(double x);
-double reverseNum(double x);
 double naturalLog(double x);
 
 // Структура тестов
@@ -42,7 +41,7 @@ int main(void) {
 		{
 			(RRFun[]) {sine, cubing, naturalLog},
 			-1,
-			(double[]) {1.0, 3.87578, 0.451583},
+			(double[]) { 1.0, 3.87578, 0.451583},
 			INCORRECT_ARGUMENT
 		},
 		{
@@ -64,17 +63,20 @@ int main(void) {
 			for (int j = 0; j < func_num; j++) {
 				if (fabs(value[j] - tests[i].res[j]) / 2 > eps) {
 					printf("%d-й тест не пройден :(\n", i + 1);
+					free(value);
+					continue;
 				}
 			}
+			printf("%d-й тест пройден :)\n", i + 1);
 		}
 		else {
 			printf("%d-й тест пройден :)\n", i + 1);
 		}
 
-		if(err != MALLOC_ERR)
+		if (err != MALLOC_ERR)
 			free(value);
 	}
-	
-	
+
+
 	return 0;
 }
