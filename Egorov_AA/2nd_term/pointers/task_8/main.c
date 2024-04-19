@@ -44,7 +44,7 @@ int main(void) {
 			-1,
 			(double[]) {1.0, 3.87578, 0.451583},
 			INCORRECT_ARGUMENT
-		}
+		},
 		{
 			(RRFun[]) {sine, cubing, naturalLog},
 			10,
@@ -68,7 +68,7 @@ int main(void) {
 			}
 		}
 		else {
-			printf("%d-й тест пройден :)", i + 1);
+			printf("%d-й тест пройден :)\n", i + 1);
 		}
 
 		if(err != MALLOC_ERR)
