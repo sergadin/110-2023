@@ -40,9 +40,9 @@ int main(void) {
 		},
 		{
 			(RRFun[]) {sine, cubing, naturalLog},
-			-1,
-			(double[]) { 1.0, 3.87578, 0.451583},
-			INCORRECT_ARGUMENT
+			1,
+			(double[]) { 0.841471, 1, 0},
+			OK
 		},
 		{
 			(RRFun[]) {sine, cubing, naturalLog},
