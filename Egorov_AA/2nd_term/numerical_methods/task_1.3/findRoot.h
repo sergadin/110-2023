@@ -1,12 +1,12 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <math.h>
 
 typedef double (*RRFun)(double);
 
-typedef enum {           // Коды ошибок:
-	OK,                  //  Все хорошо
-	I_LIMIT_EXCEEDED,    //  Превышен лимит итераций
-	WRONG_INTERVAL,      //  Неправильно задан интервал
+typedef enum {           // РљРѕРґС‹ РѕС€РёР±РѕРє:
+	OK,                  //  Р’СЃРµ С…РѕСЂРѕС€Рѕ
+	I_LIMIT_EXCEEDED,    //  РџСЂРµРІС‹С€РµРЅ Р»РёРјРёС‚ РёС‚РµСЂР°С†РёР№
+	WRONG_INTERVAL,      //  РќРµРїСЂР°РІРёР»СЊРЅРѕ Р·Р°РґР°РЅ РёРЅС‚РµСЂРІР°Р»
 } error;
 
 double findRoot(RRFun f, double a, double b, double eps, error* err);
