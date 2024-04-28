@@ -1,6 +1,6 @@
 #include "./utils/utils.h"
 
-double Composition_of_function(double x, int n, double (*Functions[n])(double))
+double Composition_of_function(double x, int n, Fun *Functions)
 {
     double y = x;
     for(int i = n-1; i >= 0; i--)
