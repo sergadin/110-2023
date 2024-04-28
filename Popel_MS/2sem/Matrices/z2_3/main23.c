@@ -11,7 +11,7 @@ typedef struct{  /* новая переменаая-структура для п
 
 
 int main(void){
-	double res, eps = 1e-5;
+	double res;
     FILE *fout;
 	Error err;
     double temp;
@@ -31,7 +31,7 @@ int main(void){
             printf("Файл не открывается\n");
             return -1;
         }
-	res = Inverse_matr(tests[n].file_name, fout, tests[n].n, eps, &err);
+	res = Inverse_matr(tests[n].file_name, fout, tests[n].n, &err);
         fclose(fout);
         fout = fopen("inverse_matr.txt", "r");
 		if(err != tests[n].err){
