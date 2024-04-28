@@ -16,20 +16,7 @@ typedef struct{  /* новая переменаая-структура для п
 static double func1(double x); /* Вспомогательная функция для тестирования: степенная функция*/
 static double func2(double x); /* Вспомогательная функция для тестирования: наклонная прямая*/
 static double func3(double x);  /* Вспомогательная функция для тестирования: константа*/
-static double max(double x, double y, double eps); /*Вспомогательная функция поиска максимума*/
 
-static double max(double x, double y, double eps){
-	double max_1;
-	if (x > y){
-	max_1 = x;
-	}else{
-		max_1 = y;
-	}
-	if (eps > max_1){
-		return eps;
-	}
-	return max_1;
-}
 static double func1(double x){
 	return (pow(x,3) - sqrt(2) * x + 17);
 }

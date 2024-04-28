@@ -3,21 +3,34 @@
 #include <stdio.h>
 #include "z7.h"
 
-double sequence_recursive_takes(F_RR f, F_RR g, double x, double eps, Error *err)
+void sequence_recursive_takes(F_RR f, F_RRZ g, double x, Error *err)
 {
 	int limit = 10000;
-	int i = 0;
-	double* fn_array = (double*)(malloc((limit + 1) * sizeof(double)));
-	fn_array[i] = (*f)(x);
+	double* fn_array = (double*)(malloc((2) * sizeof(double)));
+	int g1;
+	double f0;
+	double f1;
 
+	fn_array[0] = (*f)(x); 
+	fn_array[1] = (*f)(fn_array[0]);
+
+	f0 = fn_array[0];
+	f1 = fn_array[1];
+	
 	while (limit > 0)
 	{
-		i++;
-		fn_array[i] = (*f)(fn_array[i-1]);
-		if ((fabs((*g)(fn_array[i-1])) < eps) && (fabs((*g)(fn_array[i])) < eps))
+		g1 = (*g)(f0, f1);
+		if (g1 == 0)
 		{
 			break;
 		}
+
+		fn_array[0] = fn_array[1];
+		fn_array[1] = (*f)(fn_array[0]);
+
+		f0 = fn_array[0];
+		f1 = fn_array[1];
+
 		limit--;
 	}
 
@@ -27,4 +40,6 @@ double sequence_recursive_takes(F_RR f, F_RR g, double x, double eps, Error *err
 	else {
 		*err = BAD;
 	}
+
+	free(fn_array);
 }
