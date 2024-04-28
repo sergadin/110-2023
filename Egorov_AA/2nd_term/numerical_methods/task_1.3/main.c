@@ -1,5 +1,5 @@
 ﻿#include <stdio.h>
-#include <math.h>sd
+#include <math.h>
 #include "findRoot.h"
 
 typedef struct {          // Структура тестов:
@@ -36,7 +36,6 @@ double func4(double x) {
 }
 
 int main(void) {
-	system("chcp 1251");
 	int test_num, iteration_num;
 	error err;
 	double value;
