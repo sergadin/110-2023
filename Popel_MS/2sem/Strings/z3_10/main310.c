@@ -12,14 +12,14 @@ typedef struct{  /* новая переменаая-структура для п
 
 int main(void){
 	double res;
-    FILE *fout;
+	FILE *fout;
 	Error err;
-    double temp;
+
     
-    TestCase tests[] = {{"str2.txt", 3, NA_OK},
+    	TestCase tests[] = {{"str2.txt", 3, NA_OK},
 	{"str3.txt", 10, NA_OK},
 	{"str1.txt", 15, NA_OK},
-    {"str4.txt", 14, NA_OK}};
+    	{"str4.txt", 14, NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
