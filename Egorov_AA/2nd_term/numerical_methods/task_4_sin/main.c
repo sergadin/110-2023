@@ -24,13 +24,13 @@ int main(void) {
 		i_num = 0;
 		value = calculateSin(tests[i].x, tests[i].eps, &err);
 		if (err != tests[i].err_code) {
-			printf("%d-й тест не пройден :( | %d\n", i + 1);
+			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else if ((err == OK) && (fabs(tests[i].res - value) / 2 > tests[i].eps)) {
-			printf("%d-й тест не пройден :( | %d\n", i + 1);
+			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else {
-			printf("%d-й тест пройден. | %d\n", i + 1);
+			printf("%d-й тест пройден.\n", i + 1);
 		}
 	}
 
