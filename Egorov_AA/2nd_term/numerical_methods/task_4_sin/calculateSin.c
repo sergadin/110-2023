@@ -9,7 +9,7 @@ double calculateSin(double x, double eps, error* err) {
 
     while (fabs(term) > eps) {
         sin_x += term;
-        term = -term * x * x / ((2 * n) * (2 * n + 1));
+        term = -term * x * x / ((2 * n) * (2 * n + 1));     // Слагаемое ряда Тейлора: x - x^3/3! + x^3/5 - ...
         n++;
 
         limit--;
