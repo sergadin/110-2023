@@ -39,7 +39,3 @@ double calculateHarmonicMean(FILE* finput) {
      }
     return count / sum;
 }
-
-
-
-

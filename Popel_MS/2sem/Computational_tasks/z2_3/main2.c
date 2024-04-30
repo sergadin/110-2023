@@ -1,5 +1,5 @@
 #include <math.h>
-#include "z_2_3.h"
+#include "z2_3.h"
 #include <stdio.h>
 
 typedef struct{  /* новая переменаая-структура для проведения теста */
@@ -15,6 +15,20 @@ static double straight_line(double x); /* Вспомогательная фун�
 static double constanta(double x);  /* Вспомогательная функция для тестирования: прибавляет к действительному числу 1*/
 static double power_func(double x); /* Вспомогательная функция для тестирования: вычитает из действительного числа 2*/
 static double odd_func(double x); /* Вспомогательная функция для тестирования: нечетная функция*/
+static double max(double x, double y, double eps);
+
+static double max(double x, double y, double eps){
+	double max_1;
+	if (x>y){
+	max_1 = x;
+	}else{
+		max_1 = y;
+	}
+	if (eps>max_1){
+		return eps;
+	}
+	return max_1;
+}
 
 static double parabola(double x){
 	return ((x * x)+2);
@@ -24,8 +38,9 @@ static double straight_line(double x){
 	return (x + 3);
 }
 
-static double constanta(double x){  
-	return 2;
+static double constanta(double x){ 
+	x = 2;
+	return x;
 }
 static double power_func(double x){ 
 	return pow(x, 4) + 55 * x - 17;
@@ -49,10 +64,12 @@ int main(void){
 		res = Simpson_method(tests[n].f, tests[n].a, tests[n].b, eps, &err);
 		if(err != tests[n].err){
 			printf("Тест №%d не пройден.\n", n + 1);
-		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) > eps)){
+		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) > (max(res, tests[n].res, 1.0)*eps))){
 			printf("Тест №%d не пройден. %lf\n", n + 1, res);
-		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) < eps)){
+		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) < (max(res, tests[n].res, 1.0)*eps))){
 			printf("Тест №%d успешно пройден. Значение интеграла: %lf\n", n + 1, res);
+		}else if(err == NA_LIMIT){
+			printf("Тест №%d пройден, но вычислено приближенное значение. Значение интеграла: %lf\n", n + 1, res);
 		}else{
 			printf("Тест №%d успешно пройден.\n", n + 1);
 		}

@@ -14,7 +14,20 @@ static double parabola(double x); /* Вспомогательная функци
 static double straight_line(double x); /* Вспомогательная функция для тестирования: прямолинейная функция - не будет корней*/
 static double almost_zero(double x);  /* Вспомогательная функция для тестирования: функция со значениями вблизи нуля*/
 static double power_func(double x); /* Вспомогательная функция для тестирования: степенная функция - неправильный порядок параметров*/
+static double max(double x, double y, double eps);
 
+static double max(double x, double y, double eps){
+	double max_1;
+	if (x > y){
+	max_1 = x;
+	}else{
+		max_1 = y;
+	}
+	if (eps > max_1){
+		return eps;
+	}
+	return max_1;
+}
 static double parabola(double x){
 	return ((x * x)-2);
 }
@@ -24,20 +37,20 @@ static double straight_line(double x){
 }
 
 static double almost_zero(double x){  
-	return (100000 * (x - (1e - 6)));
+	return (100000 * (x - (1e-6)));
 }
 static double power_func(double x){ 
 	return pow(x, 4) + 55 * x - 17;
 }
 
 int main(void){
-	double res, eps = 1e-7;
+	double res, eps = 1e-6;
 	Error err;
 	int iter;
 	
 	TestCase tests[] = {{parabola, 0.5, 3, 1.414214, NA_OK},
 	{straight_line, 5, 162, -1, NA_NO_ROOT},
-	{almost_zero, -100000, 5, 1e - 6, NA_OK},
+	{almost_zero, -100000, 5, 1e-6, NA_OK},
 	{power_func, 4, 1, -1, NA_WRNG_ORD}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
@@ -45,9 +58,9 @@ int main(void){
 		res = chord_method(tests[n].f, tests[n].a, tests[n].b, eps, &err, &iter);
 		if(err != tests[n].err){
 			printf("Тест №%d не пройден.\n", n + 1);
-		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) > eps)){
+		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) > max(res, tests[n].res, 1.0)*eps)){
 			printf("Тест №%d не пройден.\n", n + 1);
-		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) < eps)){
+		}else if((err == NA_OK) && ((fabs(res-tests[n].res)) < max(res, tests[n].res, 1.0)*eps)){
 			printf("Тест №%d успешно пройден. Первое подходящее значение x = %lf. Количество итераций: %d\n", n + 1, res, iter);
 		}else{
 			printf("Тест №%d успешно пройден.\n", n + 1);

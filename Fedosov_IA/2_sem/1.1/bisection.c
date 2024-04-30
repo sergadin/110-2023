@@ -28,7 +28,8 @@ double bisection(Rfun f, double eps, double a, double b, Error *error) {
 	double right_border_val = (*f)(b);	//Значение функции на правой границе
 	double midpoint;			//Середина отрезка [a,b]
 	double midpoint_value;			//Значение в середине отрезка [a,b]
-
+	*error = OK;
+	
 	for(int i = 0; i < LIMIT; i++) {
 		
 		//Сразу проверяем являются ли границы отрезка корнями		
