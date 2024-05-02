@@ -11,16 +11,15 @@ typedef struct{  /* новая переменаая-структура для п
 
 
 int main(void){
-	double res;
 	FILE *fout, *fstr;
 	Error err;
 	char *strs = NULL; //строка из переданного файла
 
     
-    TestCase tests[] = {{"str2.txt", 3, NA_OK},
+    	TestCase tests[] = {{"str2.txt", 3, NA_OK},
 	{"str3.txt", 10, NA_OK},
 	{"str1.txt", 15, NA_OK},
-    {"str4.txt", 14, NA_OK}};
+    	{"str4.txt", 14, NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
@@ -49,27 +48,27 @@ int main(void){
 		}
 
 		fclose(fstr);
-        fout = fopen("str_correct.txt", "w");
-
-        if (fout == NULL){
-            printf("Файл не открывается\n");
+	        fout = fopen("str_correct.txt", "w");
+	
+	        if (fout == NULL){
+	            printf("Файл не открывается\n");
+				free(strs);
+	            goto terminate;
+	        }
+	
+			Delete_sub_str(strs, tests[n].n, &err);
+			fprintf(fout, "%s\n", strs);
+			fclose(fout);
+			terminate:
+			
+			if(err != tests[n].err){
+				printf("Тест №%d не пройден.\n", n + 1);
+			}else if(err == NA_OK){
+				printf("Тест №%d пройден. Измененная строка записана в файл str_correct.txt\n", n + 1);
+			}else{
+				printf("Тест №%d успешно пройден.\n", n + 1);
+			}
 			free(strs);
-            goto terminate;
-        }
-
-		res = Delete_sub_str(strs, tests[n].n, &err);
-		fprintf(fout, "%s\n", strs);
-		fclose(fout);
-		terminate:
-		
-		if(err != tests[n].err){
-			printf("Тест №%d не пройден.\n", n + 1);
-		}else if(err == NA_OK){
-			printf("Тест №%d пройден. Измененная строка записана в файл str_correct.txt\n", n + 1);
-		}else{
-			printf("Тест №%d успешно пройден.\n", n + 1);
-		}
-		free(strs);
-	}	
+		}	
 	return 0;	
 }
