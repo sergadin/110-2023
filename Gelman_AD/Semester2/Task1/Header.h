@@ -1,4 +1,4 @@
-#include <math.h>
+#include <stdio.h>
 
 /* A set of functions from R to R */
 typedef double (*RRFun)(double x);

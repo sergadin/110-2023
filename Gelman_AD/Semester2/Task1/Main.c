@@ -1,6 +1,6 @@
-#include <math.h>
-#include "Header.h"
+#include <stdlib.h>
 #include <stdio.h>
+#include "Header.h"
 
 // New structure for testing
 typedef struct testcase
@@ -54,7 +54,7 @@ int main(void)
 
 	// Calculation & printing results of the function square(x) 
 
-	for (int i = 0; i < 5; i++) 
+	for (int i = 0; i < 2; i++) 
 	{
 		main_function(tests_square[i].f, tests_square[i].x, tests_square[i].length);
 		for (int j = 0; j < tests_square[i].length; j++)
@@ -64,7 +64,7 @@ int main(void)
 	}
 
 	// Calculation & printing results of the function cube(x) 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		main_function(tests_cube[i].f, tests_cube[i].x, tests_cube[i].length);
 		for (int j = 0; j < tests_cube[i].length; j++)
@@ -74,7 +74,7 @@ int main(void)
 	}
 
 	// Calculation & printing results of the function sum(x) 
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		main_function(tests_sum[i].f, tests_sum[i].x, tests_sum[i].length);
 		for (int j = 0; j < tests_sum[i].length; j++)
