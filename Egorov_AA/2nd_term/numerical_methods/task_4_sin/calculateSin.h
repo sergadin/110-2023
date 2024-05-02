@@ -4,7 +4,7 @@
 typedef enum {           // Коды ошибок:
 	OK,                  //  Все хорошо
 	I_LIMIT_EXCEEDED,    //  Превышен лимит итераций
-	WRONG_ARGUMENT       //  Аргумент не принадлежит требуемому отрезку
+	INVALID_ARGUMENT       //  Аргумент не принадлежит требуемому отрезку
 } error;
 
 double calculateSin(double x, double eps, error* err);
