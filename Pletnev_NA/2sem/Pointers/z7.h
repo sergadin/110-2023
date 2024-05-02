@@ -4,7 +4,7 @@
 typedef double (*F_RR)(double);
 
 /*Функции из RxR в Z*/
-typedef int (*F_RRZ)(int);
+typedef int (*F_RRZ)(double, double);
 
 /* Ошибки кода */
 typedef enum
