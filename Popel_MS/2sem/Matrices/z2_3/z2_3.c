@@ -13,7 +13,8 @@
  */
 void Inverse_matr(double **matr, int n, Error *err){
     double dif, head_el;//частное от деления одной строки матрицы на другую, главный элемент строки.
-    
+    int ch_zero = 0; //счетчик нулевых элементов в последней строке для проверки матрицы на вырожденность.
+    *err = NA_OK;
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
             if (j != i){
@@ -25,12 +26,18 @@ void Inverse_matr(double **matr, int n, Error *err){
         }
     }
 
+    for (int j = 0; j < n; j++){
+        if(matr[n-1][j] == 0){
+            ch_zero ++;
+        }
+    }
+    if (ch_zero == n){
+        *err = NA_SINGLE_MATR;
+    }
     for (int i = 0; i < n; i++){
         head_el = matr[i][i];
         for (int j = 0; j < (2 * n); j++){
             matr[i][j] /= head_el;
         }
     }
-
-    *err = NA_OK;
  }
