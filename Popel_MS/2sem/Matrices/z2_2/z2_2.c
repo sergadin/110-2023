@@ -72,7 +72,7 @@ static void new_matr(double * matr, double *nmatr, int n, int m);
  * Функция ищет определитель переданной матрицы, рекурсивно сводя ее к поиску определителя матрицы 2х2.
  */
 double determinate(double *matr, int n, double eps, Error *err){
-    double det; //значение определителя
+    double det = 0; //значение определителя
     double *nmatr = (double *)malloc(((n - 1) * (n - 1)) * sizeof(double)); //новая подматрица (минор) порядка n-1 
     int sgn = 1; //знак минора
 
