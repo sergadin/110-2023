@@ -25,20 +25,20 @@ typedef struct testcase{
 	double b;
 	double eps;
 	double answer;
-	int exit_err;
+	ERR exit_err;
 } testcase;
 
 int main(void)
 {
 	struct testcase tests[] = {
-		{f1, 3, -3, 0.00001, 0, 1}, // здесь долджно выдать ошибку, так как a > b
-		{f2, 3, 4, 0.00001, 0.83333, 0}, //на вход даётся парабола [3;4]
-		{f2, 1, 2 , 0.00001, 0.83333, 0} //надо найти площадь под параболой на отрезке [1;2]
+		{f1, 3, -3, 0.00001, 0, E_IO}, // здесь долджно выдать ошибку, так как a > b
+		{f2, 3, 4, 0.00001, 0.83333, OK}, //на вход даётся парабола [3;4]
+		{f2, 1, 2 , 0.00001, 0.83333, OK} //надо найти площадь под параболой на отрезке [1;2]
 	};
-	int err = 0;
+	ERR err = OK;
 	double answ;
 	for (int i = 0; i < 3; i++){
-		err = 0;
+		err = OK;
 		answ = integrate(tests[i].f, tests[i].a, tests[i].b, tests[i].eps, &err);
 		if ((fabs(answ - tests[i].answer) < tests[i].eps) && (tests[i].exit_err == err))
 		{

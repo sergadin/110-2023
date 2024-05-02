@@ -3,19 +3,19 @@
 #include "integration.h"
 
 
-double integrate(RRFun f, double a, double b, double eps, int *err)
+double integrate(RRFun f, double a, double b, double eps, ERR *err)
 {
 	int count = 8; //количество отрезков, на которые разбивается отрезок
-	double length, f_start, f_end, start, end, prev_integr = f(a)*(b - a), curr_integr = prev_integr + 10;
+	double length, f_start, f_end, start, end, prev_integr = f(a)*(b - a), curr_integr;
 	if (a > b) 
 	{ 
-		*err = 1;
+		*err = E_IO;
 		printf("ошибка, некорректно введён отрезок \n");
 		return 0;
 	}
-	while (fabs(prev_integr - curr_integr) > eps)
+	do
 	{
-		length = (b - a)/ count;
+		length = (b - a) / count;
 		start = a;
 		end = a + length;
 		f_start = f(start);
@@ -32,5 +32,6 @@ double integrate(RRFun f, double a, double b, double eps, int *err)
 		}
 		count = count * 2;
 	}
+	while ((fabs(prev_integr - curr_integr) > eps) || (length > eps));
 	return curr_integr;
 }
