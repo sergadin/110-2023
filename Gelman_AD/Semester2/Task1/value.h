@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 /* A set of functions from R to R */
-typedef double (*RRFun)(double x);
+typedef double (*RRFun)(double);
 
 /*  Calculating f(x0), ..., f(xn-1):
 	Parameters:
