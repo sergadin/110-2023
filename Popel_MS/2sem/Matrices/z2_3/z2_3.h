@@ -1,4 +1,6 @@
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 /* Основные ошибки*/
 typedef enum {
