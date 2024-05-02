@@ -24,7 +24,7 @@ int main(void){
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
 
-		strs = malloc((tests[n].n)*sizeof(char));
+		strs = malloc(((tests[n].n) + 1)*sizeof(char));
 		if (strs == NULL){
 			printf("Оперативная память не выделена\n");
 			err = NA_MEMORY_ERR;
