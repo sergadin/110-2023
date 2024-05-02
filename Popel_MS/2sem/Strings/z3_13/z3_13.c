@@ -37,7 +37,7 @@ static char * check_word(int i, char * buf, char *str){
  */
 int Condit_compil(const char * filename, FILE * fout, Error *err){
     FILE *f;
-    int count_of_def = 0, line = 1, written = 0, if_ch = 0, el_ch = 0; /*количество define, порядковый номер текущей строки, индикатор ввода
+    int t, count_of_def = 0, line = 1, written = 0, if_ch = 0, el_ch = 0; /*количество define, порядковый номер текущей строки, индикатор ввода
     строки в итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его),
                                                           индикатор #else - (аналогично)*/
     char buffer[256], define[] = "#define", str_arr[256][256], *istr; /*текущая строка, строка #define, словарь макросов после define, первый 
