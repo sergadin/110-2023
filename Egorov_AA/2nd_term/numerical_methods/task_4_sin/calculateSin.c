@@ -7,6 +7,11 @@ double calculateSin(double x, double eps, error* err) {
 
     *err = OK;
 
+    if (!(x > -2 * M_PI && x < 2 * M_PI)) {
+        *err = INVALID_ARGUMENT;
+        return -1;
+    }
+
     while (fabs(term) > eps) {
         sin_x += term;
         term = -term * x * x / ((2 * n) * (2 * n + 1));     // Слагаемое ряда Тейлора: x - x^3/3! + x^3/5 - ...
