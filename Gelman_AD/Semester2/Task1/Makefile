@@ -1,8 +1,8 @@
 all: a.out
 	./a.out
-task_1.o: task_1.c Header.h
-	gcc -c task_1.c
-Main.o: Main.c task_1.c
+value.o: value.c value.h
+	gcc -c value.c
+Main.o: Main.c value.c
 	gcc -c Main.c
-a.out: Main.o task_1.o
-	gcc Main.o task_1.o
+a.out: Main.o value.o
+	gcc Main.o value.o
