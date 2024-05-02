@@ -21,7 +21,8 @@ int main(void){
 	{"matr2.txt", 2, NA_OK},
 	{"matr3.txt", 3, NA_OK},
 	{"matr4.txt", 0, NA_ZERO_MATR},
-    {"matr5.txt", 6, NA_OK}};
+    	{"matr5.txt", 6, NA_OK},
+	{"matr6.txt", 2, NA_SINGLE_MATR}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
