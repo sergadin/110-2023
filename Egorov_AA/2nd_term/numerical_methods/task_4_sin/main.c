@@ -15,7 +15,7 @@ int main(void) {
 	dataSet tests[] = {
 		{-3, 1e-4, -0.14112, OK},
 		{0.9, 0.0001, 0.7833269, OK},
-		{4, 0.0001, -0.75680249, OK},
+		{4 + 1000 * M_PI, 0.0001, -0.75680249, I_LIMIT_EXCEEDED},
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
