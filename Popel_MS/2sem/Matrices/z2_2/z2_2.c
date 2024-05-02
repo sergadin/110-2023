@@ -76,6 +76,7 @@ double determinate(double *matr, int n, double eps, Error *err){
     double *nmatr = (double *)malloc(((n - 1) * (n - 1)) * sizeof(double)); //новая подматрица (минор) порядка n-1 
     int sgn = 1; //знак минора
 
+    *err = NA_OK;
     if (nmatr == NULL){
 		printf("Оперативная память не выделена\n");
 		*err = NA_MEMORY_ERR;
@@ -101,7 +102,6 @@ double determinate(double *matr, int n, double eps, Error *err){
         sgn *= -1;
     }
         
-    *err = NA_OK;
     free(nmatr);
     return det;
 }
