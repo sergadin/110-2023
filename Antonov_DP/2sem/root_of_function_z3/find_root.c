@@ -29,11 +29,13 @@ double find_root(RRFun f, double a, double b, double eps, ERR *err)
 	if (fabs(f_focus_point) < eps) {return a;}
 	if (fabs(f_prev) < eps) {return b;}
 	curr = prev - (f_prev / (f_prev - f_focus_point)) * (prev - focus_point);
-	while (fabs(curr - prev) > eps)
+	while ((fabs(curr - prev) > eps) || (count < 1000000))
 	{
 		prev = curr;
 		f_prev = f(prev);
 		curr = prev - (f_prev / (f_prev - f_focus_point)) * (prev - focus_point);
+		count++;
 	}
+	if (count == 1000000) { printf ("ответ найден, но не с такой точностью"); }
 	return curr;
 }
