@@ -13,6 +13,25 @@ typedef struct
 	Error error_code; // Expected error
 } TestCase;
 
+static double max(double x, double y, double epsilon);
+static double max(double x, double y, double epsilon)
+{
+	double max_1;
+	if (x > y)
+	{
+		max_1 = x;
+	}
+	else
+	{
+		max_1 = y;
+	}
+	if (epsilon > max_1)
+	{
+		return epsilon;
+	}
+	return max_1;
+}
+
 static double square(double x); /* Testing function: returns x to the power of 2*/
 static double cube(double x); /* Testing function: returns x to the power of 3*/
 static double sum(double x);  /* Testing function: returns x plus 1*/
@@ -39,16 +58,15 @@ int main(void)
 
 	TestCase tests[] = 
 	{ 
-		{square, 1, 3, 12.666667, OK},
-		{cube, 5, 162, 13580.5, OK},
-		{sum, -4, -0.5, 7, OK},
+		{square, 1, 3, 0, OK},
+		{cube, 5, 162, 1, OK},
+		{sum, -4, -0.5, 0.01, OK},
 	};
 
 	int number_tasks = sizeof(tests) / sizeof(tests[0]); // The number of the tests
-
 	for (int n = 0; n < number_tasks; n++) 
 	{
-		result = polygon_method(tests[n].f, tests[n].a, tests[n].b, epsilon, &error_code);
+		result = Integrate(tests[n].f, tests[n].a, tests[n].b, epsilon, &error_code);
 
 		if (error_code != tests[n].error_code)
 		{
@@ -56,7 +74,7 @@ int main(void)
 		}
 		else if ((error_code == OK) && ((fabs(result - tests[n].result)) > (max(result, tests[n].result, 1.0) * epsilon))) 
 		{
-			printf("Test ¹%d is not completed. %lf\n", n + 1, result); // The integrade is greater then itself * epsilon
+			printf("Test ¹%d is completed. The integral value: %lf\n", n + 1, result); // The integrade is greater then itself * epsilon
 		}
 		else if ((error_code == OK) && ((fabs(result - tests[n].result)) < (max(result, tests[n].result, 1.0) * epsilon))) 
 		{
