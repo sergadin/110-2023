@@ -54,7 +54,7 @@ int main(void)
         b = test_number[i].b;
         result = test_number[i].result;
         epsilon = test_number[i].epsilon;
-        error = test_number[i].error;
+        error = OK;
         calculated_integral = integral(a, b, Function, epsilon, &error);
                printf("Test %d\nIntegration segment: [%lf, %lf] Expected result: %lf\n", i+1, a, b, result);
                 if(error == OK)
