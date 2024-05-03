@@ -8,7 +8,7 @@ typedef struct // New structure for testing
 	RRFun function;         //   Function pointer
 	double a;              //    Beginning of the segment
 	double b;             //     Ending of the segment
-	double result;       //      Expected result
+	int result;       //      Expected result
 	int number_fcalls;  //        Number of function calls
 	error error_code;  //       Expected error
 } dataSet;
@@ -34,9 +34,9 @@ static double sum(double x)
 {
 	double x; 
 	int number_fcalls = 0;
-	double result; 
+	int result; 
 
-	result = root_chords(&x, -10, 45, square, 1.e-15);
+	result = root_chords(&x, -10, 15, square, 1.e-15);
 	if (result)
 	{
 		printf("x=%lg\n number of interations =%d\n", x, result - 1);

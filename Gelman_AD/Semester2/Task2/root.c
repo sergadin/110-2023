@@ -51,11 +51,6 @@ int root_chords(double* x, double a, double b, double (*function)(double), doubl
 	sgnfa = sign(fa); 
 	sgnfb = sign(fb);
 
-	if (sgnfa * sgnfb != -1)
-	{
-		return 0;
-	}
-
 	// Finding the root
 	for (iterations_number = 1; fabs(c[1] - c[0]) > epsilon; iterations_number++)
 	{
