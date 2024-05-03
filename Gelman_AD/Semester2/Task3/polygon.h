@@ -9,7 +9,7 @@ typedef double (*RRFun)(double);
 typedef enum 
 {
     OK, // No errors
-    WRNG_ORDER, // b < a - the borders of the segment
+    WRONG_ORDER, // b < a - the borders of the segment
     ITERATION_LIMIT_EXCEEDED, // Iteration limit exceeded
 }Error;
 
@@ -24,4 +24,4 @@ typedef enum
  * If the Iteration limit exceeded, the error code ITERATION_LIMIT_EXCEEDED is printed
  */
 
-double polygon_method(RRFun f, double a, double b, double epsilon, Error* error_code);
+double Integrate(RRFun f, double a, double b, double epsilon, Error *error_code);
