@@ -7,7 +7,7 @@ SRCS = \
 .PHONY: all, build, clean, run
 
 $(TARGET): 
-		gcc -I $(HDRS_DIR) $(SRCS) -o $(TARGET)
+		gcc -I $(HDRS_DIR) $(SRCS) -o $(TARGET) -lm
 
 all: clean build
 
