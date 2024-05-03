@@ -11,9 +11,7 @@
  *             *error_code - Expected errors
  */
 
-static double Integrate(RRFun f, double a, double b, double n);
 static double max(double x, double y, double epsilon);
-
 static double max(double x, double y, double epsilon) 
 {
 	double max_1;
@@ -32,45 +30,54 @@ static double max(double x, double y, double epsilon)
 	return max_1;
 }
 
-// I(a, b, f) = ((b - a) / 2)(fa + fb);
-static double Integrate(RRfun f, double a, double b, double n)
+double integrate_n(RRFun f, double a, double b, int n);
+double integrate_n(RRFun f, double a, double b, int n) 
 {
-	double dx; // Subsegment of the partition
-	double sum; // Integral sum
-	dx = (b - a) / n;
-	sum = (*f)(a) + (*f)(b);
-	for (int i = 1; i < n; i++)
+	double h; // Subsegment of the partition
+	double x, y;
+	double result = 0;
+
+	h = (b - a) / n;
+
+	for (int i = 0; i < n; i++) 
 	{
-		// sum += ???
+		x = a + h * i;
+		y = a + h * (i + 1);
+		result += (f((x + y) / 2)) * h;
 	}
-	sum = (sum * dx) / 2;
-	return sum;
+	return result;
 }
 
-
-double polygon_method(RRFun f, double a, double b, double epsilon, Error* error_code) 
+double Integrate(RRFun f, double a, double b, double epsilon, Error *error_code) 
 {
-	double s1, s2, limit = 1000; // First & second integral sum respectfully
-	int n = 1024;
+	double h = (b - a); // Initial length of the segment
+	double I; // Initial approximation of the integral
+	double Inew; // New approximation of the integral
+	double limit = 1000; // The limit of iterations
+	int n = 1024; // The number of the subsegments in the partition
+
 	if (a >= b) // Wrong order
 	{
-		*error_code = WRNG_ORDER;
+		*error_code = WRONG_ORDER;
 		return -1;
 	}
-	s1 = Integrate(f, a, b, n);
+
+	Inew = integrate_n(f, a, b, n);
 	n = 2048;
-	while (fabs(s1 - s2) > (max(s1, s2, 1.0) * epsilon)) 
+
+	while (fabs(Inew - I) > (max(Inew, I, 1.0) * epsilon))
 	{
-		s2 = Integrate(f, a, b, n);
-		s1 = s2;
+		I = integrate_n(f, a, b, n);
+		Inew = I;
 		n = 2 * n;
+
 		limit -= 1;
-		if (limit <= 0) 
+		if (limit <= 0)
 		{
 			*error_code = ITERATION_LIMIT_EXCEEDED;
-			return s2;
+			return I;
 		}
 	}
 	*error_code = OK;
-	return s2;
+	return I;
 }
