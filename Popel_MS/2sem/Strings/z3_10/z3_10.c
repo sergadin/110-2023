@@ -15,7 +15,7 @@ void Delete_sub_str(char *strs, int size_s, Error *err){
     char *dict = ".,:;!&()/[]"; //Словарь элементов, части строки между которыми надо удалить.
     int size_d = strlen(dict), first_pos,  first = 1, i = 0; /*размер словаря, позиция первого элемента из словаря, индекс наличия "первого 
     элемента" из словаря (1, если еще не найден первый элемент, 0 - если найден), порядковый индекс*/
-
+    *err = NA_OK;
     printf("\nИсходная строка - %s", strs);
     while (i < size_s){
         for (int j = 0; j < size_d; j++){
@@ -25,7 +25,7 @@ void Delete_sub_str(char *strs, int size_s, Error *err){
                 first = 0;
             }else if (strs[i] == dict[j]){
                 first = 1;
-                memmove(strs + first_pos, strs + i + 1, size_s - i + 1);
+                memmove(strs + first_pos, strs + i + 1, size_s - i);
                 i = first_pos - 1;
             }
         }

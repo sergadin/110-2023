@@ -17,8 +17,8 @@ int main(void){
 
     
     	TestCase tests[] = {{"str2.txt", 3, NA_OK},
-	{"str3.txt", 10, NA_OK},
-	{"str1.txt", 15, NA_OK},
+		{"str3.txt", 10, NA_OK},
+		{"str1.txt", 15, NA_OK},
     	{"str4.txt", 14, NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
