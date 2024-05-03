@@ -11,7 +11,7 @@
  * Функция ищет обратную матрицу приведения новой матрицы методом Гаусса к ступенчатому виду 
  * левой половины (исходной матрицы). Полученная в правой части матрица - результат. 
  */
-void Inverse_matr(double **matr, int n, Error *err){
+int Inverse_matr(double **matr, int n, Error *err){
     double dif, head_el;//частное от деления одной строки матрицы на другую, главный элемент строки.
     int ch_zero = 0; //счетчик нулевых элементов в последней строке для проверки матрицы на вырожденность.
     *err = NA_OK;
@@ -32,7 +32,12 @@ void Inverse_matr(double **matr, int n, Error *err){
         }
     }
     if (ch_zero == n){
+        for (int i = 0; i < n; i++){
+    	    free(matr[i]);
+        }
+        free(matr);
         *err = NA_SINGLE_MATR;
+        return -1;
     }
     for (int i = 0; i < n; i++){
         head_el = matr[i][i];
@@ -40,4 +45,5 @@ void Inverse_matr(double **matr, int n, Error *err){
             matr[i][j] /= head_el;
         }
     }
+    return 0;
  }

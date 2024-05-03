@@ -13,6 +13,7 @@ typedef struct{  /* новая переменаая-структура для п
 int main(void){
     FILE *f;
     Error err;
+	int res = 0;
     double **matr = NULL;
 	
     TestCase tests[] = {{"matr1.txt", 1, NA_OK},
@@ -77,7 +78,7 @@ int main(void){
 	        }
 	        fclose(f);
 	
-		    Inverse_matr(matr, tests[n].n, &err);
+		    res = Inverse_matr(matr, tests[n].n, &err);
 	
 	        terminate:
 			if(err != tests[n].err){
