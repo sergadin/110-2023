@@ -52,14 +52,32 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
     	return -1;
     }
     str_arr = (char **)malloc(sizeof(char*)*line);
+    if (str_arr == NULL){
+            printf("Оперативная память не выделена\n");
+            *err = NA_MEMORY_ERR;
+            return -1;
+        }
     for (int i = 0; i < line; i++){
     	str_arr[i] = (char *)malloc(sizeof(char)*line);
+    	if (str_arr[i] == NULL){
+            printf("Оперативная память не выделена\n");
+            *err = NA_MEMORY_ERR;
+		for (int j = 0; j < i; j++){
+		    	free(str_arr[j]);
+		    }
+		    free(str_arr);
+            return -1;
+        }
     }
     for (int k = 0; k < line; k++){
     	str = (char *)malloc(sizeof(char)*256);
     	if (str == NULL){
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
+		for (int i = 0; i < line; i++){
+		    	free(str_arr[i]);
+		    }
+		    free(str_arr);
             return -1;
         }
         //str[0] = '-'; 
