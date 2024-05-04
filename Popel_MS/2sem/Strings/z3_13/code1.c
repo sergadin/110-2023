@@ -5,7 +5,7 @@
 
 void main(){
     int a = 0;
-    #ifdef Macr
+    #ifdef Mar
     printf("Hello, world\n");
     #endif
     #ifdef New_invisible

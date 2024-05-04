@@ -1,6 +1,7 @@
 #include <math.h>
 #include "z2_2.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef struct{  /* новая переменаая-структура для проведения теста */
     const char * file_name; //название файла, в котором находятся элементы матрицы
@@ -25,19 +26,58 @@ static double max(double x, double y, double eps){
 
 
 int main(void){
-	double res, eps = 1e-5;
+	double res = 0, eps = 1e-5;
+	int ord = 0; //порядок матрицы - считывается из файла
+	double *matr = NULL; //указатель на массив, содержащий элементы матрицы, переменная для записи результата
+	FILE *f = NULL;
 	Error err;
-    //double matr1[1] = {4}, matr2[4] = {1, 0.5, -9, 2}, matr3[9] = {1, 2, 3, 3, 2, 1, 4, 2, 5}, *matr4 = NULL;
-   // double matr5[36] = {118, 146, 119, 140, 66, 142, 141, 75, 79, 76, 148, 3, 137, 51, 27, 23, 115, 110, 15, 126, 140, 36, 6, 56, 95, 20, 17, 124, 140, 94, 97, 131, 88, 148, 29, 36};
+
 	TestCase tests[] = {{"matr1.txt", 4, NA_OK},
 	{"matr2.txt", 6.5, NA_OK},
 	{"matr3.txt", -20, NA_OK},
 	{"matr4.txt", 0, NA_ZERO_MATR},
-    {"matr5.txt", -25986176625338, NA_OK}};
+    {"matr5.txt", 356948478124, NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
-		res = determinant(tests[n].file_name, eps, &err);
+		f = fopen(tests[n].file_name, "r");
+
+		if (f == NULL){								/*Открытие файла, считывание из него значений элементов матрицы и запись их в массив.*/
+			printf("Файл не открывается\n");
+			err = FILE_WR;
+			goto terminate;
+		}
+
+		if (fscanf(f, "%d", &ord) != 1){
+			printf("Файл пуст\n");
+			err = FILE_WR;
+			fclose(f);
+			goto terminate;
+			
+		}
+
+		matr = (double *)malloc((ord * ord) * sizeof(double));
+		if (matr == NULL){
+			printf("Оперативная память не выделена\n");
+			err = NA_MEMORY_ERR;
+			fclose(f);
+			goto terminate;
+		}
+
+		for (int i = 0; i < (ord * ord); ++i){   
+			if (fscanf(f, "%lf", &matr[i])!=1){
+				printf("В файле недостаточно значений\n");
+				err = FILE_WR;
+				free(matr);
+				fclose(f);
+				goto terminate;
+			}
+		}
+
+		fclose(f);
+		res = determinate(matr, ord, eps, &err);
+		free(matr);
+		terminate:
 		if(err != tests[n].err){
 			printf("Тест №%d не пройден.\n", n + 1);
 		}else if((err == NA_OK) && ((fabs(res - tests[n].res)) > (max(res, tests[n].res, 1.0) * eps))){

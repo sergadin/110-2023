@@ -4,56 +4,17 @@
 #include "z2_3.h"
 
 
-/*	Параметры: *filename - имя файла, содержащего элементы матрицы
- *         *fout - файл, в который выгружается итоговая матрица
+/*	Параметры: **matr - указатель на матрицу указателей на массивы: в них записана матрица n*2n, где к исходной матрице справа 
+ *                                                                                                   приписана единичная порядка n
  *          n - порядок матрицы
  *         *err - указатель на код ошибки.
- * Функция ищет обратную матрицу методом приписывания справа единичной матрицы и приведения новой матрицы методом Гаусса к ступенчатому виду 
+ * Функция ищет обратную матрицу приведения новой матрицы методом Гаусса к ступенчатому виду 
  * левой половины (исходной матрицы). Полученная в правой части матрица - результат. 
  */
-int Inverse_matr(const char *filename, FILE *fout, int n, Error *err){
-    double **matr = (double **)malloc(sizeof(double *) * n); //массив адресов на строки матрицы
-    FILE *f = NULL;
+int Inverse_matr(double **matr, int n, Error *err){
     double dif, head_el;//частное от деления одной строки матрицы на другую, главный элемент строки.
-    
-    if (n == 0){
-        *err = NA_ZERO_MATR;
-        return -1;
-    }
-    if (matr == NULL){
-		printf("Оперативная память не выделена\n");
-		*err = NA_MEMORY_ERR;
-		return -1;
-	}
-    f = fopen(filename, "r");
-	if (f == NULL){
-		printf("Файл не открывается\n");
-		*err = FILE_WR;
-		return -1;
-	}
-    for (int i = 0; i < n; i++){
-        matr[i] = (double *)malloc(sizeof(double) * 2 * n);
-        if (matr[i] == NULL){
-            printf("Оперативная память не выделена\n");
-            *err = NA_MEMORY_ERR;
-            return -1;
-	    }
-        for (int j = 0; j < (2 * n); j++){
-            if (j < n){
-                if (fscanf(f, "%lf", &matr[i][j])!=1){
-			        printf("В файле недостаточно значений\n");
-            		*err = FILE_WR;
-			        return -1;
-		        }
-            }else if(j == n + i){
-                    matr[i][j] = 1;
-            }else{
-                matr[i][j] = 0;
-            }
-        }
-    }
-    fclose(f);
-
+    int ch_zero = 0; //счетчик нулевых элементов в последней строке для проверки матрицы на вырожденность.
+    *err = NA_OK;
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
             if (j != i){
@@ -65,21 +26,24 @@ int Inverse_matr(const char *filename, FILE *fout, int n, Error *err){
         }
     }
 
+    for (int j = 0; j < n; j++){
+        if(matr[n-1][j] == 0){
+            ch_zero ++;
+        }
+    }
+    if (ch_zero == n){
+        for (int i = 0; i < n; i++){
+    	    free(matr[i]);
+        }
+        free(matr);
+        *err = NA_SINGLE_MATR;
+        return -1;
+    }
     for (int i = 0; i < n; i++){
         head_el = matr[i][i];
         for (int j = 0; j < (2 * n); j++){
             matr[i][j] /= head_el;
         }
     }
-    
-    for (int i = 0; i < n; i++){
-        for (int j = n; j < (2*n); j++){
-            fprintf(fout, "%lf\n", matr[i][j]);
-        }
-        free(matr[i]);
-    }
-
-    *err = NA_OK;
-    free(matr);
-    return 1;
+    return 0;
  }
