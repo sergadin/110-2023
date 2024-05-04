@@ -60,6 +60,10 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
     	if (str == NULL){
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
+		for (int i = 0; i< line; i++){
+		    	free(str_arr[i]);
+		    }
+		    free(str_arr);
             return -1;
         }
         //str[0] = '-'; 
