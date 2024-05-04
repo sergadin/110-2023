@@ -63,7 +63,7 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
 		for (int j = 0; j < i; j++){
-		    	free(str_arr[i]);
+		    	free(str_arr[j]);
 		    }
 		    free(str_arr);
             return -1;
