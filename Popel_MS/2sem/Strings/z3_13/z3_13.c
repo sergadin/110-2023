@@ -68,6 +68,7 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
 		    free(str_arr);
             return -1;
         }
+    }
     for (int k = 0; k < line; k++){
     	str = (char *)malloc(sizeof(char)*256);
     	if (str == NULL){
