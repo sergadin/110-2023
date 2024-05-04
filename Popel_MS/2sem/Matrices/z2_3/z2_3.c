@@ -31,7 +31,7 @@ int Inverse_matr(double **matr, int n, Error *err, double eps){
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
             if (j != i){
-                if (fabs(matr[i][i]) < eps>){
+                if (fabs(matr[i][i]) < eps){
                     continue;
                 }
                 dif = matr[j][i] / matr[i][i];
