@@ -23,4 +23,4 @@ typedef enum {
  * Если возникли проблемы с открытием файла, возвращается код ошибки FILE_WR и значение -1.
  */
 
-void Delete_sub_str(char *strs, int size_s, Error *err);
+int Delete_sub_str(char **strs, FILE *f, FILE *fout, int line, Error *err);

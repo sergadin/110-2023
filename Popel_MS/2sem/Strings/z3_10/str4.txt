@@ -1,1 +1,7 @@
-Please accept (all) tasks)
+Testing text with some brackets
+A lot of /* brackets */
+In different states /* Do you think
+will it be working cirrectly?
+Or not? */ So,
+I think, it /*MUST*/ doing all /*tasks*/ correctly
+That's all */
