@@ -3,6 +3,19 @@
 #include <stdio.h>
 #include "z2_3.h"
 
+static double max(double x, double y, double eps);
+static double max(double x, double y, double eps){
+	double max_1;
+	if (x > y){
+	max_1 = x;
+	}else{
+		max_1 = y;
+	}
+	if (eps > max_1){
+		return eps;
+	}
+	return max_1;
+}
 
 /*	Параметры: **matr - указатель на матрицу указателей на массивы: в них записана матрица n*2n, где к исходной матрице справа 
  *                                                                                                   приписана единичная порядка n
@@ -18,6 +31,9 @@ int Inverse_matr(double **matr, int n, Error *err, double eps){
     for (int i = 0; i < n; i++){
         for (int j = 0; j < n; j++){
             if (j != i){
+                if (fabs(matr[i][i]) < eps>){
+                    continue;
+                }
                 dif = matr[j][i] / matr[i][i];
                 for (int l = 0; l < (2 * n); l++){
                     matr[j][l] -= (dif * matr[i][l]);
@@ -27,7 +43,7 @@ int Inverse_matr(double **matr, int n, Error *err, double eps){
     }
 
     for (int j = 0; j < n; j++){
-        if(matr[n-1][j] == 0){
+        if(fabs(matr[n-1][j])<eps){
             ch_zero ++;
         }
     }
