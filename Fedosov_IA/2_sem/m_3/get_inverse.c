@@ -11,11 +11,13 @@ static double* make_mat(const char *file_name, int* mat_size, Error *error){
   FILE* data = fopen(file_name, "r");
   if (data == NULL) {
     *error = EMPTY_FILE;
+    fclose(file_name);
     return;
   }
 
   if (fscanf(data, "%d", &size) != 1) {
     *error = EMPTY_FILE;
+    fclose(file_name);
     return;
   }
 
@@ -24,6 +26,7 @@ static double* make_mat(const char *file_name, int* mat_size, Error *error){
   for (int i = 0; i < size * size; i ++) {
     fscanf(data, "%lf", &mat[i]);
   }
+  fclose(file_name);
   return mat;
 }
 
