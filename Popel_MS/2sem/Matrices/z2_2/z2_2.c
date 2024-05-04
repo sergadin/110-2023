@@ -50,8 +50,9 @@ double determinate(double *matr, int n, double eps, Error *err){
     if (n == 2){
         return ((matr[0] * matr[3]) - (matr[1] * matr[2]));
     }
+	nmatr = (double *)malloc(((n - 1) * (n - 1)) * sizeof(double));
     for (int i = 0; i < n; i++){
-        nmatr = (double *)malloc(((n - 1) * (n - 1)) * sizeof(double));
+        
         if (nmatr == NULL){
 		printf("Оперативная память не выделена\n");
 		*err = NA_MEMORY_ERR;
@@ -61,7 +62,8 @@ double determinate(double *matr, int n, double eps, Error *err){
     	new_matr(matr, nmatr, n, i);
         det  += sgn * matr[i] * determinate(nmatr, n-1, eps, err);
         sgn *= -1;
-        free(nmatr);
+        
     }
+	free(nmatr);
     return det;
 }
