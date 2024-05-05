@@ -11,10 +11,10 @@ typedef struct{  /* новая переменаая-структура для п
 
 int main(void){
 	FILE *fout, *f;
-	Error err;
-	int line = 1, res = 0;
-	size_t len = 1024;
-	char **strs = NULL, *buf = NULL; //строка из переданного файла
+	Error err; 
+	int line = 1, res = 0; //количество строк, результат
+	size_t len = 1024; 
+	char **strs = NULL, *buf = NULL; //массив строк, текущая строка
 
     	err = NA_OK;
     	TestCase tests[] = {{"str2.txt", NA_OK},

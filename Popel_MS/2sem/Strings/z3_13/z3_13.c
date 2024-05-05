@@ -29,8 +29,8 @@ static void check_word(long int k, char * buf, char *str){
         
 
 
-/*	Параметры: (*code_txt)[256] - массив строк с исходным текстом файла.
- *         (*answ_txt)[256] - массив, в который будет передан ответ. 
+/*	Параметры: *f - исходный файл.
+ *         *fout - итоговый файл.
  *          line - количество строк в исходном файле.
  *         *err - указатель на код ошибки.
  * Функция обрабатывает текст полученного файла с кодом, сохраняя, в соответствии с выполнением условий, команды программы под инструкциями
@@ -39,26 +39,28 @@ static void check_word(long int k, char * buf, char *str){
  */
 int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
     size_t len = 1024;
-    ssize_t n_bytes = 0;
-    int t = 0, k = 0, /*len1=0, len2=0,*/ written = 0, if_ch = 0, el_ch = 0; /*количество define, количество сохраненных строк, индикатор ввода
-    строки в итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его),
+    ssize_t n_bytes = 0; //размер текущей строки
+    int t = 0, k = 0, written = 0, if_ch = 0, el_ch = 0; /*количество найденных define, порядковый индекс, индикатор ввода строки в 
+    итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его),
                                                           индикатор #else - (аналогично)*/
     char define[] = "#define", *istr; /*строка #define, первый элемент текущего макроса в строке*/
-    char hash1[] = "#ifdef", hash2[] = "#else", hash3[] = "#endif", *istr1,*istr2, *istr3; /*строки #ifdef, #else, #endif, индексы их первых 
-    элементов*/
-    char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения.
+    char hash1[] = "#ifdef", hash2[] = "#else", hash3[] = "#endif", *istr1,*istr2, *istr3; /*строки #ifdef, #else, #endif, индексы их 
+                                                                                                                первых элементов*/
+    char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения, текущая строка.
     char ** str_arr = NULL; //словарь макросов после define
     *err = NA_OK;
     if (line == 0){
     	*err = FILE_WR;
     	return -1;
     }
+
     buf = (char *)calloc(sizeof(char), 1024);
     if (buf == NULL){
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
             return -1;
         }
+
     str_arr = (char **)calloc(sizeof(char*),line);
     if (str_arr == NULL){
             printf("Оперативная память не выделена\n");
@@ -66,6 +68,7 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
             free(buf);
             return -1;
         }
+
     while ((n_bytes = getline(&buf, &len, f))!=-1){
         
         str_arr[k] = (char *)calloc(sizeof(char),n_bytes);
@@ -80,6 +83,7 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
             free(buf);
             return -1;
         }
+
     	str = (char *)calloc(sizeof(char),n_bytes);
     	if (str == NULL){
             printf("Оперативная память не выделена%d - 2\n", k);
@@ -94,6 +98,7 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
 
       written = 0;
         istr = strstr(buf, define);
+
         if (istr != NULL){
             printf("Seeked word on position - %ld. Line - %d\n", istr - buf, k + 1);
             check_word(istr - buf + strlen(define), buf, str_arr[t]);
@@ -112,6 +117,7 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                 
                 written = 1;
             }
+
             istr2 = strstr(buf, hash2);
             if (istr2 != NULL){
                 printf("Seeked condition_2 on position - %ld. Line - %d\n", istr2 - buf, k + 1);
@@ -132,18 +138,22 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                 if_ch = 0;
                 written = 1;
             }
+
         if ((el_ch == -1)||(if_ch == -1)){
             written = 1;
-       }
+        }
         if (written == 0){
 		fprintf(fout, "%s", buf);
         }
+
         free(str);
         k++;
     }
-   for (int i = 0; i < line; i++){
+
+    for (int i = 0; i < line; i++){
     	free(str_arr[i]);
     }
+    
     free(str_arr);
     free(buf);
     return 0;

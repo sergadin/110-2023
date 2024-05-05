@@ -56,6 +56,9 @@ int Inverse_matr(double **matr, int n, Error *err, double eps){
         return -1;
     }
     for (int i = 0; i < n; i++){
+        if (fabs(matr[i][i]) < eps){
+                    continue;
+                }
         head_el = matr[i][i];
         for (int j = 0; j < (2 * n); j++){
             matr[i][j] /= head_el;
