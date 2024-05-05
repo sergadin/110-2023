@@ -14,11 +14,11 @@ static void check_word(long int k, char * buf, char *str){
     int have_word = -1, j = 0; /*индикатор наличия слов после слов-инструкций (-1 - нет, 0 - найдено хотя бы одно значение, 
     1 - окончание считывания), порядковый индекс*/
     for (int i = k; i < (strlen(buf) - 1); i++){
-            if (((buf[i] == ' ') || (buf[i] == '(') || (buf[i]=='\n') || (i == (strlen(buf) - 2))) && (have_word == 0)){
+            if (((buf[i] == ' ') || (buf[i] == '(') || (buf[i]=='\n') || (i == (strlen(buf) - 2)) || (buf[i] == '\0')) && (have_word == 0)){
                 have_word = 1;
                 strncpy(str, buf + i - j, j);
             }
-		    if ((buf[i] != ' ')&&(buf[i] != '\n')&&(have_word < 1)){
+		    if ((buf[i] != ' ')&&(buf[i] != '\n')&&(buf[i] != '\0')&&(have_word < 1)){
                 have_word = 0;
                 j++;
 		    }
@@ -37,89 +37,84 @@ static void check_word(long int k, char * buf, char *str){
  * #ifdef - #else - #endif. На вход подается рабочий код без синтаксических и логических ошибок (Если есть #ifdef или #else, то обязательно
  *                                                                                                                      прописан и #endif)
  */
-int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error *err){
-    int t = 0, m = 0, /*len1=0, len2=0,*/ written = 0, if_ch = 0, el_ch = 0; /*количество define, количество сохраненных строк, индикатор ввода
+int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
+    size_t len = 1024;
+    ssize_t n_bytes = 0;
+    int t = 0, k = 0, /*len1=0, len2=0,*/ written = 0, if_ch = 0, el_ch = 0; /*количество define, количество сохраненных строк, индикатор ввода
     строки в итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его),
                                                           индикатор #else - (аналогично)*/
     char define[] = "#define", *istr; /*строка #define, первый элемент текущего макроса в строке*/
     char hash1[] = "#ifdef", hash2[] = "#else", hash3[] = "#endif", *istr1,*istr2, *istr3; /*строки #ifdef, #else, #endif, индексы их первых 
     элементов*/
-    char *str = NULL; //фрагмент текущей строки для сравнения.
+    char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения.
     char ** str_arr = NULL; //словарь макросов после define
     *err = NA_OK;
     if (line == 0){
     	*err = FILE_WR;
     	return -1;
     }
-    str_arr = (char **)malloc(sizeof(char*)*line);
+    buf = (char *)calloc(sizeof(char), 1024);
+    if (buf == NULL){
+            printf("Оперативная память не выделена\n");
+            *err = NA_MEMORY_ERR;
+            return -1;
+        }
+    str_arr = (char **)calloc(sizeof(char*),line);
     if (str_arr == NULL){
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
+            free(buf);
             return -1;
         }
-    for (int i = 0; i < line; i++){
-    	str_arr[i] = (char *)malloc(sizeof(char)*line);
-    	if (str_arr[i] == NULL){
-            printf("Оперативная память не выделена\n");
+    while ((n_bytes = getline(&buf, &len, f))!=-1){
+        
+        str_arr[k] = (char *)calloc(sizeof(char),n_bytes);
+    	if (str_arr[k] == NULL){
+            printf("Оперативная память не выделена%d - 1\n", k);
+            printf("%ld - mem\n", n_bytes);
             *err = NA_MEMORY_ERR;
-		for (int j = 0; j < i; j++){
+		for (int j = 0; j < k; j++){
 		    	free(str_arr[j]);
 		    }
 		    free(str_arr);
+            free(buf);
             return -1;
         }
-    }
-    for (int k = 0; k < line; k++){
-    	str = (char *)malloc(sizeof(char)*256);
+    	str = (char *)calloc(sizeof(char),n_bytes);
     	if (str == NULL){
-            printf("Оперативная память не выделена\n");
+            printf("Оперативная память не выделена%d - 2\n", k);
             *err = NA_MEMORY_ERR;
-		for (int i = 0; i < line; i++){
+		for (int i = 0; i < k; i++){
 		    	free(str_arr[i]);
 		    }
+            free(buf);
 		    free(str_arr);
             return -1;
-        }
-        //str[0] = '-'; 
-        //printf("%ld - strlen, %s\n", strlen(str), str);
+        } 
 
-        written = 0;
-        istr = strstr(code_txt[k], define);
+      written = 0;
+        istr = strstr(buf, define);
         if (istr != NULL){
-            printf("Seeked word on position - %ld. Line - %d\n", istr - code_txt[k], k + 1);
-            check_word(istr - code_txt[k] + strlen(define), code_txt[k], str_arr[t]);
+            printf("Seeked word on position - %ld. Line - %d\n", istr - buf, k + 1);
+            check_word(istr - buf + strlen(define), buf, str_arr[t]);
             t++;
-        }
-            istr1 = strstr(code_txt[k], hash1);
+        }	
+            istr1 = strstr(buf, hash1);
             if(istr1 != NULL){
-                printf("Seeked condition_1 on position - %ld. Line - %d\n", istr1 - code_txt[k], k+1);
-                check_word(istr1 - code_txt[k] + strlen(hash1), code_txt[k], str);
+                printf("Seeked condition_1 on position - %ld. Line - %d\n", istr1 - buf, k+1);
+                check_word(istr1 - buf + strlen(hash1), buf, str);
                 if_ch = -1;
                 for (int k = 0; k < t; k++){
-                /*len1 = strlen(str);
-                len2 = strlen(str_arr[k]);
-                if (len1!=len2){
-                	continue;
-                }else{
-                	for (int p = 0; p<len1; p++){
-                		if (str_arr[k][p]!=str[p]){
-                			if_ch = -1;
-                			break;
-                		}else{
-                			if_ch = 1;
-                		}
-                	}
-                }*/ 
-			if (strcmp(str_arr[k], str) == 0){
+                	if (strcmp(str_arr[k], str) == 0){
 	                        if_ch = 1;
                     }
                 }
                 
                 written = 1;
             }
-            istr2 = strstr(code_txt[k], hash2);
+            istr2 = strstr(buf, hash2);
             if (istr2 != NULL){
-                printf("Seeked condition_2 on position - %ld. Line - %d\n", istr2 - code_txt[k], k + 1);
+                printf("Seeked condition_2 on position - %ld. Line - %d\n", istr2 - buf, k + 1);
                 if (if_ch == 1){
                     el_ch = -1;
                 }else if (if_ch == -1){
@@ -130,9 +125,9 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
                 written = 1;
             }
 
-            istr3 = strstr(code_txt[k], hash3);
+            istr3 = strstr(buf, hash3);
             if (istr3 != NULL){
-                printf("Seeked condition_3 on position - %ld. Line - %d\n", istr3 - code_txt[k], k + 1);
+                printf("Seeked condition_3 on position - %ld. Line - %d\n", istr3 - buf, k + 1);
                 el_ch = 0;
                 if_ch = 0;
                 written = 1;
@@ -141,14 +136,15 @@ int Condit_compil( char (*code_txt)[256], char (*answ_txt)[256], int line, Error
             written = 1;
        }
         if (written == 0){
-        	strcpy(answ_txt[m], code_txt[k]);
-        	m++;
+		fprintf(fout, "%s", buf);
         }
         free(str);
+        k++;
     }
    for (int i = 0; i < line; i++){
     	free(str_arr[i]);
     }
     free(str_arr);
-    return m;
+    free(buf);
+    return 0;
 }

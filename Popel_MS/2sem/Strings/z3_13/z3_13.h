@@ -23,4 +23,4 @@ typedef enum {
  * Если возникают ошибки при открытии файла или при работе с ним, возвращается код ошибки FILE_WR и значение -1.
  */
 
-int Condit_compil(char (*code_txt)[256], char (*answ_txt)[256], int line, Error *err);
+int Condit_compil(FILE *f, FILE *fout, int line, Error *err);
