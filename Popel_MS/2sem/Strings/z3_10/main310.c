@@ -5,7 +5,7 @@
 #include <string.h>
 typedef struct{  /* новая переменаая-структура для проведения теста */
     const char * file_name; //название файла, содержащего редактируемая строка.
-	Error err; //адрес ошибки
+    Error err; //адрес ошибки
 } TestCase;
 
 
@@ -20,7 +20,7 @@ int main(void){
     	TestCase tests[] = {{"str2.txt", NA_OK},
 		{"str3.txt", NA_OK},
 		{"str1.txt", NA_OK},
-    	{"str4.txt", NA_OK}};
+    		{"str4.txt", NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
@@ -31,7 +31,7 @@ int main(void){
 			err = FILE_WR;
 			goto terminate;
 		}
-		buf = (char*)malloc(1024*sizeof(char));
+		buf = (char*)malloc(1024 * sizeof(char));
 		if (buf == NULL){
 			printf("Оперативная память не выделена\n");
 			err = NA_MEMORY_ERR;
@@ -39,7 +39,7 @@ int main(void){
 			goto terminate;
 			}
 
-		if (getline(&buf, &len, f)==-1){
+		if (getline(&buf, &len, f) == -1){
 			err = FILE_WR;
 			fclose(f);
 			free(buf);
@@ -52,7 +52,7 @@ int main(void){
 		free(buf);
     		rewind(f);
 
-		strs = (char **)calloc(line,sizeof(char*));
+		strs = (char **)calloc(line, sizeof(char*));
 		if (strs == NULL){
 			printf("Оперативная память не выделена\n");
 			err = NA_MEMORY_ERR;
