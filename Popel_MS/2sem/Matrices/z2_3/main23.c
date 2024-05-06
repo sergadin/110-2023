@@ -5,7 +5,7 @@
 typedef struct{  /* новая переменаая-структура для проведения теста */
     const char * file_name; //название файла, содержащего элементы матрицы
     int n; //порядок матрицы
-	Error err; //адрес ошибки
+    Error err; //адрес ошибки
 } TestCase;
 
 
@@ -13,14 +13,14 @@ typedef struct{  /* новая переменаая-структура для п
 int main(void){
     FILE *f;
     Error err;
-	int res = 0;
+    int res = 0;
     double **matr = NULL, eps = 1e-5;
 	
     TestCase tests[] = {{"matr1.txt", 1, NA_OK},
 	{"matr2.txt", 2, NA_OK},
 	{"matr3.txt", 3, NA_OK},
 	{"matr4.txt", 0, NA_ZERO_MATR},
-    {"matr5.txt", 6, NA_OK},
+        {"matr5.txt", 6, NA_OK},
 	{"matr6.txt", 2, NA_SINGLE_MATR}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
@@ -85,16 +85,15 @@ int main(void){
 				printf("Тест №%d не пройден.\n", n + 1);
 			}else if(err == NA_OK){
 				printf("Тест №%d пройден. Обратная матрица:\n\n", n + 1);
-	            for (int i = 0; i < tests[n].n; i++){
-	                for (int j = tests[n].n; j < (2 * tests[n].n); j++){
-	                    printf("%lf ", matr[i][j]);
-	                }
-	                printf("\n");
-	                free(matr[i]);
-	            }
-	            free(matr);
-	            
-	            printf("\n");
+	            		for (int i = 0; i < tests[n].n; i++){
+	                		for (int j = tests[n].n; j < (2 * tests[n].n); j++){
+	                    			printf("%lf ", matr[i][j]);
+	                		}
+	                		printf("\n");
+	                		free(matr[i]);
+	            		}
+	            		free(matr);
+	        		printf("\n");
 			}else{
 				printf("Тест №%d успешно пройден.\n", n + 1);
 			}
