@@ -39,6 +39,6 @@ double calcInt(RRFun f, double a, double b, double eps, int* i_num, error* err) 
 		}
 		
 	}
-	printf("integral = %lf\n", cur_integral);
+	printf("Интеграл = %lf\n", cur_integral);
 	return cur_integral;
 }
