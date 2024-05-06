@@ -29,9 +29,9 @@ int Delete_sub_str(char **strs, FILE *f, FILE* fout, int line, Error *err){
 		*err = NA_MEMORY_ERR;
 		for (int k = 0; k < j; k ++){
 			free(strs[k]);
-		    }
+		}
 	    return -1;
-	    }
+	}
     }
 
     while(!feof(f)){
@@ -63,14 +63,14 @@ int Delete_sub_str(char **strs, FILE *f, FILE* fout, int line, Error *err){
         }
 
         if (not_write == 0){
-        fprintf(fout, "%s", strs[i]);
+            fprintf(fout, "%s", strs[i]);
         }
         i++;
     }
 
     for (int j = 0; j < line; j++){
         free(strs[j]);
-	}
+    }
 
     free(strs);
     return 0;
