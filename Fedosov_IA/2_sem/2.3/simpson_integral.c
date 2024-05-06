@@ -17,22 +17,23 @@ double simpson_integral(double a, double b, double (*f)(double), double eps, Err
     *error = OK;
     
     for(int k = 0; k < LIMIT; k ++) { 
-        h = (b-a) / N;
+        h = (b - a) / N;
         sum1 = sum2 = -(f(a) + f(b));
         index1 = index2 = 4.;
         i = 0;
         for(x = a; x <= b + h / 2.; x += h) {
-            sum1 +=  (index1 = 6.-index1) * (func = f(x));
-            if (i++%2 == 0) {
-                sum2 += (index2 = 6.-index2) * func;
+            func = (*f)(x);
+            sum1 +=  (index1 = 6.-index1) * func;
+            if (i++ % 2 == 0) {
+                sum2 += (index2 = 6. -index2) * func;
             };
         };
         
         //Тут проверяется, что увеленичение отрезков в 2 раза приведет к изменению значения интеграла меньше, чем на eps, в таком случае вычисления считаются точными
-        if (fabs((sum1-2. * sum2) / sum1) <= eps) {
-        	return (h * sum1)/3. + h * (2. * sum2 - sum1) / 45.;
+        if (fabs(sum1 - 2 * sum2) <= eps) {
+        	return (h * sum1) / 3. + h * (2. * sum2 - sum1) / 45.;
         } else { 
-        	N*=2.;
+        	N *= 2.;
         }
 
     };

@@ -23,5 +23,4 @@ int root_chords(double* x, double a, double b, double (*function)(double), doubl
 /*
 if sign(f(a)) = 0, sign(f(b)) = 0, sign(f(a)) = sign(f(b)) the iteration method will not start
 if sign(f(a)) = 0 or sign(f(b)) = 0, the required root is returned (one if there are two of them)
-if sign(f(a)) = sign(f(b)) the method is not applicable
 */

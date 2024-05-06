@@ -5,59 +5,73 @@
 #include <string.h>
 typedef struct{  /* новая переменаая-структура для проведения теста */
     const char * file_name; //название файла, содержащего редактируемая строка.
-    int n; //длина передаваемой строки
-	Error err; //адрес ошибки
+    Error err; //адрес ошибки
 } TestCase;
 
 
 int main(void){
-	FILE *fout, *fstr;
-	Error err;
-	char *strs = NULL; //строка из переданного файла
+	FILE *fout, *f;
+	Error err; 
+	int line = 1, res = 0; //количество строк, результат
+	size_t len = 1024; 
+	char **strs = NULL, *buf = NULL; //массив строк, текущая строка
 
-    
-    	TestCase tests[] = {{"str2.txt", 3, NA_OK},
-	{"str3.txt", 10, NA_OK},
-	{"str1.txt", 15, NA_OK},
-    	{"str4.txt", 14, NA_OK}};
+    	err = NA_OK;
+    	TestCase tests[] = {{"str2.txt", NA_OK},
+		{"str3.txt", NA_OK},
+		{"str1.txt", NA_OK},
+    		{"str4.txt", NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++){
 
-		strs = malloc(((tests[n].n) + 1)*sizeof(char));
+		f = fopen(tests[n].file_name, "r");
+		if (f == NULL){
+			printf("Файл не открывается\n");
+			err = FILE_WR;
+			goto terminate;
+		}
+		buf = (char*)malloc(1024 * sizeof(char));
+		if (buf == NULL){
+			printf("Оперативная память не выделена\n");
+			err = NA_MEMORY_ERR;
+			fclose(f);
+			goto terminate;
+			}
+
+		if (getline(&buf, &len, f) == -1){
+			err = FILE_WR;
+			fclose(f);
+			free(buf);
+			goto terminate;
+		}
+		while(!feof(f)){
+			line++;
+			getline(&buf, &len, f);
+    		}
+		free(buf);
+    		rewind(f);
+
+		strs = (char **)calloc(line, sizeof(char*));
 		if (strs == NULL){
 			printf("Оперативная память не выделена\n");
 			err = NA_MEMORY_ERR;
+			fclose(f);
 			goto terminate;
-		}
+			}
 
-		fstr = fopen(tests[n].file_name, "r");
-		if (fstr == NULL){
+		fout = fopen("str_correct.txt", "w");
+
+		if (fout == NULL){
 			printf("Файл не открывается\n");
 			err = FILE_WR;
 			free(strs);
+			fclose(f);
 			goto terminate;
 		}
-
-		if (fscanf(fstr, "%s", strs) != 1){
-			printf("В файле недостаточно значений\n");
-			err = FILE_WR;
-			fclose(fstr);
-			free(strs);
-			goto terminate;
-		}
-
-		fclose(fstr);
-	        fout = fopen("str_correct.txt", "w");
 	
-	        if (fout == NULL){
-	            printf("Файл не открывается\n");
-				free(strs);
-	            goto terminate;
-	        }
-	
-			Delete_sub_str(strs, tests[n].n, &err);
-			fprintf(fout, "%s\n", strs);
+			res = Delete_sub_str(strs, f, fout, line, &err);
+			fclose(f);
 			fclose(fout);
 			terminate:
 			
@@ -68,7 +82,6 @@ int main(void){
 			}else{
 				printf("Тест №%d успешно пройден.\n", n + 1);
 			}
-			free(strs);
-		}	
+	}	
 	return 0;	
 }
