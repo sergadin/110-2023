@@ -11,14 +11,12 @@ static double* make_mat(const char *file_name, int* mat_size, Error *error){
   FILE* data = fopen(file_name, "r");
   if (data == NULL) {
     *error = EMPTY_FILE;
-    fclose(file_name);
-    return;
+    return 0;
   }
 
   if (fscanf(data, "%d", &size) != 1) {
     *error = EMPTY_FILE;
-    fclose(file_name);
-    return;
+    return 0;
   }
 
   *mat_size = size; 
@@ -26,7 +24,6 @@ static double* make_mat(const char *file_name, int* mat_size, Error *error){
   for (int i = 0; i < size * size; i ++) {
     fscanf(data, "%lf", &mat[i]);
   }
-  fclose(file_name);
   return mat;
 }
 
@@ -107,14 +104,14 @@ double* inverse(const char* file, Error* error) {
   int m;
   double* mat = make_mat(file, &m, error);
   if (*error == EMPTY_FILE) {
-    return;
+    return 0;
   }
 
   double* rez = (double*)malloc(m * m * sizeof(double));
   double det = determinant(mat, m); // находим определитель исходной матрицы
   if (fabs(det) < EPS) {
     *error = NO_INVERSE;
-    return;
+    return 0;
   }
 
   for (int i = 0; i < m; i++)
