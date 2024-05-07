@@ -4,7 +4,7 @@ interpolation.o: interpolation.c interpolation.h
 	gcc -c interpolation.c 
 
 main.o: main.c interpolation.h 
-	gcc -c interpolation.c
+	gcc -c main.c
 	
 run: a.out
 	./a.out
