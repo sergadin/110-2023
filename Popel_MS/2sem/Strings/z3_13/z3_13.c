@@ -48,6 +48,10 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                                                                                                                 первых элементов*/
     char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения, текущая строка.
     char ** str_arr = NULL; //словарь макросов после define
+
+
+
+	
     *err = NA_OK;
     if (line == 0){
     	*err = FILE_WR;
