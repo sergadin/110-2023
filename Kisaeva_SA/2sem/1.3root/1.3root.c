@@ -28,7 +28,7 @@ double chord_method(func f, double a, double b, double eps, error *err, int *kol
 		return b;
 	}
 	
-	while((fabs(fx) > eps) && (iters < limit_iters)){
+	while((fabs(a-b) > eps) && (limit_iters >= 0)){
 		c = a - ((fx * (b-a)) / (fb - fa)) ;
 		fc = (*f)(c);
 		if ((fa*fc) < 0){
@@ -41,13 +41,13 @@ double chord_method(func f, double a, double b, double eps, error *err, int *kol
 		}
 		x = c;
 		fx = fc;
+		if(fabs(fc)<eps){
+			break;
+		}
 		iters++;
 		*kol_iters = iters;
 		limit_iters--;
-		if (limit_iters < 0) {
-			*err = MORE_THAN_LIMIT;
-			return -1;
 		}
-	}
 	return x;
 }
+/////
