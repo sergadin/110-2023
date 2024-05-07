@@ -113,8 +113,8 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                 printf("Seeked condition_1 on position - %ld. Line - %d\n", istr1 - buf, k+1);
                 check_word(istr1 - buf + strlen(hash1), buf, str);
                 if_ch = -1;
-                for (int k = 0; k < t; k++){
-                	if (strcmp(str_arr[k], str) == 0){
+                for (int p = 0;  < t; p++){
+                	if (strcmp(str_arr[p], str) == 0){
 	                        if_ch = 1;
                     }
                 }
