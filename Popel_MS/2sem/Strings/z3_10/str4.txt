@@ -1,7 +1,7 @@
 Testing text with some brackets
 A lot of /* brackets */
 In different states /* Do you think
-will it be working cirrectly?
+it will work correctly?
 Or not? */ So,
-I think, it /*MUST*/ doing all /*tasks*/ correctly
+I think, it /*SHOULD*/ do all /*tasks*/ correctly
 That's all */
