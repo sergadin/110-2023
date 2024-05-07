@@ -65,7 +65,7 @@ double Integrate(RRFun f, double a, double b, double epsilon, Error *error_code)
 	Inew = integrate_n(f, a, b, n);
 	n = 2048;
 
-	while (fabs(Inew - I) > (max(Inew, I, 1.0) * epsilon))
+	while ((fabs(Inew - I) - (max(Inew, I, 1.0) * epsilon)) > 0.0000001)
 	{
 		I = integrate_n(f, a, b, n);
 		Inew = I;
