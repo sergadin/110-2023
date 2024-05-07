@@ -7,6 +7,34 @@ typedef struct
     int size;
 } TestCase;
 
+static double *make_mat(const char *file_name, Error *error)
+{
+    double *mat;
+    int size;
+    FILE *data = fopen(file_name, "r");
+    if (data == NULL)
+    {
+        *error = EMPTY_FILE;
+        return 0;
+    }
+
+    if (fscanf(data, "%d", &size) != 1)
+    {
+        *error = EMPTY_FILE;
+        fclose(data);
+        return 0;
+    }
+
+    mat = (double *)malloc(size * size * sizeof(double));
+    for (int i = 0; i < size * size; i++)
+    {
+        fscanf(data, "%lf", &mat[i]);
+    }
+    *error = OK;
+    fclose(data);
+    return mat;
+}
+
 int main(void)
 {
     Error error;
@@ -19,10 +47,12 @@ int main(void)
         {"data6.txt", 3}};
 
     double *rez;
+    double *mat;
 
     for (int i = 0; i < 6; i++)
     {
-        rez = inverse(tests[i].file, &error);
+        mat = make_mat(tests[i].file, &error);
+        rez = inverse(mat, tests[i].size, &error);
         if (error == NO_INVERSE)
         {
             printf("В тесте %d обратной матрицы не существует тк определитель исходной равен 0\n", i + 1);

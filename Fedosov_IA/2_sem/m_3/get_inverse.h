@@ -8,7 +8,7 @@ typedef enum {
     EMPTY_FILE,     //Файл с входными данными пуст
 }Error;
 
-double* inverse(const char* file, Error *error);
+double* inverse(double* mat, int size, Error *error);
 /*
 Функция вычисляет обратную матрицу 
 

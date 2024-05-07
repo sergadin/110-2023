@@ -4,34 +4,6 @@
 #include "get_inverse.h"
 #define EPS 1e-8
 
-// функция создает матрицу по входному файлу
-static double *make_mat(const char *file_name, int *mat_size, Error *error)
-{
-  double *mat;
-  int size;
-  FILE *data = fopen(file_name, "r");
-  if (data == NULL)
-  {
-    *error = EMPTY_FILE;
-    return 0;
-  }
-
-  if (fscanf(data, "%d", &size) != 1)
-  {
-    *error = EMPTY_FILE;
-    fclose(data);
-    return 0;
-  }
-
-  *mat_size = size;
-  mat = (double *)malloc(size * size * sizeof(double));
-  for (int i = 0; i < size * size; i++)
-  {
-    fscanf(data, "%lf", &mat[i]);
-  }
-  fclose(data);
-  return mat;
-}
 
 // функция транспонирования матрицы
 static double *transponate(double *mas, int rows, int cols)
@@ -85,16 +57,16 @@ static double determinant(double *mas, int m)
   double d = 0;
   k = 1; //(-1) в степени i
 
-  if (m < 1)
+  /*if (m < 1)
   {
     printf("Определитель вычислить невозможно!");
     return 0;
   }
-
+  */
   if (m == 1)
   {
     d = mas[0];
-    free(p);
+    // free(p);
     return (d);
   }
 
@@ -119,12 +91,11 @@ static double determinant(double *mas, int m)
   return (d);
 }
 
-double *inverse(const char *file, Error *error)
+double *inverse(double* mat, int size, Error *error)
 {
   double *temp;
   double *temp2;
-  int m;
-  double *mat = make_mat(file, &m, error);
+  int m = size;
   if (*error == EMPTY_FILE)
   {
     free(mat);
