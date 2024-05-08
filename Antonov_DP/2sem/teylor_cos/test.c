@@ -12,7 +12,7 @@ int main(void)
 {
 	struct testcase tests[] = {
 		{M_PI / 4, 0.00001, cos(M_PI / 4)},
-		{M_PI / 3, 0.00001, cos(M_PI / 3)},
+		{5 * (M_PI / 3) + 1000000 * M_PI, 0.00001, cos(M_PI / 3)},
 		{M_PI / 2, 0.00001, cos(M_PI / 2)}
 	};
 	double answ;

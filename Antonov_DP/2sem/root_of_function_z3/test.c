@@ -40,6 +40,7 @@ int main(void)
 	for (int i = 0; i < 3; i++){
 		err = OK;
 		answ = find_root(tests[i].f, tests[i].a, tests[i].b, tests[i].eps, &err);
+		printf("%lf \n", answ);
 		if ((fabs(answ - tests[i].answer) < tests[i].eps) && (tests[i].exit_err == err))
 		{
 			printf("test correct \n");
