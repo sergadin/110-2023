@@ -2,6 +2,21 @@
 #include <math.h>
 #include "find_root.h"
 
+static int compRR(double a, double b, double eps);
+
+static int compRR(double a, double b, double eps)
+{
+	if((a > 100000) || (b > 100000))
+	{
+		if (fabs(a - b) < eps * (a + b)) { return 0; }
+		if (a > b) { return 1; }
+		return -1;
+	}
+	if (fabs(a - b) < eps) { return 0; }
+	if (a > b) { return 1; }
+	return -1;
+}
+
 
 double find_root(RRFun f, double a, double b, double eps, ERR *err)
 {
@@ -29,13 +44,13 @@ double find_root(RRFun f, double a, double b, double eps, ERR *err)
 	if (fabs(f_focus_point) < eps) {return a;}
 	if (fabs(f_prev) < eps) {return b;}
 	curr = prev - (f_prev / (f_prev - f_focus_point)) * (prev - focus_point);
-	while ((fabs(curr - prev) > eps) || (count < 1000000))
+	while ((compRR(curr, prev, eps) != 0) && (count < 1000000))
 	{
 		prev = curr;
 		f_prev = f(prev);
 		curr = prev - (f_prev / (f_prev - f_focus_point)) * (prev - focus_point);
 		count++;
 	}
-	if (count == 1000000) { printf ("ответ найден, но не с такой точностью"); }
+	if (count == 1000000) { printf ("ответ найден, но не с такой точностью \n"); }
 	return curr;
 }
