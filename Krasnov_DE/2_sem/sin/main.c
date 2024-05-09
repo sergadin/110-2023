@@ -1,35 +1,42 @@
 #include "sin.h"
 
-
-typedef struct{     //create the test structure
+typedef struct{ // create a test structure
     double x;
-    double eps;
     double res;
+    error err_code;
 }dataSet;
 
 int main(void)
 {
     double result;
-    const double pi = 3.1415926535, eps = 1e-6;
+    double eps = 1e-6;
+    error err;
     int test_num;
-    dataSet tests[]={   //create various tests
-        {pi/2,eps,1.000000},
-        {1,eps,0.841471},
-        {2,eps,0.909297},
-        {3,eps,0.141123},
+    dataSet tests[]={
+        {M_PI/2,1.000000,OK},   //create a custom set of tests
+        {1,0.841471,OK},
+        {2,0.909297,OK},
+        {3*M_PI,0.141123,INCORRECT_ARG},
     };
 
-    test_num = sizeof(tests) / sizeof(tests[0]);    //count the number of tests
+    test_num = sizeof(tests) / sizeof(tests[0]); //count the number of tests
 
-    for (int i = 0; i < test_num; i ++) {   //we start the loop with functions that calculate the sine of a given angle
-		result = my_sin(tests[i].x, tests[i].eps);
-		if (fabs(result - tests[i].res) < eps) {
-			printf("test %d passed successfully, sin(%lf) = %lf\n", i + 1, tests[i].x, result);
-		}
-		else {
-			printf("test %d failed, the value of the resulting function %lf differs from the value in the test %lf\n", i + 1, result,tests[i].res);
-		}
-	}
+    for (int i = 0; i < test_num; i ++) {
+		result = my_sin(tests[i].x, eps, &err); //
+		if(tests[i].err_code != err){
+            printf("test %d failed, the expected result of the algorithm was not obtained \n",i+1);
+	    }
+	    else if(err == INCORRECT_ARG){
+	        printf("the test %d passed, the expected error result was obtained \n",i+1);
+	    }
+	    else if(fabs(result-tests[i].res)>eps && err == OK){
+            printf("test %d failed, %lf and %lf values ​​are different \n", i+1, result, tests[i].res);
+	    }
+	    else{
+            printf("test %d passed, %lf and %lf values ​​are the same\n",i+1, result, tests[i].res);
+	    }
+
+    }
 
 	return 0;
 }
