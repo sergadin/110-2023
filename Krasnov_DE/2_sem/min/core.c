@@ -20,14 +20,16 @@ double min_search(RRFun *f, double a, double b, double eps, error *err){
             b = d;
             d = c;
             c = a + psi * (d-a);
+            f_d=f_c;
+            f_c=(*f)(c);
         }
         else{
             a = c;
             c = d;
             d = b - psi * (b-c);
+            f_c=f_d;
+            f_d=(*f)(d);
         }
-        f_c = (*f)(c);
-        f_d = (*f)(d);
         limit = limit - 1;
         if(limit==0){
             *err = LIMIT;
