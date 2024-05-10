@@ -4,10 +4,11 @@
 #include "log.h"
 
 double taylor_log(double x, double eps, Error *err) {
+	double result, term;
+	int sgn, limit;
 	if (x <= 0 || x == 1)
 	{
 		*err = OGRAN;
-		printf("х должно быть больше 0 и не равно 1\n");
 		return -1;
 		*err = OK;
 	}
@@ -17,13 +18,19 @@ double taylor_log(double x, double eps, Error *err) {
 		return -1;
 	}
 
-	double sum = 0;
-	int n = 1;
-	double temp = 1;
-	while (fabs(temp) > eps) {
-		temp = pow(-1, n + 1) * pow(x - 1, n) / n;
-		sum += temp;
-		n++;
+	result = 0;
+	term = 1;
+	sgn = -1;
+	limit = 10000;
+
+	while (fabs(term) > eps && (limit > 0)) {
+		term *= x / sgn;
+		result += term;
+		sgn *= -1;
 	}
-	return sum;
+	if (limit == 0){
+		*err = NO_LIMIT;
+		return -1;
+	}
+	return result;
 }
