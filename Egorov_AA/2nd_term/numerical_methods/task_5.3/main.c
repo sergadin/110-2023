@@ -12,18 +12,18 @@ typedef struct {          // Структура тестов:
 
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
-	//FILE* gnuplotPipe;
+	FILE* gnuplotPipe;
 	for (int i = 0; i < n; i++)
 		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
 	for (int i = 0; i < m; i++)
 		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
-	//gnuplotPipe = popen("gnuplot -persist", "w");
-	//if (gnuplotPipe == NULL) {
-	//	printf("Ошибка запуска Gnuplot.\n");
-	//	return;
-	//}
-	//fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'data.txt' with points title\nset output\n", number);
-	//pclose(gnuplotPipe);
+	gnuplotPipe = popen("gnuplot -persist", "w");
+	if (gnuplotPipe == NULL) {
+		printf("Ошибка запуска Gnuplot.\n");
+		return;
+	}
+	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'out%d.txt' with points title\nset output\n", number, 2*number - 1);
+	pclose(gnuplotPipe);
 }
 
 int main(void) {
@@ -67,7 +67,7 @@ int main(void) {
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
 
-	for (int i = 0; i < 2; i++) {                                            // Тестирование
+	for (int i = 0; i < test_num; i++) {                                            // Тестирование
 		char filename1[32], filename2[32];
 		sprintf(filename1, "out%d.txt", 2 * (i + 1) - 1);
 		sprintf(filename2, "out%d.txt", 2 * (i + 1));
