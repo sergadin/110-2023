@@ -1,11 +1,15 @@
 #include "sin.h"
 
 
-double my_sin(double x, double eps){
+double my_sin(double x, double eps, error *err){
     double sin = x;
 	double next_term = x;
 	int power = 1;
 	int sign = -1;
+	if(x < -2*M_PI || x >2 * M_PI){ //checking that the angle lies on the segment [-2pi, 2pi]
+        *err=INCORRECT_ARG;
+        return -1;
+	}
 
 	while(fabs(next_term) > eps){
         next_term = sign * fabs(next_term) * x * x / ( (power+1) * (power+2) );
@@ -20,4 +24,4 @@ double my_sin(double x, double eps){
 }
 /*the function receives an input angle (x), the sine of which we must calculate using the Taylor series and the measurement accuracy (eps).
 First, the first element of the Taylor series is considered, which is equal to x itself.Next, the cycle counting sin is started using the Taylor series
-until the new element of the series is <=eps.
+until the new element of the series is <=eps.*/

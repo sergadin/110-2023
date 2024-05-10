@@ -1,9 +1,9 @@
 all: a.out run
 
-core.o: core.c sin.h
+core.o: core.c integral.h
 	gcc -c core.c
 
-main.o: main.c sin.h
+main.o: main.c integral.h
 	gcc -c main.c
 
 run: a.out

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 typedef struct{  /* новая переменаая-структура для проведения теста */
-    const char * file_name; //название файла, содержащего редактируемая строка.
+    	const char * file_name; //название файла, содержащего редактируемая строка.
 	Error err; //адрес ошибки
 } TestCase;
 
@@ -18,8 +18,8 @@ int main(void){
 
     	err = NA_OK;
     	TestCase tests[] = {{"str2.txt", NA_OK},
-		{"str3.txt", NA_OK},
-		{"str1.txt", NA_OK},
+	{"str3.txt", NA_OK},
+	{"str1.txt", NA_OK},
     	{"str4.txt", NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
@@ -38,7 +38,7 @@ int main(void){
 			err = NA_MEMORY_ERR;
 			fclose(f);
 			goto terminate;
-			}
+		}
 			
 		if (getline(&buf, &len, f) == -1){
 			err = FILE_WR;
