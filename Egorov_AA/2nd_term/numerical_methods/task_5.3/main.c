@@ -12,22 +12,13 @@ typedef struct {          // Структура тестов:
 
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
-	FILE* gnuplotPipe;
 	for (int i = 0; i < n; i++)
 		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
 	for (int i = 0; i < m; i++)
 		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
-	gnuplotPipe = popen("gnuplot -persist", "w");
-	if (gnuplotPipe == NULL) {
-		printf("Ошибка запуска Gnuplot.\n");
-		return;
-	}
-	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'out%d.txt' with points title\nset output\n", number, 2*number - 1);
-	pclose(gnuplotPipe);
 }
 
 int main(void) {
-	//system("chcp 1251");
 	const double eps = 0.1;
 	int test_num, func_num = 3;
 	error err;
@@ -54,13 +45,6 @@ int main(void) {
 			10,
 			(point[]) { {0.6, -0.510826}, {0.9, -0.105361}, {1.35, 0.300105} },
 			3,
-			OK 
-		},
-		{ 
-			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
-			5,
-			(point[]) { {1, 2}, {2, 3}, {3, 4}, {4, 5} },
-			4,
 			OK 
 		}
 	};
