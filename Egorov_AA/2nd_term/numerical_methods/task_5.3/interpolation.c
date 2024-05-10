@@ -10,6 +10,7 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 			if (p[i].x >= i_p[j].x)
 				break;
 		}
+		double x0 = points[i - 1].x, x1 = points[i].x, y0 = points[i - 1].y, y1 = points[i].y;
 
 		// Вычисление значения на отрезке с помощью кусочно-квадратичной интерполяции
 		if (i < n - 1) {
@@ -22,12 +23,12 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 			y2 = p[i - 1].y;
 		}
 
-		double L0 = ((i_p[j].x - p[i].x) * (i_p[j].x - x2)) / ((p[i - 1].x - p[i].x) * (p[i - 1].x - x2));
-		double L1 = ((i_p[j].x - p[i - 1].x) * (i_p[j].x - x2)) / ((p[i].x - p[i - 1].x) * (p[i].x - x2));
-		double L2 = ((i_p[j].x - p[i - 1].x) * (i_p[j].x - p[i].x)) / ((x2 - p[i - 1].x) * (x2 - p[i].x));
+		double L0 = ((x - x1) * (x - x2)) / ((x0 - x1) * (x0 - x2));
+		double L1 = ((x - x0) * (x - x2)) / ((x1 - x0) * (x1 - x2));
+		double L2 = ((x - x0) * (x - x1)) / ((x2 - x0) * (x2 - x1));
 
-		double result = p[i - 1].y * L0 + p[i].y * L1 + y2 * L2;
-
+		double result = y0 * L0 + y1 * L1 + y2 * L2;
+		
 		interp_y[j] = result;
 	}
 }
