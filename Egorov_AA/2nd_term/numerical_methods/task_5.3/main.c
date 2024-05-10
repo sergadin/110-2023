@@ -10,8 +10,8 @@ typedef struct {          // Структура тестов:
 	error err_code;
 } dataSet;
 
-void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, point* res, int number);
-void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, point* res, int number) {
+void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
+void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
 	FILE* gnuplotPipe;
 	for (int i = 0; i < n; i++)
 		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
@@ -20,9 +20,10 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 	gnuplotPipe = popen("gnuplot -persist", "w");
 	if (gnuplotPipe == NULL) {
 		printf("Ошибка запуска Gnuplot.\n");
-		return 1;
+		return;
 	}
 	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'data.txt' with points title\nset output\n", number);
+	pclose(gnuplotPipe);
 }
 
 int main(void) {
@@ -90,9 +91,11 @@ int main(void) {
 		}
 		else {
 			printf("%d-й тест пройден.\n", i + 1);
-			write_points(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
+			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
 		}
 		theend:
+		fclose(out1);
+		fclose(out2);
 		free(res);
 	}
 
