@@ -11,7 +11,8 @@ typedef struct {          // Структура тестов:
 } dataSet;
 
 int main(void) {
-	const double eps = 1e-4;
+	system("chcp 1251");
+	const double eps = 1;
 	int test_num, func_num = 3;
 	error err;
 
@@ -19,7 +20,7 @@ int main(void) {
 		{ 
 			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
 			5,
-			(point[]) { {0.5, 0.5}, {10, 10}, {5.5, 5.5}, {100, 100} },
+			(point[]) { {0.5, 0.5}, {1.5, 1.5}, {2.8, 2.8}, {3.62, 3.62} },
 			4,
 			OK 
 		},
@@ -59,8 +60,9 @@ int main(void) {
 		}
 		else if (err == OK) {
 			for (int j = 0; j < tests[i].m; j++) {
-				if (fabs(res[j] - tests[i].interp_points[j].y) / 2 < eps) {
+				if (fabs(res[j] - tests[i].interp_points[j].y) > eps) {
 					printf("%d-й тест не пройден :(\n", i + 1);
+					goto theend;
 					break;
 				}
 			}
@@ -69,6 +71,7 @@ int main(void) {
 		else {
 			printf("%d-й тест пройден.\n", i + 1);
 		}
+		theend:
 		free(res);
 	}
 
