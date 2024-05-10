@@ -1,5 +1,5 @@
 set terminal pngcairo enhanced font "arial,10" fontscale 1.0 size 800, 600
-set output "plot3.png"
+set output "pic3.png"
 set title "Сравнение двух функций"
 set xlabel "X"
 set ylabel "Y"
