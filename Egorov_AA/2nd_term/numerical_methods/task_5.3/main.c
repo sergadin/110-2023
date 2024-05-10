@@ -3,12 +3,13 @@
 #include <stdlib.h>
 
 typedef struct {          // Структура тестов:
-	point* points;
-	size_t n;
-	point* interp_points;
-	size_t m;
-	error err_code;
+	point* points;              // Массив определенных точек
+	size_t n;                   // Количество этих точек
+	point* interp_points;       // Точные точки функции(x используется для поиска прибл. значения, y для проверки в тесте)
+	size_t m;                   // Количество этих точек
+	error err_code;             // Код ошибки
 } dataSet;
+
 
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
@@ -17,6 +18,7 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 	for (int i = 0; i < m; i++)
 		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
 }
+
 
 int main(void) {
 	const double eps = 0.1;

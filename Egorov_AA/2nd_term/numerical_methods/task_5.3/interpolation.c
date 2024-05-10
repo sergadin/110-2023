@@ -24,7 +24,7 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 			y2 = p[i - 1].y;
 		}
 
-		double L0 = ((x - x1) * (x - x2)) / ((x0 - x1) * (x0 - x2));
+		double L0 = ((x - x1) * (x - x2)) / ((x0 - x1) * (x0 - x2));     // Весовые коэффиценты
 		double L1 = ((x - x0) * (x - x2)) / ((x1 - x0) * (x1 - x2));
 		double L2 = ((x - x0) * (x - x1)) / ((x2 - x0) * (x2 - x1));
 
