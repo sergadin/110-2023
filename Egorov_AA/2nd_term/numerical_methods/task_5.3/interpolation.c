@@ -10,6 +10,7 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 			if (p[i].x >= i_p[j].x)
 				break;
 		}
+		
 		double x0 = points[i - 1].x, x1 = points[i].x, y0 = points[i - 1].y, y1 = points[i].y;
 
 		// Вычисление значения на отрезке с помощью кусочно-квадратичной интерполяции
