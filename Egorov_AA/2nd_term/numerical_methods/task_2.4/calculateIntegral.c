@@ -29,7 +29,7 @@ double calcInt(RRFun f, double a, double b, double eps, int* i_num, error* err) 
 		for (int i = 0; i < n; i++)
 			cur_integral += gaussQuad(f, a + i * h, a + (i + 1) * h);
 
-		if (fabs(cur_integral - prev_integral) < eps)
+		if ((fabs(cur_integral - prev_integral) / fmax(fabs(cur_integral), fabs(prev_integral))) < eps)
 			break;
 
 		limit--;
