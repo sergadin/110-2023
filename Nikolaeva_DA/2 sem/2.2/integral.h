@@ -4,6 +4,7 @@
 typedef double (*RRFun)(double);
 typedef enum {
 	OK = 0,
+	NA_LIMIT,
 	NO_INTER
 } Error;
 
@@ -18,6 +19,7 @@ typedef enum {
  * Вывод:
  * Если код выполнен без ошибок, выводится код ошибки OK и значение интеграла.
  * Если порядок границ отрезка введены неправильно, выводится код ошибки NO_INTER.
+ * Если превышен лимит операций то мы получаем  NO_INTER.
  */
 
 double integral(RRFun f, double a, double b, double eps, Error *err);
