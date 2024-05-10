@@ -1,6 +1,6 @@
 all: a.out run
 
-fillValueArray.o: findMinValue.c findMinValue.h
+findMinValue.o: findMinValue.c findMinValue.h
 	gcc -c findMinValue.c 
 
 main.o: main.c findMinValue.h 

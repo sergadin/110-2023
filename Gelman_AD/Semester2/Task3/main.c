@@ -58,9 +58,9 @@ int main(void)
 
 	TestCase tests[] = 
 	{ 
-		{square, 1, 3, 0, OK},
-		{cube, 5, 162, 1, OK},
-		{sum, -4, -0.5, 0.01, OK},
+		{square, 1, 3, 8.666667, OK},
+		{cube, 5, 162, 172186708.489589, OK},
+		{sum, -4, -0.5, -4.375000, OK},
 	};
 
 	int number_tasks = sizeof(tests) / sizeof(tests[0]); // The number of the tests
@@ -72,9 +72,9 @@ int main(void)
 		{
 			printf("Test ¹%d is not completed.\n", n + 1); // WRONG_ORDER
 		}
-		else if ((error_code == OK) && ((fabs(result - tests[n].result)) > (max(result, tests[n].result, 1.0) * epsilon))) 
+		else if ((error_code == OK) && ((fabs(result - tests[n].result)) >= (max(result, tests[n].result, 1.0) * epsilon)))
 		{
-			printf("Test ¹%d is completed. The integral value: %lf\n", n + 1, result); // The integrade is greater then itself * epsilon
+			printf("Test ¹%d is not completed. The integral value: %lf\n", n + 1, result); // The integrade is greater then itself * epsilon
 		}
 		else if ((error_code == OK) && ((fabs(result - tests[n].result)) < (max(result, tests[n].result, 1.0) * epsilon))) 
 		{

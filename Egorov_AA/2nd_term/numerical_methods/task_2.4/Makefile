@@ -1,6 +1,6 @@
 all: a.out run
 
-fillValueArray.o: calculateIntegral.c calculateIntegral.h
+calculateIntegral.o: calculateIntegral.c calculateIntegral.h
 	gcc -c calculateIntegral.c 
 
 main.o: main.c calculateIntegral.h 

@@ -2,13 +2,8 @@
 #include <math.h>
 #include <stdlib.h>
 #include <float.h>
-#define EPS 0.0001
-#define PI 3.14159265358
 
 typedef double (*RRFun)(double x);    // Функция R -> R
-
-double func(double x);                // Функция для задания функции
-
 
 typedef enum{                         // Ошибки
     NOT_OK,                           // Несоответствие ожидаемому значению
@@ -17,7 +12,7 @@ typedef enum{                         // Ошибки
 
 
 
-void mas_of_arg(RRFun f, double x, double* mas_arg, Er *error, int i);
+void mas_of_arg(RRFun f, double* mas_arg, Er *error, int i);
 
 /* 
 ** Функция, определяющая значение функции в конкретной точке

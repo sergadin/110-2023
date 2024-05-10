@@ -11,5 +11,3 @@ run: a.out
 
 a.out: main.o core.o
 	gcc main.o core.o -lm
-
-

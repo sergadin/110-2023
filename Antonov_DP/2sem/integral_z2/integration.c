@@ -2,6 +2,21 @@
 #include <math.h>
 #include "integration.h"
 
+static int compRR(double a, double b, double eps);
+
+static int compRR(double a, double b, double eps)
+{
+        if((a > 100000) || (b > 100000))
+        {
+                if (fabs(a - b) < eps * (a + b)) { return 0; }
+                if (a > b) { return 1; }
+                return -1;
+        }
+        if (fabs(a - b) < eps) { return 0; }
+        if (a > b) { return 1; }
+        return -1;
+}
+
 
 double integrate(RRFun f, double a, double b, double eps, ERR *err)
 {
@@ -32,6 +47,7 @@ double integrate(RRFun f, double a, double b, double eps, ERR *err)
 		}
 		count = count * 2;
 	}
-	while ((fabs(prev_integr - curr_integr) > eps) || (length > eps));
+	while ((compRR(curr_integr, prev_integr, eps) != 0) && (length > eps) && (count < 1000000));
+	if ((length < eps) || (count > 1000000)) { printf("найден ответ, но не с требуемой точностью \n"); }
 	return curr_integr;
 }

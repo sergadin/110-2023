@@ -4,13 +4,44 @@
 #include "z3_13.h"
 
 
-/*	Параметры: k - позиция, с которой начинается сравнение
- *         *buf - текущая строка 
- *         *str - итоговое слово
- * Функция ищет и записывает первое слово в данном фрагменте строки. Слово заканчивается, если встречается пробел, () или \n.
+/*	Параметры: *top - указатель на следующий элемент.
+ *         state - состояние строки - 1, 2 - если не надо удалять следующие строки, -1, -2 - если надо удалять следующие строки.
+ * Функция записывает новое состояние и адрес следующего блока в стэке.
+ */ 
+
+OBJ* push(OBJ* top, int state);
+OBJ* push(OBJ* top, int state){
+    OBJ* ptr = malloc(sizeof(OBJ));
+    ptr->state = state;
+    ptr->next = top;
+    return ptr;
+
+}
+
+/*	Параметры: *top - указатель на следующий элемент.
+ * Функция удаляет указатель на следующий адрес, переходя к предыдущему блоку в стэке.
+ */ 
+OBJ* pop(OBJ* top);
+OBJ* pop(OBJ* top){
+    if(top == NULL){
+        return top;
+    }
+
+    OBJ* ptr_next = top->next;
+    free(top);
+    return ptr_next;
+}
+
+
+/*	Параметры: 
+ *          k - с какого момента начинать поиск (позиция последнего элемента найденного условия + 1)
+ *          *buf - текущая строка.
+ *          *str - строка, в которую будет записано найденное слово. 
+ * Функция ищет первое слово после одного из условий: #define или #ifdef. 
  */
-static void check_word(long int k, char * buf, char *str);
-static void check_word(long int k, char * buf, char *str){
+
+static void find_word(long int k, char * buf, char *str);
+static void find_word(long int k, char * buf, char *str){
     int have_word = -1, j = 0; /*индикатор наличия слов после слов-инструкций (-1 - нет, 0 - найдено хотя бы одно значение, 
     1 - окончание считывания), порядковый индекс*/
     for (int i = k; i < (strlen(buf) - 1); i++){
@@ -25,12 +56,48 @@ static void check_word(long int k, char * buf, char *str){
         }
             
     }
-        
-        
+       
+
+/*	Параметры: *str - текущая строка.
+ *         *cond - условие, которое нужно найти в текущей строке.
+ * Функция проверяет наличие переданного условия в данной строке. Если такого слова нет, возвращается -1, иначе - позиция первого элемента
+ */
+
+static int find_cond(char* str, char* cond);        
+static int find_cond(char* str, char* cond){
+    int len = strlen(str), corr = 0, j = 1, pos = 0;
+
+    if (len < strlen(cond)){
+        return -1;
+    }
+
+    for (int i = 0; i < len; i++){
+        if (j == strlen(cond)){
+            if ((str[i] == ' ') || (str[i] == '\n') || (str[i] == '\0') || (i==len-2)){
+                return pos;
+            }
+        }
+        if ((str[i] != ' ') && (corr != 1) && (str[i] != '#')){
+            return -1;
+        }else if ((corr == 0) && (str[i] == '#')){
+            corr = 1;
+            pos = i;
+            continue;
+        }
+        if (corr == 1){
+            if (str[i] == cond[j]){
+                j++;
+            }else{
+                return -1;
+            }
+        }       
+    }
+    return pos;
+}          
 
 
-/*	Параметры: *f - исходный файл.
- *         *fout - итоговый файл.
+/*	Параметры: *f - массив строк с исходным текстом файла.
+ *          *fout - массив, в который будет передан ответ. 
  *          line - количество строк в исходном файле.
  *         *err - указатель на код ошибки.
  * Функция обрабатывает текст полученного файла с кодом, сохраняя, в соответствии с выполнением условий, команды программы под инструкциями
@@ -39,16 +106,22 @@ static void check_word(long int k, char * buf, char *str){
  */
 int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
     size_t len = 1024;
-    ssize_t n_bytes = 0; //размер текущей строки
-    int t = 0, k = 0, written = 0, if_ch = 0, el_ch = 0; /*количество найденных define, порядковый индекс, индикатор ввода строки в 
-    итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его),
-                                                          индикатор #else - (аналогично)*/
-    char define[] = "#define", *istr; /*строка #define, первый элемент текущего макроса в строке*/
-    char hash1[] = "#ifdef", hash2[] = "#else", hash3[] = "#endif", *istr1,*istr2, *istr3; /*строки #ifdef, #else, #endif, индексы их 
-                                                                                                                первых элементов*/
+    OBJ* states = NULL; //первый блок стэка
+    ssize_t n_bytes = 0; //количество элементов в текущей строке
+    int def_numb = 0, k = 0, written = 0, if_ch = 0, el_ch = 0, def_pos = 0, if_pos = 0, else_pos = 0, endif_pos = 0; /*количество define, 
+    количество сохраненных строк, индикатор ввода строки в итоговый файл (1 - не вводить, 0 - вводить), 
+    индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его), индикатор #else - (аналогично),
+    позиция первого элемента соответствующий слов-условий.*/
+    char define[] = "#define"; /*строка #define, первый элемент текущего макроса в строке*/
+    char ifdef_h[] = "#ifdef", else_h[] = "#else", endif_h[] = "#endif"; /*строки #ifdef, #else, #endif, индексы их первых элементов*/
     char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения, текущая строка.
     char ** str_arr = NULL; //словарь макросов после define
+
+
+
+
     *err = NA_OK;
+
     if (line == 0){
     	*err = FILE_WR;
     	return -1;
@@ -61,7 +134,7 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
             return -1;
         }
 
-    str_arr = (char **)calloc(sizeof(char*),line);
+    str_arr = (char **)calloc(sizeof(char*), line);
     if (str_arr == NULL){
             printf("Оперативная память не выделена\n");
             *err = NA_MEMORY_ERR;
@@ -69,71 +142,86 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
             return -1;
         }
 
-    while ((n_bytes = getline(&buf, &len, f))!=-1){
-        
-        str_arr[k] = (char *)calloc(sizeof(char),n_bytes);
-    	if (str_arr[k] == NULL){
-            printf("Оперативная память не выделена%d - 1\n", k);
-            printf("%ld - mem\n", n_bytes);
-            *err = NA_MEMORY_ERR;
-		for (int j = 0; j < k; j++){
-		    	free(str_arr[j]);
-		    }
-		    free(str_arr);
-            free(buf);
-            return -1;
-        }
+    while ((n_bytes = getline(&buf, &len, f)) != -1){
 
     	str = (char *)calloc(sizeof(char),n_bytes);
     	if (str == NULL){
             printf("Оперативная память не выделена%d - 2\n", k);
             *err = NA_MEMORY_ERR;
-		for (int i = 0; i < k; i++){
-		    	free(str_arr[i]);
-		    }
+            for (int i = 0; i < k; i++){
+                    free(str_arr[i]);
+            }
             free(buf);
-		    free(str_arr);
             return -1;
         } 
 
-      written = 0;
-        istr = strstr(buf, define);
+        written = 0;
 
-        if (istr != NULL){
-            printf("Seeked word on position - %ld. Line - %d\n", istr - buf, k + 1);
-            check_word(istr - buf + strlen(define), buf, str_arr[t]);
-            t++;
-        }	
-            istr1 = strstr(buf, hash1);
-            if(istr1 != NULL){
-                printf("Seeked condition_1 on position - %ld. Line - %d\n", istr1 - buf, k+1);
-                check_word(istr1 - buf + strlen(hash1), buf, str);
-                if_ch = -1;
-                for (int k = 0; k < t; k++){
-                	if (strcmp(str_arr[k], str) == 0){
-	                        if_ch = 1;
+        if ((def_pos = find_cond(buf, define)) != -1){
+            printf("Seeked word on position - %d. Line - %d\n", def_pos, k + 1);
+            str_arr[def_numb] = (char *)calloc(sizeof(char), n_bytes);
+            if (str_arr[def_numb] == NULL){
+                printf("Оперативная память не выделена%d - 1\n", k);
+                *err = NA_MEMORY_ERR;
+                for (int j = 0; j < def_numb; j++){
+                        free(str_arr[j]);
                     }
+                    free(str_arr);
+                    free(buf);
+                    free(str);
+                    return -1;
+            }
+            find_word(def_pos + strlen(define), buf, str_arr[def_numb]);
+            def_numb++;
+        }	
+
+            else if((if_pos = find_cond(buf, ifdef_h)) != -1){
+                printf("Seeked condition_1 on position - %d. Line - %d\n", if_pos, k + 1);
+                find_word(if_pos + strlen(ifdef_h), buf, str);
+                if_ch = -1;
+                if ((states == NULL)||((states->state) >= 0)){
+                    states = push(states, -1);
+                    for (int p = 0; p < def_numb; p++){
+                        if (strcmp(str_arr[p], str) == 0){
+                                if_ch = 1;
+                                states = pop(states);
+                                states = push(states, 1);
+                                break;
+                        }
+                    }
+                }else{
+                    states = push(states, -1);
                 }
-                
                 written = 1;
             }
 
-            istr2 = strstr(buf, hash2);
-            if (istr2 != NULL){
-                printf("Seeked condition_2 on position - %ld. Line - %d\n", istr2 - buf, k + 1);
-                if (if_ch == 1){
+            else if ((else_pos = find_cond(buf, else_h)) != -1){
+                printf("Seeked condition_2 on position - %d. Line - %d\n", else_pos, k + 1);
+                if ((states->state) == 1){
                     el_ch = -1;
-                }else if (if_ch == -1){
+                    states = pop(states);
+                    states = push(states, -2);
+                }else if ((states->state) == -1){
                     el_ch = 1;
-                    
+                    states = pop(states);
+                    if (states!=NULL){
+		            if((states->state)!=-1){
+		                states = push(states, 2);
+		            }else{
+		                states = push(states, -1);
+		                el_ch = -1;
+		            }
+                    }else{
+                    	states = push(states, 2);
+                    }
                 }
                 if_ch = 0;
                 written = 1;
             }
 
-            istr3 = strstr(buf, hash3);
-            if (istr3 != NULL){
-                printf("Seeked condition_3 on position - %ld. Line - %d\n", istr3 - buf, k + 1);
+            else if ((endif_pos = find_cond(buf, endif_h)) != -1){
+                printf("Seeked condition_3 on position - %d. Line - %d\n", endif_pos, k + 1);
+                states = pop(states);
                 el_ch = 0;
                 if_ch = 0;
                 written = 1;
@@ -153,7 +241,9 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
     for (int i = 0; i < line; i++){
     	free(str_arr[i]);
     }
-    
+    while(states != NULL){
+        states = pop(states);
+    }
     free(str_arr);
     free(buf);
     return 0;
