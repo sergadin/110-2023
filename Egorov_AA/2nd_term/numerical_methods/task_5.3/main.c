@@ -11,7 +11,6 @@ typedef struct {          // Структура тестов:
 } dataSet;
 
 int main(void) {
-	system("chcp 1251");
 	const double eps = 1;
 	int test_num, func_num = 3;
 	error err;

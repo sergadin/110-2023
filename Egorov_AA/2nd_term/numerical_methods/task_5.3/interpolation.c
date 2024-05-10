@@ -2,7 +2,7 @@
 
 void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, error* err) {
 	*err = OK;
-    for (int j = 0; j < m; j++) {
+	for (int j = 0; j < m; j++) {
 		double x2, y2;
 		// Поиск отрезка, в который попадает x
 		int i;
@@ -29,5 +29,5 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 		double result = p[i - 1].y * L0 + p[i].y * L1 + y2 * L2;
 
 		interp_y[j] = result;
-    }
+	}
 }
