@@ -10,8 +10,24 @@ typedef struct {          // Структура тестов:
 	error err_code;
 } dataSet;
 
+void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, point* res, int number);
+void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, point* res, int number) {
+	FILE* gnuplotPipe;
+	for (int i = 0; i < n; i++)
+		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
+	for (int i = 0; i < m; i++)
+		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
+	gnuplotPipe = popen("gnuplot -persist", "w");
+	if (gnuplotPipe == NULL) {
+		printf("Ошибка запуска Gnuplot.\n");
+		return 1;
+	}
+	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'data.txt' with points title\nset output\n", number);
+}
+
 int main(void) {
-	const double eps = 1;
+	//system("chcp 1251");
+	const double eps = 0.1;
 	int test_num, func_num = 3;
 	error err;
 
@@ -51,8 +67,13 @@ int main(void) {
 	test_num = sizeof(tests) / sizeof(tests[0]);
 
 	for (int i = 0; i < test_num; i++) {                                            // Тестирование
+		FILE* out1 = fopen("out1.txt", "w"), * out2 = fopen("out2.txt", "w");
 		double* res;
 		res = (double*)malloc(sizeof(double) * tests[i].m);
+		if (res = NULL) {
+			printf("Память не выделилась :(");
+			return -1;
+		}
 		interpolate(tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, &err);
 		if (err != tests[i].err_code) {
 			printf("%d-й тест не пройден :(\n", i + 1);
@@ -62,18 +83,18 @@ int main(void) {
 				if (fabs(res[j] - tests[i].interp_points[j].y) > eps) {
 					printf("%d-й тест не пройден :(\n", i + 1);
 					goto theend;
-					break;
 				}
 			}
-			printf("%d-й тест пройден.\n", i+1);
+			printf("%d-й тест пройден.\n", i + 1);
+			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
 		}
 		else {
 			printf("%d-й тест пройден.\n", i + 1);
+			write_points(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
 		}
 		theend:
 		free(res);
 	}
-
 
 	return 0;
 }
