@@ -22,7 +22,7 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 		printf("Ошибка запуска Gnuplot.\n");
 		return;
 	}
-	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'data.txt' with points title\nset output\n", number);
+	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'out1.txt' with points\nset output\n", number);
 	pclose(gnuplotPipe);
 }
 
@@ -71,7 +71,7 @@ int main(void) {
 		FILE* out1 = fopen("out1.txt", "w"), * out2 = fopen("out2.txt", "w");
 		double* res;
 		res = (double*)malloc(sizeof(double) * tests[i].m);
-		if (res = NULL) {
+		if (res == NULL) {
 			printf("Память не выделилась :(");
 			return -1;
 		}
