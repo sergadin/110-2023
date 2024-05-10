@@ -12,18 +12,18 @@ typedef struct {          // Структура тестов:
 
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
-	FILE* gnuplotPipe;
+	//FILE* gnuplotPipe;
 	for (int i = 0; i < n; i++)
 		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
 	for (int i = 0; i < m; i++)
 		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
-	gnuplotPipe = popen("gnuplot -persist", "w");
-	if (gnuplotPipe == NULL) {
-		printf("Ошибка запуска Gnuplot.\n");
-		return;
-	}
-	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'out1.txt' with points\nset output\n", number);
-	pclose(gnuplotPipe);
+	//gnuplotPipe = popen("gnuplot -persist", "w");
+	//if (gnuplotPipe == NULL) {
+	//	printf("Ошибка запуска Gnuplot.\n");
+	//	return;
+	//}
+	//fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'data.txt' with points title\nset output\n", number);
+	//pclose(gnuplotPipe);
 }
 
 int main(void) {
@@ -33,42 +33,53 @@ int main(void) {
 	error err;
 
 	dataSet tests[] = {
-		{ 
-			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
-			5,
-			(point[]) { {0.5, 0.5}, {1.5, 1.5}, {2.8, 2.8}, {3.62, 3.62} },
-			4,
-			OK 
-		},
-		{	
-			(point[]) { {0.3, 0.198669}, {0.6, 0.564642}, {0.9, 0.783327}, {1.2, 0.932039}, {1.5, 0.997495}, 
-			{1.8, 0.973848}, {2.1, 0.863209}, {2.4, 0.675463}, {2.7, 0.42738}, {3, 0.14112} },
-			10,
-			(point[]) { {0.5, 0.479426}, {1, 0.84147}, {2, 0.909297} },
-			3,
-			OK 
-		},
-		{	
-			(point[]) { {0.2, -1.60944}, {0.5, -0.693147}, {0.8, -0.223144}, {1, 0}, {1.2, 0.182322},
-			{1.5, 0.405465}, {1.8, 0.587787}, {2, 0.693147}, {2.3, 0.832909}, {2.6, 0.955511} },
-			10,
-			(point[]) { {0.6, -0.510826}, {0.9, -0.105361}, {1.35, 0.300105} },
-			3,
-			OK 
-		},
-		{ 
-			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
-			5,
-			(point[]) { {1, 2}, {2, 3}, {3, 4}, {4, 5} },
-			4,
-			OK 
-		}
+		{
+			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}
+ },
+5,
+(point[]) { {0.5, 0.5}, {1.5, 1.5}, {2.8, 2.8}, {3.62, 3.62}
+},
+4,
+OK
+},
+{
+	(point[]) { {0.3, 0.198669}, {0.6, 0.564642}, {0.9, 0.783327}, {1.2, 0.932039}, {1.5, 0.997495},
+	{1.8, 0.973848}, {2.1, 0.863209}, {2.4, 0.675463}, {2.7, 0.42738}, {3, 0.14112}
+},
+10,
+(point[]) { {0.5, 0.479426}, {1, 0.84147}, {2, 0.909297}
+},
+3,
+OK
+},
+{
+	(point[]) { {0.2, -1.60944}, {0.5, -0.693147}, {0.8, -0.223144}, {1, 0}, {1.2, 0.182322},
+	{1.5, 0.405465}, {1.8, 0.587787}, {2, 0.693147}, {2.3, 0.832909}, {2.6, 0.955511}
+},
+10,
+(point[]) { {0.6, -0.510826}, {0.9, -0.105361}, {1.35, 0.300105}
+},
+3,
+OK
+},
+{
+	(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}
+},
+5,
+(point[]) { {1, 2}, {2, 3}, {3, 4}, {4, 5}
+},
+4,
+OK
+}
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
 
-	for (int i = 0; i < test_num; i++) {                                            // Тестирование
-		FILE* out1 = fopen("out1.txt", "w"), * out2 = fopen("out2.txt", "w");
+	for (int i = 0; i < 2; i++) {                                            // Тестирование
+		char filename1[32], filename2[32];
+		sprintf(filename1, "out%d.txt", 2 * (i + 1) - 1);
+		sprintf(filename2, "out%d.txt", 2 * (i + 1));
+		FILE* out1 = fopen(filename1, "w"), * out2 = fopen(filename2, "w");
 		double* res;
 		res = (double*)malloc(sizeof(double) * tests[i].m);
 		if (res == NULL) {
@@ -93,7 +104,7 @@ int main(void) {
 			printf("%d-й тест пройден.\n", i + 1);
 			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
 		}
-		theend:
+	theend:
 		fclose(out1);
 		fclose(out2);
 		free(res);
