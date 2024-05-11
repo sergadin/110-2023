@@ -8,6 +8,7 @@ int main() {
 	double** matrix, ** inverse_matrix;
 	printf("Введите размер квадратной матрицы NxN:");
 	scanf("%d", &n);
+	m = n;
 	matrix = (double**)malloc(n * sizeof(double*));
 	for (int i = 0; i < n; i++) {
 		matrix[i] = (double*)malloc(n * sizeof(double));
@@ -21,8 +22,14 @@ int main() {
 
 	printf("\nОбратная матрица:\n");
 	writeMatrix(inverse_matrix, n, n);
-
+	
+	for (int i = 0; i < m; i++) {
+		free(matrix[i]);
+	}
 	free(matrix);
+	for (int i = 0; i < n; i++) {
+		free(inverse_matrix[i]);
+	}
 	free(inverse_matrix);
 	return 0;
 }
