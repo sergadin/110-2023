@@ -29,6 +29,7 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
         istr2 = strstr(buf, rgt_board);
 	    
         if (have_frst_brd == 1){
+	    size = strlen(buf);
             if (istr2 == NULL){
                 memmove(buf, buf + size - 1, size);
                 not_write = 1;
