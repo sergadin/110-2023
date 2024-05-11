@@ -5,6 +5,7 @@
 typedef enum {
 	OK,             //Ошибок нет
     SIZE,           //Неподходящий размер
+    NOT_DET,
 }Error;
 
 
