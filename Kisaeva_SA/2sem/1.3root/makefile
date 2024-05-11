@@ -1,9 +1,9 @@
 all : a.out run
 
-z1_3.o : 1.3root.c 1.3root.h
+1.3root.o : 1.3root.c 1.3root.h
 	gcc -c 1.3root.c 
 
-main1.o : mainroot.c 1.3root.h
+mainroot.o : mainroot.c 1.3root.h
 	gcc -c mainroot.c 
 	
 run : a.out

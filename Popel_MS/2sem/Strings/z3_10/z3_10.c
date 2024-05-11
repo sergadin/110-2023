@@ -23,10 +23,11 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
     
     *err = NA_OK;
     
-    while((getline(&buf, &len, f))!=-1){
+    while((getline(&buf, &len, f)) != -1){
         int not_write = 0;
         istr1 = strstr(buf, lft_board);
         istr2 = strstr(buf, rgt_board);
+	    
         if (have_frst_brd == 1){
             if (istr2 == NULL){
                 memmove(buf, buf + size - 1, size);
@@ -54,6 +55,6 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
         }
         i++;
     }
-	free(buf);
+    free(buf);
     return 0;
 }

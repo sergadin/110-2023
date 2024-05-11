@@ -4,7 +4,8 @@
 typedef double (*RRFun)(double);
 
 typedef enum {
-	NA_INTER,
+	NO_INTER,
+	NO_LIMIT,
 	OK 		//Ошибок нет
 } Error;
 
