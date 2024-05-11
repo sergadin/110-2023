@@ -38,7 +38,8 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
                 memmove(buf, istr2 + 2, size - (istr2 - buf));
             }
         }
-
+	istr1 = strstr(buf, lft_board);
+        istr2 = strstr(buf, rgt_board);
         while (istr1 != NULL){
             size = strlen(buf);
             if (istr2 == NULL){
