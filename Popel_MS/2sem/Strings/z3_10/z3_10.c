@@ -38,13 +38,13 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
             	}
                 have_frst_brd = 1;
             }else if ((istr2 != NULL) && ((have_frst_brd == 1) || (istr1 != NULL))){
-            void *k = 0;
+                void *k = 0;
                 if (have_frst_brd == 1){
                     have_frst_brd = 0;
                     k = buf;
                 }else{
                 	k = istr1;
-                	}
+                }
                 memmove(k, istr2 + strlen(rgt_board), size - (istr2 - buf));
             }
             istr1 = strstr(buf, lft_board);
