@@ -48,7 +48,7 @@ int main()
     Error error;
     TestCase tests[] = {
         {"file.txt", 3, 4},
-        {"data2.txt", 1, 2},
+        {"data2.txt", 4, 5},
         {"data3.txt", 3, 4},
         {"data4.txt", 4, 5},
     };
