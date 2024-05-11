@@ -67,7 +67,7 @@ double integration_gauss(func f, double a, double b, double eps, error *err) {
 	
 	if (limit == 0) {
 		*err = MORE_THAN_LIMIT;
-		return pred_integ;
+		return -1;
 	}
 
 	return cur_integ;
