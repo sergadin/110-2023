@@ -4,12 +4,6 @@
 
 typedef double (*RRFun)(double);
 
-double sine(double x);
-double cubing(double x);
-double reverseNum(double x);
-double naturalLog(double x);
-
-
 typedef enum {
 	OK,
 	MALLOC_ERR,

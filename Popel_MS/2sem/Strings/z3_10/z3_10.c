@@ -42,7 +42,7 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
             size = strlen(buf);
             if (istr2 == NULL){
                 have_frst_brd = 1;
-                memmove(istr1, buf + size - 1, size - (istr1 - buf));
+                memmove(istr1, buf + size - 1, size);
             }else{
                 memmove(istr1, istr2 + 2, size - (istr2 - buf));
             }
