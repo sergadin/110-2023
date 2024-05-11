@@ -31,10 +31,10 @@ double min_search(RRFun *f, double a, double b, double eps, error *err){
             f_d=(*f)(d);
         }
         limit = limit - 1;
-        if(limit==0){
-            *err = LIMIT;
-            return -1;
         }
+    if(limit==0){
+        *err = LIMIT;
+        return -1;
     }
     x=(a+b)/2;
     return (*f)(x);
