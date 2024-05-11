@@ -7,6 +7,8 @@ double minimum(double a, double b, double (*Function)(double), double epsilon, E
     double min;
     double x_min;
     double dx = 0;
+    double ai = 0;
+    double f_ai = 0;
 
     if(b <= a)
     {
@@ -30,10 +32,12 @@ double minimum(double a, double b, double (*Function)(double), double epsilon, E
         dx = (b-a)/n;
         for(int i = 0; i <= n; i++)
         {
-                if(Function(a+i*dx) < min)
+            ai = a+i*dx;
+            f_ai = Function(ai);
+                if(f_ai < min)
                 {
-                    min = Function(a+i*dx);
-                    x_min = a+i*dx;
+                    min = f_ai;
+                    x_min = ai;
                 }
         }
 
