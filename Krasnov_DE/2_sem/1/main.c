@@ -1,5 +1,4 @@
 #include "fill_massiv.h"
-#include <locale.h>
 
 typedef struct {
     int f_number;
@@ -7,6 +6,11 @@ typedef struct {
 	double* res;
 	error err_code;
 } dataSet;          //creating a test structure
+
+double sine(double x);
+double cubing(double x);
+double reverseNum(double x);
+double naturalLog(double x);
 
 double sine(double x) {
 	return sin(x);
@@ -25,7 +29,6 @@ double naturalLog(double x) {
 }
 
 int main(void) {
-    setlocale(LC_ALL, "Rus");
 	const double pi = 3.1415926535, eps = 1e-7;
 	int test_num, funcnum_default = 4;
 	int flag;
