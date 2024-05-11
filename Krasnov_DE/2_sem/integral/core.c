@@ -52,5 +52,5 @@ double Integral_count(RRFun *f, double a, double b, double eps, error *err){
 /*The function receives as input the function address (RRFun *f),
  the left and right boundaries of the segment (double a double b), the calculation accuracy (eps), and the error address (*err).
  The function calculates the integral of the function using Gaussian quadrature, if the program executes successfully,
-  it will return the value of the integral and assign *err the value OK.
+  it will return the value of the integral and assign *err the value OK.*/
 
