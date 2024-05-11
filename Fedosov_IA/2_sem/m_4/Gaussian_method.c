@@ -140,7 +140,7 @@ double *gauss(double **m_matrix, int rows, int cols, Error *error)
 
     for (int i = 0; i < cols - 1; i++)
     {
-        if (matrix[rows - 1][i] != 0)
+        if (fabs(matrix[rows - 1][i]) > EPS)
             check_null++;
     }
     if (check_null == 0)
