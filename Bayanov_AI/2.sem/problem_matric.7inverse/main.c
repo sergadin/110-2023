@@ -12,10 +12,9 @@ int main (void)
 {
   FILE *f = NULL;
   int N = 0;
-  int error_counter = 0;
   double epsilon = 0;
   ERROR error = OK;
-  double **matr = NULL;
+  double *matr = NULL;
   double *vector_b = NULL;
   double *vector_x = NULL;
   struct testing test_number[4] = 
@@ -28,10 +27,6 @@ int main (void)
 
   for (int i = 0; i < 4; i++)
 	{
-	  vector_b = NULL;
-	  vector_x = NULL;
-	  matr = NULL;
-	  error_counter = 0;
 	  printf ("\nTest %d\n", i + 1);
 	  N = test_number[i].N;
 	  epsilon = test_number[i].epsilon;
@@ -49,7 +44,7 @@ int main (void)
 		  printf ("Malloc error\n");
 		  continue;
 		}
-	  matr = (double **) malloc ((N) * sizeof (double *));
+	  matr = (double *) malloc ((N * N) * sizeof (double));
 	  if (matr == NULL)
 		{
 		  free (vector_b);
@@ -57,35 +52,11 @@ int main (void)
 		  printf ("Malloc error\n");
 		  continue;
 		}
-	  for (int i = 0; i < N; i++)
-		{
-		  matr[i] = NULL;
-		  matr[i] = (double *) malloc ((N) * sizeof (double));
-		  if (matr[i] == NULL)
-			{
-			  for (int j = 0; j < i; j++)
-				free (matr[j]);
-			  error_counter++;
-			  break;
-			}
-		}
-
-	  if (error_counter != 0)
-		{
-		  free (vector_b);
-		  free (vector_x);
-		  free (matr);
-		  printf ("Malloc error");
-		  continue;
-		}
-
 	  f = fopen (test_number[i].File_name, "r");
 	  if (f == NULL)
 		{
 		  free (vector_b);
 		  free (vector_x);
-		  for (int i = 0; i < N; i++)
-			free (matr[i]);
 		  free (matr);
 		  printf ("File open error");
 		  continue;
@@ -93,7 +64,7 @@ int main (void)
 	  for (int i = 0; i < N; i++)
 		{
 		  for (int j = 0; j < N; j++)
-			fscanf (f, "%lf", &matr[i][j]);
+			fscanf (f, "%lf", &matr[N * i + j]);
 		  fscanf (f, "%lf", &vector_b[i]);
 		}
 	  fclose (f);
@@ -113,9 +84,10 @@ int main (void)
 		}
 	  free (vector_b);
 	  free (vector_x);
-	  for (int i = 0; i < N; i++)
-		free (matr[i]);
 	  free (matr);
+	  vector_b = NULL;
+	  vector_x = NULL;
+	  matr = NULL;
 	}
   return 0;
 }
