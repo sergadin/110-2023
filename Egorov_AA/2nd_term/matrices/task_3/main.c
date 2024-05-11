@@ -6,7 +6,6 @@
 int main() {
 	int m, n;
 	double** matrix, ** inverse_matrix;
-	system("chcp 1251");
 	printf("Введите размер квадратной матрицы NxN:");
 	scanf("%d", &n);
 	matrix = (double**)malloc(n * sizeof(double*));

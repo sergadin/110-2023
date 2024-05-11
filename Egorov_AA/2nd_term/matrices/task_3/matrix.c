@@ -35,7 +35,7 @@ double** invertMatrix(double** matrix, int n) {
 		double pivot = matrix[i][i];
 		if (pivot == 0.0) {
 			printf("Обратная матрица не существует.\n");
-			return;
+			return 0;
 		}
 		for (int j = 0; j < n; j++) {
 			matrix[i][j] /= pivot;
