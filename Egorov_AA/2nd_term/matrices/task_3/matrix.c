@@ -11,7 +11,7 @@ void fillMatrix(double*** matrix, int m, int n) {
 void writeMatrix(double** matrix, int m, int n) {
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++)
-			printf("%20.14lf ", matrix[i][j]);
+			printf("%26.14lf ", matrix[i][j]);
 
 		printf("\n");
 	}
