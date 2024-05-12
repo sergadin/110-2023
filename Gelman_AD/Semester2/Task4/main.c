@@ -39,31 +39,29 @@ int main(void)
 	const double epsilon = 1e-3;
 	dataSet tests[] = 
 	{                                   
-		{square, -0.5, 5, 3.938, OK},		
-		{cube, -10, 5, -52, OK},
-		{sum, -10, 10, 7, OK}
+		{square, 1, 5, 1, OK},		
+		{cube, -1, 5, -1, OK},
+		{sum, -10, 10, -11, OK}
 	};
 
 	test_number = sizeof(tests) / sizeof(tests[0]);
 
-	/*
-	for (int i = 0; i < test_num; i++) 
-	{                                            // Само тестирование
-		value = findMinValue(tests[i].func, tests[i].a, tests[i].b, eps, &err);
-		if (err != tests[i].err_code) 
+	for (int i = 0; i < test_number; i++) 
+	{
+		value = min_value(tests[i].f, tests[i].a, tests[i].b, epsilon, &error_code);
+		if (error_code != tests[i].error_code) 
 		{
-			printf("%d-й тест не пройден :(\n", i + 1);
+			printf("The %d-th test is not completed\n", i + 1);
 		}
-		else if ((err == OK) && (fabs(tests[i].res - value) / 2 > eps)) 
+		else if ((error_code == OK) && (fabs(tests[i].result - value) / 2 > epsilon)) 
 		{
-			printf("%d-й тест не пройден :(\n", i + 1);
+			printf("The %d-th test is not completed\n", i + 1);
 		}
 		else 
 		{
-			printf("%d-й тест пройден :)\n", i + 1);
+			printf("The %d-th test is completed\n", i + 1);
 		}
 	}
-	*/
 
 	return 0;
 }

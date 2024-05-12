@@ -11,55 +11,90 @@ epsilon — specified accuracy
 error_code - expected error
 */
 
-ВЫЧИСЛИТЬ МИНИМАЛЬНОЕ ЗНАЧЕНИЕ ФУНКЦИИ f
-МЕТОДОМ ПОСТРОЕНИЯ ПАРАБОЛЫ С ПОИСКОМ ТРЁХ ТОЧЕК
-С ПОМОЩЬЮ ИЗМЕЛЬЧЕНИЯ РАВНОМЕРНОЙ СЕТКИ
-
+double min(double x1, double x2, double x3);
+double min(double x1, double x2, double x3) 
+{
+	if (x1 < x2 && x1 < x3) 
+	{
+		return x1;
+	}
+	else if (x2 < x3) 
+	{
+		return x2;
+	}
+	else 
+	{
+		return x3;
+	}
+}
 
 double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 {
-	const double phi = 0.38196;       // Отношение, в котором разбивается отрезок
-	int limit = 1000;                 // Ограничение на количество итераций
-	double f_x1, f_x2, x1, x2;
+	double x1, x2, x3;
+	double x_min;
+	double step; // The shredding step of the even net
+	double x0; // The vertex of the parabola
+	int limit = 1000; // The iterations limit
 
-	if (a > b) 
+	if (a > b)
 	{
-		*error_code = WRONG_INTERVAL;        // Проверка ошибки неверного задания интервала 
+		*error_code = WRONG_INTERVAL;
 		return -1;
 	}
 
-	x1 = a + phi * (b - a);
-	x2 = b - phi * (b - a);
-	f_x1 = (*f)(x1);
-	f_x2 = (*f)(x2);
-
-	while ((fabs(f_x1 - f_x2) > eps) || (fabs(f_x1 - f_x2) > eps * fabs(f_x1 + f_x2) / 2)) 
+	while (fabs(b - a) > epsilon)
 	{
-		if (f_x1 < f_x2) 
+		step = (b - a) / 1000;
+		x1 = a;
+		x2 = a + step;
+		x3 = a + 2 * step;
+
+		while (x3 <= b)
 		{
-			b = x2;
-			x2 = x1;
-			x1 = a + phi * (b - a);
-			f_x2 = f_x1;
-			f_x1 = (*f)(x1);
-		}
-		else 
-		{
-			a = x1;
+			if (f(x1) > f(x2) && f(x2) < f(x3))
+			{
+				break; // End of the while cycle
+			}
 			x1 = x2;
-			x2 = b - phi * (b - a);
-			f_x1 = f_x2;
-			f_x2 = (*f)(x2);
+			x2 = x3;
+			x3 += step;
 		}
+
+		x0 = 0.5 * (x1 + x3); // Calculating the coordinates of the vertex
+		x_min = min(x1, x2, x3);
+
+		if (f(x0) < f(x_min))
+		{
+			if (x0 < x_min)
+			{
+				b = x_min;
+			}
+			else
+			{
+				a = x_min;
+			}
+		}
+		else
+		{
+			if (x2 < x_min)
+			{
+				a = x0;
+			}
+			else
+			{
+				b = x0;
+			}
+		}
+
 		limit--;
-		if (limit <= 0) 
-		{               // Проверка ошибки на превышение количества итераций
-			*err = I_LIMIT_EXCEEDED;
+		if (limit <= 0)
+		{
+			*error_code = ITERATION_LIMIT_EXCEEDED;
 			return -1;
 		}
 	}
-
-	printf("Minimum: %lf\n", f_x1);
 	*error_code = OK;
-	return f_x1;
+	x_min = 0.5 * (a + b);
+	printf("Minimum of the function: %lf\n", f(x_min));
+	return f(x_min); // min_value = f(x_min)
 }
