@@ -28,6 +28,7 @@ double min(double x1, double x2, double x3)
 	}
 }
 
+double min_value(RRFun f, double a, double b, double epsilon, error* error_code);
 double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 {
 	double x1, x2, x3;
@@ -94,6 +95,7 @@ double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 		}
 	}
 	*error_code = OK;
+	//printf("error_code %c\n", *error_code);
 	x_min = 0.5 * (a + b);
 	printf("Minimum of the function: %lf\n", f(x_min));
 	return f(x_min); // min_value = f(x_min)

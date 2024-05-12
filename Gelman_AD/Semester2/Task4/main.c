@@ -49,11 +49,13 @@ int main(void)
 	for (int i = 0; i < test_number; i++) 
 	{
 		value = min_value(tests[i].f, tests[i].a, tests[i].b, epsilon, &err);
+		printf("The value %lf\n", value);
+
 		if (err != tests[i].error_code) 
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}
-		else if ((err == OK) && (fabs(tests[i].result - value) / 2 > epsilon)) 
+		else if ((err == OK) && (fabs(tests[i].result - value) / 2 < epsilon)) 
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}
