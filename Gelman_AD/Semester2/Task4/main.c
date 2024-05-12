@@ -34,7 +34,7 @@ static double sum(double x)
 int main(void) 
 {
 	int test_number;
-	error error_code;
+	error err;
 	double value;
 	const double epsilon = 1e-3;
 	dataSet tests[] = 
@@ -48,12 +48,12 @@ int main(void)
 
 	for (int i = 0; i < test_number; i++) 
 	{
-		value = min_value(tests[i].f, tests[i].a, tests[i].b, epsilon, &error_code);
-		if (error_code != tests[i].error_code) 
+		value = min_value(tests[i].f, tests[i].a, tests[i].b, epsilon, &err);
+		if (err != tests[i].error_code) 
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}
-		else if ((error_code == OK) && (fabs(tests[i].result - value) / 2 > epsilon)) 
+		else if ((err == OK) && (fabs(tests[i].result - value) / 2 > epsilon)) 
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}
