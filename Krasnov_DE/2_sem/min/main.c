@@ -41,7 +41,7 @@ int main(void){
     dataSet tests[] = {     //creating test suites
     {func1, -10, 5, 5, OK},
 	{func2, 5, 162, 8, OK},
-	{func3, 5, 25, 2, OK},
+	{func3, 5e+60, 2e+61, 2, LIMIT},
 	{func4, 4, 1, -1, WRNG_ORD}
 	};
 
