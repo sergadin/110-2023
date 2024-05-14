@@ -4,7 +4,7 @@ double fillValueArray(RRFun* functions, int func_num, double x, error* err,doubl
         *err=MALLOC_ERR;
         return -1;
     }
-    if(func_num>4){
+    if(func_num>  4){
         *err = INCORRECT_ARGUMENT;
         return -1;
     }
