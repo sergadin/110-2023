@@ -21,7 +21,7 @@ int main() {
 	inverse_matrix = invertMatrix(matrix, n);
 
 	printf("\nОбратная матрица:\n");
-	writeMatrix(inverse_matrix, n, n);
+	writeMatrix(inverse_matrix, n);
 
 	multiplied_matrix = multiplyMatrices(matrix, inverse_matrix, n);
 
