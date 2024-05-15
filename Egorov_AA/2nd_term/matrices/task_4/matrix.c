@@ -11,7 +11,6 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 
 
 double* solution(double* mat, size_t m, size_t n, error* err) {
-	bool is_singular = false;
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));                             // Называние массива
 	if (sol == NULL) {
