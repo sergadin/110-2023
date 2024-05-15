@@ -44,4 +44,6 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 	printf("\nSolution:\n");
 	for (int i = 0; i < m; i++)
 		printf("x%d = %f\n", i + 1, sol[i]);
+
+	return sol;
 }
