@@ -42,59 +42,94 @@ OBJ* pop(OBJ* top){
 
 static void find_word(long int k, char * buf, char *str);
 static void find_word(long int k, char * buf, char *str){
-    int have_word = -1, j = 0; /*индикатор наличия слов после слов-инструкций (-1 - нет, 0 - найдено хотя бы одно значение, 
-    1 - окончание считывания), порядковый индекс*/
-    for (int i = k; i < (strlen(buf) - 1); i++){
-            if (((buf[i] == ' ') || (buf[i] == '(') || (buf[i]=='\n') || (i == (strlen(buf) - 2)) || (buf[i] == '\0')) && (have_word == 0)){
-                have_word = 1;
-                strncpy(str, buf + i - j, j);
-            }
-		    if ((buf[i] != ' ')&&(buf[i] != '\n')&&(buf[i] != '\0')&&(have_word < 1)){
-                have_word = 0;
-                j++;
-		    }
-        }
-            
+    char *white_space = " ";
+    while(buf[k]==' '){
+   	    k++;
     }
+    for (int i = k; buf[i] != 0; i++){
+        if(strchr(" (\r\n\t", buf[i])){
+            strncpy(str, buf + k, i - k);
+            return;
+        }
+    }
+}
        
 
-/*	Параметры: *str - текущая строка.
+/*	Параметры: *buf - текущая строка.
  *         *cond - условие, которое нужно найти в текущей строке.
  * Функция проверяет наличие переданного условия в данной строке. Если такого слова нет, возвращается -1, иначе - позиция первого элемента
  */
 
-static int find_cond(char* str, char* cond);        
-static int find_cond(char* str, char* cond){
-    int len = strlen(str), corr = 0, j = 1, pos = 0;
+static int find_cond(char* buf, char* cond);        
+static int find_cond(char* buf, char* cond){
+	int i = 0, start = 0;
+	char *white_space = " ";
 
-    if (len < strlen(cond)){
-        return -1;
+   while(buf[i] == ' '){
+   	i++;
     }
 
-    for (int i = 0; i < len; i++){
-        if (j == strlen(cond)){
-            if ((str[i] == ' ') || (str[i] == '\n') || (str[i] == '\0') || (i==len-2)){
-                return pos;
-            }
-        }
-        if ((str[i] != ' ') && (corr != 1) && (str[i] != '#')){
-            return -1;
-        }else if ((corr == 0) && (str[i] == '#')){
-            corr = 1;
-            pos = i;
-            continue;
-        }
-        if (corr == 1){
-            if (str[i] == cond[j]){
-                j++;
-            }else{
-                return -1;
-            }
-        }       
+    if (strlen(buf) < strlen(cond)){
+    	return -1;
     }
-    return pos;
+    start = i;
+
+    for (int k = 0; cond[k]; k++){
+    	if(cond[k] != buf[i]){
+    		return -1;
+    	}
+    	i++;
+    }
+
+    if(strchr(" (\r\n\t", buf[i]) || buf[i] == '\0'){
+    	return start;
+    }
+    return -1;
 }          
 
+/*	Параметры: *all_defines - указатель на следующий элемент.
+ * Функция удаляет указатель на следующий адрес и указатель на текущее значение, переходя к предыдущему блоку в "массиве".
+ */
+static void do_undefine(struct item *all_defines);
+static void do_undefine(struct item *all_defines){
+    struct item *curr = all_defines->next;
+    struct item *temp;
+    while(curr != NULL){
+    	temp = curr->next;
+    	free(curr->term);
+    	free(curr);
+    	curr = temp;
+    }
+	printf("undefided\n");
+}
+
+/*	Параметры: *all_defines - указатель на текущий блок "массива".
+ *         *term - проверяемое слово (строку).
+ * Функция проверяет наличие переданного слова в "массиве" строк.
+ */
+static int is_defined(struct item *all_defines, char *term);
+static int is_defined(struct item *all_defines, char *term){
+    for(struct item *curr = all_defines->next; curr != NULL; curr = curr->next){
+        if(strcmp(curr->term, term) == 0)
+        return -1;
+    }
+    return 0;
+}
+
+/*	Параметры: *all_defines - указатель на текущий блок "массива".
+ *         *term - слово (строка).
+ * Функция записывает в "массив" новое слово и создает следующий блок.
+ */
+static void register_define(struct item *all_defines, char *term);
+static void register_define(struct item *all_defines, char *term){
+    if (is_defined(all_defines, term)){
+        return;
+    }
+    struct item *new_item = malloc(sizeof(struct item));
+    new_item->next = all_defines->next;
+    new_item->term = strdup(term);
+    all_defines->next = new_item;
+}
 
 /*	Параметры: *f - массив строк с исходным текстом файла.
  *          *fout - массив, в который будет передан ответ. 
@@ -105,18 +140,17 @@ static int find_cond(char* str, char* cond){
  *                                                                                                                      прописан и #endif)
  */
 int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
-    size_t len = 1024;
+    size_t len = 0;
     OBJ* states = NULL; //первый блок стэка
     ssize_t n_bytes = 0; //количество элементов в текущей строке
-    int def_numb = 0, k = 0, written = 0, if_ch = 0, el_ch = 0, def_pos = 0, if_pos = 0, else_pos = 0, endif_pos = 0; /*количество define, 
-    количество сохраненных строк, индикатор ввода строки в итоговый файл (1 - не вводить, 0 - вводить), 
-    индикатор #ifdef - (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его), индикатор #else - (аналогично),
+    int k = 0, written = 0, if_ch = 0, el_ch = 0, def_pos = 0, if_pos = 0, else_pos = 0, endif_pos = 0; /*количество сохраненных строк, 
+    индикатор ввода строки в итоговый файл (1 - не вводить, 0 - вводить), индикатор #ifdef - 
+                            (-1 - удалить все после, 0 - не найден, 1 - найден, удалить только его), индикатор #else - (аналогично),
     позиция первого элемента соответствующий слов-условий.*/
     char define[] = "#define"; /*строка #define, первый элемент текущего макроса в строке*/
     char ifdef_h[] = "#ifdef", else_h[] = "#else", endif_h[] = "#endif"; /*строки #ifdef, #else, #endif, индексы их первых элементов*/
     char *str = NULL, *buf = NULL; //фрагмент текущей строки для сравнения, текущая строка.
-    char ** str_arr = NULL; //словарь макросов после define
-
+    struct item all_defines = {NULL, NULL}; //первый блок "массива" слов.
 
 
 
@@ -127,52 +161,26 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
     	return -1;
     }
 
-    buf = (char *)calloc(sizeof(char), 1024);
-    if (buf == NULL){
-            printf("Оперативная память не выделена\n");
-            *err = NA_MEMORY_ERR;
-            return -1;
-        }
+    buf = NULL;
 
-    str_arr = (char **)calloc(sizeof(char*), line);
-    if (str_arr == NULL){
-            printf("Оперативная память не выделена\n");
-            *err = NA_MEMORY_ERR;
-            free(buf);
-            return -1;
-        }
+
 
     while ((n_bytes = getline(&buf, &len, f)) != -1){
-
-    	str = (char *)calloc(sizeof(char),n_bytes);
+	
+	str = (char *)calloc(sizeof(char),n_bytes);
     	if (str == NULL){
             printf("Оперативная память не выделена%d - 2\n", k);
             *err = NA_MEMORY_ERR;
-            for (int i = 0; i < k; i++){
-                    free(str_arr[i]);
-            }
             free(buf);
             return -1;
-        } 
+        }
 
         written = 0;
 
         if ((def_pos = find_cond(buf, define)) != -1){
             printf("Seeked word on position - %d. Line - %d\n", def_pos, k + 1);
-            str_arr[def_numb] = (char *)calloc(sizeof(char), n_bytes);
-            if (str_arr[def_numb] == NULL){
-                printf("Оперативная память не выделена%d - 1\n", k);
-                *err = NA_MEMORY_ERR;
-                for (int j = 0; j < def_numb; j++){
-                        free(str_arr[j]);
-                    }
-                    free(str_arr);
-                    free(buf);
-                    free(str);
-                    return -1;
-            }
-            find_word(def_pos + strlen(define), buf, str_arr[def_numb]);
-            def_numb++;
+            find_word(def_pos + strlen(define), buf, str);
+            register_define(&all_defines, str);
         }	
 
             else if((if_pos = find_cond(buf, ifdef_h)) != -1){
@@ -181,14 +189,11 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                 if_ch = -1;
                 if ((states == NULL)||((states->state) >= 0)){
                     states = push(states, -1);
-                    for (int p = 0; p < def_numb; p++){
-                        if (strcmp(str_arr[p], str) == 0){
-                                if_ch = 1;
-                                states = pop(states);
-                                states = push(states, 1);
-                                break;
-                        }
-                    }
+                    if (is_defined(&all_defines, str)){
+                        if_ch = 1;
+                        states = pop(states);
+                        states = push(states, 1);
+            }
                 }else{
                     states = push(states, -1);
                 }
@@ -205,14 +210,14 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
                     el_ch = 1;
                     states = pop(states);
                     if (states!=NULL){
-		            if((states->state)!=-1){
-		                states = push(states, 2);
-		            }else{
-		                states = push(states, -1);
-		                el_ch = -1;
-		            }
+                        if((states->state) != -1){
+                            states = push(states, 2);
+                        }else{
+                            states = push(states, -1);
+                            el_ch = -1;
+                        }
                     }else{
-                    	states = push(states, 2);
+                        states = push(states, 2);
                     }
                 }
                 if_ch = 0;
@@ -231,20 +236,19 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
             written = 1;
         }
         if (written == 0){
-		fprintf(fout, "%s", buf);
+		    fprintf(fout, "%s", buf);
         }
 
-        free(str);
+	    free(str);
         k++;
     }
 
-    for (int i = 0; i < line; i++){
-    	free(str_arr[i]);
-    }
+	do_undefine(&all_defines);
+
     while(states != NULL){
         states = pop(states);
     }
-    free(str_arr);
+
     free(buf);
     return 0;
 }

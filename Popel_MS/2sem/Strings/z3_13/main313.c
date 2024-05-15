@@ -16,12 +16,13 @@ int main(void){
 	int line = 1, res = 0;
     FILE *fout, *f;
 	Error err;
-	size_t len = 1024;
+	size_t len = 0;
 	char *buf = NULL; //текущая строка
+	buf = NULL;
 
-    TestCase tests[] = {{"code3.c", NA_OK},
+    TestCase tests[] = {{"code1.c", NA_OK},
 	{"code2.c", NA_OK},
-	{"code1.c", NA_OK}};
+	{"code3.c", NA_OK}};
 	
 
 
@@ -33,14 +34,6 @@ int main(void){
 		if (f == NULL){
 			printf("Файл не открывается\n");
 			err = FILE_WR;
-			goto terminate;
-		}
-
-		buf = (char*)malloc(1024 * sizeof(char));
-		if (buf == NULL){
-			printf("Оперативная память не выделена\n");
-			err = NA_MEMORY_ERR;
-			fclose(f);
 			goto terminate;
 		}
 
