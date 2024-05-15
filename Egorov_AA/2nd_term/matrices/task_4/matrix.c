@@ -11,6 +11,7 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 
 
 double* solution(double* mat, size_t m, size_t n, error* err) {
+	*err = OK;
 
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));
@@ -34,9 +35,6 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 		}
 	}
 
-	printf("Upper Triangular Matrix:\n");
-	writeMatrix(mat, m, n);
-
 	for (int i = m - 1; i >= 0; i--) {
 		sol[i] = mat[i * n + m];
 		for (int j = i + 1; j < m; j++) {
@@ -44,10 +42,6 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 		}
 		sol[i] /= mat[i * n + i];
 	}
-
-	printf("\nSolution:\n");
-	for (int i = 0; i < m; i++)
-		printf("x%d = %f\n", i + 1, sol[i]);
 
 	return sol;
 }
