@@ -1,6 +1,12 @@
-﻿#include "stdio.h"
-#include "time.h"
+﻿#include <stdio.h>
+#include <stdlib.h>
 
-void fillMatrix(int*** matrix, int m, int n);
+typedef enum {
+    OK,              // Все хорошо
+    NO_SOLUTION,     // Система не определена
+    NOT_DET
+}error;
 
-void writeMatrix(int** matrix, int m, int n);
+void writeMatrix(double* matrix, size_t m, size_t n);
+
+double* solution(double* matrix, size_t m, size_t n, error* err);

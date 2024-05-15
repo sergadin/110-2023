@@ -1,24 +1,29 @@
 ﻿#include "matrix.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-
-int main() {
+int main(void) {
+	FILE* input;
+	error err;
+	double* matrix, * res;
 	int m, n;
-	int** matrix;
-	system("chcp 1251");
-	printf("Введите размер квадратной матрицы NxN:");
-	scanf("%d", &n);
-	matrix = (int**)malloc(n * sizeof(int*));
-	for (int i = 0; i < n; i++) {
-		matrix[i] = (int*)malloc(n * sizeof(int));
+	if ((input = fopen("input.txt", "r")) == NULL) {
+		printf("Не удалось открыть файл");
+		return -1;
 	}
 
-	fillMatrix(&matrix, n, n);
+	fscanf(input, "%d %d", &m, &n);
 
-	printf("Сгенерированная матрица размера %dx%d:\n", n, n);
+	matrix = (double*)malloc(m * n * sizeof(double));
 
-	writeMatrix(matrix, n, n);
+	for (int i = 0; i < m * n; i++) {
+		fscanf(input, "%lf", &matrix[i]);
+	}
+
+	res = solution(matrix, m, n, &err);
+
+	//writeMatrix(res, 1, m - 1);
+
 
 	return 0;
 }
