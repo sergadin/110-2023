@@ -42,6 +42,8 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 		}
 		sol[i] /= mat[i * n + i];
 	}
+	
+	//writeMatrix(sol, 1, m);
 
 	return sol;
 }

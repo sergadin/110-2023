@@ -28,8 +28,18 @@ int main(void) {
 		},
 		{
 		"input3.txt",
-		(double[]) { 0.28571428, 0.85714285, 7.42857142, -3.57142857 },
+		(double[]) { 0 },
 		NO_SOLUTION
+		},
+		{
+		"input4.txt",
+		(double[]) { 55.17704468, -0.35057501, -2.53179109, 55.26782329, -1.04136025, -117.35089055, 5.13566938 },
+		OK
+		},
+		{
+		"input5.txt",
+		(double[]) { 1000 },
+		OK
 		}
 	};
 
@@ -43,7 +53,7 @@ int main(void) {
 			printf("%d-й тест не пройден. Не удалось открыть файл\n", i + 1);
 			continue;
 		}
-		if (fscanf(input, "%d%d", &m, &n) == NULL) {
+		if (fscanf(input, "%d%d", &m, &n) != 2) {
 			printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 			fclose(input);
 			continue;
@@ -57,7 +67,7 @@ int main(void) {
 		}
 
 		for (int i = 0; i < m * n; i++) {
-			if (fscanf(input, "%lf", &matrix[i]) == NULL) {
+			if (fscanf(input, "%lf", &matrix[i]) != 1) {
 				printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 				fclose(input);
 				free(matrix);
