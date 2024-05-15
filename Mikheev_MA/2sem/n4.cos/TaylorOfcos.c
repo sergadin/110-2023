@@ -8,14 +8,10 @@ double TaylorOfcos(double x, Er *error, double EPS){
     double res = 1;
     int i;
     
-    //printf("x = %lf\n", x);
-    
     for(i = 1; i < max_count && fabs(res) > EPS; i++){
         
-        //printf("res = %lf\n", res);
-        res = res * (-1) * x*x / (2*i) / (2*i - 1);
-        //printf("res = %lf\n", res);
-        
+        res = res * (-1) * x*x / (2*i) / (2*i - 1);  // Каждое слагаемое отличается от предыдушего на
+                                                     // (-1)X^2/2i/(2i-1)   
         cosx = cosx + res;
     }
     
@@ -29,7 +25,5 @@ double TaylorOfcos(double x, Er *error, double EPS){
         *error = NOT_CORRECT;
     }
     
-    //printf("i = %d\n", i);
-    //printf("cosx = %lf\n", cosx);
     return cosx;
 }

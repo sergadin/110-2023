@@ -3,10 +3,10 @@
 
 
 
-typedef struct{
-    double x;
-    double res;
-    Er error;
+typedef struct{   // Структура теста
+    double x;     // Аргумент косинуса
+    double res;   // Ожидаемый результат
+    Er error;     // Адрес ошибки
 }Testcase;
 
 
@@ -14,11 +14,11 @@ typedef struct{
 
 int main(void){
     Er error = OK;
-    int length; 
-    double result;
-    double EPS = 0.0000001;
+    int length; // Количество тестов
+    double result; // Результат работы функции
+    double EPS = 0.0000001; // Заданная погрешность
     
-    Testcase test[] = {
+    Testcase test[] = {   // Тесты
         {0, 1, OK},
         {PI/3, 0.5, OK},
         {PI/6, sqrt(3)/2, OK},
