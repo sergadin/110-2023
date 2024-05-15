@@ -17,19 +17,19 @@ int main(void) {
 
 	dataSet tests[] = {
 		{
-		"input.txt",
+		"input1.txt",
 		(double[]) { 0.28571428, 0.85714285, 7.42857142, -3.57142857 },
 		OK
 		},
 		{
 		"input2.txt",
-		(double[]) { 0.28571428, 0.85714285, 7.42857142, -3.57142857 },
+		(double[]) { 1000 },
 		OK
 		},
 		{
-		"input2.txt",
+		"input3.txt",
 		(double[]) { 0.28571428, 0.85714285, 7.42857142, -3.57142857 },
-		OK
+		NO_SOLUTION
 		}
 	};
 
@@ -37,7 +37,6 @@ int main(void) {
 
 	for (int i = 0; i < test_num; i++) {                                            // Тестирование
 		FILE* input;
-		error err;
 		double* matrix, * sol;
 		int m, n;
 		if ((input = fopen(tests[i].input, "r")) == NULL) {
@@ -45,21 +44,21 @@ int main(void) {
 			continue;
 		}
 		if (fscanf(input, "%d%d", &m, &n) == NULL) {
-			printf("%d-й тест не пройден. Ошибка чтения файла", i + 1);
+			printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 			fclose(input);
 			continue;
 		}
 
 		matrix = (double*)malloc(m * n * sizeof(double));
 		if (matrix == NULL) {
-			printf("%d-й тест не пройден. Память не выделилась", i + 1);
+			printf("%d-й тест не пройден. Память не выделилась\n", i + 1);
 			fclose(input);
 			continue;
 		}
 
 		for (int i = 0; i < m * n; i++) {
 			if (fscanf(input, "%lf", &matrix[i]) == NULL) {
-				printf("%d-й тест не пройден. Ошибка чтения файла", i + 1);
+				printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 				fclose(input);
 				free(matrix);
 				continue;
@@ -78,7 +77,7 @@ int main(void) {
 					goto theend;
 				}
 			}
-			printf("%d-й тест пройден.\nРешения:", i + 1);
+			printf("%d-й тест пройден. Решения:", i + 1);
 			writeMatrix(sol, 1, m);
 		}
 		else {

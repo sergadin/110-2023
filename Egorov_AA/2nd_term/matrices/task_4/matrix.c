@@ -11,19 +11,19 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 
 
 double* solution(double* mat, size_t m, size_t n, error* err) {
-	*err = OK;
-
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));
 	if (sol == NULL) {
-		printf("Память не выделилась :(");
+		// printf("Память не выделилась.\n");
 		return 0;
 	}
+	
+	*err = OK;
 
 	if (m + 1 != n) {
-		printf("Система не определена");
+		// printf("Система не определена. ");
 		*err = NO_SOLUTION;
-		return 0;
+		return sol;
 	}
 
 	for (int i = 0; i < m; i++) {
