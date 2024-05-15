@@ -18,12 +18,12 @@ double func3(double x){
 }
 
 
-typedef struct{
-    RFun f;
-    double a;
-    double b;
-    double res;
-    Er error;
+typedef struct{  // структура теста
+    RFun f;      // функция
+    double a;    // левая граница отрезка
+    double b;    // правая граница отрезка
+    double res;  // ожидаемый результат работы
+    Er error;    // код ошибки
 } Testcase;
 
 
@@ -31,7 +31,7 @@ int main(void){
     int count = 0; // количество итераций
     Er error = OK;
     int length; // количество тестов
-    double result;
+    double result; // результат работы функции
     double EPS = 0.0001; // точность вычислений
     
     Testcase test[] = {
@@ -42,8 +42,6 @@ int main(void){
     };
     
     length = sizeof(test) / sizeof(test[0]);
-    //printf("%d\n", length);
-    
     
     for(int i = 0; i < length; i++){
         count = 0;
@@ -66,10 +64,6 @@ int main(void){
         
     }
     
-    
     //printf("Интеграл = %lf", result);
-    
-    
-    
     return 0;
 }

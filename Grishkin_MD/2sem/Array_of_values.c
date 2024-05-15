@@ -1,6 +1,6 @@
 #include "Array_of_values.h"
 
-double* fillValueArray(RRFun* func, int len, double x, error* err) {
+double* arrayOfValues(RRFun* func, int len, double x, error* err) {
     double res;
     double* arr;
     arr = (double*)malloc(len*sizeof(double));
@@ -14,10 +14,11 @@ double* fillValueArray(RRFun* func, int len, double x, error* err) {
         if (isnan(res) || isinf(res)) {
             printf("incorrect arg\n");
             *err = PARAM;
+
             free(arr);
             return 0;
-            }
-            arr[i] = res;
+        }
+        arr[i] = res;
 	}
 	return arr;
 }
