@@ -14,6 +14,10 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));
+	if (sol == NULL) {
+		printf("Память не выделилась :(");
+		return 0;
+	}
 
 	if (m + 1 != n) {
 		printf("Система не определена");
@@ -23,7 +27,7 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 
 	for (int i = 0; i < m; i++) {
 		for (int k = i + 1; k < m; k++) {
-			float factor = mat[k * n + i] / mat[i * n + i];
+			double factor = mat[k * n + i] / mat[i * n + i];
 			for (int j = i; j <= m; j++) {
 				mat[k * n + j] -= factor * mat[i * n + j];
 			}
