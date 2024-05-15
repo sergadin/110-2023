@@ -11,6 +11,7 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 
 
 double* solution(double* mat, size_t m, size_t n, error* err) {
+	bool is_singular = false;
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));
 	if (sol == NULL) {
@@ -27,11 +28,15 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 	}
 
 	for (int i = 0; i < m; i++) {
-		for (int k = i + 1; k < m; k++) {
-			double factor = mat[k * n + i] / mat[i * n + i];
-			for (int j = i; j <= m; j++) {
-				mat[k * n + j] -= factor * mat[i * n + j];
+		for (int j = i + 1; j < m; j++) {
+			double factor = mat[j * n + i] / mat[i * n + i];
+			for (int k = i; k <= m; k++) {
+				mat[j * n + k] -= factor * mat[i * n + k];
 			}
+		}
+		if (matrix[i][i] == 0 && matrix[i][N] != 0) {
+			is_singular = true;
+			break;
 		}
 	}
 
