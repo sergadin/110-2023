@@ -28,18 +28,18 @@ int main(void) {
 		},
 		{
 		"input3.txt",
-		(double[]) { 0 },
-		NO_SOLUTION
-		},
-		{
-		"input4.txt",
 		(double[]) { 55.17704468, -0.35057501, -2.53179109, 55.26782329, -1.04136025, -117.35089055, 5.13566938 },
 		OK
 		},
 		{
+		"input4.txt",
+		(double[]) { 0 },
+		NO_SOLUTION
+		},
+		{
 		"input5.txt",
 		(double[]) { 1000 },
-		OK
+		SINGULAR_MATRIX
 		}
 	};
 

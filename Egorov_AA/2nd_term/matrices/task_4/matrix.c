@@ -34,11 +34,12 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 				mat[j * n + k] -= factor * mat[i * n + k];
 			}
 		}
-		if (matrix[i][i] == 0 && matrix[i][N] != 0) {
-			is_singular = true;
-			break;
+		if (mat[i * n + i] == 0 && mat[i * n + m] != 0) {
+			*err = SINGULAR_MATRIX;
+			return sol;
 		}
 	}
+
 
 	for (int i = m - 1; i >= 0; i--) {
 		sol[i] = mat[i * n + m];

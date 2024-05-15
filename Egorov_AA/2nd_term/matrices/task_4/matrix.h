@@ -5,7 +5,7 @@
 typedef enum {
     OK,              // Все хорошо
     NO_SOLUTION,     // Система не определена
-    NOT_DET
+    SINGULAR_MATRIX  // Матрица вырождена
 }error;
 
 void writeMatrix(double* matrix, size_t m, size_t n);
