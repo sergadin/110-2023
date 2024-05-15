@@ -13,21 +13,22 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 double* solution(double* mat, size_t m, size_t n, error* err) {
 	bool is_singular = false;
 	double* sol;
-	sol = (double*)malloc(m * sizeof(double));
+	sol = (double*)malloc(m * sizeof(double));                             // Называние массива
 	if (sol == NULL) {
 		// printf("Память не выделилась.\n");
+		*err = M_ALLOC_ERR;
 		return 0;
 	}
 	
 	*err = OK;
 
-	if (m + 1 != n) {
+	if (m + 1 != n) {                                                      // Проверка на определенность
 		// printf("Система не определена. ");
 		*err = NO_SOLUTION;
 		return sol;
 	}
 
-	for (int i = 0; i < m; i++) {
+	for (int i = 0; i < m; i++) {                                          // Приведение к верхнетреугольному виду
 		for (int j = i + 1; j < m; j++) {
 			double factor = mat[j * n + i] / mat[i * n + i];
 			for (int k = i; k <= m; k++) {
@@ -41,7 +42,7 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 	}
 
 
-	for (int i = m - 1; i >= 0; i--) {
+	for (int i = m - 1; i >= 0; i--) {                                      // Заполнение массива значений
 		sol[i] = mat[i * n + m];
 		for (int j = i + 1; j < m; j++) {
 			sol[i] -= mat[i * n + j] * sol[j];
