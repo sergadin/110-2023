@@ -8,7 +8,7 @@ int main(void) {
 	double* matrix, * res;
 	int m, n;
 	if ((input = fopen("input.txt", "r")) == NULL) {
-		printf("Не удалось открыть файл");
+		printf("Не удалось открыть файл\n");
 		return -1;
 	}
 

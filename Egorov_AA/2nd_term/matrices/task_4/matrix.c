@@ -18,6 +18,7 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 	if (m + 1 != n) {
 		printf("Система не определена");
 		*err = NO_SOLUTION;
+		return 0;
 	}
 
 	for (int i = 0; i < m; i++) {
