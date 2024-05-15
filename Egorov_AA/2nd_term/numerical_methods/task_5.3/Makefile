@@ -8,6 +8,9 @@ main.o: main.c interpolation.h
 	
 run: a.out
 	./a.out
+	gnuplot plot1.gnu
+	gnuplot plot2.gnu
+	gnuplot plot3.gnu
 	
 a.out: main.o interpolation.o
 	gcc main.o interpolation.o -lm

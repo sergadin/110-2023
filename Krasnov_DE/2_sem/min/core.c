@@ -3,7 +3,7 @@
 double min_search(RRFun *f, double a, double b, double eps, error *err){
     double psi = (sqrt(5)-1)/2;
     double phi = 1 - psi;
-    int limit = 1000000;
+    int limit = 1000;
     double x;
     double d, f_d, c, f_c;
     *err = OK;
@@ -30,11 +30,11 @@ double min_search(RRFun *f, double a, double b, double eps, error *err){
             f_c=f_d;
             f_d=(*f)(d);
         }
-        limit = limit - 1;
-        if(limit==0){
-            *err = LIMIT;
-            return -1;
-        }
+        limit = limit - 1;  
+    }
+    if(limit==0){
+      *err = LIMIT;
+      return -1;
     }
     x=(a+b)/2;
     return (*f)(x);

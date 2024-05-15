@@ -1,29 +1,27 @@
-﻿﻿#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 typedef double (*RRFun)(double);
 
 typedef enum 
-{           // Коды ошибок:
-	OK,                   //  Все хорошо
-	I_LIMIT_EXCEEDED,     //  Превышен лимит итераций
-	WRONG_INTERVAL,       //  Неправильно задан интервал
+{           
+	OK,
+	ITERATION_LIMIT_EXCEEDED,
+	WRONG_INTERVAL,
 } error;
 
 double min_value(RRFun f, double a, double b, double epsilon, error* error_code);
 
-/* Функция поиска минимума функции методом золотого сечения
-**
-** На вход функции подается указатель на функцию, начало и конец отрезка, на котором
-** нужно найти минимальное значение, допустимая погрешность и код ошибки.
-** Функция сравнивает значения заданной функции на точках, выбранных методом золотого
-** сечения. Выбирает отрезок от точки с минимальным значением, до конца отрезка,
-** оставшийся кусок выбрасывает. Причем отношение длины нового отрезка к старому равно
-** 0.618. Данное отношение сохраняется, что и дало название этому методу.
-** Эту процедуру функция выполняет, пока значение функции в двух точках не будет
-** сравнимо с погрешностью.
-**
-** Если все прошло без ошибок, функция вернет значение(сравнимое с погрешностью)
-** заданной функции в точке минимума.
+/* Function for finding the minimum of the given function with the shredding of the even net method
+* The function input is a pointer to the function,
+* the beginning and the end of the segment on which we need to find the minimum value,
+* permissible error and error code.
+* 
+* In the cycle we look for three points according to the refinement step of the even net and find the vertex of the parabola.
+* We compare the function values ​​at the vertex of the parabola and the minimum of three points, 
+* and narrow the interval to find the minimum.
+* We repeat this process until we achieve the specified accuracy.
+* 
+* If everything went without errors, the function will return the minimum value (comparable to the epsilon)
 */

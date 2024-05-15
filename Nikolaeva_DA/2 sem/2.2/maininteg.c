@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "integral.h"
+
 typedef struct {          // Структура тестов:
 	RRFun f;          //   - Указатель на функцию
 	double a;         //   - Начало отрезка
@@ -12,44 +13,53 @@ typedef struct {          // Структура тестов:
 double func1(double x);      // Заданные функции
 double func2(double x);
 double func3(double x);
+double func4(double x);
+
 
 double func1(double x) {
-	return ((x * x)-2);
+	return x * x * x + (x / 5 - 5) * (x / 5 - 5) - 20;
 }
+
 
 double func2(double x) {
 	return 5 * x - 2;
 }
 
+
 double func3(double x) {
-	return  2 * x;
+	return x * x - 10 * x + 20;
+}
+
+
+double func4(double x) {
+	return sin(x);
 }
 
 int main(void) {
-	int n_tests;
+	int test_num;
 	Error err;
 	double value;
 	const double eps = 1e-5;
-	dataSet tests[] = {                                  //      Тесты
-		{func1, -0.5, 3, 2.041668, OK},             //  Имя функции, 
-		{func2, -10, 5, -217.5, OK},               //   Начало отрезка, конец отрезка
-		{func3, 3, -3, 0.00001, NO_INTER}         //   Ожидаемая ошибка
-	};             
+	dataSet tests[] = {
+		{func1, 0, 2, 10.106667, OK},
+		{func2, -10, 5, -217.5, OK},
+		{func3, 0, 10, 33.333333, OK},
+		{func4, 0, 2.5, 1.80114, OK},
+		{func3, 5, 0, 0.803, NO_INTER}
+	};
 
+	test_num = sizeof(tests) / sizeof(tests[0]);
 
-
-	n_tests = sizeof(tests) / sizeof(tests[0]);
-
-	for (int i = 0; i < n_tests; i++) {                    // Тестирование
+	for (int i = 0; i < test_num; i++) {                                            // Тестирование
 		value = integral(tests[i].f, tests[i].a, tests[i].b, eps, &err);
 		if (err != tests[i].err) {
-			printf("%d-й тест не пройден \n", i + 1);
+			printf("%d-й тест не пройден   \n", i + 1);
 		}
 		else if ((err == OK) && (fabs(tests[i].res - value) / 2 > eps)) {
-			printf("%d-й тест не пройден \n", i + 1);
+			printf("%d-й тест не пройден  \n", i + 1);
 		}
 		else {
-			printf("%d-й тест пройден.\n", i + 1);
+			printf("%d-й тест пройден. \n", i + 1);
 		}
 	}
 
