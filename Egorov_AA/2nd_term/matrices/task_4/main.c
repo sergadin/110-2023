@@ -11,20 +11,23 @@ int main(void) {
 		printf("Не удалось открыть файл\n");
 		return 0;
 	}
-	if (fscanf(input, "%d %d", &m, &n) == NULL) {
-		printf("Ошибка чтения файла :(");
+	if (fscanf(input, "%d%d", &m, &n) == NULL) {
+		printf("Ошибка чтения файла");
+		fclose(input);
 		return 0;
 	}
 
 	matrix = (double*)malloc(m * n * sizeof(double));
 	if (matrix == NULL) {
-		printf("Память не выделилась :(");
+		printf("Память не выделилась");
+		fclose(input);
 		return 0;
 	}
 
 	for (int i = 0; i < m * n; i++) {
 		if (fscanf(input, "%lf", &matrix[i]) == NULL) {
-			printf("Ошибка чтения файла :(");
+			printf("Ошибка чтения файла");
+			fclose(input);
 			return 0;
 		}
 	}
@@ -34,5 +37,8 @@ int main(void) {
 	writeMatrix(res, 1, m);
 
 
+	free(matrix);
+	free(res);
+	fclose(input);
 	return 0;
 }
