@@ -1,6 +1,7 @@
-﻿#include "stdio.h"
-#include "time.h"
-#include "stdlib.h"
+﻿#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <math.h>
 
 void fillMatrix(double*** matrix, int n);
 

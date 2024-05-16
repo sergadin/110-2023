@@ -10,8 +10,18 @@ void writeMatrix(double* matrix, int m, int n) {
 }
 
 
+void swapRows(double* mat, int n, int row_1, int row_2) {
+    for (int i = 0; i < n; i++) {
+        double temp;
+        temp = mat[row_1 * n + i];
+        mat[row_1 * n + i] = mat[row_2 * n + i];
+        mat[row_2 * n + i] = temp;
+    }
+}
+
+
 double* solution(double* mat, int m, int n, error* err) {
-    const double eps = 0.000000000000;
+	const double eps = 0.0000000000001;
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));                             // Называние массива
 	if (sol == NULL) {
@@ -19,7 +29,7 @@ double* solution(double* mat, int m, int n, error* err) {
 		*err = M_ALLOC_ERR;
 		return 0;
 	}
-	
+
 	*err = OK;
 
 	if (m + 1 != n) {                                                      // Проверка на определенность
@@ -27,23 +37,20 @@ double* solution(double* mat, int m, int n, error* err) {
 		*err = NO_SOLUTION;
 		return sol;
 	}
+	
+	for (int i = 0; i < m; i++) {
+        
+    }
 
 	for (int i = 0; i < m; i++) {                                          // Приведение к верхнетреугольному виду
 		for (int j = i + 1; j < m; j++) {
-            double factor;
-            if (fabs(mat[i * n + i]) > eps) {
-                factor = mat[j * n + i] / mat[i * n + i];
-            }
-            else {
-                *err = SINGULAR_MATRIX;
-                return sol;
-            }   
-            
+			double factor;
+			factor = mat[j * n + i] / mat[i * n + i];
 			for (int k = i; k <= m; k++) {
 				mat[j * n + k] -= factor * mat[i * n + k];
 			}
 		}
-		if (fabs(mat[i * n + i] ) <= eps && fabs(mat[i * n + m]) >= eps) {
+		if (fabs(mat[i * n + i] ) < eps && fabs(mat[i * n + m]) > eps) {
 			*err = SINGULAR_MATRIX;
 			return sol;
 		}
@@ -57,7 +64,7 @@ double* solution(double* mat, int m, int n, error* err) {
 		}
 		sol[i] /= mat[i * n + i];
 	}
-	
+
 	//writeMatrix(sol, 1, m);
 
 	return sol;

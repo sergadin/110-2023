@@ -13,6 +13,8 @@ void fillMatrix(double*** matrix, int n);
 
 void writeMatrix(double** matrix, int n);
 
+int checkMatrix(double** matrix, int n);
+
 double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err);
 
 double** invertMatrix(double** given_matrix, int n, error* err);

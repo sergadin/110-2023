@@ -4,7 +4,7 @@ void fillMatrix(double*** matrix, int n) {
 	srand(time(NULL));
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
-			(*matrix)[i][j] = (double)rand();
+			(*matrix)[i][j] = rand();
 }
 
 
@@ -60,7 +60,7 @@ double** invertMatrix(double** given_matrix, int n) {
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
-		if (pivot == 0.0) {
+		if (fabs(pivot) < 0.0000001) {
 			printf("Обратная матрица не существует.\n");
 			return 0;
 		}

@@ -18,6 +18,26 @@ void writeMatrix(double** matrix, int n) {
 }
 
 
+int checkMatrix(double** matrix, int m) {
+    const eps = 0.00001;
+    flag = 1;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++){
+            if(i == j)
+                if (fabs(matrix[i][j]) > 1 + eps)
+                    flag = 0;
+            else
+                if (fabs(matrix[i][j]) > eps)
+                    flag = 0;
+        }
+    }
+    if(flag)
+        return 1;
+    else
+        return 0;
+}
+
+
 double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err) {
 	double** multiplied_matrix;
 	multiplied_matrix = (double**)malloc(n * sizeof(double*));
