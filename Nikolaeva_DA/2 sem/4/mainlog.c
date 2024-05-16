@@ -18,21 +18,21 @@ int main(void)
 	Error err;
 	struct testing tests[4] =
 	{
-		{0, -1, 0.00001},
-		{0.5, -0.599999, 0.000001},
-		{0.4, -0.482758, 0.000001},
-		{0.9, -0.944751, 0.000001}
+		{0.5, 0.405466, 0.000001},
+		{0.4, 0.336472, 0.000001},
+		{0.9, 0.641853, 0.000001}
 	};
 
-	for(int i = 0; i < 4; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		x = tests[i].x;
 		result = tests[i].result;
 		eps = tests[i].eps;
 		value = taylor_log(x, eps, &err);
 		printf("Тест %d\n Значение x: %lf; Ожидаемый результат: %lf\n", i+1, tests[i].x, tests[i].result);
-		printf(" ln(1+x): %lf\n", value);
-	}
+		printf(" ln(x): %lf\n", value);
+		printf("logf : %.20f\n", logf(x + 1));
+			}
 
 	return 0;
 }
