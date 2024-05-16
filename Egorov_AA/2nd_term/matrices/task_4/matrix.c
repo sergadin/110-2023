@@ -1,6 +1,6 @@
 ﻿#include "matrix.h"
 
-void writeMatrix(double* matrix, size_t m, size_t n) {
+void writeMatrix(double* matrix, int m, int n) {
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
 			printf("%lf ", matrix[i * n + j]);
@@ -10,7 +10,8 @@ void writeMatrix(double* matrix, size_t m, size_t n) {
 }
 
 
-double* solution(double* mat, size_t m, size_t n, error* err) {
+double* solution(double* mat, int m, int n, error* err) {
+    const double eps = 0.000000000000;
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));                             // Называние массива
 	if (sol == NULL) {
@@ -29,12 +30,20 @@ double* solution(double* mat, size_t m, size_t n, error* err) {
 
 	for (int i = 0; i < m; i++) {                                          // Приведение к верхнетреугольному виду
 		for (int j = i + 1; j < m; j++) {
-			double factor = mat[j * n + i] / mat[i * n + i];
+            double factor;
+            if (fabs(mat[i * n + i]) > eps) {
+                factor = mat[j * n + i] / mat[i * n + i];
+            }
+            else {
+                *err = SINGULAR_MATRIX;
+                return sol;
+            }   
+            
 			for (int k = i; k <= m; k++) {
 				mat[j * n + k] -= factor * mat[i * n + k];
 			}
 		}
-		if (mat[i * n + i] == 0 && mat[i * n + m] != 0) {
+		if (fabs(mat[i * n + i] ) <= eps && fabs(mat[i * n + m]) >= eps) {
 			*err = SINGULAR_MATRIX;
 			return sol;
 		}

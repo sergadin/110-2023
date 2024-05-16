@@ -4,7 +4,7 @@
 #include <math.h>
 
 typedef struct {          // Структура тестов:
-	char* input;               // Имя файла
+	const char* input;               // Имя файла
 	double* res;               // Ожидаемые значения
 	error err_code;             // Код ошибки
 } dataSet;
@@ -38,7 +38,7 @@ int main(void) {
 		},
 		{
 		"input5.txt",
-		(double[]) { 1000 },
+		(double[]) { 0 },
 		SINGULAR_MATRIX
 		}
 	};
