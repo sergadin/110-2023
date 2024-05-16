@@ -6,7 +6,7 @@
 typedef enum {                      // Коды ошибок:
 	OK,                             //  Все хорошо
 	MEM_ALLOC_ERR,                  //  Ошибка выделения памяти
-	SINGULAR_MATRIX,                //  Вырожденная матрица
+	INVALID_MATRIX,                //  Вырожденная матрица
 } error;
 
 void fillMatrix(double*** matrix, int n);

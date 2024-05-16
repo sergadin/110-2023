@@ -18,33 +18,25 @@ void writeMatrix(double** matrix, int n) {
 }
 
 
-void swapRows(double** mat, int n, int row_1, int row_2) {
-	for (int i = 0; i < n; i++) {
-		double temp;
-		temp = mat[row_1][i];
-		mat[row_1][i] = mat[row_2][i];
-		mat[row_2][i] = temp;
-	}
-}
-
-
 int checkMatrix(double** matrix, int n) {
-    const double eps = 0.000000000001;
-    int flag = 1;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++){
-            if(i == j)
-                if (fabs(matrix[i][j]) > 1 + eps)
-                    flag = 0;
-            else
-                if (fabs(matrix[i][j]) > eps)
-                    flag = 0;
-        }
-    }
-    if(flag)
-        return 1;
-    else
-        return 0;
+	const double eps = 0.000000000001;
+	int flag = 1;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (i == j) {
+				if (fabs(matrix[i][j]) > 1 + eps)
+					flag = 0;
+			}
+			else {
+				if (fabs(matrix[i][j]) > eps)
+					flag = 0;
+			}
+		}
+	}
+	if (flag)
+		return 1;
+	else
+		return 0;
 }
 
 
@@ -108,21 +100,7 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			return 0;
 		}
 	}
-	
-	for (int i = 0; i < n - 1; i++) {
-		if (matrix[i][0] < eps)
-			swapRows(matrix, n, i, i+1);
-		else {
-			all_leaders_zero = 0;
-			break;
-		}
-	}
 
-	if(all_leaders_zero && (fabs(matrix[n-1][0]) < eps)) {
-		*err = SINGULAR_MATRIX;
-		return 0;
-	}
-	
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
 		for (int j = 0; j < n; j++)
 			matrix[i][j] = given_matrix[i][j];
@@ -137,6 +115,12 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
+
+		if (pivot == 0) {
+			printf("cyka");
+			*err = INVALID_MATRIX;
+			return 0;
+		}
 
 		for (int j = 0; j < n; j++) {                            // Деление строки на значение главного элемента
 			matrix[i][j] /= pivot;
@@ -153,7 +137,7 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			}
 		}
 	}
-	
+
 	for (int i = 0; i < n; i++) {
 		free(matrix[i]);
 	}
