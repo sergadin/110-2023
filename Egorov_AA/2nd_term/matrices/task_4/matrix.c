@@ -11,19 +11,21 @@ void writeMatrix(double* matrix, int m, int n) {
 
 
 void swapRows(double* mat, int n, int row_1, int row_2) {
-    for (int i = 0; i < n; i++) {
-        double temp;
-        temp = mat[row_1 * n + i];
-        mat[row_1 * n + i] = mat[row_2 * n + i];
-        mat[row_2 * n + i] = temp;
-    }
+	for (int i = 0; i < n; i++) {
+		double temp;
+		temp = mat[row_1 * n + i];
+		mat[row_1 * n + i] = mat[row_2 * n + i];
+		mat[row_2 * n + i] = temp;
+	}
 }
 
 
 double* solution(double* mat, int m, int n, error* err) {
-	const double eps = 0.0000000000001;
+	const double eps = 0.000000000001;
+	int all_leaders_zero;
 	double* sol;
-	sol = (double*)malloc(m * sizeof(double));                             // Называние массива
+	sol = (double*)malloc(m * sizeof(double));                             // Называние масcива
+	all_leaders_zero = 1;
 	if (sol == NULL) {
 		// printf("Память не выделилась.\n");
 		*err = M_ALLOC_ERR;
@@ -37,10 +39,20 @@ double* solution(double* mat, int m, int n, error* err) {
 		*err = NO_SOLUTION;
 		return sol;
 	}
-	
-	for (int i = 0; i < m; i++) {
-        
-    }
+
+	for (int i = 0; i < m - 1; i++) {
+		if (mat[i * n] < eps)
+			swapRows(mat, n, i, i+1);
+		else {
+			all_leaders_zero = 0;
+			break;
+		}
+	}
+
+	if(all_leaders_zero && (mat[(m - 1 ) * n] < eps)) {
+		*err = SINGULAR_MATRIX;
+		return sol;
+	}
 
 	for (int i = 0; i < m; i++) {                                          // Приведение к верхнетреугольному виду
 		for (int j = i + 1; j < m; j++) {

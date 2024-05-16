@@ -66,8 +66,8 @@ int main(void) {
 			continue;
 		}
 
-		for (int i = 0; i < m * n; i++) {
-			if (fscanf(input, "%lf", &matrix[i]) != 1) {
+		for (int j = 0; j < m * n; i++) {
+			if (fscanf(input, "%lf", &matrix[j]) != 1) {
 				printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 				fclose(input);
 				free(matrix);

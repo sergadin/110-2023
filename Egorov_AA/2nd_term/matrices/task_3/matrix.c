@@ -4,7 +4,7 @@ void fillMatrix(double*** matrix, int n) {
 	srand(time(NULL));
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
-			(*matrix)[i][j] = rand();
+			(*matrix)[i][j] = (double)rand();
 }
 
 
@@ -18,11 +18,52 @@ void writeMatrix(double** matrix, int n) {
 }
 
 
-double** multiplyMatrices(double** matrix1, double** matrix2, int n) {
+void swapRows(double** mat, int n, int row_1, int row_2) {
+	for (int i = 0; i < n; i++) {
+		double temp;
+		temp = mat[row_1][i];
+		mat[row_1][i] = mat[row_2][i];
+		mat[row_2][i] = temp;
+	}
+}
+
+
+int checkMatrix(double** matrix, int n) {
+    const double eps = 0.000000000001;
+    int flag = 1;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++){
+            if(i == j)
+                if (fabs(matrix[i][j]) > 1 + eps)
+                    flag = 0;
+            else
+                if (fabs(matrix[i][j]) > eps)
+                    flag = 0;
+        }
+    }
+    if(flag)
+        return 1;
+    else
+        return 0;
+}
+
+
+double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err) {
 	double** multiplied_matrix;
 	multiplied_matrix = (double**)malloc(n * sizeof(double*));
-	for (int i = 0; i < n; i++)
+	if (multiplied_matrix == NULL) {
+		printf("Ошибка выделения памяти.");
+		*err = MEM_ALLOC_ERR;
+		return 0;
+	}
+	for (int i = 0; i < n; i++) {
 		multiplied_matrix[i] = (double*)malloc(n * sizeof(double));
+		if (multiplied_matrix[i] == NULL) {
+			printf("Ошибка выделения памяти.");
+			*err = MEM_ALLOC_ERR;
+			return 0;
+		}
+	}
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
@@ -37,15 +78,51 @@ double** multiplyMatrices(double** matrix1, double** matrix2, int n) {
 }
 
 
-double** invertMatrix(double** given_matrix, int n) {
+double** invertMatrix(double** given_matrix, int n, error* err) {
+	const double eps = 0.000000000001;
+	int all_leaders_zero = 1;
 	double** inverse_matrix, ** matrix;
+	*err = OK;
 	inverse_matrix = (double**)malloc(n * sizeof(double*));      // Выделение памяти на матрицы
-	for (int i = 0; i < n; i++)
+	if (inverse_matrix == NULL) {
+		*err = MEM_ALLOC_ERR;
+		return 0;
+	}
+	for (int i = 0; i < n; i++) {
 		inverse_matrix[i] = (double*)malloc(n * sizeof(double));
-	matrix = (double**)malloc(n * sizeof(double*));
-	for (int i = 0; i < n; i++)
-		matrix[i] = (double*)malloc(n * sizeof(double));
+		if (inverse_matrix[i] == NULL) {
+			*err = MEM_ALLOC_ERR;
+			return 0;
+		}
+	}
 
+	matrix = (double**)malloc(n * sizeof(double*));
+	if (matrix == NULL) {
+		*err = MEM_ALLOC_ERR;
+		return 0;
+	}
+	for (int i = 0; i < n; i++) {
+		matrix[i] = (double*)malloc(n * sizeof(double));
+		if (matrix[i] == NULL) {
+			*err = MEM_ALLOC_ERR;
+			return 0;
+		}
+	}
+	
+	for (int i = 0; i < n - 1; i++) {
+		if (matrix[i][0] < eps)
+			swapRows(matrix, n, i, i+1);
+		else {
+			all_leaders_zero = 0;
+			break;
+		}
+	}
+
+	if(all_leaders_zero && (fabs(matrix[n-1][0]) < eps)) {
+		*err = SINGULAR_MATRIX;
+		return 0;
+	}
+	
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
 		for (int j = 0; j < n; j++)
 			matrix[i][j] = given_matrix[i][j];
@@ -60,10 +137,6 @@ double** invertMatrix(double** given_matrix, int n) {
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
-		if (fabs(pivot) < 0.0000001) {
-			printf("Обратная матрица не существует.\n");
-			return 0;
-		}
 
 		for (int j = 0; j < n; j++) {                            // Деление строки на значение главного элемента
 			matrix[i][j] /= pivot;
@@ -80,7 +153,7 @@ double** invertMatrix(double** given_matrix, int n) {
 			}
 		}
 	}
-
+	
 	for (int i = 0; i < n; i++) {
 		free(matrix[i]);
 	}
