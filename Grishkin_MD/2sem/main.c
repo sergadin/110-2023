@@ -5,10 +5,10 @@ double exp (double x);
 double squaring(double x);
 
 typedef struct {
-	RRFun* f; // указатель на массив функций
-	double x; // подаваемое значение
-	double *res; // ожидаемый массив значений
-	error err; // ожидаемый код ошибки
+	RRFun* f; 
+	double x; 
+	double *res; 
+	error err; 
 } TestCase;
 
 double sine(double x) {
@@ -24,14 +24,13 @@ double squaring(double x) {
 }
 
 int main(void){
-    const double pi = 3.141592653; // Пи
-    int t_num;   // кол-во тестов
-    int f_num = 3;  // кол-во тестов
-    const double eps = 1e-3; // 0.001 конст
-    error err; // код ошибки
-	double* value_arr; // массив результатов
+    const double pi = 3.141592653; 
+    int t_num;   
+    int f_num = 3;  
+    const double eps = 1e-3; // 0.001 
+    error err; 
+	double* value_arr; 
 
-	// массив структур `tests` с тестовыми данными.
 	TestCase tests[] = {
 		{
 			(RRFun[]) {sine, exp, squaring},
