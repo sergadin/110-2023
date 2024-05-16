@@ -19,12 +19,12 @@ void writeMatrix(double** matrix, int n) {
 
 
 int checkMatrix(double** matrix, int n) {
-	const double eps = 0.000000000001;
+	const double eps = 0.00000000001;
 	int flag = 1;
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (i == j) {
-				if (fabs(matrix[i][j]) > 1 + eps)
+				if (matrix[i][j] > 1 + eps)
 					flag = 0;
 			}
 			else {
@@ -71,7 +71,7 @@ double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err)
 
 
 double** invertMatrix(double** given_matrix, int n, error* err) {
-	const double eps = 0.000000000001;
+	const double eps = 0.00000000000001;
 	int all_leaders_zero = 1;
 	double** inverse_matrix, ** matrix;
 	*err = OK;
@@ -116,8 +116,7 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
 
-		if (pivot == 0) {
-			printf("cyka");
+		if (fabs(pivot) < eps) {
 			*err = INVALID_MATRIX;
 			return 0;
 		}
