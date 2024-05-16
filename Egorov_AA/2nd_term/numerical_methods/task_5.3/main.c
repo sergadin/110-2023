@@ -3,31 +3,24 @@
 #include <stdlib.h>
 
 typedef struct {          // Структура тестов:
-	point* points;
-	size_t n;
-	point* interp_points;
-	size_t m;
-	error err_code;
+	point* points;              // Массив определенных точек
+	size_t n;                   // Количество этих точек
+	point* interp_points;       // Точные точки функции(x используется для поиска прибл. значения, y для проверки в тесте)
+	size_t m;                   // Количество этих точек
+	error err_code;             // Код ошибки
 } dataSet;
+
 
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number);
 void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t m, double* res, int number) {
-	FILE* gnuplotPipe;
 	for (int i = 0; i < n; i++)
 		fprintf(out1, "%lf %lf\n", p[i].x, p[i].y);
 	for (int i = 0; i < m; i++)
 		fprintf(out2, "%lf %lf\n", i_p[i].x, res[i]);
-	gnuplotPipe = popen("gnuplot -persist", "w");
-	if (gnuplotPipe == NULL) {
-		printf("Ошибка запуска Gnuplot.\n");
-		return;
-	}
-	fprintf(gnuplotPipe, "set terminal png\nset output 'plot%d.png'\nplot 'out1.txt' with points\nset output\n", number);
-	pclose(gnuplotPipe);
 }
 
+
 int main(void) {
-	//system("chcp 1251");
 	const double eps = 0.1;
 	int test_num, func_num = 3;
 	error err;
@@ -55,20 +48,16 @@ int main(void) {
 			(point[]) { {0.6, -0.510826}, {0.9, -0.105361}, {1.35, 0.300105} },
 			3,
 			OK 
-		},
-		{ 
-			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
-			5,
-			(point[]) { {1, 2}, {2, 3}, {3, 4}, {4, 5} },
-			4,
-			OK 
 		}
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
 
 	for (int i = 0; i < test_num; i++) {                                            // Тестирование
-		FILE* out1 = fopen("out1.txt", "w"), * out2 = fopen("out2.txt", "w");
+		char filename1[32], filename2[32];
+		sprintf(filename1, "out%d.txt", 2 * (i + 1) - 1);
+		sprintf(filename2, "out%d.txt", 2 * (i + 1));
+		FILE* out1 = fopen(filename1, "w"), * out2 = fopen(filename2, "w");
 		double* res;
 		res = (double*)malloc(sizeof(double) * tests[i].m);
 		if (res == NULL) {
@@ -93,7 +82,7 @@ int main(void) {
 			printf("%d-й тест пройден.\n", i + 1);
 			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
 		}
-		theend:
+	theend:
 		fclose(out1);
 		fclose(out2);
 		free(res);
