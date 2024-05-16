@@ -32,12 +32,12 @@ int main(void){
     Er error = OK;
     int length; // количество тестов
     double result; // результат работы функции
-    double EPS = 0.0001; // точность вычислений
+    double EPS = 0.00000001; // точность вычислений
     
     Testcase test[] = {
-        {func1, 0, 2, 8, OK},
-        {func2, -2, 3, 20, OK},
-        {func3, PI, 3*PI, 0, OK},
+        {func1, 0, 3, 27, OK},
+        {func1, 1, 5, 124, OK},
+        {func2, -17,  36, 4*(17 + 36), OK},
         {func3, PI, 3*PI/2, -1, OK}
     };
     
