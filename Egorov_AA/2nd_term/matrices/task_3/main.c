@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 
-int main() {
+int main(void) {
 	int n;
 	double** matrix, ** inverse_matrix, ** multiplied_matrix;
 	system("chcp 1251");
