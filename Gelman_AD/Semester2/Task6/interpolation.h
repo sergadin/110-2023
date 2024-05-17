@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
@@ -15,16 +15,15 @@ typedef enum
 void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, error* err);
 
 /*
-** Функция, вычисляющая приблизительные значения по уже имеющимся точкам.
-**
-** На вход функции подается массив известных точек(p), количество этих точек(n), массив с
-** точками, в которых нужно найти значение(i_p), количество этих точек(m), массив, куда будут
-** записываться искомые значения(interp_y) и указатель на код ошибки(err).
-** Находятся три ближайшие точки к искомой и с помощью формул весовых коэффицентов и формулы
-** интерполяции находится приближенное значение точки.
-**
-** Если все прошло хорошо в массив interp_y запишутся значения функции в искомых точках.
-**
-** Заданные и полученные точки запишутся в новые файлы. С помощью гнуплота в папке появятся
-** картинки заданных функций и полученных точек.
+A function for calculating approximate values вЂ‹вЂ‹from the given points
+The function input is an array of given points (p), the number of these points (n),
+An array with points at which it is needed to find the value (i_p), the number of these points (m),
+An array where will be the required values вЂ‹вЂ‹(interp_y) and a pointer to the error code (err).
+
+The three closest points to the desired one are found and using the formulas of weighting coefficients 
+And the formula of the piecewise linear interpolation we find the approximate value of a point.
+
+If everything went well, the function values вЂ‹of the required points will be written to the interp_y array.
+The given and received points will be written to new files. 
+With the help of gnuplot, the following will appear in the folder: pictures of given functions and obtained points.
 */

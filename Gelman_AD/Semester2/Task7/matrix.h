@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* Основные ошибки*/
 typedef enum 
 {
-    OK, /*Нет ошибок*/
-    ZERO_MATRIX, /*Введена матрица без элементов*/
-    MEMORY_ERROR, /*Ошибка выделения памяти*/
-    FILE_ERROR, /*Ошибка открытия или чтения файла*/
+    OK,
+    ZERO_MATRIX,
+    MEMORY_ERROR,
+    FILE_ERROR,
 }Error;
-
 
 /*	Параметры: *matr - указатель на массив, содержащий элементы матрицы
  *          n - порядок передаваемой матрицы
@@ -23,4 +21,4 @@ typedef enum
  * Если передана пустая матрица (в которой нет ни одного значения), возвращается код ошибки NA_ZERO_MATR и значение -1.
  * Если возникли ошибки при работе с файлом, функция возвращает код ошибки FILE_WR и значение -1.
  */
-double determinate(double* matr, int n, double eps, Error* err);
+double determinate(double* matrix, int n, double epsilon, Error* error);
