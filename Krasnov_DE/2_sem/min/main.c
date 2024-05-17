@@ -23,11 +23,15 @@ static double func2(double x){
 }
 
 static double func3(double x){
-	x = 2;
-	return x;
+	return 2;
 }
+
 static double func4(double x){
 	return pow(x,4) + 55 * x - 17;
+}
+
+static double func5(double x){
+  return pow(10,x);
 }
 
 
@@ -37,17 +41,19 @@ int main(void){
     double result;
     double eps = 1e-6;
     int test_num;
+    int i;
 
     dataSet tests[] = {     //creating test suites
     {func1, -10, 5, 5, OK},
 	{func2, 5, 162, 8, OK},
-	{func3, 5e+60, 2e+61, 2, LIMIT},
-	{func4, 4, 1, -1, WRNG_ORD}
+	{func3, 2, 1000, 2, OK},
+	{func4, 4, 1, -1, WRNG_ORD},
+	{func5, 1, 1e+61, 10, LIMIT}
 	};
 
     test_num = sizeof(tests) / sizeof(tests[0]);    //count the number of tests
 
-	for (int i = 0; i < test_num; i++){
+	for (i = 0; i < test_num; i++){
 	    result = min_search(&tests[i].f, tests[i].a, tests[i].b, eps, &err);
 	    if(tests[i].err_code != err){
             printf("the test %d failed, the expected result of the algorithm execution was not obtained \n",i+1);
