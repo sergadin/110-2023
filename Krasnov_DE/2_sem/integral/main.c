@@ -14,6 +14,7 @@ static double func3(double x);
 static double func4(double x);
 static double func5(double x);
 static double func6(double x);
+static double func7(double x);
 
 static double func1(double x){  //description of functions
 	return ((x * x)+2);
