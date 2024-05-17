@@ -3,10 +3,11 @@
 #include <math.h>
 #include "matrix.h"
 
+// New structure for testing
 typedef struct 
-{  /* новая переменаая-структура для проведения теста */
+{
 	const char* file_name; //название файла, в котором находятся элементы матрицы
-	double res; //ожидаемый результат
+	double result; //ожидаемый результат
 	Error err; //адрес ошибки
 } TestCase;
 
@@ -38,7 +39,8 @@ int main(void)
 	FILE* f = NULL;
 	Error err;
 
-	TestCase tests[] = { 
+	TestCase tests[] = 
+	{ 
 		{"matr1.txt", 4, NA_OK},
 		{"matr2.txt", 6.5, NA_OK},
 		{"matr3.txt", -20, NA_OK},

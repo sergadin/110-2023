@@ -1,16 +1,17 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
+#include <math.h>
 
 typedef enum {
-    OK,              // Все хорошо
-    NO_SOLUTION,     // Система не определена
-    SINGULAR_MATRIX  // Матрица вырождена
+    OK,               // Все хорошо
+    NO_SOLUTION,      // Система не определена
+    SINGULAR_MATRIX,  // Матрица вырождена
+    M_ALLOC_ERR       // Память не выделена
 }error;
 
-void writeMatrix(double* matrix, size_t m, size_t n);
+void writeMatrix(double* matrix, int m, int n);    // Функция выписывания матрицы в терминал
 
-double* solution(double* matrix, size_t m, size_t n, error* err);
+double* solution(double* matrix, int m, int n, error* err);
 
 /*
 ** Функция решения однородной системы линейных уравнений методом исключения Гаусса.
@@ -20,10 +21,10 @@ double* solution(double* matrix, size_t m, size_t n, error* err);
 ** создается массив решений, в него заполняются значения переменных, начиная с последней.
 ** Если все прошло без ошибок, функция вернет указатель на адрес массива значений.
 ** 
-** 
-** 
-** 
-** 
+** Параметры файлов на вход: первые два числа в файле - размер матрицы (кол-во строк и 
+** столбцов). Далее идет сама матрица указанного выше размера. Программа не проверяет 
+** совпадение записанной матрицы и указанного размера, поэтому с входными данными стоит
+** быть внимательнее.
 ** 
 ** 
 ** 

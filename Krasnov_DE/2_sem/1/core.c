@@ -1,32 +1,22 @@
 #include "fill_massiv.h"
-double fillValueArray(RRFun* functions, int func_num, double x, error* err,double *value_array) {
-    if (value_array==NULL){
-        *err=MALLOC_ERR;
-        return -1;
-    }
-    if(func_num>  4){
-        *err = INCORRECT_ARGUMENT;
-        return -1;
-    }
-
-    printf("func_num=%d\n",func_num);
-	for (int i = 0; i < func_num; i++) {
-		double res;
+double* fillValueArray(RRFun* functions, int func_num, double x, error* err,double *value_array) {
+        double res;
+        int i;
+        *err=OK;
+	for (i = 0; i < func_num; i++) {
 		res = functions[i](x);
 		if (isnan(res) || isinf(res)) {
 			*err = INCORRECT_ARGUMENT;
-			return -1;
 		}
 		value_array[i] = res;
 	}
-	*err = OK;
-	return 0;
+	return value_array;
 }
 
 /*
-    The fillValueArray function receives as input a pointer to an array of functions (RRFun* functions),
-    ,number of functions expected in the test, variable x, which will be substituted in the function,
-    pointer to error, pointer to array of function values ​​at point.
-    The function alternately checks the convergence of the results and the values ​​specified in the tests.
-    The function also returns an error pointer (INCORRECT_ARGUMENT,MALLOC_ERR) or the value OK.
-    If the comparison is successful, the function will output 0 and assign the value OK*/
+    Function fillValueArray fills an array with function values ​​at a given point.
+    The function receives as input the address of the array of functions (RRFun* functions),
+    the number of functions in this array (int func_num), the variable x(double x),
+    the address of the error (error* err), and the address of the array of values ​​(double *value_array).
+    If successful, the function sets *err to OK and returns the address of the array of function values ​​at the given point.
+*/

@@ -9,9 +9,9 @@ typedef struct{
 
 double* fill_matrix(const char* file_name,int size, error *err ){
     double *matrix;
-    *err = OK;
     FILE *f1;
     int i;
+    *err = OK;
     f1 = fopen(file_name,"r");
     if(f1 == NULL){
         *err = EMPTY_FILE;
@@ -50,8 +50,8 @@ int main(void){
 
     test_num = sizeof(tests) / sizeof(tests[0]);
 
-    for (int i = 0; i < test_num; i++)
-    {   size=tests[i].size;
+    for (i = 0; i < test_num; i++)
+    {   size = tests[i].size;
         mat = fill_matrix(tests[i].file, size, &err);
         result = Get_reverse_matrix(mat, size, eps, &err);
         if (err != tests[i].err)
