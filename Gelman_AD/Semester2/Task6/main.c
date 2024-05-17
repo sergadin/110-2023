@@ -1,6 +1,5 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
-#include <math.h>﻿
 #include "interpolation.h"
 
 // New structure for testing
@@ -10,7 +9,7 @@ typedef struct
 	size_t n;                   // The number of these points
 	point* interp_points;       // Exact points of the function (x is used for approximate value, y is used for checking in the tests)
 	size_t m;                   // The number of these points
-	error err_code;             // Error code
+	error error_code;           // Error code
 } dataSet;
 
 
@@ -31,8 +30,8 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 
 int main(void) 
 {
-	const double eps = 0.1;
-	int test_num, func_num = 3;
+	const double epsilon = 0.1;
+	int test_number, function_number = 3;
 	error err;
 
 	dataSet tests[] = 
@@ -64,52 +63,51 @@ int main(void)
 		}
 	};
 
-	test_num = sizeof(tests) / sizeof(tests[0]);
+	test_number = sizeof(tests) / sizeof(tests[0]);
 
-	for (int i = 0; i < test_num; i++) 
+	for (int i = 0; i < test_number; i++) 
 	{
-		char filename1[32], filename2[32];
-		sprintf(filename1, "out%d.txt", 2 * (i + 1) - 1);
-		sprintf(filename2, "out%d.txt", 2 * (i + 1));
-		FILE* out1 = fopen(filename1, "w"), * out2 = fopen(filename2, "w");
-		double* res;
-		res = (double*)malloc(sizeof(double) * tests[i].m);
+		char file_name1[32], file_name2[32];
+		sprintf(file_name1, "out%d.txt", 2 * (i + 1) - 1);
+		sprintf(file_name2, "out%d.txt", 2 * (i + 1));
+		FILE* out1 = fopen(file_name1, "w"), * out2 = fopen(file_name2, "w");
+		double* result;
+		result = (double*)malloc(sizeof(double) * tests[i].m);
 
-		if (res == NULL) 
+		if (result == NULL) 
 		{
-			printf("Память не выделилась :(");
+			printf("No memory");
 			return -1;
 		}
 
-		interpolate(tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, &err);
+		interpolate(tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, result, &err);
 
-		if (err != tests[i].err_code) 
+		if (err != tests[i].error_code) 
 		{
-			printf("%d-й тест не пройден :(\n", i + 1);
+			printf("The %d-th test is not completed\n", i + 1);
 		}
 		else if (err == OK) 
 		{
 			for (int j = 0; j < tests[i].m; j++) 
 			{
-				if (fabs(res[j] - tests[i].interp_points[j].y) > eps) 
+				if (fabs(result[j] - tests[i].interp_points[j].y) > epsilon) 
 				{
-					printf("%d-й тест не пройден :(\n", i + 1);
+					printf("The %d-th test is not completed\n", i + 1);
 					goto theend;
 				}
 			}
-			printf("%d-й тест пройден.\n", i + 1);
-			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
+			printf("The %d-th test is completed\n", i + 1);
+			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, result, i + 1);
 		}
 		else 
 		{
-			printf("%d-й тест пройден.\n", i + 1);
-			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, res, i + 1);
+			printf("The %d-th test is completed\n", i + 1);
+			make_picture(out1, out2, tests[i].points, tests[i].n, tests[i].interp_points, tests[i].m, result, i + 1);
 		}
 	theend:
 		fclose(out1);
 		fclose(out2);
-		free(res);
+		free(result);
 	}
-
 	return 0;
 }
