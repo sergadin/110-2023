@@ -1,10 +1,10 @@
 all: a.out run
 
 core.o: core.c fill_massiv.h
-	gcc -c core.c
+	gcc -c -g core.c
 
 main.o: main.c fill_massiv.h
-	gcc -c main.c
+	gcc -c -g main.c
 
 run: a.out
 	./a.out
