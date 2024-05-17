@@ -10,29 +10,36 @@
  *      Функция переписывает в новый массив минор исходной матрицы порядка n-1.
  */
 // define N 3 - количество уравнений
+
+// The function multiplies matrix A by vector x and writes the result to vector result
+void mul_matrix_vector(double A[N][N], double x[N], double result[N]);
 void mul_matrix_vector(double A[N][N], double x[N], double result[N]) 
 {
-    // Функция умножает матрицу А на вектор x и записывает результат в вектор result
-    int i, j;
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) 
+    {
         result[i] = 0;
-        for (j = 0; j < N; j++) {
+
+        for (int j = 0; j < N; j++) 
+        {
             result[i] += A[i][j] * x[j];
         }
     }
 }
 
-double dot_product(double x[N], double y[N]) {
-    // Функция скалярно умножает два вектора x и y
-    int i;
+// The function scalarly multiplies two vectors x and y
+double dot_product(double x[N], double y[N]);
+double dot_product(double x[N], double y[N]) 
+{
     double result = 0;
-    for (i = 0; i < N; i++) {
+    for (int i = 0; i < N; i++) 
+    {
         result += x[i] * y[i];
     }
     return result;
 }
 
-int main() {
+double determinate(double* matrix, int n, double epsilon, Error* error)
+{
     double A[N][N] = { {4.0, -1.0, 1.0}, {-1.0, 4.0, -2.0}, {1.0, -2.0, 4.0} }; //матрица коэффициентов
     double b[N] = { 12.0, -1.0, 5.0 }; //правая часть системы
     double x[N] = { 0.0 }; //начальное приближение
@@ -40,40 +47,47 @@ int main() {
     double tol = 1e-6; //заданная точность
     int k = 0;
 
-    do {
+    while (sqrt(rsnew) > tol && k < 1000) //1000 - ограничение по числу итераций 
+    {
         mul_matrix_vector(A, x, Ap); //Ap = A * x
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < N; i++) 
+        {
             r[i] = b[i] - Ap[i]; //рассчитываем вектор невязки r = b - A * x
             p[i] = r[i]; //начальное направление поиска
         }
+
         mul_matrix_vector(A, p, Ap); //Ap = A * p
         double rsold = dot_product(r, r);
         double rsnew;
 
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < N; i++) 
+        {
             alpha = rsold / dot_product(p, Ap); //вычисляем параметр alpha
-            for (int j = 0; j < N; j++) {
+            for (int j = 0; j < N; j++) 
+            {
                 x[j] = x[j] + alpha * p[j]; //корректируем решение
                 r[j] = r[j] - alpha * Ap[j];
             }
             rsnew = dot_product(r, r);
-            if (sqrt(rsnew) < tol) {
+            if (sqrt(rsnew) < tol) 
+            {
                 break; //достигнута необходимая точность
             }
             beta = rsnew / rsold; //вычисляем параметр beta
-            for (int j = 0; j < N; j++) {
+            for (int j = 0; j < N; j++) 
+            {
                 p[j] = r[j] + beta * p[j]; //новое направление поиска
             }
             rsold = rsnew;
         }
         k++;
-    } while (sqrt(rsnew) > tol && k < 1000); //1000 - ограничение по числу итераций
-
-    printf("Solution:\n");
-    for (int i = 0; i < N; i++) {
-        printf("x[%d] = %.5f\n", i, x[i]);
     }
 
+    printf("Solution:\n");
+    for (int i = 0; i < N; i++) 
+    {
+        printf("x[%d] = %.5f\n", i, x[i]);
+    }
     return 0;
 }
 
