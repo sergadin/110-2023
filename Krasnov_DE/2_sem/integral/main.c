@@ -13,6 +13,7 @@ static double func2(double x);
 static double func3(double x);
 static double func4(double x);
 static double func5(double x);
+static double func6(double x);
 
 static double func1(double x){  //description of functions
 	return ((x * x)+2);
@@ -35,6 +36,9 @@ static double func5(double x){
 	return pow(x, 5);
 }
 
+static double func6(double x){
+	return pow(10, x);
+}
 
 int main(void)
 {
@@ -42,17 +46,19 @@ int main(void)
     double result;
     double eps = 1e-6;
     int test_num;
+    int i;
     dataSet tests[] = { //creating a test suite
     {func1, 1, 3, 12.666667, OK},
 	{func2, 5, 162, 13580.5, OK},
 	{func3, -4, -0.5, 7, OK},
 	{func4, 4, 1, -1, WRNG_ORD},
-	{func5, -5, 5, 0, OK}
+	{func5, -5, 5, 0, OK},
+	{func6, 2, 5, 43386.017380, OK}
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]); //count the number of tests
 
-	for (int i = 0; i < test_num; i++){
+	for (i = 0; i < test_num; i++){
 	    result = Integral_count(&tests[i].f, tests[i].a, tests[i].b, eps, &err);
 
 	    if(tests[i].err_code != err){

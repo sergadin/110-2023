@@ -8,7 +8,7 @@ double Gauss_caunting(RRFun *f, double a, double b){
 
 double Integral_count(RRFun *f, double a, double b, double eps, error *err){
     *err = OK;
-    int limit = 10000;
+    int limit = 25;
     double new_integral = 0, old_integral = 0;
     int n = 2, i;
     double dx = (b - a) / n;
@@ -31,7 +31,7 @@ double Integral_count(RRFun *f, double a, double b, double eps, error *err){
 
     limit = limit - 1;
 
-    while(fabs(new_integral - old_integral) > eps && limit > 0){
+    while(fabs(new_integral - old_integral) > eps*fmax(fabs(new_integral),fabs(old_integral)) && limit > 0){
         old_integral = new_integral;
         new_integral = 0;
         n = n * 2;
@@ -46,6 +46,7 @@ double Integral_count(RRFun *f, double a, double b, double eps, error *err){
         *err = LIMIT;
         return -1;
     }
+    printf("%d\n",limit);
 
     return new_integral;
 }
