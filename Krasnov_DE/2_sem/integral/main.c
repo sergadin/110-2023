@@ -40,6 +40,11 @@ static double func6(double x){
 	return pow(10, x);
 }
 
+static double func7(double x){
+	return sin(1/x);
+}
+
+
 int main(void)
 {
     error err;
@@ -53,7 +58,8 @@ int main(void)
 	{func3, -4, -0.5, 7, OK},
 	{func4, 4, 1, -1, WRNG_ORD},
 	{func5, -5, 5, 0, OK},
-	{func6, 2, 5, 43386.017380, OK}
+	{func6, 2, 5, 43386.017380, OK},
+	{func7, 0, 2, 10, LIMIT}
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]); //count the number of tests
