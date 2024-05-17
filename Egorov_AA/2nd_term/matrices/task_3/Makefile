@@ -1,13 +1,13 @@
 all: a.out run
 
 matrix.o: matrix.c matrix.h
-	gcc -c matrix.c 
+	gcc -g -c matrix.c 
 
 main.o: main.c matrix.h 
-	gcc -c main.c
+	gcc -g -c main.c
 	
 run: a.out
 	./a.out
 	
 a.out: main.o matrix.o
-	gcc main.o matrix.o -lm
+	gcc -g main.o matrix.o -lm

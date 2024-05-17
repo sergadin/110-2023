@@ -11,31 +11,16 @@ epsilon — specified accuracy
 error_code - expected error
 */
 
-double min(double x1, double x2, double x3);
-double min(double x1, double x2, double x3) 
-{
-	if (x1 < x2 && x1 < x3) 
-	{
-		return x1;
-	}
-	else if (x2 < x3) 
-	{
-		return x2;
-	}
-	else 
-	{
-		return x3;
-	}
-}
-
 double min_value(RRFun f, double a, double b, double epsilon, error* error_code);
 double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 {
-	double x1, x2, x3;
-	double x_min;
-	double step; // The shredding step of the even net
-	double x0; // The vertex of the parabola
+	int step = 2; // The shredding step of the even net
 	int limit = 1000; // The iterations limit
+	double dx = 0;
+	double ai = 0;
+	double f_ai = 0;
+	double x_min;
+	double min;
 
 	if (a > b)
 	{
@@ -43,51 +28,51 @@ double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 		return -1;
 	}
 
-	while (fabs(b - a) > epsilon)
+	if (f(a) > f(b))
 	{
-		step = (b - a) / 1000;
-		x1 = a;
-		x2 = a + step;
-		x3 = a + 2 * step;
+		x_min = b;
+		// min = f(x_min) = f(b);
+	}
+	else // (f(b) < f(a))
+	{
+		x_min = a;
+		// min = f(x_min) = f(a);
+	}
 
-		while (x3 <= b)
-		{
-			if (f(x1) > f(x2) && f(x2) < f(x3))
-			{
-				break; // End of the while cycle
-			}
-			x1 = x2;
-			x2 = x3;
-			x3 += step;
-		}
+	while (fabs(b - a) > epsilon && step < limit)
+	{
+		dx = (b - a) / step;
 
-		x0 = 0.5 * (x1 + x3); // Calculating the coordinates of the vertex
-		x_min = min(x1, x2, x3);
-
-		if (f(x0) < f(x_min))
+		for (int i = 0; i <= step; i++)
 		{
-			if (x0 < x_min)
+			ai = a + i * dx;
+			f_ai = f(ai);
+			if (f(ai) < f(x_min))
 			{
-				b = x_min;
-			}
-			else
-			{
-				a = x_min;
-			}
-		}
-		else
-		{
-			if (x2 < x_min)
-			{
-				a = x0;
-			}
-			else
-			{
-				b = x0;
+				min = f(ai);
+				x_min = ai;
 			}
 		}
 
+		if (fabs(x_min - a) < epsilon)
+		{
+			b = a + dx;
+		}
+
+		if (fabs(x_min - b) < epsilon)
+		{
+			a = b - dx;
+		}
+
+		if (fabs(x_min - a) >= epsilon && fabs(x_min - b) >= epsilon)
+		{
+			a = x_min - dx;
+			b = x_min + dx;
+		}
+
+		step++;
 		limit--;
+
 		if (limit <= 0)
 		{
 			*error_code = ITERATION_LIMIT_EXCEEDED;
@@ -95,8 +80,6 @@ double min_value(RRFun f, double a, double b, double epsilon, error* error_code)
 		}
 	}
 	*error_code = OK;
-	//printf("error_code %c\n", *error_code);
-	x_min = 0.5 * (a + b);
 	printf("Minimum of the function: %lf\n", f(x_min));
 	return f(x_min); // min_value = f(x_min)
 }
