@@ -7,7 +7,7 @@ typedef struct {          // Структура тестов:
 	error err_code;             // Код ошибки
 } dataSet;
 
-int main() {
+int main(void) {
 	int test_num;
 	error err;
 
@@ -91,7 +91,6 @@ int main() {
 		else {
 			printf("%d-й тест пройден.\n", i + 1);
 		}
-	theend:
 		for (int i = 0; i < n; i++) {
 			free(matrix[i]);
 		}
