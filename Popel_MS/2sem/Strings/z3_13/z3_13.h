@@ -15,6 +15,15 @@ typedef struct tag_obj{
     struct tag_obj* next; /*указатель на следующий элемент стэка*/
 } OBJ;
 
+/* Параметры: *term - адрес строки, содержащйся в следующем блоке, 
+ *  *next - адрес следующего блока.
+ *  Структура выполняет функцию массива, содержащего слова, стоящие после define.              
+ */
+struct item{  
+    char *term;
+    struct item *next;
+};
+
 /*	Параметры: *f - массив строк с исходным текстом файла.
  *             *fout - массив, в который будет передан ответ. 
  *             line - количество строк в исходном файле.
@@ -29,4 +38,4 @@ typedef struct tag_obj{
  * Если возникают ошибки при выделении памяти, возвращается код ошибки NA_MEMORY_ERR и значениие -1.
  */
 
-int Condit_compil(FILE *f, FILE *fout, int line, Error *err);
+int Condit_compil(FILE *f, FILE *fout, Error *err);

@@ -10,7 +10,7 @@
  *         *fout - итоговый файл.
  *         line - количество строк.
  *         *err - указатель на код ошибки.
- * Функция удаляет все элементы, сожержащиеся между "скобками" - элементами /* и //*. Если для правой границы нет пары,
+ * Функция удаляет все элементы, сожержащиеся между "скобками" - элементами /* и *\/. Если для правой границы нет пары,
  *                                                             элементы не удаляются. "Скобки" ведут себя так же, как и комментарии в Си.
  */
 int Delete_sub_str(FILE *f, FILE* fout, Error *err){
@@ -23,32 +23,33 @@ int Delete_sub_str(FILE *f, FILE* fout, Error *err){
     
     *err = NA_OK;
     
-    while((getline(&buf, &len, f)) != -1){
+   while((getline(&buf, &len, f))!=-1){
         int not_write = 0;
         istr1 = strstr(buf, lft_board);
         istr2 = strstr(buf, rgt_board);
-	    
-        if (have_frst_brd == 1){
-            if (istr2 == NULL){
-                memmove(buf, buf + size - 1, size);
-                not_write = 1;
-            }else{
-                have_frst_brd = 0;
-                memmove(buf, istr2 + 2, size - (istr2 - buf));
-            }
-        }
-
-        while (istr1 != NULL){
+        do{
             size = strlen(buf);
-            if (istr2 == NULL){
+            if ((istr2 == NULL) && ((have_frst_brd == 1) || (istr1 != NULL))){
+            	if (istr1 == NULL){
+            		not_write = 1;
+            		break;
+            	}else{
+            		memmove(istr1, buf + size - 1, size - (istr1 - buf));
+            	}
                 have_frst_brd = 1;
-                memmove(istr1, buf + size - 1, size);
-            }else{
-                memmove(istr1, istr2 + 2, size - (istr2 - buf));
+            }else if ((istr2 != NULL) && ((have_frst_brd == 1) || (istr1 != NULL))){
+                void *k = 0;
+                if (have_frst_brd == 1){
+                    have_frst_brd = 0;
+                    k = buf;
+                }else{
+                	k = istr1;
+                }
+                memmove(k, istr2 + strlen(rgt_board), size - (istr2 - buf));
             }
             istr1 = strstr(buf, lft_board);
             istr2 = strstr(buf, rgt_board);
-        }
+        }while(istr1 != NULL);
 
         if (not_write == 0){
         fprintf(fout, "%s", buf);

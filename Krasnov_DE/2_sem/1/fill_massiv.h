@@ -6,9 +6,8 @@ typedef double (*RRFun)(double);
 
 typedef enum {
 	OK,
-	MALLOC_ERR,
 	INCORRECT_ARGUMENT
 } error;
 
-double fillValueArray(RRFun* functions, int func_num, double x, error* err,double *value_array);
+double* fillValueArray(RRFun* functions, int func_num, double x, error* err,double *value_array);
 

@@ -13,15 +13,12 @@ typedef struct{  /* новая переменаая-структура для п
 
 
 int main(void){
-	int line = 1, res = 0;
     FILE *fout, *f;
 	Error err;
-	size_t len = 1024;
-	char *buf = NULL; //текущая строка
 
-    TestCase tests[] = {{"code3.c", NA_OK},
+    TestCase tests[] = {{"code1.c", NA_OK},
 	{"code2.c", NA_OK},
-	{"code1.c", NA_OK}};
+	{"code3.c", NA_OK}};
 	
 
 
@@ -36,29 +33,6 @@ int main(void){
 			goto terminate;
 		}
 
-		buf = (char*)malloc(1024 * sizeof(char));
-		if (buf == NULL){
-			printf("Оперативная память не выделена\n");
-			err = NA_MEMORY_ERR;
-			fclose(f);
-			goto terminate;
-		}
-
-		if (getline(&buf, &len, f) == -1){
-			err = FILE_WR;
-			fclose(f);
-			free(buf);
-			goto terminate;
-		}
-
-		while(!feof(f)){
-			line++;
-			getline(&buf, &len, f);
-    	}
-
-		free(buf);
-    	rewind(f);
-
 		fout = fopen("newcode.c", "w");
 
 		if (fout == NULL){
@@ -68,7 +42,7 @@ int main(void){
 			goto terminate;
 		}
 
-		res = Condit_compil(f, fout, line, &err);
+		Condit_compil(f, fout, &err);
 		fclose(f);
 		fclose(fout);
 

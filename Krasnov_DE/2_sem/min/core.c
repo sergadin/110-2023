@@ -1,9 +1,26 @@
 #include "find_min.h"
 
+static double max(double x, double y, double eps); 
+
+
+static double max(double x, double y, double eps) {
+	double max_ch;
+	if (x > y) {
+		max_ch = x;
+	}
+	else if (y > x) {
+		max_ch = y;
+	}
+	if (eps > max_ch) {
+		max_ch = eps;
+	}
+	return max_ch;
+}
+
 double min_search(RRFun *f, double a, double b, double eps, error *err){
     double psi = (sqrt(5)-1)/2;
     double phi = 1 - psi;
-    int limit = 1000000;
+    int limit = 100;
     double x;
     double d, f_d, c, f_c;
     *err = OK;
@@ -15,7 +32,7 @@ double min_search(RRFun *f, double a, double b, double eps, error *err){
     d = b - phi * (b - a);
     f_c = (*f)(c);
     f_d = (*f)(d);
-    while(fabs(b - a)> eps && limit > 0){
+    while((fabs(b-a) > eps || fabs(b-a)>eps*fabs(a+b)/2) && limit>0){
         if(f_c < f_d){
             b = d;
             d = c;
@@ -30,11 +47,11 @@ double min_search(RRFun *f, double a, double b, double eps, error *err){
             f_c=f_d;
             f_d=(*f)(d);
         }
-        limit = limit - 1;
-        if(limit==0){
-            *err = LIMIT;
-            return -1;
-        }
+        limit = limit - 1;  
+    }
+    if(limit==0){
+      *err = LIMIT;
+      return -1;
     }
     x=(a+b)/2;
     return (*f)(x);
