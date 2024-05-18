@@ -6,7 +6,7 @@
 double linear_interpolation(double x0, double y0, int n, double x1, double y1, double x);
 double linear_interpolation(double x0, double y0, int n, double x1, double y1, double x)
 {
-    double result = 0;
+    double result;
 
     if (x >= x0 && x <= x1) 
     {
