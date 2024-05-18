@@ -56,6 +56,45 @@ double* Get_transpone_matrix(double *arr, int n){//function to transpose the mat
     return arr;
 }
 
+double* Matrix_multiplication(double* matrix1, double* matrix2, int size){
+    double* result;
+    int i,j,k;
+    result = (double*)malloc(size*size*sizeof(double));
+    for(i=0;i<size;i++){
+        for(j=0;j<size;j++){
+            result[i*size + j]=0;
+            for(k=0;k<size;k++){
+                result[i*size + j]= result[i*size + j] + matrix1[i*size+k]*matrix2[k*size+j];
+            }
+        }
+
+    }
+    return result;
+}
+
+void Print_matrix(double* mat,int size){
+    int j;
+    for(j=0;j<size*size;j++){
+        if(j % size == size-1){
+            printf("%lf\n",mat[j]);
+        }
+        else{
+            printf("%lf ",mat[j]);
+        }
+    }
+}
+
+int Identity_matrix_test(double* mat1,double* mat2, int size, double eps){
+  int flag=0;
+  int i;
+  for(i=0;i<size*size;i++){
+    if(fabs(mat1[i]-mat2[i])>eps){
+      flag=1;
+    }
+  }
+  return flag;
+}
+
 
 double* Get_reverse_matrix(double *arr, int n,double eps, error *err){
     if(*err==EMPTY_FILE){

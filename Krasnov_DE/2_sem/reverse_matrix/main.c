@@ -35,8 +35,12 @@ int main(void){
     int test_num;
     double *result;
     double *mat;
+    double *copy;
+    double *proove;
+    double *puk;
     int size;
     int i,j;
+    int flag;
     double eps=1e-6;
     dataSet tests[] = {
         {"data1.txt", 3, NO_INVERSE},
@@ -53,6 +57,12 @@ int main(void){
     for (i = 0; i < test_num; i++)
     {   size = tests[i].size;
         mat = fill_matrix(tests[i].file, size, &err);
+        if(err == OK){
+            copy=(double*)malloc(size*size*sizeof(double));
+            for(int j=0;j<size*size;j++){
+               copy[j]=mat[j];
+            }
+        }
         result = Get_reverse_matrix(mat, size, eps, &err);
         if (err != tests[i].err)
         {
@@ -64,18 +74,26 @@ int main(void){
         }
         else if (err == OK)
         {
-            printf("test %d passed successfully, the inverse matrix is ​​equal to \n",i+1);
-            for(j=0;j<size*size;j++){
-                if(j % size == size-1){
-                    printf("%lf\n",result[j]);
-                }
-                else{
-                    printf("%lf ",result[j]);
-                }
+            proove=Matrix_multiplication(copy,result,size);
+            Print_matrix(proove,size);
+            puk=Matrix_multiplication(result,proove,size);
+            flag=Identity_matrix_test(puk,result,size,eps);
+            if(flag==0){
+              printf("test %d passed successfully, the inverse matrix is ​​equal to \n",i+1);
+              Print_matrix(result,size);
             }
+            else{
+              printf("counting error\n");
+            }
+            free(proove);
+            free(puk);
+            
         }
         printf("\n");
         free(result);
+        if(err!=EMPTY_FILE){
+          free(copy);
+        }
 
     }
     return 0;
