@@ -4,7 +4,7 @@ void fillMatrix(double*** matrix, int n) {
 	srand(time(NULL));
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
-			(*matrix)[i][j] = (double)rand();
+			(*matrix)[i][j] = rand();
 }
 
 
@@ -101,6 +101,8 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 		}
 	}
 
+	
+
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
 		for (int j = 0; j < n; j++)
 			matrix[i][j] = given_matrix[i][j];
@@ -112,6 +114,12 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			else
 				inverse_matrix[i][j] = 0;
 
+	if(all_leaders_zero && (matrix[n - 1][0] < eps)) {
+		*err = INVALID_MATRIX;
+		return 0;
+	}
+            
+            
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента

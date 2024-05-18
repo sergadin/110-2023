@@ -38,4 +38,4 @@ struct item{
  * Если возникают ошибки при выделении памяти, возвращается код ошибки NA_MEMORY_ERR и значениие -1.
  */
 
-int Condit_compil(FILE *f, FILE *fout, int line, Error *err);
+int Condit_compil(FILE *f, FILE *fout, Error *err);

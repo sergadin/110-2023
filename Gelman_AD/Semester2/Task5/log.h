@@ -9,7 +9,7 @@ typedef enum
 	INVALID_ARGUMENT
 } error;
 
-double calculatelog(double x, double epsilon, error* error_code);
+double calculatelog(double x, double epsilon, error* err);
 
 /* Function for calculationg the logarithm of a given x with Taylor's series
 * 

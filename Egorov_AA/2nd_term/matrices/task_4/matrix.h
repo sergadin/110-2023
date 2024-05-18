@@ -11,6 +11,8 @@ typedef enum {
 
 void writeMatrix(double* matrix, int m, int n);    // Функция выписывания матрицы в терминал
 
+void swapRows(double* mat, int n, int row_1, int row_2);
+
 double* solution(double* matrix, int m, int n, error* err);
 
 /*

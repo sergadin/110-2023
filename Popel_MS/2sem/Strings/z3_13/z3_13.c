@@ -139,7 +139,7 @@ static void register_define(struct item *all_defines, char *term){
  * #ifdef - #else - #endif. На вход подается рабочий код без синтаксических и логических ошибок (Если есть #ifdef или #else, то обязательно
  *                                                                                                                      прописан и #endif)
  */
-int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
+int Condit_compil(FILE *f, FILE *fout, Error *err){
     size_t len = 0;
     OBJ* states = NULL; //первый блок стэка
     ssize_t n_bytes = 0; //количество элементов в текущей строке
@@ -155,11 +155,6 @@ int Condit_compil(FILE *f, FILE *fout, int line, Error *err){
 
 
     *err = NA_OK;
-
-    if (line == 0){
-    	*err = FILE_WR;
-    	return -1;
-    }
 
     buf = NULL;
 
