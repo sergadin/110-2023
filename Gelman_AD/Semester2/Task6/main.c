@@ -27,7 +27,6 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 	}
 }
 
-
 int main(void) 
 {
 	const double epsilon = 0.1;

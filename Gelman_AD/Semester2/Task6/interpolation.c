@@ -3,18 +3,14 @@
 #include "interpolation.h"
 
 // Calculating the value of the function of the given point
-double linear_interpolation(double x[], double y[], int n, double x1);
-double linear_interpolation(double x[], double y[], int n, double x1)
+double linear_interpolation(double x0, double y0, int n, double x1, double y1, double x);
+double linear_interpolation(double x0, double y0, int n, double x1, double y1, double x)
 {
     double result = 0;
 
-    for (int i = 0; i < n - 1; i++) 
+    if (x >= x0 && x <= x1) 
     {
-        if (x1 >= x[i] && x1 <= x[i + 1]) 
-        {
-            result = y[i] + (y[i + 1] - y[i]) / (x[i + 1] - x[i]) * (x1 - x[i]);
-            break;
-        }
+        result = y0 + (y1 - y0) / (x1 - x0) * (x - x0);
     }
     return result;
 }
@@ -23,8 +19,8 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
 {
     *err = OK;
     double x1[m]; // Points from the net for interpolation
-    double y1[m]; // The value of the function of the these points
-
+    double y11[m]; // The value of the function of the these points
+    
     for (int j = 0; j < m; j++)
     {
         double x2, y2;
@@ -44,8 +40,7 @@ void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, err
         // Counting the approximate value of the function using the piecewise linear interpolation
         for (int i = 0; i < m; i++)
         {
-            x1[i] = i * (double)(n - 1) / (m - 1); // The segment [x0; xn] evenly divided into m points
-            y1[i] = linear_interpolation(x, y0, n, x1[i]); // Using the piecewise linear interpolation
+            y11[i] = linear_interpolation(x0, y0, n, x1, y1, x); // Using the piecewise linear interpolation
         }
 
         // Weighting coefficients
