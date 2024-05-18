@@ -3,13 +3,13 @@
 #include <math.h>
 #include "matrix.h"
 
-/*	Параметры: *matr - адрес на массив (исходное линейное представление матрицы)
- *             *nmatr - адрес на массив (новое линейное представление матрицы - ее минора)
- *             n - размерность исходной матрицы
- *             m - столбец, по которому строится минор
- *      Функция переписывает в новый массив минор исходной матрицы порядка n-1.
- */
-// define N 3 - количество уравнений
+// Parameters
+// *matr - address to the array (original linear representation of the matrix)
+// *nmatr - address to the array (new linear representation of the matrix - its minor)
+//  n - dimention of the original matrix
+//  m - column by which the minor is built
+// The function rewrites the minor of the original matrix of order n-1 into a new array.
+// define N = order = the number of the equasions
 
 // The function multiplies matrix A by vector x and writes the result to vector result
 void mul_matrix_vector(double A[N][N], double x[N], double result[N]);
@@ -44,10 +44,10 @@ double determinate(double* matrix, int n, double epsilon, Error* error)
     double b[N] = { 12.0, -1.0, 5.0 }; //правая часть системы
     double x[N] = { 0.0 }; //начальное приближение
     double r[N], p[N], Ap[N], alpha, beta;
-    double tol = 1e-6; //заданная точность
+    int limit = 1000;
     int k = 0;
 
-    while (sqrt(rsnew) > tol && k < 1000) //1000 - ограничение по числу итераций 
+    while (sqrt(rsnew) > epsilon && k < limit)
     {
         mul_matrix_vector(A, x, Ap); //Ap = A * x
         for (int i = 0; i < N; i++) 
@@ -69,7 +69,7 @@ double determinate(double* matrix, int n, double epsilon, Error* error)
                 r[j] = r[j] - alpha * Ap[j];
             }
             rsnew = dot_product(r, r);
-            if (sqrt(rsnew) < tol) 
+            if (sqrt(rsnew) < epsilon) 
             {
                 break; //достигнута необходимая точность
             }
