@@ -70,6 +70,16 @@ double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err)
 }
 
 
+void swapRows(double** mat, int n, int row_1, int row_2) {
+	for (int i = 0; i < n; i++) {
+		double temp;
+		temp = mat[row_1][i];
+		mat[row_1][i] = mat[row_2][i];
+		mat[row_2][i] = temp;
+	}
+}
+
+
 double** invertMatrix(double** given_matrix, int n, error* err) {
 	const double eps = 0.00000000000001;
 	int all_leaders_zero = 1;
@@ -99,6 +109,20 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			*err = MEM_ALLOC_ERR;
 			return 0;
 		}
+	}
+
+	for (int i = 0; i < m - 1; i++) {
+		if (mat[i][0] < eps)
+			swapRows(mat, n, i, i+1);
+		else {
+			all_leaders_zero = 0;
+			break;
+		}
+	}
+
+	if(all_leaders_zero && (mat[m - 1][0] < eps)) {
+		*err = SINGULAR_MATRIX;
+		return sol;
 	}
 
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
