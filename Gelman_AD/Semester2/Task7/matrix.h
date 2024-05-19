@@ -21,4 +21,4 @@ typedef enum
  * Если передана пустая матрица (в которой нет ни одного значения), возвращается код ошибки NA_ZERO_MATR и значение -1.
  * Если возникли ошибки при работе с файлом, функция возвращает код ошибки FILE_WR и значение -1.
  */
-double determinate(double* matrix, int n, double epsilon, Error* error);
+double descent_method(double* matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error);

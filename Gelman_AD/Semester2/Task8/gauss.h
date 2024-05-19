@@ -2,25 +2,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Основные ошибки*/
 typedef enum 
 {
-    OK, /*Нет ошибок*/
-    ZERO_MATR, /*Передана матрица без значений*/
-    MEMORY_ERR, /*Ошибка выделения памяти*/
-    FILE_WR, /*ошибка открытия файла и работы с ним*/
-    SINGLE_MATR, /*на вход подана вырожденная матрица*/
+    OK,
+    ZERO_MATRIX,
+    MEMORY_ERROR,
+    FILE_ERROR,
 }Error;
 
+int gauss_elimination(double** matrix, int n, Error* error, double epsilon);
 
-/*	Параметры: **matr - указатель на матрицу указателей на массивы: в них записана матрица n*2n, где к исходной матрице справа
- *                                                                                                   приписана единичная порядка n
- *          n - порядок матрицы
- *         *err - указатель на код ошибки.
- * Функция ищет обратную матрицу приведением левой части матрицы (исходной матрицы) методом Гаусса к ступенчатому виду.
- * Полученная в правой части матрица - результат.
- * Вывод: Функция выполнила код без ошибок - возвращается код ошибки NA_OK, значение 0.
- * Если на вход подана вырожденная матрица, функция возвращает код ошибки NA_SINGLE_MATR и значение -1.
- */
-
-int Inverse_matr(double** matr, int n, Error* err, double eps);
+// Parameters:
+// **matrix - a pointer to the matrix of pointers to arrays;
+// n - the dimention of the matrix
+// *error - error code pointer
+// 
+// The function gauss_elimination solves a system of linear equations using the Gaussian elimination method
+// The function executed the code without errors - the error code OK, (value 0), is returned.

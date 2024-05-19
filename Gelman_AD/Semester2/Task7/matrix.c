@@ -6,20 +6,17 @@
 // Parameters
 // *matr - address to the array (original linear representation of the matrix)
 // *nmatr - address to the array (new linear representation of the matrix - its minor)
-//  n - dimention of the original matrix
-//  m - column by which the minor is built
-// The function rewrites the minor of the original matrix of order n-1 into a new array.
-// define N = order = the number of the equasions
+//  n (= order) - dimention of the original matrix (the number of the equasions)
 
 // The function multiplies matrix A by vector x and writes the result to vector result
-void mul_matrix_vector(double A[N][N], double x[N], double result[N]);
-void mul_matrix_vector(double A[N][N], double x[N], double result[N]) 
+void mul_matrix_vector(double A[n][n], double x[n], double result[n]);
+void mul_matrix_vector(double A[n][n], double x[n], double result[n]) 
 {
-    for (int i = 0; i < N; i++) 
+    for (int i = 0; i < n; i++) 
     {
         result[i] = 0;
 
-        for (int j = 0; j < N; j++) 
+        for (int j = 0; j < n; j++) 
         {
             result[i] += A[i][j] * x[j];
         }
@@ -27,56 +24,64 @@ void mul_matrix_vector(double A[N][N], double x[N], double result[N])
 }
 
 // The function scalarly multiplies two vectors x and y
-double dot_product(double x[N], double y[N]);
-double dot_product(double x[N], double y[N]) 
+double dot_product(double x[n], double y[n]);
+double dot_product(double x[n], double y[n]) 
 {
     double result = 0;
-    for (int i = 0; i < N; i++) 
+    for (int i = 0; i < n; i++) 
     {
         result += x[i] * y[i];
     }
     return result;
 }
 
-double determinate(double* matrix, int n, double epsilon, Error* error)
+double descent_method(double* matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error)
 {
-    double A[N][N] = { {4.0, -1.0, 1.0}, {-1.0, 4.0, -2.0}, {1.0, -2.0, 4.0} }; //матрица коэффициентов
-    double b[N] = { 12.0, -1.0, 5.0 }; //права€ часть системы
-    double x[N] = { 0.0 }; //начальное приближение
-    double r[N], p[N], Ap[N], alpha, beta;
+    double A[N][N] = matrix;
+    double b[N] = vector_b;
+    double x[n] = vector_x;
+    double r[n], p[n], Ap[n], alpha, beta;
     int limit = 1000;
     int k = 0;
+    *error = OK;
+
+    if (n == 0)
+    {
+        *error = ZERO_MATRIX;
+        return -1;
+    }
 
     while (sqrt(rsnew) > epsilon && k < limit)
     {
-        mul_matrix_vector(A, x, Ap); //Ap = A * x
-        for (int i = 0; i < N; i++) 
+        mul_matrix_vector(A, x, Ap); // Ap = A * x
+        for (int i = 0; i < n; i++) 
         {
-            r[i] = b[i] - Ap[i]; //рассчитываем вектор нев€зки r = b - A * x
-            p[i] = r[i]; //начальное направление поиска
+            r[i] = b[i] - Ap[i]; // Counting vector r = b - A * x
+            p[i] = r[i]; // Initial search direction
         }
 
-        mul_matrix_vector(A, p, Ap); //Ap = A * p
+        mul_matrix_vector(A, p, Ap); // Ap = A * p
         double rsold = dot_product(r, r);
         double rsnew;
 
-        for (int i = 0; i < N; i++) 
+        for (int i = 0; i < n; i++) 
         {
-            alpha = rsold / dot_product(p, Ap); //вычисл€ем параметр alpha
-            for (int j = 0; j < N; j++) 
+            alpha = rsold / dot_product(p, Ap); // Calculate the alpha parameter
+            for (int j = 0; j < n; j++) 
             {
-                x[j] = x[j] + alpha * p[j]; //корректируем решение
+                x[j] = x[j] + alpha * p[j]; // Adjusting the solution
                 r[j] = r[j] - alpha * Ap[j];
             }
             rsnew = dot_product(r, r);
             if (sqrt(rsnew) < epsilon) 
             {
-                break; //достигнута необходима€ точность
+                break; // The required accuracy has been achieved
             }
-            beta = rsnew / rsold; //вычисл€ем параметр beta
-            for (int j = 0; j < N; j++) 
+
+            beta = rsnew / rsold; // Calculate the beta parameter
+            for (int j = 0; j < n; j++) 
             {
-                p[j] = r[j] + beta * p[j]; //новое направление поиска
+                p[j] = r[j] + beta * p[j]; // New search direction
             }
             rsold = rsnew;
         }
@@ -84,97 +89,9 @@ double determinate(double* matrix, int n, double epsilon, Error* error)
     }
 
     printf("Solution:\n");
-    for (int i = 0; i < N; i++) 
+    for (int i = 0; i < n; i++) 
     {
         printf("x[%d] = %.5f\n", i, x[i]);
     }
     return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static void new_matr(double* matr, double* nmatr, int n, int m);
-static void new_matr(double* matr, double* nmatr, int n, int m)
-{
-    int j = 0;
-    for (int i = n; i < n * n; i++)
-    {
-        if ((i % n) != m)
-        {
-            nmatr[j] = matr[i];
-            j++;
-        }
-        else
-        {
-            continue;
-        }
-    }
-}
-
-
-/*	ѕараметры: *matr - указатель на массив, содержащий элементы матрицы
-*          n - пор€док передаваемой матрицы
-*          eps - погрешность.
-*         *err - указатель на код ошибки.
-* ‘ункци€ ищет определитель переданной матрицы, рекурсивно свод€ ее к поиску определител€ матрицы 2х2.
-*/
-double determinate(double* matr, int n, double eps, Error* err)
-{
-    double det = 0; //значение определител€
-    double* nmatr = NULL; //нова€ подматрица (минор) пор€дка n-1 
-    int sgn = 1; //знак минора
-    *err = NA_OK;
-
-    if (n == 0)
-    {
-        *err = NA_ZERO_MATR;
-        return -1;
-    }
-
-    if (n == 1)
-    {
-        return matr[0];
-    }
-
-    if (n == 2)
-    {
-        return ((matr[0] * matr[3]) - (matr[1] * matr[2]));
-    }
-
-    nmatr = (double*)malloc(((n - 1) * (n - 1)) * sizeof(double));
-
-    for (int i = 0; i < n; i++)
-    {
-
-        if (nmatr == NULL)
-        {
-            printf("ќперативна€ пам€ть не выделена\n");
-            *err = NA_MEMORY_ERR;
-            return -1;
-        }
-
-        new_matr(matr, nmatr, n, i);
-        det += sgn * matr[i] * determinate(nmatr, n - 1, eps, err);
-        sgn *= -1;
-
-    }
-    free(nmatr);
-    return det;
 }

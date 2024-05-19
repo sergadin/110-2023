@@ -1,108 +1,130 @@
-#include <math.h>
+п»ї#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "gauss.h"
 
+// New structure for testing
 typedef struct 
-{  /* новая переменаая-структура для проведения теста */
-	const char* file_name; //название файла, содержащего элементы матрицы
-	int n; //порядок матрицы
-	Error err; //адрес ошибки
+{
+	const char* file_name; // The file with matrix' elements 
+	int n;                // The dimention of the matrix
+	Error error;         // Error code
 } TestCase;
-
-
 
 int main(void) 
 {
 	FILE* f;
-	Error err;
-	int res = 0;
-	double** matr = NULL, eps = 1e-5;
+	Error error;
+	int result = 0;
+	double** matrix = NULL;
+	double epsilon = 0.0001;
 
-	TestCase tests[] = { {"matr1.txt", 1, NA_OK},
-	{"matr2.txt", 2, NA_OK},
-	{"matr3.txt", 3, NA_OK},
-	{"matr4.txt", 0, NA_ZERO_MATR},
-		{"matr5.txt", 6, NA_OK},
-	{"matr6.txt", 2, NA_SINGLE_MATR} };
+	TestCase tests[] = 
+	{ 
+		{"matrix1.txt", 1, OK},
+		{"matrix2.txt", 2, OK},
+		{"matrix3.txt", 3, OK},
+	};
 
-	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
-	for (int n = 0; n < n_tasks; n++) {
+	int number_tasks = sizeof(tests) / sizeof(tests[0]);
 
-		if (tests[n].n == 0) {
-			err = NA_ZERO_MATR;
+	for (int n = 0; n < number_tasks; n++) 
+	{
+
+		if (tests[n].n == 0) 
+		{
+			error = ZERO_MATRIX;
 			goto terminate;
 		}
 
-		f = fopen(tests[n].file_name, "r"); /*Открытие файла и запись матрицы в массив. "Приписывание" к матрице справа единичной
-																										аналогичного порядка.*/
-		if (f == NULL) {
-			printf("Файл не открывается\n");
-			err = FILE_WR;
+		// Opening a file, reading matrix element values вЂ‹вЂ‹from it and writing them to the array
+		f = fopen(tests[n].file_name, "r");
+
+		if (f == NULL) 
+		{
+			printf("File did not open\n");
+			error = FILE_ERROR;
 			goto terminate;
 		}
-		matr = (double**)malloc(sizeof(double*) * tests[n].n);
-		if (matr == NULL) {
-			printf("Оперативная память не выделена\n");
+		if (fscanf(f, "%d", &n) != 1)
+		{
+			printf("File is empty\n");
+			error = FILE_ERROR;
 			fclose(f);
-			err = NA_MEMORY_ERR;
 			goto terminate;
 		}
-		for (int i = 0; i < tests[n].n; i++) {
-			matr[i] = (double*)malloc(sizeof(double) * 2 * tests[n].n);
-			if (matr[i] == NULL) {
-				printf("Оперативная память не выделена\n");
-				for (int j = 0; j < i; j++) {
-					free(matr[j]);
+
+		matrix = (double**)malloc(sizeof(double*) * tests[n].n);
+
+		if (matrix == NULL) 
+		{
+			printf("Memory error\n");
+			fclose(f);
+			error = MEMORY_ERROR;
+			goto terminate;
+		}
+
+		for (int i = 0; i < tests[n].n; i++) 
+		{
+			matrix[i] = (double*)malloc(sizeof(double) * 2 * tests[n].n);
+			if (matrix[i] == NULL) 
+			{
+				printf("Memory error\n");
+				for (int j = 0; j < i; j++) 
+				{
+					free(matrix[j]);
 				}
-				free(matr);
+				free(matrix);
 				fclose(f);
-				err = NA_MEMORY_ERR;
+				error = MEMORY_ERROR;
 				goto terminate;
 			}
-			for (int j = 0; j < (2 * tests[n].n); j++) {
-				if (j < tests[n].n) {
-					if (fscanf(f, "%lf", &matr[i][j]) != 1) {
-						printf("В файле недостаточно значений\n");
-						err = FILE_WR;
+			for (int j = 0; j < (2 * tests[n].n); j++) 
+			{
+				if (j < tests[n].n) 
+				{
+					if (fscanf(f, "%lf", &matrix[i][j]) != 1) 
+					{
+						printf("Not enough elements in the file\n");
+						error = FILE_ERROR;
 						fclose(f);
-						for (int i = 0; i < tests[n].n; i++) {
-							free(matr[i]);
+						for (int i = 0; i < tests[n].n; i++) 
+						{
+							free(matrix[i]);
 						}
-						free(matr);
+						free(matrix);
 						goto terminate;
 					}
-				}
-				else if (j == tests[n].n + i) {
-					matr[i][j] = 1;
-				}
-				else {
-					matr[i][j] = 0;
 				}
 			}
 		}
 		fclose(f);
 
-		res = Inverse_matr(matr, tests[n].n, &err, eps);
+		gauss_elimination(matrix, tests[n].n, &error, epsilon);
 
 	terminate:
-		if (err != tests[n].err) {
-			printf("Тест №%d не пройден.\n", n + 1);
+		if (error != tests[n].error) 
+		{
+			printf("Test в„–%d is not completed\n", n + 1);
 		}
-		else if (err == NA_OK) {
-			printf("Тест №%d пройден. Обратная матрица:\n\n", n + 1);
-			for (int i = 0; i < tests[n].n; i++) {
-				for (int j = tests[n].n; j < (2 * tests[n].n); j++) {
-					printf("%lf ", matr[i][j]);
+		else if (error == OK) 
+		{
+			printf("Test в„–%d is completed. Result:\n\n", n + 1);
+			for (int i = 0; i < tests[n].n; i++) 
+			{
+				for (int j = tests[n].n; j < (2 * tests[n].n); j++) 
+				{
+					printf("%lf ", matrix[i][j]);
 				}
 				printf("\n");
-				free(matr[i]);
+				free(matrix[i]);
 			}
-			free(matr);
+			free(matrix);
 			printf("\n");
 		}
-		else {
-			printf("Тест №%d успешно пройден.\n", n + 1);
+		else 
+		{
+			printf("Test в„–%d is completed\n", n + 1);
 		}
 	}
 	return 0;
