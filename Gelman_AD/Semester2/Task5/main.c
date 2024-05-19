@@ -32,7 +32,7 @@ int main(void)
 
 		if (err != tests[i].error_code) 
 		{
-			printf("The %d-th test is not completed aaa, error code %lf \n", i + 1, tests[i].error_code);
+			printf("The %d-th test is not completed\n", i + 1);
 		}
 		else if ((err == OK) && (fabs(tests[i].result - value) / 2 > tests[i].epsilon)) 
 		{
