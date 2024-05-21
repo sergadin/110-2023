@@ -72,7 +72,6 @@ double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err)
 
 double** invertMatrix(double** given_matrix, int n, error* err) {
 	const double eps = 0.00000000000001;
-	int all_leaders_zero = 1;
 	double** inverse_matrix, ** matrix;
 	*err = OK;
 	inverse_matrix = (double**)malloc(n * sizeof(double*));      // Выделение памяти на матрицы
@@ -101,7 +100,6 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 		}
 	}
 
-	
 
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
 		for (int j = 0; j < n; j++)
@@ -114,12 +112,7 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			else
 				inverse_matrix[i][j] = 0;
 
-	if(all_leaders_zero && (matrix[n - 1][0] < eps)) {
-		*err = INVALID_MATRIX;
-		return 0;
-	}
-            
-            
+
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
