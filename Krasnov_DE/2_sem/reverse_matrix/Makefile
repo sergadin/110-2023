@@ -1,9 +1,9 @@
 all: a.out run
 
-core.o: core.c find_reverse_matrix.h
+core.o: core.c reverse_matrix.h
 	gcc -c -g core.c
 
-main.o: main.c find_reverse_matrix.h
+main.o: main.c reverse_matrix.h
 	gcc -c -g main.c
 
 run: a.out
