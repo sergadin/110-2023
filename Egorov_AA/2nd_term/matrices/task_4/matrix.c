@@ -1,8 +1,6 @@
 ﻿#include "matrix.h"
 
-static void writeMatrix(double* matrix, int m, int n);
-
-static void writeMatrix(double* matrix, int m, int n) {
+void writeMatrix(double* matrix, int m, int n) {
 	for (int i = 0; i < m; i++) {
 		for (int j = 0; j < n; j++) {
 			printf("%lf ", matrix[i * n + j]);
