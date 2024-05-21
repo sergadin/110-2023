@@ -26,8 +26,6 @@ static void swapRows(double* mat, int n, int row_1, int row_2) {
 
 double* solution(double* mat, int m, int n, error* err) {
 	const double eps = 0.000000000001;
-	double max_element;
-	int row_w_max_el;
 	double* sol;
 	sol = (double*)malloc(m * sizeof(double));                             // Называние масcива
 	if (sol == NULL) {
@@ -47,15 +45,16 @@ double* solution(double* mat, int m, int n, error* err) {
 
 
 	for (int i = 0; i < m; i++) {                                          // Приведение к верхнетреугольному виду
-		max_element = mat[i * n + i];
-		row_w_max_el = 0;
+		double max_element = mat[i * n + i];
+		int row_w_max_el = i;
 		for (int j = 0; j < m; j++) {
 			if (mat[j * n + i] > max_element) {
 				max_element = mat[j * n];
 				row_w_max_el = j;
 			}
 		}
-		swapRows(mat, n, i, row_w_max_el);
+		if (i != row_w_max_el)
+			swapRows(mat, n, i, row_w_max_el);
 		if (mat[i * n + i] == 0) {
 			*err = SINGULAR_MATRIX;
 			return 0;
