@@ -71,19 +71,19 @@ int main(void) {
 
 		inverse_matrix = invertMatrix(matrix, n, &err);
 
-		writeMatrix(matrix, n);
-		printf("\n");
-		writeMatrix(inverse_matrix, n);
-
 		if (err != tests[i].err_code) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else if (err == OK) {
 			multiplied_matrix = multiplyMatrices(matrix, inverse_matrix, n, &err);
 			printf("\n");
-			writeMatrix(multiplied_matrix, n);
 			if (checkMatrix(multiplied_matrix, n) == 1) {
 				printf("%d-й тест пройден.\n", i + 1);
+				writeMatrix(matrix, n);
+		                printf("\n");
+                		writeMatrix(inverse_matrix, n);
+				printf("\n");
+				writeMatrix(multiplied_matrix, n);
 			}
 			else
 				printf("%d-й тест не пройден.\n", i + 1);

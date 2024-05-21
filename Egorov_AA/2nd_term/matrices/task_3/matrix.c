@@ -116,8 +116,8 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
-
-		if (fabs(pivot) < eps) {
+	
+		if (fabs(pivot) == 0) {
 			*err = INVALID_MATRIX;
 			return 0;
 		}
