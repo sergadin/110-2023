@@ -1,9 +1,7 @@
-#include "find_reverse_matrix.h"
+#include "reverse_matrix.h"
 
-double* Get_Minor(double* matrix, int n, int row, int col){ //the function creates a minor without a row (int row) and a column (int col)
-    double* minor;
+double* Get_Minor(double* matrix,double* minor, int n, int row, int col){
     int i,j=0;
-    minor = (double*)malloc((n-1)*(n-1)*sizeof(double));
     for(i = 0; i < n * n; i++){
         if(i % n != col && i / n != row){
             minor[j]=matrix[i];
@@ -16,34 +14,25 @@ double* Get_Minor(double* matrix, int n, int row, int col){ //the function creat
     return minor;
 }
 
-double Get_determinant(double* arr, int n){//the function calculates the determinant of a matrix of size n *n
-    double determinant=0;
-    double* p;
-    int k=1;
+
+double Get_det(double* arr, int n,double eps){
+    double* copy;
     int i;
-    if(n < 1){
-        return 0;
+    double determinant=1;
+    copy=(double*)malloc(n*n*sizeof(double));
+    for(i=0;i<n*n;i++){
+        copy[i]=arr[i];
     }
-    if(n==1){
-        determinant=arr[0];
-        return determinant;
+    copy=Get_stepped(n, n, copy, eps);
+    for(i=0;i<n;i++){
+        determinant=determinant*copy[i*n+i];
     }
-    if(n==2){
-        determinant=arr[0]*arr[3]-arr[1]*arr[2];
-        return determinant;
-    }
-    if(n > 2){
-        for(i = 0; i < n; i++){
-            p = Get_Minor(arr, n, 0, i);
-            determinant = determinant + k * arr[i] * Get_determinant(p, n-1);
-            k = k * (-1);
-            free(p);
-        }
-    }
-    return(determinant);
+    free(copy);
+    return determinant;
 }
 
-double* Get_transpone_matrix(double *arr, int n){//function to transpose the matrix fed into it
+
+double* Get_transpone_matrix(double *arr, int n){
     int i,j;
     double c;
     for(i = 0; i < n; i++){
@@ -55,6 +44,41 @@ double* Get_transpone_matrix(double *arr, int n){//function to transpose the mat
     }
     return arr;
 }
+
+
+double* Get_reverse(double* arr,int n, double eps, error *err){
+    double determinant;
+    int i;
+    int row,col;
+    int sgn;
+    double* minor;
+    double* p;
+    if(*err!=OK){
+        return 0;
+    }
+
+    determinant=Get_det(arr, n, eps);
+    if(fabs(determinant) < eps){
+        *err = NO_INVERSE;
+        free(arr);
+        return 0;
+    }
+
+    minor=(double*)malloc((n-1)*(n-1)*sizeof(double));
+    p=(double*)malloc(n*n*sizeof(double));
+    for(i = 0; i < n * n; i++){
+        row = i / n;
+        col = i % n;
+        sgn = pow(-1,row+col);
+        minor = Get_Minor(arr,minor, n, row, col);
+        p[i] = sgn * Get_det(minor,n-1,eps) / determinant;
+    }
+    p= Get_transpone_matrix(p, n);
+    free(arr);
+    free(minor);
+    return p;
+}
+
 
 double* Matrix_multiplication(double* matrix1, double* matrix2, int size){
     double* result;
@@ -72,6 +96,7 @@ double* Matrix_multiplication(double* matrix1, double* matrix2, int size){
     return result;
 }
 
+
 void Print_matrix(double* mat,int size){
     int j;
     for(j=0;j<size*size;j++){
@@ -83,6 +108,7 @@ void Print_matrix(double* mat,int size){
         }
     }
 }
+
 
 int Identity_matrix_test(double* mat1,double* mat2, int size, double eps){
   int flag=0;
@@ -96,34 +122,58 @@ int Identity_matrix_test(double* mat1,double* mat2, int size, double eps){
 }
 
 
-double* Get_reverse_matrix(double *arr, int n,double eps, error *err){
-    if(*err==EMPTY_FILE){
-        free(arr);
-        return 0;
-    }
-    double determinant=Get_determinant(arr, n);
-    if(fabs(determinant) < eps){
-        *err = NO_INVERSE;
-        free(arr);
-        return 0;
-    }
+void line_difference (int numb_columns, double *matr, int first_number, int second_number, double c){
     int i;
-    int row, col;
-    int sgn;
-    double* p;
-    p = (double*)malloc(n*n*sizeof(double));
-    for(i = 0; i < n * n; i++){
-        row = i / n;
-        col = i % n;
-        sgn = pow(-1,row+col);
-        double* minor = Get_Minor(arr, n, row, col);
-        p[i] = sgn * Get_determinant(minor, n-1) / determinant;
-        free(minor);
-    }
-    p = Get_transpone_matrix(p, n);
-    free(arr);
-    return p;
+    for (i = 0; i < numb_columns ; i++){
+        matr[numb_columns * first_number + i] = matr[numb_columns * first_number + i]- matr[numb_columns * second_number + i] * c;
+	}
 }
-/*The function calculates the inverse of a matrix using the algebraic complement matrix.
-The input is the address of an array, including matrix elements, matrix size, calculation accuracy, error address.
+
+
+void swap (int numb_colums, double *matr, int i, int j)
+{
+  double a;
+  for (int k = 0; k < numb_colums; k++)
+	{
+	  a = matr[numb_colums * i + k];
+	  matr[numb_colums * i + k] = matr[numb_colums * j + k];
+	  matr[numb_colums * j + k] = a;
+	}
+}
+
+
+double* Get_stepped(int N, int M, double *matr, double epsilon)
+{
+  int rang = 0;
+  double leader = 1;
+  double repeat_leader = 1;
+  int i,j = 0;
+  for (j = 0; j < M; j++)
+	{
+	  i = rang;
+	  while (i < N)
+		{
+		  if (fabs (matr[M * i + j]) < epsilon)
+			{
+			  i++;
+			  continue;
+			}
+		  leader = matr[M * i + j];
+		  swap (M, matr, rang, i);
+
+		  for (int k = i + 1; k < N; k++)
+			{
+			  repeat_leader = matr[M * k + j];
+			  if (fabs (repeat_leader) > epsilon)
+				line_difference (M, matr, k, rang, repeat_leader / leader);
+			}
+		  rang++;
+		  break;
+		}
+	}
+  return matr;
+}
+
+/*The get_reverse function calculates the inverse of a matrix by counting algebraic additions and reducing the matrix to echelon form.
+The input is the address of the array (containing matrix elements)(double* arr), matrix size(int size), calculation accuracy(double eps), error address(error *err).
 */
