@@ -4,19 +4,19 @@
 #include "matrix.h"
 
 // New structure for testing
-typedef struct 
+struct testing
 {
 	const char* file_name; // The file with matrix' elements 
 	int n;                // The dimention of the matrix
 	double epsilon;      // The epsilon
 	Error error;        // Error code
-} TestCase;
+};
 
 int main(void) 
 {
 	double epsilon = 0.0001;
 	int n = 0; // The size of the matrix (from the file)
-	double* matrix = NULL; // The pointer to an array containing matrix elements (a variable for storing the result)
+	double** matrix = NULL; // The pointer to an array containing matrix elements (a variable for storing the result)
 	double* vector_b = NULL;
 	double* vector_x = NULL;
 	FILE* f = NULL;
@@ -29,11 +29,10 @@ int main(void)
 		{"matrix3.txt", 2, 0.0001, OK},
 	};
 
-	int number_tasks = sizeof(tests) / sizeof(tests[0]);
-
-	for (int j = 0; j < number_tasks; j++) 
+	for (int j = 0; j < 4; j++) 
 	{
-		f = fopen(tests[j].file_name, "r");
+		f = fopen(test_number[j].file_name, "r");
+		n = test_number[j].n;
 
 		// Opening a file, reading matrix element values ​​from it and writing them to the array
 		if (f == NULL) 
@@ -51,14 +50,14 @@ int main(void)
 			goto terminate;
 		}
 
-		vector_b = (double*)malloc((test_number[i].n) * sizeof(double));
+		vector_b = (double*)malloc((test_number[j].n) * sizeof(double));
 		if (vector_b == NULL)
 		{
 			printf("Memory error\n");
 			error = MEMORY_ERROR;
 			continue;
 		}
-		vector_x = (double*)malloc((test_number[i].n) * sizeof(double));
+		vector_x = (double*)malloc((test_number[j].n) * sizeof(double));
 		if (vector_x == NULL)
 		{
 			free(vector_b);
@@ -67,7 +66,7 @@ int main(void)
 			continue;
 		}
 
-		matrix = (double*)malloc((n * n) * sizeof(double));
+		matrix = (double**)malloc((n) * sizeof(double*));
 		if (matrix == NULL) 
 		{
 			printf("Random Access Memory is not allocated\n");
@@ -105,7 +104,7 @@ int main(void)
 		descent_method(matrix, n, vector_b, vector_x, epsilon, &error);
 
 		terminate:
-		if (error != tests[j].error) 
+		if (error != test_number[j].error)
 		{
 			printf("Test №%d is not completed\n", j + 1);
 		}
