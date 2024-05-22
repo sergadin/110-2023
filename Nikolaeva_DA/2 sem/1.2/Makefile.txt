@@ -1,0 +1,13 @@
+all : a.out run
+test1.o : test1.c test2.h
+	gcc -c test1.c 
+
+main.o : main.c test2.h
+	gcc -c main.c 
+	
+run : a.out
+	./a.out
+	
+a.out : main.o test1.o
+	gcc main.o test1.o -lm                   
+	
