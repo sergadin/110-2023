@@ -1,5 +1,17 @@
 ﻿#include "matrix.h"
 
+static void swapRows(double* mat, int n, int row_1, int row_2);            // Функция меняет строки местами
+
+static void swapRows(double* mat, int n, int row_1, int row_2) {
+	for (int i = 0; i < n; i++) {
+		double temp;
+		temp = mat[row_1 * n + i];
+		mat[row_1 * n + i] = mat[row_2 * n + i];
+		mat[row_2 * n + i] = temp;
+	}
+}
+
+
 void fillMatrix(double*** matrix, int n) {
 	srand(time(NULL));
 	for (int i = 0; i < n; i++)
@@ -114,6 +126,16 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 
 
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
+
+		if (matrix[i][i] == 0) {
+			for (int j = i + 1; j < n; j++) {
+				if (a[j][i] != 0) {
+					swapRows(matrix, n, i, j);
+					swapRows(inverse_matrix, n, i, j);
+					break;
+				}
+			}
+		}
 
 		double pivot = matrix[i][i];                             // Выбор главного элемента
 	
