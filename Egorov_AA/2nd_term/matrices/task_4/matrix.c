@@ -55,7 +55,7 @@ double* solution(double* mat, int m, int n, error* err) {
 			swapRows(mat, n, i, row_w_max_el);
 		if (mat[i * n + i] == 0) {
 			*err = SINGULAR_MATRIX;
-			return 0;
+			return sol;
 		}
 
 		for (int j = i + 1; j < m; j++) {
