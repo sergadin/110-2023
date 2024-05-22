@@ -2,7 +2,7 @@
 
 void copyWords(FILE* input, FILE* output, error* err) {
 	int ch, index = 0;
-	char word[256];
+	char word[121];
 	*err = OK;
 
 	while ((ch = fgetc(input)) != EOF) {
