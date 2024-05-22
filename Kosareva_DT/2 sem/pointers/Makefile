@@ -1,6 +1,6 @@
 all : a.out run
 
-pointer_7.0 : pointer_7.c pointer_7.h
+pointer_7.o : pointer_7.c pointer_7.h
 	gcc -c pointer_7.c
 
 main.o : main.c pointer_7.h
