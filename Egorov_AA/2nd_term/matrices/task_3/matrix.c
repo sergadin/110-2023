@@ -1,13 +1,13 @@
 ﻿#include "matrix.h"
 
-static void swapRows(double* mat, int n, int row_1, int row_2);            // Функция меняет строки местами
+static void swapRows(double** mat, int n, int row_1, int row_2);            // Функция меняет строки местами
 
-static void swapRows(double* mat, int n, int row_1, int row_2) {
+static void swapRows(double** mat, int n, int row_1, int row_2) {
 	for (int i = 0; i < n; i++) {
 		double temp;
-		temp = mat[row_1 * n + i];
-		mat[row_1 * n + i] = mat[row_2 * n + i];
-		mat[row_2 * n + i] = temp;
+		temp = mat[row_1][i];
+		mat[row_1][i] = mat[row_2][i];
+		mat[row_2][i] = temp;
 	}
 }
 
@@ -129,7 +129,7 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 
 		if (matrix[i][i] == 0) {
 			for (int j = i + 1; j < n; j++) {
-				if (a[j][i] != 0) {
+				if (matrix[j][i] != 0) {
 					swapRows(matrix, n, i, j);
 					swapRows(inverse_matrix, n, i, j);
 					break;
