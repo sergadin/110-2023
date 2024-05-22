@@ -48,21 +48,29 @@ int main(void) {
 		}
 
 		matrix = (double**)malloc(n * sizeof(double*));
-		for (int i = 0; i < n; i++) {
-			matrix[i] = (double*)malloc(n * sizeof(double));
-		}
-
 		if (matrix == NULL) {
 			printf("%d-й тест не пройден. Память не выделилась\n", i + 1);
 			fclose(input);
 			continue;
 		}
+		for (int i = 0; i < n; i++) {
+			matrix[i] = (double*)malloc(n * sizeof(double));
+			if (matrix[i] == NULL) {
+				printf("%d-й тест не пройден. Память не выделилась\n", i + 1);
+				fclose(input);
+				continue;
+			}
+		}
+
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (fscanf(input, "%lf", &matrix[i][j]) != 1) {
 					printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 					fclose(input);
+					for (int i = 0; i < n; i++) {
+						free(matrix[i]);
+					}
 					free(matrix);
 					continue;
 				}
@@ -105,6 +113,13 @@ int main(void) {
 			}
 			free(multiplied_matrix);
 		}
+		if (err == INVALID_MATRIX) {
+			for (int i = 0; i < n; i++) {
+				free(inverse_matrix[i]);
+			}
+			free(inverse_matrix);
+		}
+		fclose(input);
 	}
 
 	return 0;

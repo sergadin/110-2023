@@ -141,7 +141,11 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 	
 		if (fabs(pivot) == 0) {
 			*err = INVALID_MATRIX;
-			return 0;
+			for (int j = 0; j < n; j++) {
+				free(matrix[j]);
+			}
+			free(matrix);
+			return inverse_matrix;
 		}
 
 		for (int j = 0; j < n; j++) {                            // Деление строки на значение главного элемента
