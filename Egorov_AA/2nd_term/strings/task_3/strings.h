@@ -4,9 +4,7 @@
 
 typedef enum {
     OK,               // Все хорошо
-    NO_SOLUTION,      // Система не определена
-    SINGULAR_MATRIX,  // Матрица вырождена
-    M_ALLOC_ERR       // Память не выделена
+    TOO_LONG_WORD     // Записано слишком длинное слово
 }error;
 
 
