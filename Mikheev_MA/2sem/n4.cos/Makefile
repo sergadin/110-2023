@@ -9,5 +9,5 @@ run : a.out
 	./a.out
   
 a.out : main.o TaylorOfcos.o
-	gcc main.o TaylorOfcos -lm
+	gcc main.o TaylorOfcos.o -lm
 
