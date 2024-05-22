@@ -1,5 +1,5 @@
 #include "strings.h"
-#define MAX_WORD_LENGTH 256
+#define MAX_WORD_LENGTH 512
 
 void copyWords(FILE* input, FILE* output, error* err) {
 	int ch, index = 0;
