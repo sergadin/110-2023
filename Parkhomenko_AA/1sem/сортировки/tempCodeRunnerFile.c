@@ -1,0 +1,1 @@
+(fin_1 - start_1)/CLOCKS_PER_SEC;
