@@ -16,9 +16,7 @@ int main(void) {
 	dataSet tests[] = {
 		{ "input1.txt", "output1.txt", OK},
 		{ "input2.txt", "output2.txt", OK },
-		{ "input3.txt", "output3.txt", OK },
-		{ "input4.txt", "output4.txt", NO_SOLUTION },
-		{ "input5.txt", "output5.txt", SINGULAR_MATRIX }
+		{ "input3.txt", "output3.txt", OK }
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);
@@ -42,7 +40,7 @@ int main(void) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else if (err == OK) {
-			printf("%d-й тест пройден. Результат в output%d.txt", i + 1, i + 1);
+			printf("%d-й тест пройден. Результат в output%d.txt\n", i + 1, i + 1);
 		}
 		else {
 			printf("%d-й тест пройден.\n", i + 1);

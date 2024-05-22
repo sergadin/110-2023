@@ -21,7 +21,4 @@ void copyWords(FILE* input, FILE* output, error* err) {
 		word[index] = '\0';
 		fprintf(output, "%s\n", word);
 	}
-
-	fclose(input);
-	fclose(output);
 }
