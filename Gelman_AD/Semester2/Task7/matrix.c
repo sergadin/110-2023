@@ -4,19 +4,18 @@
 #include "matrix.h"
 
 // Parameters
-// *matr - address to the array (original linear representation of the matrix)
-// *nmatr - address to the array (new linear representation of the matrix - its minor)
+// *matrix - address to the array (original linear representation of the matrix)
 //  n (= order) - dimention of the original matrix (the number of the equasions)
 
 // The function multiplies matrix A by vector x and writes the result to vector result
 void mul_matrix_vector(double** matrix, int n, double* vector_x, double* result_vector);
 void mul_matrix_vector(double** matrix, int n, double* vector_x, double* result_vector)
 {
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
     {
         result_vector[i] = 0;
 
-        for (int j = 0; j < n; j++) 
+        for (int j = 0; j < n; j++)
         {
             result_vector[i] += matrix[i][j] * vector_x[j];
         }
@@ -71,11 +70,17 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
     tr_vector_A = (double*)malloc((n) * sizeof(double));
     vector_AAtr = (double*)malloc((n) * sizeof(double));
 
+    for (int i = 0; i < n; i++)
+    {
+        result_vector[i] = vector_b[i];
+        vector_x[i] = 0;
+    }
+
     while (sqrt(dot_product(result_vector, result_vector, n)) > epsilon && iteration < limit)
     {
         mul_matrix_vector(matrix, n, vector_x, vector_Ax); // Ap = A * x
 
-        for (int i = 0; i < n; i++) 
+        for (int i = 0; i < n; i++)
         {
             result_vector[i] = vector_Ax[i] - vector_b[i];; // Counting vector r = A * x - b
         }
@@ -96,10 +101,10 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
         }
 
         iteration++;
-        if (fabs(dot_product(result_vector, result_vector, n)) >= epsilon && iteration == limit)
-        {
-            *error = ITERATION_LIMIT_EXEEDED;
-        }
+    }
+    if (fabs(dot_product(result_vector, result_vector, n)) >= epsilon && iteration == limit)
+    {
+        *error = OK;
     }
 
     free(result_vector);

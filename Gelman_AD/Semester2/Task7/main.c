@@ -6,13 +6,13 @@
 // New structure for testing
 struct testing
 {
-	const char* file_name; // The file with matrix' elements 
+	const char* file_name; // The file with matrix' elements
 	int n;                // The dimention of the matrix
 	double epsilon;      // The epsilon
 	Error error;        // Error code
 };
 
-int main(void) 
+int main(void)
 {
 	double epsilon = 0.0001;
 	int n = 0; // The size of the matrix (from the file)
@@ -29,24 +29,16 @@ int main(void)
 		{"matrix3.txt", 2, 0.0001, OK},
 	};
 
-	for (int j = 0; j < 4; j++) 
+	for (int j = 0; j < 3; j++)
 	{
 		f = fopen(test_number[j].file_name, "r");
 		n = test_number[j].n;
 
 		// Opening a file, reading matrix element values ​​from it and writing them to the array
-		if (f == NULL) 
+		if (f == NULL)
 		{
 			printf("File did not open\n");
 			error = FILE_ERROR;
-			goto terminate;
-		}
-
-		if (fscanf(f, "%d", &n) != 1) 
-		{
-			printf("File is empty\n");
-			error = FILE_ERROR;
-			fclose(f);
 			goto terminate;
 		}
 
@@ -67,7 +59,7 @@ int main(void)
 		}
 
 		matrix = (double**)malloc((n) * sizeof(double*));
-		if (matrix == NULL) 
+		if (matrix == NULL)
 		{
 			printf("Random Access Memory is not allocated\n");
 			error = MEMORY_ERROR;
@@ -77,17 +69,17 @@ int main(void)
 			goto terminate;
 		}
 
-		for (int i = 0; i < (n * n); ++i) 
+		for (int i = 0; i < n; ++i)
 		{
 			matrix[i] = NULL;
 			matrix[i] = (double*)malloc((test_number[i].n) * sizeof(double));
-			if (fscanf(f, "%lf", &matrix[i]) != 1) 
+			if (matrix[i] == NULL)
 			{
-				printf("Not enough elements in the file\n");
-				error = FILE_ERROR;
-				free(matrix);
-				fclose(f);
-				goto terminate;
+				for (int k = 0; k < i; k++)
+				{
+					free(matrix[k]);
+				}
+				break;
 			}
 		}
 
@@ -108,13 +100,14 @@ int main(void)
 		{
 			printf("Test №%d is not completed\n", j + 1);
 		}
-		else 
+		else
 		{
-			printf("Test №%d is completed.\n", j + 1);
 			for (int k = 0; k < n; k++)
 			{
 				printf("x%d = %lf ", k + 1, vector_x[k]);
 			}
+			printf("Test №%d is completed.\n", j + 1);
+			// printf("aaaa = %d \n", n);
 		}
 		free(vector_b);
 		free(vector_x);
