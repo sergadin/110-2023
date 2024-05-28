@@ -38,6 +38,7 @@ int main(void) {
 				goto error;
 			}
 		}
+		fclose(f);
 		rank(matrix, n, m, 0.00000001);
 		error :
 	}
