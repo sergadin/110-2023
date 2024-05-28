@@ -1,6 +1,6 @@
 #include "strings.h"
 
-#define MAX_LINE_LENGTH 1024
+#define MAX_LINE_LENGTH 2048
 
 typedef struct Define {
 	char key[MAX_LINE_LENGTH];
@@ -50,6 +50,7 @@ void process_file(FILE* input, FILE* output, error* err) {
 
 	*err = OK;
 	char line[MAX_LINE_LENGTH];
+	char delimiters[] = " .!,;:\n\t";
 	Define* defines = NULL;
 	int undef_flag = 0;
 
@@ -66,7 +67,7 @@ void process_file(FILE* input, FILE* output, error* err) {
 		}
 		else {
 			if (!undef_flag) {
-				char* token = strtok(line, " \t\n");
+				char* token = strtok(line, delimiters);
 				while (token != NULL) {
 					const char* replacement = find_define(defines, token);
 					if (replacement) {

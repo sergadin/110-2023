@@ -16,7 +16,7 @@ int main() {
 	error err;
 
 	dataSet tests[] = {
-		{ "input.txt", "output.txt", OK},
+		{ "input1.txt", "output1.txt", OK},
 		{ "input2.txt", "output2.txt", OK },
 		{ "input3.txt", "output3.txt", TOO_LONG_WORD }
 	};
