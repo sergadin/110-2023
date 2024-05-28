@@ -38,9 +38,8 @@ int main(void)
 	double **matr, eps = 0.00001;
 	input = fopen("input.txt", "r");
 	output = fopen("output.txt", "w");
-	printf("1");
 	fscanf(input, "%d", &n);
-	printf("1");
+	matr = (double **)malloc(n * sizeof(double *));
 	for (int i = 0; i < n; i++)
 	{
 		matr[i] = (double *)malloc(n * sizeof(double));
@@ -50,7 +49,7 @@ int main(void)
 		}
 	}
 	inverse_matrix(matr, n, eps, &err);
-	fprintf(output, "%d", n);
+	fprintf(output, "%d ", n);
 	for (int i = 0; i < n; i++)
         {
                 for (int j = 0; j < n; j++)

@@ -54,8 +54,8 @@ static int change_strs(double **matr, int str1, int str2)
 int inverse_matrix(double **matr, int n, double eps, ERR *err)
 {
 	double **inv_matr, coef;
+	inv_matr = (double **)malloc(n * sizeof(double *));
 	int sub_err, main_str;
-	printf("0");
 	for (int i = 0; i < n; i++)
 	{
 		inv_matr[i] = (double *)malloc(n * sizeof(double));
@@ -65,12 +65,10 @@ int inverse_matrix(double **matr, int n, double eps, ERR *err)
 		}
 		inv_matr[i][i] = 1;
 	}
-	printf("1");
 	for (int i = 0; i < n; i++)
 	{
-		printf("2");
 		sub_err = 1;
-		for (int j = 0; j < n; j++)
+		for (int j = i; j < n; j++)
 		{
 			if (compRR(matr[j][i], 0, eps) != 0)
 			{
@@ -79,20 +77,20 @@ int inverse_matrix(double **matr, int n, double eps, ERR *err)
 				break;
 			}
 		}
-		if (sub_err = 1)
+		if (sub_err == 1)
 		{
 			printf("матрица вырожденная");
 			*err = E_M;
 			return -1;
 		}
-		coef = matr[main_str][i];
+		coef = (1 / matr[main_str][i]);
 		mult_str(matr, main_str, n, coef);
 		mult_str(inv_matr, main_str, n, coef);
-		for (int j = main_str; j < n; j++)
+		for (int j = (main_str + 1); (j % n) != main_str; j++)
 		{
-			coef = (-1) * matr[j][i];
-			add_str(matr, main_str, j, n, coef);
-			add_str(inv_matr, main_str, j, n, coef);
+			coef = (-1) * matr[j % n][i];
+			add_str(matr, main_str, (j % n), n, coef);
+			add_str(inv_matr, main_str, (j % n), n, coef);
 		}
 		change_strs(matr, main_str, i);
 		change_strs(inv_matr, main_str, i);
