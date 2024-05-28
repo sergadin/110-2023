@@ -1,9 +1,9 @@
 #include "strings.h"
 #define MAX_WORD_LENGTH 512
 
-int add_word(Node** head, const char* word); // Функция для добавления слова в список, если его там еще нет
+static int add_word(Node** head, const char* word); // Функция для добавления слова в список, если его там еще нет
 
-int add_word(Node** head, const char* word) {
+static int add_word(Node** head, const char* word) {
 	Node* current = *head;
 	while (current != NULL) {
 		if (strcmp(current->word, word) == 0) {
