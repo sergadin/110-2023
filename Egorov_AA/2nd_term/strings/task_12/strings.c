@@ -9,9 +9,9 @@ typedef struct Define {
 } Define;
 
 
-const void add_define(Define** head, const char* key, const char* value);
+const void addDefine(Define** head, const char* key, const char* value);
 
-const void add_define(Define** head, const char* key, const char* value) {
+const void addDefine(Define** head, const char* key, const char* value) {
 	Define* new_define = (Define*)malloc(sizeof(Define));
 	strcpy(new_define->key, key);
 	strcpy(new_define->value, value);
@@ -20,9 +20,9 @@ const void add_define(Define** head, const char* key, const char* value) {
 }
 
 
-const char* find_define(Define* head, const char* key);
+const char* findDefine(Define* head, const char* key);
 
-const char* find_define(Define* head, const char* key) {
+const char* findDefine(Define* head, const char* key) {
 	Define* current = head;
 	while (current != NULL) {
 		if (strcmp(current->key, key) == 0) {
@@ -34,12 +34,15 @@ const char* find_define(Define* head, const char* key) {
 }
 
 
-const void removeDefine()
+const void removeDefine(Define** head, const char* key, const char* value);
+
+const void removeDefine(Define** head, const char* key, const char* value) {
+}
 
 
-const void free_defines(Define* head);
+const void freeDefines(Define* head);
 
-const void free_defines(Define* head) {
+const void freeDefines(Define* head) {
 	Define* current = head;
 	while (current != NULL) {
 		Define* temp = current;
@@ -62,7 +65,7 @@ void process_file(FILE* input, FILE* output, error* err) {
 			char key[MAX_LINE_LENGTH];
 			char value[MAX_LINE_LENGTH];
 			if (sscanf(line, "#define %s %[^\n]", key, value) == 2) {
-				add_define(&defines, key, value);
+				addDefine(&defines, key, value);
 			}
 		}
 		else if (strncmp(line, "#undef", 6) == 0) {
@@ -72,7 +75,7 @@ void process_file(FILE* input, FILE* output, error* err) {
 			if (!undef_flag) {
 				char* token = strtok(line, delimiters);
 				while (token != NULL) {
-					const char* replacement = find_define(defines, token);
+					const char* replacement = findDefine(defines, token);
 					if (replacement) {
 						fprintf(output, "%s ", replacement);
 					}
@@ -88,5 +91,5 @@ void process_file(FILE* input, FILE* output, error* err) {
 			}
 		}
 	}
-	free_defines(defines);
+	freeDefines(defines);
 }
