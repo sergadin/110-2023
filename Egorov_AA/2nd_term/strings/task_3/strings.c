@@ -1,17 +1,21 @@
 #include "strings.h"
 #define MAX_WORD_LENGTH 512
 
-static int add_word(Node** head, const char* word); // Функция для добавления слова в список, если его там еще нет
+typedef struct Node {
+	char word[MAX_WORD_LENGTH];
+	struct Node* next;
+} Node;
 
-static int add_word(Node** head, const char* word) {
+static int addWord(Node** head, const char* word);         // Функция для добавления слова в связный список
+
+static int addWord(Node** head, const char* word) {
 	Node* current = *head;
 	while (current != NULL) {
-		if (strcmp(current->word, word) == 0) {
-			return 0; // Слово уже есть в списке
+		if (strcmp(current->word, word) == 0) {     // Проверка на наличие слова в списке
+			return 0;
 		}
 		current = current->next;
 	}
-	// Добавляем новое слово в начало списка
 	Node* new_node = (Node*)malloc(sizeof(Node));
 	if (new_node == NULL) {
 		perror("Ошибка выделения памяти");
@@ -28,14 +32,13 @@ void copyWords(FILE* input, FILE* output, error* err) {
 	int ch, index = 0;
 	char word[MAX_WORD_LENGTH + 1];
 	Node* head = NULL;
-
 	*err = OK;
 
 	while ((ch = fgetc(input)) != EOF) {
-		if (isspace((unsigned char)ch) || ispunct((unsigned char)ch)) {
+		if (isspace((unsigned char)ch) || ispunct((unsigned char)ch)) {        // Если знак пункутации => слово закончилось
 			if (index > 0) {
-				word[index] = '\0';
-				if (add_word(&head, word)) {
+				word[index] = '\0';	
+				if (addWord(&head, word)) {                            // Проверяем находится ли оно в списке, если нет, то выписываем
 					fprintf(output, "%s\n", word);
 				}
 				index = 0;
@@ -51,9 +54,9 @@ void copyWords(FILE* input, FILE* output, error* err) {
 			}
 		}
 	}
-	if (index > 0) {
+	if (index > 0) {                                                                // Если после последнего слова нет знака пунктуации
 		word[index] = '\0';
-		if (add_word(&head, word)) {
+		if (addWord(&head, word)) {
 			fprintf(output, "%s\n", word);
 		}
 	}
