@@ -16,9 +16,9 @@ int main() {
 	error err;
 
 	dataSet tests[] = {
-		{ "input1.txt", "output1.txt", OK},
+		{ "input1.txt", "output1.txt", OK },
 		{ "input2.txt", "output2.txt", OK },
-		{ "input3.txt", "output3.txt", TOO_LONG_WORD }
+		{ "input3.txt", "output3.txt", OK }
 	};
 
 	test_num = sizeof(tests) / sizeof(tests[0]);

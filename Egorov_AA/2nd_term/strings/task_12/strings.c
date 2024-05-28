@@ -9,9 +9,9 @@ typedef struct Define {
 } Define;
 
 
-void add_define(Define** head, const char* key, const char* value);
+const void add_define(Define** head, const char* key, const char* value);
 
-void add_define(Define** head, const char* key, const char* value) {
+const void add_define(Define** head, const char* key, const char* value) {
 	Define* new_define = (Define*)malloc(sizeof(Define));
 	strcpy(new_define->key, key);
 	strcpy(new_define->value, value);
@@ -34,9 +34,12 @@ const char* find_define(Define* head, const char* key) {
 }
 
 
-void free_defines(Define* head);
+const void removeDefine()
 
-void free_defines(Define* head) {
+
+const void free_defines(Define* head);
+
+const void free_defines(Define* head) {
 	Define* current = head;
 	while (current != NULL) {
 		Define* temp = current;
@@ -50,7 +53,7 @@ void process_file(FILE* input, FILE* output, error* err) {
 
 	*err = OK;
 	char line[MAX_LINE_LENGTH];
-	char delimiters[] = " .!,;:\n\t";
+	char delimiters[] = " \n\t";
 	Define* defines = NULL;
 	int undef_flag = 0;
 
