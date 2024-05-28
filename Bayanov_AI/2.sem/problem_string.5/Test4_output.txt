@@ -1,0 +1,26 @@
+Maximum word length: 6
+Minimum word length: 1
+Average word length: 1
+Frequency of symbol ' ': 39.473684 percent 
+Frequency of symbol '0': 2.631579 percent 
+Frequency of symbol '1': 5.263158 percent 
+Frequency of symbol '2': 2.631579 percent 
+Frequency of symbol '3': 2.631579 percent 
+Frequency of symbol '4': 2.631579 percent 
+Frequency of symbol '5': 2.631579 percent 
+Frequency of symbol '6': 2.631579 percent 
+Frequency of symbol '7': 2.631579 percent 
+Frequency of symbol '8': 2.631579 percent 
+Frequency of symbol '9': 2.631579 percent 
+Frequency of symbol 'a': 2.631579 percent 
+Frequency of symbol 'b': 2.631579 percent 
+Frequency of symbol 'c': 2.631579 percent 
+Frequency of symbol 'd': 2.631579 percent 
+Frequency of symbol 'e': 2.631579 percent 
+Frequency of symbol 'f': 2.631579 percent 
+Frequency of symbol 'g': 2.631579 percent 
+Frequency of symbol 'h': 2.631579 percent 
+Frequency of symbol 'i': 2.631579 percent 
+Frequency of symbol 'k': 2.631579 percent 
+Frequency of symbol 'l': 2.631579 percent 
+Frequency of symbol 'm': 2.631579 percent 
