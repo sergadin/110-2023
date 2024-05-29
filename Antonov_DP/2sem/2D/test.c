@@ -7,9 +7,9 @@
 int main(void)
 {
 	ERR err = OK;
-	int n;
+	int n, check = 0;
 	FILE *input, *output;
-	double **matr, *val, *b, eps = 0.000001;
+	double **matr, *val, *b, eps = 0.000001, result;
 	input = fopen("input.txt", "r");
 	output = fopen("output.txt", "w");
 	fscanf(input, "%d", &n);
@@ -34,6 +34,27 @@ int main(void)
         {
                 fprintf(output, "%lf ", val[i]);
         }
+	for (int i = 0; i < n; i++)
+	{
+		result = 0;
+		for (int j = 0; j < n; j++)
+		{
+			result += (matr[i][j] * val[j]);
+		}
+		result -= b[i];
+		if(fabs(result) > eps)
+		{
+			check = 1;
+		}
+	}
+	if(check == 0)
+	{
+		printf("значения подходят \n");
+	}
+	else
+	{
+		printf("к сожалению значения не подходят \n");
+	}
 	for (int i = 0; i < n; i++)
 	{
                 free(matr[i]);

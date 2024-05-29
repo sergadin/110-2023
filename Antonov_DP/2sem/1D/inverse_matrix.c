@@ -20,6 +20,33 @@ static int compRR(double a, double b, double eps)
 	return -1;
 }
 
+static int check_inv(double **matr, double **inv_matr, int n, double eps);
+
+static int check_inv(double **matr, double **inv_matr, int n, double eps)
+{
+	double elem;
+	for (int i = 0; i < n; i++)
+	{
+		for(int j = 0; j < n; j++)
+		{
+			elem = 0;
+			for (int k = 0; k < n; k++)
+			{
+				elem = elem + (matr[i][k] * inv_matr[k][j]);
+			}
+			if ((i == j) && (fabs(elem - 1) > eps))
+			{
+				return 1;
+			}
+			if((i != j) && (fabs(elem) > eps))
+			{
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 static int add_str(double **matr, int str1, int str2, int n, double k);
 
 static int add_str(double **matr, int str1, int str2, int n, double k)
@@ -53,14 +80,17 @@ static int change_strs(double **matr, int str1, int str2)
 
 int inverse_matrix(double **matr, int n, double eps, ERR *err)
 {
-	double **inv_matr, coef;
+	double **inv_matr, **sub_matr, coef;
 	inv_matr = (double **)malloc(n * sizeof(double *));
+	sub_matr = (double **)malloc(n * sizeof(double *));
 	int sub_err, main_str;
 	for (int i = 0; i < n; i++)
 	{
+		sub_matr[i] = (double *)malloc(n * sizeof(double));
 		inv_matr[i] = (double *)malloc(n * sizeof(double));
 		for (int j = 0; j < n; j++)
 		{
+			sub_matr[i][j] = matr[i][j];
 			inv_matr[i][j] = 0;
 		}
 		inv_matr[i][i] = 1;
@@ -95,6 +125,14 @@ int inverse_matrix(double **matr, int n, double eps, ERR *err)
 		change_strs(matr, main_str, i);
 		change_strs(inv_matr, main_str, i);
 	}
+	if(check_inv(sub_matr, inv_matr, n, eps) == 0)
+	{
+		printf("матрица действительно обратная");
+	}
+	else
+	{
+		printf("к сожалению матрица не обратная");
+	}
 	for (int i = 0; i < n; i++)
 	{
 		for (int j = 0; j < n; j++)
@@ -104,8 +142,10 @@ int inverse_matrix(double **matr, int n, double eps, ERR *err)
 	}
 	for (int i = 0; i < n; i++)
         {
+		free(sub_matr[i]);
                 free(inv_matr[i]);
         }
+	free(sub_matr);
 	free(inv_matr);
 	return 0;
 }
