@@ -2,7 +2,7 @@ all : a.out run
 
 
 
-Array_of_values.o : Array_of_values.c Array_of_values.h
+fillValueArray.o : Array_of_values.c Array_of_values.h
 
 	gcc -c -g Array_of_values.c
 

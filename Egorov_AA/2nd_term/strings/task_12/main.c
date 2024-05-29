@@ -1,20 +1,55 @@
-﻿// strings_task13.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+﻿#include <stdio.h>
+#include <stdlib.h>
+#include "strings.h"
 
-#include <iostream>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+typedef struct {          // Структура тестов:
+	const char* input;               // Имя файла
+	const char* output;
+	error err_code;                  // Код ошибки
+} dataSet;
+
+
+int main() {
+
+	int test_num;
+	error err;
+
+	dataSet tests[] = {
+		{ "input1.txt", "output1.txt", OK },
+		{ "input2.txt", "output2.txt", OK },
+		{ "input3.txt", "output3.txt", OK }
+	};
+
+	test_num = sizeof(tests) / sizeof(tests[0]);
+
+	for (int i = 0; i < test_num; i++) {                                            // Тестирование
+		FILE* input, * output;
+
+		if ((input = fopen(tests[i].input, "r")) == NULL) {
+			printf("%d-й тест не пройден. Не удалось открыть инпут файл\n", i + 1);
+			continue;
+		}
+		if ((output = fopen(tests[i].output, "w")) == NULL) {
+			printf("%d-й тест не пройден. Не удалось открыть аутпут файл\n", i + 1);
+			fclose(input);
+			continue;
+		}
+
+		process_file(input, output, &err);
+
+		if (err != tests[i].err_code) {
+			printf("%d-й тест не пройден :(\n", i + 1);
+		}
+		else if (err == OK) {
+			printf("%d-й тест пройден. Результат в output%d.txt\n", i + 1, i + 1);
+		}
+		else {
+			printf("%d-й тест пройден.\n", i + 1);
+		}
+		fclose(input);
+		fclose(output);
+	}
+
+	return 0;
 }
-
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
