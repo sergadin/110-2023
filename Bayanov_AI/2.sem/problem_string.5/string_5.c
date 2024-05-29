@@ -26,7 +26,7 @@ void function_string5 (FILE *output, FILE *input)
 		for(int j = 0; symbols[j] != 0 && symbols[j] != '\n'; j++) 
 		{ 
 			c = symbols[j];
-			symbol_frequency[(int)c]++;
+			symbol_frequency[c]++;
 			if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) 
 			{
 				current_length++;
@@ -86,8 +86,8 @@ void function_string5 (FILE *output, FILE *input)
 	
 	for(int i = 0; i < symbols_size; i++)
 	{
-		if( (char)i != '\0' && (char)i != '\n' && symbol_frequency[i] != 0)
-			fprintf(output, "Frequency of symbol '%c': %lf percent \n", i, (double)symbol_frequency[i]*100/counter_sym);
+		if(i != '\0' && i != '\n' && symbol_frequency[i] != 0)
+			fprintf(output, "Frequency of symbol '%c': %lf percent \n", i, symbol_frequency[i]*100/counter_sym);
 	}
 }
 
