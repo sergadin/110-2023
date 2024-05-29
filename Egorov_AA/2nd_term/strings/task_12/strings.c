@@ -37,7 +37,7 @@ const char* findDefine(Define* head, const char* key) {
 const void removeDefine(Define** head, const char* key);             // Освобождает определенный дефайн
 
 const void removeDefine(Define** head, const char* key) {
-	Define* current = (Define*)malloc(sizeof(Define));
+	Define* current = *head;
 	Define* prev = NULL;
 	
 	while (current != NULL) {
