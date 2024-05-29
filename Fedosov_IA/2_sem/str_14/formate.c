@@ -9,7 +9,6 @@ void formatParagraph(char paragraph[], int width, FILE *outp)
     int first_line = 1;
     char *word;
     int remaining_width = width;
-    fprintf(outp, "    ");
     word = strtok(paragraph, " \n");
     while (word != NULL)
     {
@@ -20,10 +19,11 @@ void formatParagraph(char paragraph[], int width, FILE *outp)
             remaining_width -= 4;
             first_line = 0;
         }
+
         if (word_length > remaining_width)
         {
-            fprintf(outp, "\n    ");
-            remaining_width = width - 4;
+            fprintf(outp, "\n");
+            remaining_width = width;
         }
         fprintf(outp, "%s ", word);
         remaining_width -= word_length + 1;
