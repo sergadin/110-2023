@@ -3,32 +3,6 @@
 #include <stdlib.h>
 #include "inverse_matrix.h"
 
-static double f1(double x);
-static double f2(double x);
-
-// функция задаёт кубическую параболу
-
-double f1(double x)
-{
-	return x * x * x;
-}
-
-// функция, задающая параболу с корнями 2 и 3
-
-double f2(double x)
-{
-	return ((x - 2) * (x - 3));
-}
-
-typedef struct testcase{
-	double a;
-	double b;
-	int x;
-	int y;
-	int len;
-	double eps;
-	ERR exit_err;
-} testcase;
 
 int main(void)
 {
