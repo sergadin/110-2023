@@ -21,7 +21,7 @@ static int addWord(Node** head, const char* word, error* err) {
 		exit(-1);
 	}
 
-	new_node->word = _strdup(word);
+	new_node->word = strdup(word);
 	new_node->next = *head;
 	*head = new_node;
 	return 1;
