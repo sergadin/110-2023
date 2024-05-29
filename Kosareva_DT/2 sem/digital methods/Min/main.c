@@ -22,14 +22,18 @@ int main(void) {
 		{SIN, 7, 5},
 		{PARABOLA, -100, 100}
 	};
-	double eps = 0.00001;
+	int error;
+	double eps = 0.0000001;
+	double min;
 	
 	for (int i=0; i<3; i++) {
-		if (min_search(entry[i].f, &entry[i].a, &entry[i].b, eps) == -1) {
-			printf("Превышен лимит итераций\n");
+		error = 0;
+		min = min_search(entry[i].f, entry[i].a, entry[i].b, eps, &error);
+		if (error == 1) {
+			printf("Ошибка\n");
 		}
 		else {
-			printf("%lf\n", entry[i].a);
+			printf("%lf\n", min);
 		}
 	}
 	

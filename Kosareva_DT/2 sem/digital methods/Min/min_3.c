@@ -1,8 +1,24 @@
 #include "min_3.h"
 #include <math.h>
 
+typedef struct{
+	double x;
+	double y;
+} dot;
+
+double max(double a, double b, double c) {
+	if (b > a) {
+		a = b;
+	}
+	if (c > a) {
+		a = c;
+	}
+	
+	return a;
+}
+
 void min_dots(R_Rfun f, double *a, double *b, int n, double eps) {
-	double min[2]; //положение минимума и его значение
+	dot min; //положение минимума и его значение
 	double dx; //шаг
 	
 	if (*b < *a) {
@@ -13,43 +29,44 @@ void min_dots(R_Rfun f, double *a, double *b, int n, double eps) {
 	
 	dx = (*b - *a)/n;
 	
-	min[0] = *b;
-	min[1] = (*f)(*b);
+	min.x = *b;
+	min.y = (*f)(*b);
 	
 	for (double i=*a; i<*b; i+=dx) {
-		if ((*f)(i) < min[1]) {
-			min[0] = i;
-			min[1] = (*f)(i);
+		if ((*f)(i) < min.y) {
+			min.x = i;
+			min.y = (*f)(i);
 		}
 	}
 	
-	if (fabs(min[0] - *a) < eps) {
+	if (fabs(min.x - *a) < (eps * max(*a, min.x, 1))) {
 		*b = *a + dx;
 		return;
 	}
 	
-	if (fabs(min[0] - *b) < eps) {
+	if (fabs(min.x - *b) < (eps * max(*b, min.x, 1))) {
 		*a = *b - dx;
 		return;
 	}
 	
-	*a = min[0] - dx;
-	*b = min[0] + dx;
+	*a = min.x - dx;
+	*b = min.x + dx;
 	
 	return;
 }
 
-int min_search(R_Rfun f, double *a, double *b, double eps) {
+double min_search(R_Rfun f, double a, double b, double eps, int *err) {
 	int n = 2;
 	
-	while ((fabs(*a - *b) > eps) && (n < 10000)) {
-		min_dots(f, a, b, n, eps);
+	while (((fabs(a - b) > (eps * max(a, b, 1))) && (n < 1000))) {
+		min_dots(f, &a, &b, n, eps);
 		n++;
 	}
 	
-	if (fabs(*a - *b) > eps) {
+	if (fabs(a - b) > (eps * max(a, b, 1))) {
+		*err = 1;
 		return -1;
 	}
 	
-	return 0;
+	return a;
 }
