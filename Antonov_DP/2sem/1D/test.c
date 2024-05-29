@@ -58,6 +58,7 @@ int main(void)
                 }
 		free(matr[i]);
         }
+	free(matr);
 	fclose(input);
 	fclose(output);
 	return 0;

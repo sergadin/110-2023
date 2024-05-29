@@ -106,5 +106,6 @@ int inverse_matrix(double **matr, int n, double eps, ERR *err)
         {
                 free(inv_matr[i]);
         }
+	free(inv_matr);
 	return 0;
 }
