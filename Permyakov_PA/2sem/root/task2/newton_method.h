@@ -9,6 +9,7 @@ typedef enum {		// Коды ошибок:
         SEGMENT_ERROR,	// - неправильный отрезок - корень в конце отрезка или 
 			//   критическая точка в отрезке
         DEGREE_ERROR,	// - неверная степень
+	ITERATION_LIMIT_EXCEEDED		// - слишком долго считает
 } error;
 
 double find_root(polynomial f, int n, double a, double b, double eps,  error* err);

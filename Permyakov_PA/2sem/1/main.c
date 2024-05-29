@@ -31,7 +31,7 @@ double distance(double x, double y)
 }
 int main(void)
 {
-	const double delta = 1e-4;
+	const double eps = 1e-4;
 	int test_n = 3;
 	error err;
 	double* ans;
@@ -65,27 +65,28 @@ int main(void)
 
 	test_n = sizeof(tests) / sizeof(tests[0]);
 
-        for (int i = 0; i < test_n; i++) {
+        for (int i = 0; i < test_n; i++) {                                            // Тестирование
                 ans = determine_values(tests[i].f, tests[i].X, tests[i].Y, tests[i].n, &err);
                 if (err != tests[i].err_code) {
-                        printf("%d-й тест провален\n", i + 1);
+                        printf("%d-й тест не пройден\n", i + 1);
                 }
                 else if (err == OK) {
                         for (int j = 0; j < tests[i].n; j++) {
-                                if (fabs(ans[j] - tests[i].res[j]) / 2 > delta) {
-                                        printf("%d-й тест провален\n", i + 1);
-                                        free(ans);
-                                        continue;
+                                if (fabs(ans[j] - tests[i].res[j]) > eps) {
+                                        printf("%d-й тест не пройден\n", i + 1);
+					printf("%d\n", j + 1);
+					printf("%lf\n", fabs(ans[j] - tests[i].res[j]));
+                                        goto theend;
                                 }
                         }
                         printf("%d-й тест пройден\n", i + 1);
                 }
-                else {
+		else {
                         printf("%d-й тест пройден\n", i + 1);
-                }
+                        }
+        theend:
+                free(ans);
+        }
 
-                if (err != MALLOC_ERROR)
-                        free(ans);
-	}
 	return 0;
 }

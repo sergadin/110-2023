@@ -1,8 +1,8 @@
-#include <gauss_method.h>
+#include "DetInt.h"
 
-static double 2dotGaussQuad(func f, double a, double b);
+static double GaussQuad(func f, double a, double b);
 
-static double 2dotGaussQuad(func f, double a, double b)	// двуточечная квадратура Гаусса
+static double GaussQuad(func f, double a, double b)	// двуточечная квадратура Гаусса
 {
 	return 0.5 * (b - a) * (f(0.5 * (a + b - ((b - a) / sqrt(3))))
 		       	+ f(0.5 * (a + b + ((b - a) / sqrt(3)))));
@@ -16,12 +16,14 @@ double DetInt(func f, double a, double b, double eps, error* err)
 	double cur_int;
 	double prev_int;
 	double delta = b - a;
+	double c = 1;
 	if (b < a){
-		err = SEGMENT_ERROR;
-		return 0;
+		c = a;
+		a = b;
+		b = c;
+		c = -1;
 	}
-
-	cur_int = 2dotGaussQuad(f, a, b);
+	cur_int = GaussQuad(f, a, b);
 	while (1){
 		iter_c++;
 		prev_int = cur_int;
@@ -29,17 +31,17 @@ double DetInt(func f, double a, double b, double eps, error* err)
 		n *= 2;
 		cur_int = 0;
 		for (int i = 0; i < n; i++){
-			cur_int += 2dotGaussQuad(func f, a + i * delta, a + (i + 1) * delta);
+			cur_int += GaussQuad(f, a + i * delta, a + (i + 1) * delta);
 		}
 		if (iter_c > lim){
-			err = ITERATION_LIMIT_EXCEEDED;
+			*err = ITERATION_LIMIT_EXCEEDED;
 			return 0;
 		}
 		if (fabs(cur_int - prev_int) < (eps * fmax(fabs(cur_int), fabs(prev_int)))){
-			err = OK;
+			*err = OK;
 			break;
 		}
 	}
-	printf("Интеграл посчитан за %d шагов", iter_c);
-	return cur_int;
+	printf("Интеграл посчитан за %d шагов\n", iter_c);
+	return c * cur_int;
 }

@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <math.h>
 
-typedef double (*func)(double, double);
+typedef double (*func)(double);
 
 typedef enum {               // Коды ошибок:
         OK,                  // - все хорошо
         INCORRECT_ARGUMENT,   // - дан аргумент, не соответствующий области определений функции
-	LIMIT_EXCEEDED,		// - слишком много итераций
+	ITERATION_LIMIT_EXCEEDED,		// - слишком много итераций
 } error;
 
 double FindMin(func f, double a, double b, double eps,  int* iter,  error* err);
