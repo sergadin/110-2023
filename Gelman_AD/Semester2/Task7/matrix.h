@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-typedef enum 
+typedef enum
 {
     OK,
     ZERO_MATRIX,

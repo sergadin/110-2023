@@ -23,7 +23,7 @@ int main(void)
 	Error error;
 
 	struct testing test_number[3] =
-	{ 
+	{
 		{"matrix1.txt", 2, 0.0001, OK},
 		{"matrix2.txt", 3, 0.0001, OK},
 		{"matrix3.txt", 2, 0.0001, OK},
@@ -95,7 +95,7 @@ int main(void)
 		fclose(f);
 		descent_method(matrix, n, vector_b, vector_x, epsilon, &error);
 
-		terminate:
+	terminate:
 		if (error != test_number[j].error)
 		{
 			printf("Test №%d is not completed\n", j + 1);

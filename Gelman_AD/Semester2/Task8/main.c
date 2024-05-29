@@ -23,7 +23,7 @@ int main(void)
 	{ 
 		{"matrix1.txt", 1, OK},
 		{"matrix2.txt", 2, OK},
-		{"matrix3.txt", 3, OK},
+		{"matrix3.txt", 3, OK}
 	};
 
 	int number_tasks = sizeof(tests) / sizeof(tests[0]);

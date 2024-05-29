@@ -27,7 +27,7 @@ double dot_product(double* x, double* y, int n);
 double dot_product(double* x, double* y, int n)
 {
     double result = 0;
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
     {
         result += x[i] * y[i];
     }
@@ -41,7 +41,7 @@ void mul_trmatrix_vector(double** matrix, int n, double* vector_x, double* resul
     for (int i = 0; i < n; i++)
     {
         result_vector[i] = 0;
-        for (int j = 0; j < n; j++) 
+        for (int j = 0; j < n; j++)
         {
             result_vector[i] += matrix[j][i] * vector_x[j];
         }
@@ -112,31 +112,3 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
     free(tr_vector_A);
     free(vector_AAtr);
 }
-
-/*
-mul_matrix_vector(A, p, Ap); // Ap = A * p
-        double rsold = dot_product(r, r);
-        double rsnew;
-
-        for (int i = 0; i < n; i++)
-        {
-            alpha = rsold / dot_product(p, Ap); // Calculate the alpha parameter
-            for (int j = 0; j < n; j++)
-            {
-                x[j] = x[j] + alpha * p[j]; // Adjusting the solution
-                r[j] = r[j] - alpha * Ap[j];
-            }
-            rsnew = dot_product(r, r);
-            if (sqrt(rsnew) < epsilon)
-            {
-                break; // The required accuracy has been achieved
-            }
-
-            beta = rsnew / rsold; // Calculate the beta parameter
-            for (int j = 0; j < n; j++)
-            {
-                p[j] = r[j] + beta * p[j]; // New search direction
-            }
-            rsold = rsnew;
-        }
-*/
