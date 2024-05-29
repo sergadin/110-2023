@@ -10,11 +10,13 @@ typedef enum
     FILE_ERROR,
 }Error;
 
-int gauss_elimination(double** matrix, int n, Error* error, double epsilon);
+double* gauss_elimination(double* matrix, int m, int n, Error* error);
+void print_matrix(double* matrix, int m, int n);
 
 // Parameters:
-// **matrix - a pointer to the matrix of pointers to arrays;
-// n - the dimention of the matrix
+// matrix - a pointer to the matrix of pointers to arrays
+// m - the number of strings of the matrix
+// n - the number of rows of the matrix
 // *error - error code pointer
 // 
 // The function gauss_elimination solves a system of linear equations using the Gaussian elimination method
