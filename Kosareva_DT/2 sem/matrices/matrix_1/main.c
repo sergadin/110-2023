@@ -33,13 +33,12 @@ int main(void) {
 		for (j=0; j<n*m; j++) {
 			if (fscanf(f, "%lf", &matrix[j]) != 1) {
 				printf("Ошибка чтения\n");
-				fclose(f);
-				free(matrix);
 				goto error;
 			}
 		}
 		fclose(f);
 		rank(matrix, n, m, 0.00000001);
+		free(matrix);
 		continue;
 		
 		error :
