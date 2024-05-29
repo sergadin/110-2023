@@ -1,0 +1,23 @@
+all : a.out run
+
+
+
+fillValueArray.o : Array_of_values.c Array_of_values.h
+
+	gcc -c -g Array_of_values.c
+
+
+
+main.o : main.c Array_of_values.h
+
+	gcc -c -g main.c
+
+run : a.out
+
+	./a.out
+
+
+
+a.out : main.o Array_of_values.o
+
+	gcc -g main.o Array_of_values.o -lm
