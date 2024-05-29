@@ -48,27 +48,21 @@ void mul_trmatrix_vector(double** matrix, int n, double* vector_x, double* resul
     }
 }
 
-double descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error)
+void descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error)
 {
     double* result_vector = NULL;
     double* vector_Ax = NULL;
     double* tr_vector_A = NULL;
     double* vector_AAtr = NULL;
-    int limit = 1000; // The limit of the iterations
+    double square_length_AAtr = 0;
+    int limit = 100000; // The limit of the iterations
     int iteration = 0; // The number of iterations
-    int k = 0; // The coefficient for Gauss method
-    *error = OK;
+    double k = 0; // The coefficient for Gauss method
 
-    if (n == 0)
-    {
-        *error = ZERO_MATRIX;
-        return -1;
-    }
-
-    result_vector = (double*)malloc((n) * sizeof(double));
-    vector_Ax = (double*)malloc((n) * sizeof(double));
-    tr_vector_A = (double*)malloc((n) * sizeof(double));
-    vector_AAtr = (double*)malloc((n) * sizeof(double));
+    result_vector = (double *) malloc((n) * sizeof (double));
+    vector_Ax = (double *) malloc((n) * sizeof (double));
+    tr_vector_A = (double *) malloc((n) * sizeof (double));
+    vector_AAtr = (double *) malloc((n) * sizeof (double));
 
     for (int i = 0; i < n; i++)
     {
@@ -76,7 +70,7 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
         vector_x[i] = 0;
     }
 
-    while (sqrt(dot_product(result_vector, result_vector, n)) > epsilon && iteration < limit)
+    while (sqrt (dot_product (result_vector, result_vector, n)) >= epsilon && iteration < limit)
     {
         mul_matrix_vector(matrix, n, vector_x, vector_Ax); // Ap = A * x
 
@@ -88,13 +82,14 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
         mul_trmatrix_vector(matrix, n, result_vector, tr_vector_A);
         mul_matrix_vector(matrix, n, tr_vector_A, vector_AAtr);
 
-        if (sqrt(dot_product(vector_AAtr, vector_AAtr, n)) <= epsilon)
+        square_length_AAtr = dot_product(vector_AAtr, vector_AAtr, n);
+        if (sqrt(square_length_AAtr) <= epsilon)
         {
             break;
             *error = ZERO_MATRIX; // Divided by zero
         }
 
-        k = dot_product(result_vector, vector_AAtr, n) / dot_product(vector_AAtr, vector_AAtr, n);
+        k = dot_product(result_vector, vector_AAtr, n) / square_length_AAtr;
         for (int i = 0; i < n; i++)
         {
             vector_x[i] -= k * tr_vector_A[i];
@@ -104,7 +99,7 @@ double descent_method(double** matrix, int n, double* vector_b, double* vector_x
     }
     if (fabs(dot_product(result_vector, result_vector, n)) >= epsilon && iteration == limit)
     {
-        *error = OK;
+        *error = ITERATION_LIMIT_EXEEDED;
     }
 
     free(result_vector);

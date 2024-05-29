@@ -11,7 +11,7 @@ typedef enum
     ITERATION_LIMIT_EXEEDED,
 }Error;
 
-double descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error);
+void descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error);
 
 // Parameters
 // *matr - address to the array (original linear representation of the matrix)
