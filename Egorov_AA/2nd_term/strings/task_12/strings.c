@@ -42,7 +42,7 @@ const void removeDefine(Define** head, const char* key) {
 	
 	while (current != NULL) {
 		if(strcmp(current->key, key) == 0) {
-			if(prev = NULL)
+			if(prev == NULL)
 				*head = current->next;
 			else
 				prev->next = current->next;
