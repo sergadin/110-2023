@@ -1,80 +1,118 @@
 #include "MethZeyd.h"
 
 
+
 typedef struct{  //структура теста
-    const char* inp;
-    double* res;
-    Er error;
+    const char* inp;  //название файла
+    double *res;   // ожидаемый результат
+    Er error;  // код ошибки
 }Testcase;
 
 
-
 int main(void){
-    int m; // количество строк
-    int n; // количество столбцов
-    int length; // количество тестов
-    Er error = OK;
-    double **matr = NULL;
-    double *solution = NULL;
     FILE* input;
-    FILE* output;
+    int m, n; // размер матрицы
+    int length; // количество тестов
+    double **matr = NULL; // массив для матрицы
+    double *arr = NULL; // массив решений
+    Er error = OK;
+    double EPS = 0.00000001;
+
     
     Testcase test[] = {
-        {input1.txt, (double[]) {1, 1, 1}, OK}
-    }
+        {"input1.txt", (double[]){2.25, -0.75, -0.75}, OK},
+        {"input2.txt", (double[]){3, 0.5, 1}, OK},
+        {"input3.txt", (double[]){3, -3}, OK}
+        
+    };
     
     length = sizeof(test) / sizeof(test[0]);
+
     
-    for(int k = 0; k < length; i++){
-        if(input = fopen(test[i].inp, "r") == NULL){
-            printf("Ошибка открытия файла в тесте №%d", k + 1);
+    for(int l = 0; l < length; l++){
+        if((input = fopen(test[l].inp, "r")) == NULL){
+            printf("Ошибка открытия файла в тесте №%d", l + 1);
             return -1;
         }
-        if(fscanf(input, "%d %d", &m, &n) != 2){
-            printf("Ошибка чтения файла в тесте №%d", k + 1);
+        if(fscanf(input, "%d %d", &n, &m) != 2){
+            printf("Ошибка чтения файла в тесте №%d", l + 1);
             fclose(input);
             return -1;
         }
-        
-        matr = (double*)malloc(m*n*sizeof(double));
-        if(matr == NULL){
-            printf("Ошибка выделения памяти в тесте №%d", k + 1);
-            fclose(input);
-            return -1;
-        }
-        
-        solution = (double*)malloc(m*sizeof(double));
-        if(solution == NULL){
-            printf("Ошибка выделения памяти в тесте №%d", k + 1);
-            free(matr);
-            fclose(input);
-            return -1;
-        }
-        
-        
-        for(int j = 0; j < n; j++){                                  // заполнение матрицы
-            for(int i = 0; i < m; i++){
-                if(fscanf(input("%lf", &matr[i][j])) != 1){
-                    printf("Ошибка чтения файла в тесте №%d", k + 1);
-                    fclose(input);
-                    free(matr);
-                    free(solution);
-                    return -1;
-                }
+
+        matr = (double**)malloc(n * sizeof(double*));
+		if (matr == NULL) {
+			printf("Ошибка выделения памяти в тесте №%d\n", l + 1);
+			fclose(input);
+			return -1;
+		}
+		for (int i = 0; i < m; i++) {
+			matr[i] = (double*)malloc(m * sizeof(double));
+			if (matr[i] == NULL) {
+				printf("Ошибка выделения памяти в тесте №%d\n", l + 1);
+				fclose(input);
+				return -1;
+			}
+		}
+		
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				if (fscanf(input, "%lf", &matr[i][j]) != 1) {
+					printf("Ошибка чтения файла в тесте №%d\n", l + 1);
+					fclose(input);
+					for (int i = 0; i < m; i++) {
+						free(matr[i]);
+					}
+					free(matr);
+					continue;
+				}
+			}
+		}
+		
+		//for(int i = 0; i < n; i++){
+		//    for(int j = 0; j < m; j++){
+		//        printf("%lf\t", matr[i][j]);
+		//    }
+		//    printf("\n");
+		//}
+		
+		arr = (double*)malloc(n * sizeof(double));
+		if(arr == NULL){
+			printf("Ошибка выделения памяти в тесте №%d\n", l + 1);
+			fclose(input);
+			for (int i = 0; i < m; i++){
+				free(matr[i]);
+			}
+			free(matr);
+			return -1;
+		}
+		
+		
+		for(int i = 0; i < n; i++){
+		    arr[i] = 0;
+		}
+		
+		MethZeyd(matr, &arr, &error, n, m, EPS);
+		
+		
+		for(int i = 0; i < n; i++){
+		    if(fabs(arr[i] - test[l].res[i]) > EPS || error == LIMIT || error == NOT_CORRECT){
+		        printf("Тест №%d не пройден\n", l + 1);
+		        break;
+		    }
+		}
+		if(error == OK){
+		    printf("Тест №%d успешно пройден\n", l + 1);
+		    for(int i = 0; i < n; i++){
+                printf("x%d = %lf\n", i + 1, arr[i]);
             }
-        }
-        
-        
-        MethZeyd(matr, &solution, error);
-        
-        
+		}
+		printf("\n");
+		//for (int i = 0; i < m; i++){
+		//	free(matr[i]);
+		//}
+		free(matr);
+		free(arr);
     }
-    
-    
-    
-    
-    
-    
-    
     return 0;
 }

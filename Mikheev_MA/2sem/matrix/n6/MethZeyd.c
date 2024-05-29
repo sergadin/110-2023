@@ -1,58 +1,58 @@
 #include "MethZeyd.h"
 
-double max()
 
 
-void MethZeyd(double **matr, double *solution, Er *error, int m, int n){
-    double sum = 0; // сумма произведений коэф. матрицы на решение переменной
-    double x = 0;  // переменная для сравнения двух решений на соседних итерациях
-    int max_count = 1000;  // максимальное количество итераций
-    int count = 0;  // счетчик, отвечающий за количество переменных, которые достигают нужной точности
-    //*error = NOT_OK;
+void MethZeyd(double **matr, double **arr, Er *error, int n, int m, double EPS){
+    double sum = 0; // сумма произведений коэф. матрицы умноженное на корень
+    int count = 0; // счетчик, отвечающий за количество переменных, которые достигают нужной точности
+    int max_count = 10000; // максимальное количество итераций
+    double x = 0; // переменная для сравнения двух решений на соседних итерациях
+    int l = 0;
     
-    for(int i = 0; i < m && *error != NOT_OK;; i++){   // цикл, который считает количесетво корней, которые достигли нужной точности
-        *solution[i] = 0;
-    }
-    
-    
-    for(int j = 0; j < max_count && count != m; j++){  // цикл, который считает количесетво корней, которые достигли нужной точности
+    for(l = 0; l < max_count; l++){  // цикл, который считает количесетво корней, которые достигли нужной точности
+        if(count == n){
+            break;
+        }
         count = 0;
         
-        for(int i = 0; i < m; i++){  // цикл, который считает новую итераци решений системы.
+        for(int i = 0; i < n; i++){  // цикл, который считает новую итерацию решения системы.
             sum = 0;
+            for(int j = 0; j < m; j++){  // цикл который считает сумму произведений коэф.матрицы на решение переменной
             
-            for(int l = 0; l < n; l++){ // цикл который считает сумму произведений коэф.матрицы на решение переменной
-                
-                if(l == i){ // мы не берем коэфф i-ой переменной
+                if(j == i){
                     continue;
                 }
-                if(l == n - 1){ // столбец свободных переменных прибавляется со знаком +
-                    sum = sum + matr[i][l];
-                }
-                else{
-                sum = sum - matr[i][l] * (*solution[l]);  
+            
+                if(j == m - 1){
+                    sum = sum + matr[i][j];
                 }
             
-                //x = *solution[i];
-                //*solution[i] = 1/matr[i][i] * sum;
-                
-                //if(fabs(x - *solution[i]) < EPS){
-                //    count++;
-                //}
-                
+                sum = sum - (*arr)[j] * matr[i][j];
+            
             }
-    
-            x = *solution[i];
-            *solution[i] = 1/matr[i][i] * sum;  // новое решение
-    
-            if(fabs(x - *solution[i]) < EPS){   // сравнение решений соседних итераций с нужной точностью
-                *error = NOT_OK;
+            //printf("sum = %lf\n", sum);
+            x = (*arr)[i];
+            (*arr)[i] = sum / matr[i][i]; // новое решение
+            
+            if(fabs(x - (*arr)[i]) < EPS* fmax(1, (*arr)[i])){  //сравнение старого корня с новым
+                count++;
             }
-    
+            //for(int i = 0; i < n; i++){
+            //    printf("x%d = %lf\n", i + 1, arr[i]);
+            //}
         }
     }
     
+    *error = OK;
     
+    if(l == max_count){
+        *error = LIMIT;
+    }
+    
+    for(int i = 0; i < n; i++){
+        if(isnan((*arr)[i]) || isinf((*arr)[i])){
+            *error = NOT_CORRECT;
+        }
+    }
     
 }
-
