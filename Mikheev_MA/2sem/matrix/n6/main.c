@@ -46,7 +46,7 @@ int main(void){
 			fclose(input);
 			return -1;
 		}
-		for (int i = 0; i < m; i++) {
+		for (int i = 0; i < n; i++) {
 			matr[i] = (double*)malloc(m * sizeof(double));
 			if (matr[i] == NULL) {
 				printf("Ошибка выделения памяти в тесте №%d\n", l + 1);
@@ -60,11 +60,11 @@ int main(void){
 				if (fscanf(input, "%lf", &matr[i][j]) != 1) {
 					printf("Ошибка чтения файла в тесте №%d\n", l + 1);
 					fclose(input);
-					for (int i = 0; i < m; i++) {
-						free(matr[i]);
+					for (int k = 0; k < n; k++) {
+						free(matr[k]);
 					}
 					free(matr);
-					continue;
+					return -1;
 				}
 			}
 		}
@@ -80,7 +80,7 @@ int main(void){
 		if(arr == NULL){
 			printf("Ошибка выделения памяти в тесте №%d\n", l + 1);
 			fclose(input);
-			for (int i = 0; i < m; i++){
+			for (int i = 0; i < n; i++){
 				free(matr[i]);
 			}
 			free(matr);
@@ -108,11 +108,12 @@ int main(void){
             }
 		}
 		printf("\n");
-		//for (int i = 0; i < m; i++){
-		//	free(matr[i]);
-		//}
+		for (int i = 0; i < n; i++){
+			free(matr[i]);
+		}
 		free(matr);
 		free(arr);
+		fclose(input);
     }
     return 0;
 }
