@@ -40,7 +40,11 @@ int main(void) {
 		}
 		fclose(f);
 		rank(matrix, n, m, 0.00000001);
+		continue;
+		
 		error :
+			fclose(f);
+			free(matrix);
 	}
 	return 0;
 }
