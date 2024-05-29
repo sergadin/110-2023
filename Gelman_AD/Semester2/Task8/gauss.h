@@ -8,9 +8,9 @@ typedef enum
     ZERO_MATRIX,
     MEMORY_ERROR,
     FILE_ERROR,
-}Error;
+}error;
 
-double* gauss_elimination(double* matrix, int m, int n, Error* error);
+double* gauss_elimination(double* matrix, int m, int n, error* err);
 void print_matrix(double* matrix, int m, int n);
 
 // Parameters:
