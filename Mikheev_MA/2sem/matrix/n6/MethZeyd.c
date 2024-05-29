@@ -17,19 +17,20 @@ void MethZeyd(double **matr, double **arr, Er *error, int n, int m, double EPS){
         
         for(int i = 0; i < n; i++){  // цикл, который считает новую итерацию решения системы.
             sum = 0;
-            for(int j = 0; j < m; j++){  // цикл который считает сумму произведений коэф.матрицы на решение переменной
+            for(int j = 0; j < m - 1; j++){  // цикл который считает сумму произведений коэф.матрицы на решение переменной
             
                 if(j == i){
                     continue;
                 }
             
-                if(j == m - 1){
-                    sum = sum + matr[i][j];
-                }
+                //if(j == m - 1){
+                //    sum = sum + matr[i][j];
+                //}
             
                 sum = sum - (*arr)[j] * matr[i][j];
             
             }
+            sum = sum + matr[i][m - 1];
             //printf("sum = %lf\n", sum);
             x = (*arr)[i];
             (*arr)[i] = sum / matr[i][i]; // новое решение
