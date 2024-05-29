@@ -1,10 +1,8 @@
 #include "strings.h"
 
-#define MAX_LINE_LENGTH 2048
-
 typedef struct Define {
-	char key[MAX_LINE_LENGTH];
-	char value[MAX_LINE_LENGTH];
+	char* key;
+	char* value;
 	struct Define* next;
 } Define;
 
@@ -13,8 +11,8 @@ const void addDefine(Define** head, const char* key, const char* value);
 
 const void addDefine(Define** head, const char* key, const char* value) {  // Добавляет дефайн в список
 	Define* new_define = (Define*)malloc(sizeof(Define));
-	strcpy(new_define->key, key);
-	strcpy(new_define->value, value);
+	new_define->key = strdup(key);
+	new_define->value = strdup(value);
 	new_define->next = *head;
 	*head = new_define;
 }
@@ -42,10 +40,14 @@ const void removeDefine(Define** head, const char* key) {
 	
 	while (current != NULL) {
 		if(strcmp(current->key, key) == 0) {
-			if(prev == NULL)
+			if (prev == NULL) {
 				*head = current->next;
-			else
+			}
+			else {
 				prev->next = current->next;
+			}
+			free(current->key);
+			free(current->value);
 			free(current);
 			return;
 			}
@@ -62,30 +64,35 @@ const void freeDefines(Define* head) {
 	while (current != NULL) {
 		Define* temp = current;
 		current = current->next;
+		free(temp->key);
+		free(temp->value);
 		free(temp);
 	}
 }
 
 
 void process_file(FILE* input, FILE* output, error* err) {
-
-	*err = OK;
-	char line[MAX_LINE_LENGTH];
-	char delimiters[] = " \n\t";
+	int buffer_size = 512;
+	size_t len = 0;
+	ssize_t read;
 	Define* defines = NULL;
+	*err = OK;
+	char delimiters[] = " \n\t";
+	char* line = NULL;
 
-	while (fgets(line, sizeof(line), input)) {
+	while ((read = getline(&line, &len, input)) != -1) {
 		if (strncmp(line, "#define", 7) == 0) {                                   // Если строка с дефайном
-			char key[MAX_LINE_LENGTH];
-			char value[MAX_LINE_LENGTH];
-			if (sscanf(line, "#define %s %[^\n]", key, value) == 2) {         // Заносим дефайн в список
+			char* key = strtok(line + 8, " ");
+			char* value = strtok(NULL, "\n");
+			if (key && value) {         // Заносим дефайн в список
 				addDefine(&defines, key, value);
 			}
 		}
 		else if (strncmp(line, "#undef", 6) == 0) {                               // Если строка с андефом
-			char key[MAX_LINE_LENGTH];
-			if (sscanf(line, "#undef %s", key) == 1)                          // Освобождаем дефайн
+			char* key = strtok(line + 7, "\n");
+			if (key) {                          // Освобождаем дефайн
 				removeDefine(&defines, key);
+			}
 		}
 		else {                                                                    // Строка без дефа и андефа
 			char* token = strtok(line, delimiters);                           // Делим строку на слова
@@ -103,4 +110,6 @@ void process_file(FILE* input, FILE* output, error* err) {
 		}
 	}
 	freeDefines(defines);
+	if (line)
+		free(line);
 }
