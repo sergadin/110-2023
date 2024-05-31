@@ -19,18 +19,18 @@ int main(void)
 
 	dataSet tests[] =
 	{
-		{"matrix1.txt", (double[]) { 0.25 }, OK},
-		{"matrix2.txt", (double[]) { 2, -1 }, OK},
-		{"matrix3.txt", (double[]) { 0, 0.5, 0 }, OK}
+		{"matrix1.txt", (double[]) { 0.28571428, 0.85714285, 7.42857142, -3.57142857 }, OK},
+		{"matrix2.txt", (double[]) { 1000 }, OK},
+		{"matrix3.txt", (double[]) { 55.17704468, -0.35057501, -2.53179109, 55.26782329, -1.04136025, -117.35089055, 5.13566938 }, OK}
 	};
 
 	test_number = sizeof(tests) / sizeof(tests[0]);
 
 	for (int i = 0; i < test_number; i++)
 	{
-		FILE* f = NULL;
-		double* matrix = NULL;
-		double* solution = NULL;
+		FILE* f;
+		double* matrix;
+		double* solution;
 		int m, n; // The number of strings and the number of rows
 		f = fopen(tests[i].file_name, "r");
 
@@ -92,6 +92,7 @@ int main(void)
 		}
 		free(matrix);
 		free(solution);
+		fclose(f);
 	}
 	return 0;
 }

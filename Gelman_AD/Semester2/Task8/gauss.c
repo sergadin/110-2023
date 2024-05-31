@@ -18,12 +18,13 @@
 
 
 // Function for exchanging two rows of a matrix
-void swap_rows(double* matrix, int n, int row1, int row2);
-void swap_rows(double* matrix, int n, int row1, int row2) 
+static void swap_rows(double* matrix, int n, int row1, int row2);
+static void swap_rows(double* matrix, int n, int row1, int row2) 
 {
     for (int i = 0; i < n; i++) 
     {
-        double temp = matrix[row1 * n + i];
+        double temp;
+        temp = matrix[row1 * n + i];
         matrix[row1 * n + i] = matrix[row2 * n + i];
         matrix[row2 * n + i] = temp;
     }
@@ -44,7 +45,8 @@ void print_matrix(double* matrix, int m, int n)
 
 double* gauss_elimination(double* matrix, int m, int n, error* err)
 {
-    double* solution = (double*)malloc(m * sizeof(double));
+    double* solution;
+    solution = (double*)malloc(m * sizeof(double));
 
     if (solution == NULL)
     {
@@ -78,7 +80,8 @@ double* gauss_elimination(double* matrix, int m, int n, error* err)
         // Zero out the elements in column i under the main diagonal
         for (int j = i + 1; j < m; j++)
         {
-            double mul = matrix[j * n + i] / matrix[i * n + i];
+            double mul;
+            mul = matrix[j * n + i] / matrix[i * n + i];
             for (int k = i; k <= m; k++)
             {
                 matrix[j * n + k] -= mul * matrix[i * n + k];
