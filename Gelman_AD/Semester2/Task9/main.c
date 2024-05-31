@@ -26,9 +26,9 @@ int main(void)
 	  {"string3.txt", OK},
 	};
 
-	int n_tasks = sizeof(tests) / sizeof(tests[0]);
+	int number_tasks = sizeof(tests) / sizeof(tests[0]);
 
-	for (int n = 0; n < n_tasks; n++) 
+	for (int n = 0; n < number_tasks; n++) 
 	{
 
 		f = fopen(tests[n].file_name, "r");
