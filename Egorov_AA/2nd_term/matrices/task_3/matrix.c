@@ -1,10 +1,22 @@
 ﻿#include "matrix.h"
 
+static void swapRows(double** mat, int n, int row_1, int row_2);            // Функция меняет строки местами
+
+static void swapRows(double** mat, int n, int row_1, int row_2) {
+	for (int i = 0; i < n; i++) {
+		double temp;
+		temp = mat[row_1][i];
+		mat[row_1][i] = mat[row_2][i];
+		mat[row_2][i] = temp;
+	}
+}
+
+
 void fillMatrix(double*** matrix, int n) {
 	srand(time(NULL));
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < n; j++)
-			(*matrix)[i][j] = (double)rand();
+			(*matrix)[i][j] = rand();
 }
 
 
@@ -70,19 +82,8 @@ double** multiplyMatrices(double** matrix1, double** matrix2, int n, error* err)
 }
 
 
-void swapRows(double** mat, int n, int row_1, int row_2) {
-	for (int i = 0; i < n; i++) {
-		double temp;
-		temp = mat[row_1][i];
-		mat[row_1][i] = mat[row_2][i];
-		mat[row_2][i] = temp;
-	}
-}
-
-
 double** invertMatrix(double** given_matrix, int n, error* err) {
 	const double eps = 0.00000000000001;
-	int all_leaders_zero = 1;
 	double** inverse_matrix, ** matrix;
 	*err = OK;
 	inverse_matrix = (double**)malloc(n * sizeof(double*));      // Выделение памяти на матрицы
@@ -111,19 +112,6 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 		}
 	}
 
-	for (int i = 0; i < m - 1; i++) {
-		if (mat[i][0] < eps)
-			swapRows(mat, n, i, i+1);
-		else {
-			all_leaders_zero = 0;
-			break;
-		}
-	}
-
-	if(all_leaders_zero && (mat[m - 1][0] < eps)) {
-		*err = SINGULAR_MATRIX;
-		return sol;
-	}
 
 	for (int i = 0; i < n; i++)                                  // Копирование матрицы
 		for (int j = 0; j < n; j++)
@@ -136,13 +124,28 @@ double** invertMatrix(double** given_matrix, int n, error* err) {
 			else
 				inverse_matrix[i][j] = 0;
 
+
 	for (int i = 0; i < n; i++) {                                // Метод Гаусса - Жордано
 
-		double pivot = matrix[i][i];                             // Выбор главного элемента
+		if (matrix[i][i] == 0) {
+			for (int j = i + 1; j < n; j++) {
+				if (matrix[j][i] != 0) {
+					swapRows(matrix, n, i, j);
+					swapRows(inverse_matrix, n, i, j);
+					break;
+				}
+			}
+		}
 
-		if (fabs(pivot) < eps) {
+		double pivot = matrix[i][i];                             // Выбор главного элемента
+	
+		if (fabs(pivot) == 0) {
 			*err = INVALID_MATRIX;
-			return 0;
+			for (int j = 0; j < n; j++) {
+				free(matrix[j]);
+			}
+			free(matrix);
+			return inverse_matrix;
 		}
 
 		for (int j = 0; j < n; j++) {                            // Деление строки на значение главного элемента

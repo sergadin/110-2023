@@ -19,9 +19,9 @@ int main(void)
 	double value;
 	dataSet tests[] = 
 	{
-		{10, 1e-4,  0.693097, OK},
-		{1, 0.0001, 0.405532, OK},
-		{2, 0.0001, -0.693147, OK},
+		{0.5, 0.000001, 0.405465, OK},
+		{0.4, 0.000001, 0.336472, OK},
+		{0.9, 0.000001, 0.641853, OK}
 	};
 
 	test_number = sizeof(tests) / sizeof(tests[0]);
@@ -42,6 +42,8 @@ int main(void)
 		{
 			printf("The %d-th test is completed\n", i + 1);
 		}
+
+		printf("Taylor result: %lf\n", value);
 	}
 
 	return 0;

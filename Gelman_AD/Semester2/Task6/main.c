@@ -27,7 +27,6 @@ void make_picture(FILE* out1, FILE* out2, point* p, size_t n, point* i_p, size_t
 	}
 }
 
-
 int main(void) 
 {
 	const double epsilon = 0.1;
@@ -37,8 +36,8 @@ int main(void)
 	dataSet tests[] = 
 	{
 		{ 
-			(point[]) { {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
-			5,
+			(point[]) { {0, 0}, {1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5} },
+			6,
 			(point[]) { {0.5, 0.5}, {1.5, 1.5}, {2.8, 2.8}, {3.62, 3.62} },
 			4,
 			OK 

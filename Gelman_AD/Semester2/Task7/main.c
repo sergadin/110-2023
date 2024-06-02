@@ -1,115 +1,121 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "matrix.h"
 
 // New structure for testing
-typedef struct 
+struct testing
 {
-	const char* file_name; //название файла, в котором находятся элементы матрицы
-	double result; //ожидаемый результат
-	Error err; //адрес ошибки
-} TestCase;
+	const char* file_name; // The file with matrix' elements
+	int n;                // The dimention of the matrix
+	double epsilon;      // The epsilon
+	Error error;        // Error code
+};
 
-static double max(double x, double y, double eps);
-static double max(double x, double y, double eps) 
+int main(void)
 {
-	double max_1;
-	if (x > y) 
-	{
-		max_1 = x;
-	}
-	else 
-	{
-		max_1 = y;
-	}
-	if (eps > max_1) 
-	{
-		return eps;
-	}
-	return max_1;
-}
-
-
-int main(void) 
-{
-	double res = 0, eps = 1e-5;
-	int ord = 0; //порядок матрицы - считывается из файла
-	double* matr = NULL; //указатель на массив, содержащий элементы матрицы, переменная для записи результата
+	double epsilon = 0.0001;
+	int n = 0; // The size of the matrix (from the file)
+	double** matrix = NULL; // The pointer to an array containing matrix elements (a variable for storing the result)
+	double* vector_b = NULL;
+	double* vector_x = NULL;
 	FILE* f = NULL;
-	Error err;
+	Error error;
 
-	TestCase tests[] = 
-	{ 
-		{"matr1.txt", 4, NA_OK},
-		{"matr2.txt", 6.5, NA_OK},
-		{"matr3.txt", -20, NA_OK},
+	struct testing test_number[3] =
+	{
+		{"matrix1.txt", 2, 0.0001, OK},
+		{"matrix2.txt", 3, 0.0001, OK},
+		{"matrix3.txt", 2, 0.0001, OK},
 	};
 
-	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
-
-	for (int n = 0; n < n_tasks; n++) 
+	for (int j = 0; j < 3; j++)
 	{
-		f = fopen(tests[n].file_name, "r");
+		f = fopen(test_number[j].file_name, "r");
+		n = test_number[j].n;
 
-		if (f == NULL) 
-		{								/*Открытие файла, считывание из него значений элементов матрицы и запись их в массив.*/
-			printf("Файл не открывается\n");
-			err = FILE_WR;
+		// Opening a file, reading matrix element values вЂ‹вЂ‹from it and writing them to the array
+		if (f == NULL)
+		{
+			printf("File did not open\n");
+			error = FILE_ERROR;
 			goto terminate;
 		}
 
-		if (fscanf(f, "%d", &ord) != 1) 
+		vector_b = (double*)malloc((test_number[j].n) * sizeof(double));
+		if (vector_b == NULL)
 		{
-			printf("Файл пуст\n");
-			err = FILE_WR;
+			printf("Memory error\n");
+			error = MEMORY_ERROR;
+			continue;
+		}
+		vector_x = (double*)malloc((test_number[j].n) * sizeof(double));
+		if (vector_x == NULL)
+		{
+			free(vector_b);
+			printf("Memory error\n");
+			error = MEMORY_ERROR;
+			continue;
+		}
+
+		matrix = (double**)malloc((n) * sizeof(double*));
+		if (matrix == NULL)
+		{
+			printf("Random Access Memory is not allocated\n");
+			error = MEMORY_ERROR;
 			fclose(f);
-			goto terminate;
-
-		}
-
-		matr = (double*)malloc((ord * ord) * sizeof(double));
-		if (matr == NULL) 
-		{
-			printf("Оперативная память не выделена\n");
-			err = NA_MEMORY_ERR;
-			fclose(f);
+			free(vector_b);
+			free(vector_x);
 			goto terminate;
 		}
 
-		for (int i = 0; i < (ord * ord); ++i) 
+		for (int i = 0; i < n; ++i)
 		{
-			if (fscanf(f, "%lf", &matr[i]) != 1) 
+			matrix[i] = NULL;
+			matrix[i] = (double*)malloc((test_number[i].n) * sizeof(double));
+			if (matrix[i] == NULL)
 			{
-				printf("В файле недостаточно значений\n");
-				err = FILE_WR;
-				free(matr);
-				fclose(f);
-				goto terminate;
+				for (int k = 0; k < i; k++)
+				{
+					free(matrix[k]);
+				}
+				break;
 			}
 		}
 
-		fclose(f);
-		res = determinate(matr, ord, eps, &err);
-		free(matr);
+		for (int i = 0; i < n; i++)
+		{
+			for (int k = 0; k < n; k++)
+			{
+				fscanf(f, "%lf", &matrix[i][k]);
+			}
+			fscanf(f, "%lf", &vector_b[i]);
+		}
 
-		terminate:
-		if (err != tests[n].err) 
+		fclose(f);
+		descent_method(matrix, n, vector_b, vector_x, epsilon, &error);
+
+	terminate:
+		if (error != test_number[j].error)
 		{
-			printf("Тест №%d не пройден.\n", n + 1);
+			printf("Test в„–%d is not completed\n", j + 1);
 		}
-		else if ((err == NA_OK) && ((fabs(res - tests[n].res)) > (max(res, tests[n].res, 1.0) * eps))) 
+		else
 		{
-			printf("Тест №%d не пройден. %lf\n", n + 1, res);
+			for (int k = 0; k < n; k++)
+			{
+				printf("x%d = %lf ", k + 1, vector_x[k]);
+			}
+			printf("Test в„–%d is completed.\n", j + 1);
+			// printf("aaaa = %d \n", n);
 		}
-		else if ((err == NA_OK) && ((fabs(res - tests[n].res)) < (max(res, tests[n].res, 1.0) * eps))) 
+		free(vector_b);
+		free(vector_x);
+		for (int i = 0; i < n; i++)
 		{
-			printf("Тест №%d успешно пройден. Значение определителя матрицы: %lf\n", n + 1, res);
+			free(matrix[i]);
 		}
-		else 
-		{
-			printf("Тест №%d успешно пройден.\n", n + 1);
-		}
+		free(matrix);
 	}
 	return 0;
 }

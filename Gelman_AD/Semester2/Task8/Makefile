@@ -10,4 +10,4 @@ run: a.out
 	./a.out
 
 a.out: main.o gauss.o
-	gcc main.o gauss.o - lm
+	gcc main.o gauss.o -lm

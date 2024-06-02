@@ -3,178 +3,107 @@
 #include <math.h>
 #include "matrix.h"
 
-/*	Параметры: *matr - адрес на массив (исходное линейное представление матрицы)
- *             *nmatr - адрес на массив (новое линейное представление матрицы - ее минора)
- *             n - размерность исходной матрицы
- *             m - столбец, по которому строится минор
- *      Функция переписывает в новый массив минор исходной матрицы порядка n-1.
- */
-// define N 3 - количество уравнений
+// Parameters
+// *matrix - address to the array (original linear representation of the matrix)
+//  n (= order) - dimention of the original matrix (the number of the equasions)
 
 // The function multiplies matrix A by vector x and writes the result to vector result
-void mul_matrix_vector(double A[N][N], double x[N], double result[N]);
-void mul_matrix_vector(double A[N][N], double x[N], double result[N]) 
+void mul_matrix_vector(double** matrix, int n, double* vector_x, double* result_vector);
+void mul_matrix_vector(double** matrix, int n, double* vector_x, double* result_vector)
 {
-    for (int i = 0; i < N; i++) 
+    for (int i = 0; i < n; i++)
     {
-        result[i] = 0;
+        result_vector[i] = 0;
 
-        for (int j = 0; j < N; j++) 
+        for (int j = 0; j < n; j++)
         {
-            result[i] += A[i][j] * x[j];
+            result_vector[i] += matrix[i][j] * vector_x[j];
         }
     }
 }
 
 // The function scalarly multiplies two vectors x and y
-double dot_product(double x[N], double y[N]);
-double dot_product(double x[N], double y[N]) 
+double dot_product(double* x, double* y, int n);
+double dot_product(double* x, double* y, int n)
 {
     double result = 0;
-    for (int i = 0; i < N; i++) 
+    for (int i = 0; i < n; i++)
     {
         result += x[i] * y[i];
     }
     return result;
 }
 
-double determinate(double* matrix, int n, double epsilon, Error* error)
+// The function multiplies the transposed matrix A and the column vector x
+void mul_trmatrix_vector(double** matrix, int n, double* vector_x, double* result_vector);
+void mul_trmatrix_vector(double** matrix, int n, double* vector_x, double* result_vector)
 {
-    double A[N][N] = { {4.0, -1.0, 1.0}, {-1.0, 4.0, -2.0}, {1.0, -2.0, 4.0} }; //матрица коэффициентов
-    double b[N] = { 12.0, -1.0, 5.0 }; //правая часть системы
-    double x[N] = { 0.0 }; //начальное приближение
-    double r[N], p[N], Ap[N], alpha, beta;
-    double tol = 1e-6; //заданная точность
-    int k = 0;
-
-    while (sqrt(rsnew) > tol && k < 1000) //1000 - ограничение по числу итераций 
+    for (int i = 0; i < n; i++)
     {
-        mul_matrix_vector(A, x, Ap); //Ap = A * x
-        for (int i = 0; i < N; i++) 
+        result_vector[i] = 0;
+        for (int j = 0; j < n; j++)
         {
-            r[i] = b[i] - Ap[i]; //рассчитываем вектор невязки r = b - A * x
-            p[i] = r[i]; //начальное направление поиска
-        }
-
-        mul_matrix_vector(A, p, Ap); //Ap = A * p
-        double rsold = dot_product(r, r);
-        double rsnew;
-
-        for (int i = 0; i < N; i++) 
-        {
-            alpha = rsold / dot_product(p, Ap); //вычисляем параметр alpha
-            for (int j = 0; j < N; j++) 
-            {
-                x[j] = x[j] + alpha * p[j]; //корректируем решение
-                r[j] = r[j] - alpha * Ap[j];
-            }
-            rsnew = dot_product(r, r);
-            if (sqrt(rsnew) < tol) 
-            {
-                break; //достигнута необходимая точность
-            }
-            beta = rsnew / rsold; //вычисляем параметр beta
-            for (int j = 0; j < N; j++) 
-            {
-                p[j] = r[j] + beta * p[j]; //новое направление поиска
-            }
-            rsold = rsnew;
-        }
-        k++;
-    }
-
-    printf("Solution:\n");
-    for (int i = 0; i < N; i++) 
-    {
-        printf("x[%d] = %.5f\n", i, x[i]);
-    }
-    return 0;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-static void new_matr(double* matr, double* nmatr, int n, int m);
-static void new_matr(double* matr, double* nmatr, int n, int m)
-{
-    int j = 0;
-    for (int i = n; i < n * n; i++)
-    {
-        if ((i % n) != m)
-        {
-            nmatr[j] = matr[i];
-            j++;
-        }
-        else
-        {
-            continue;
+            result_vector[i] += matrix[j][i] * vector_x[j];
         }
     }
 }
 
-
-/*	Параметры: *matr - указатель на массив, содержащий элементы матрицы
-*          n - порядок передаваемой матрицы
-*          eps - погрешность.
-*         *err - указатель на код ошибки.
-* Функция ищет определитель переданной матрицы, рекурсивно сводя ее к поиску определителя матрицы 2х2.
-*/
-double determinate(double* matr, int n, double eps, Error* err)
+void descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error)
 {
-    double det = 0; //значение определителя
-    double* nmatr = NULL; //новая подматрица (минор) порядка n-1 
-    int sgn = 1; //знак минора
-    *err = NA_OK;
+    double* result_vector = NULL;
+    double* vector_Ax = NULL;
+    double* tr_vector_A = NULL;
+    double* vector_AAtr = NULL;
+    double square_length_AAtr = 0;
+    int limit = 100000; // The limit of the iterations
+    int iteration = 0; // The number of iterations
+    double k = 0; // The coefficient for Gauss method
 
-    if (n == 0)
-    {
-        *err = NA_ZERO_MATR;
-        return -1;
-    }
-
-    if (n == 1)
-    {
-        return matr[0];
-    }
-
-    if (n == 2)
-    {
-        return ((matr[0] * matr[3]) - (matr[1] * matr[2]));
-    }
-
-    nmatr = (double*)malloc(((n - 1) * (n - 1)) * sizeof(double));
+    result_vector = (double *) malloc((n) * sizeof (double));
+    vector_Ax = (double *) malloc((n) * sizeof (double));
+    tr_vector_A = (double *) malloc((n) * sizeof (double));
+    vector_AAtr = (double *) malloc((n) * sizeof (double));
 
     for (int i = 0; i < n; i++)
     {
+        result_vector[i] = vector_b[i];
+        vector_x[i] = 0;
+    }
 
-        if (nmatr == NULL)
+    while (sqrt (dot_product (result_vector, result_vector, n)) >= epsilon && iteration < limit)
+    {
+        mul_matrix_vector(matrix, n, vector_x, vector_Ax); // Ap = A * x
+
+        for (int i = 0; i < n; i++)
         {
-            printf("Оперативная память не выделена\n");
-            *err = NA_MEMORY_ERR;
-            return -1;
+            result_vector[i] = vector_Ax[i] - vector_b[i];; // Counting vector r = A * x - b
         }
 
-        new_matr(matr, nmatr, n, i);
-        det += sgn * matr[i] * determinate(nmatr, n - 1, eps, err);
-        sgn *= -1;
+        mul_trmatrix_vector(matrix, n, result_vector, tr_vector_A);
+        mul_matrix_vector(matrix, n, tr_vector_A, vector_AAtr);
 
+        square_length_AAtr = dot_product(vector_AAtr, vector_AAtr, n);
+        if (sqrt(square_length_AAtr) <= epsilon)
+        {
+            break;
+            *error = ZERO_MATRIX; // Divided by zero
+        }
+
+        k = dot_product(result_vector, vector_AAtr, n) / square_length_AAtr;
+        for (int i = 0; i < n; i++)
+        {
+            vector_x[i] -= k * tr_vector_A[i];
+        }
+
+        iteration++;
     }
-    free(nmatr);
-    return det;
+    if (fabs(dot_product(result_vector, result_vector, n)) >= epsilon && iteration == limit)
+    {
+        *error = ITERATION_LIMIT_EXEEDED;
+    }
+
+    free(result_vector);
+    free(vector_Ax);
+    free(tr_vector_A);
+    free(vector_AAtr);
 }

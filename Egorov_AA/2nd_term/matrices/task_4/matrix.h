@@ -9,7 +9,7 @@ typedef enum {
     M_ALLOC_ERR       // Память не выделена
 }error;
 
-void writeMatrix(double* matrix, int m, int n);    // Функция выписывания матрицы в терминал
+void writeMatrix(double* matrix, int m, int n);
 
 double* solution(double* matrix, int m, int n, error* err);
 

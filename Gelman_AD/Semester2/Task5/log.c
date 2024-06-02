@@ -21,19 +21,20 @@ double power_n(double x, int n)
     return y;
 }
 
-double calculatelog(double x, double epsilon, error* error_code)
+double calculatelog(double x, double epsilon, error* err)
 {
     double taylor_result = 0;
-    int n = 1, limit = 10000;
+    int n = 1, limit = 1000;
     double n_member = x;
+    *err = OK;
 
     if (x <= 0)
     {
-        *error_code = INVALID_ARGUMENT;
+        *err = INVALID_ARGUMENT;
         return -1;
     }
 
-    while (fabs(n_member) >= epsilon)
+    while (fabs(n_member) > epsilon)
     {
         taylor_result += n_member;
         n++;
@@ -48,11 +49,10 @@ double calculatelog(double x, double epsilon, error* error_code)
         limit--;
         if (limit < 0)
         {
-            *error_code = ITERATION_LIMIT_EXCEEDED;
+            *err = ITERATION_LIMIT_EXCEEDED;
             return -1;
         }
     }
-    *error_code = OK;
     printf("Taylor result: %lf\n", taylor_result);
     return taylor_result;
 }

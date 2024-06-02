@@ -1,0 +1,8 @@
+Maximum word length: 1600
+Minimum word length: 3
+Average word length: 801
+Frequency of symbol '?': 0.062344 percent 
+Frequency of symbol 'W': 0.062344 percent 
+Frequency of symbol 'a': 99.750623 percent 
+Frequency of symbol 'h': 0.062344 percent 
+Frequency of symbol 'y': 0.062344 percent 

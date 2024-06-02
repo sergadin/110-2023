@@ -7,7 +7,7 @@ typedef struct {          // Структура тестов:
 	error err_code;             // Код ошибки
 } dataSet;
 
-int main() {
+int main(void) {
 	int test_num;
 	error err;
 
@@ -48,21 +48,29 @@ int main() {
 		}
 
 		matrix = (double**)malloc(n * sizeof(double*));
-		for (int i = 0; i < n; i++) {
-			matrix[i] = (double*)malloc(n * sizeof(double));
-		}
-
 		if (matrix == NULL) {
 			printf("%d-й тест не пройден. Память не выделилась\n", i + 1);
 			fclose(input);
 			continue;
 		}
+		for (int i = 0; i < n; i++) {
+			matrix[i] = (double*)malloc(n * sizeof(double));
+			if (matrix[i] == NULL) {
+				printf("%d-й тест не пройден. Память не выделилась\n", i + 1);
+				fclose(input);
+				continue;
+			}
+		}
+
 
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
 				if (fscanf(input, "%lf", &matrix[i][j]) != 1) {
 					printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 					fclose(input);
+					for (int i = 0; i < n; i++) {
+						free(matrix[i]);
+					}
 					free(matrix);
 					continue;
 				}
@@ -71,19 +79,19 @@ int main() {
 
 		inverse_matrix = invertMatrix(matrix, n, &err);
 
-		writeMatrix(matrix, n);
-		printf("\n");
-		writeMatrix(inverse_matrix, n);
-
 		if (err != tests[i].err_code) {
 			printf("%d-й тест не пройден :(\n", i + 1);
 		}
 		else if (err == OK) {
 			multiplied_matrix = multiplyMatrices(matrix, inverse_matrix, n, &err);
 			printf("\n");
-			writeMatrix(multiplied_matrix, n);
 			if (checkMatrix(multiplied_matrix, n) == 1) {
 				printf("%d-й тест пройден.\n", i + 1);
+				writeMatrix(matrix, n);
+		                printf("\n");
+                		writeMatrix(inverse_matrix, n);
+				printf("\n");
+				writeMatrix(multiplied_matrix, n);
 			}
 			else
 				printf("%d-й тест не пройден.\n", i + 1);
@@ -91,7 +99,6 @@ int main() {
 		else {
 			printf("%d-й тест пройден.\n", i + 1);
 		}
-	theend:
 		for (int i = 0; i < n; i++) {
 			free(matrix[i]);
 		}
@@ -106,6 +113,13 @@ int main() {
 			}
 			free(multiplied_matrix);
 		}
+		if (err == INVALID_MATRIX) {
+			for (int i = 0; i < n; i++) {
+				free(inverse_matrix[i]);
+			}
+			free(inverse_matrix);
+		}
+		fclose(input);
 	}
 
 	return 0;

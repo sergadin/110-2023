@@ -34,7 +34,7 @@ double find_max_sum(FILE *input) {
     return max_sum;
 }
 
-int main() {
+int main(void) {
     double result;
     FILE *input;
 
