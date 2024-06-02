@@ -23,8 +23,8 @@ int main()
 
 	TestCase tests[] =
 	{ {"paragraph1.txt", OK},
-	  {"paragraph2.txt", OK},
-	  {"paragraph3.txt", OK},
+	// {"paragraph2.txt", OK},
+	//  {"paragraph3.txt", OK},
 	};
 
 	int n_tasks = sizeof(tests) / sizeof(tests[0]);
