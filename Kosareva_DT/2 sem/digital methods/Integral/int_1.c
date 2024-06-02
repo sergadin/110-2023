@@ -1,6 +1,22 @@
 #include <math.h>
-#include <stdio.h>
 #include "int_1.h"
+
+
+int compare(double a, double b, double eps) {
+	a = fabs(a);
+	b = fabs(b);
+	if (a>b && a>1) {
+		eps = a*eps;
+	}
+	else if (b>a && b>1) {
+		eps = b*eps;
+	}
+	
+	if (fabs(a - b) < eps) {
+		return 1;
+	}
+	return 0;
+}
 
 double rect(R_Rfun f, double a, double b, int n) {
 	double dx, i, summ;
@@ -20,31 +36,30 @@ double rect(R_Rfun f, double a, double b, int n) {
 	return summ;
 }
 
-void integral(test entry, double eps, int limit) {
-	int n = 2;
+double integral(R_Rfun f, double a, double b, double eps, int *err) {
+	int n = 256;
 	double res1, res2; //суммы с увеличением разбиения
+	int limit = 15;
 	
-	res1 = rect(entry.f, entry.a, entry.b, n);
+	res1 = rect(f, a, b, n);
 	
 	n *= 2;
 	
-	res2 = rect(entry.f, entry.a, entry.b, n);
+	res2 = rect(f, a, b, n);
 	
-	while ((fabs(res1 - res2) > eps) && (limit > 0)) {
+	while (compare(res1, res2, eps) == 0) {
 		//printf("%d, %lf\n", n, res2);
 		n *= 2;
 		res1 = res2;
-		res2 = rect(entry.f, entry.a, entry.b, n);
+		res2 = rect(f, a, b, n);
 		limit--;
+		
+		if (limit < 0) {
+			*err = 1;
+			return -1;
+		}
 	}
 	
-	if (fabs(res1 - res2) > eps) {
-		printf("Превышен лимит итераций");
-		return;
-	}
-	
-	printf("Дробление - %d, результат - %lf, верный ответ - %lf\n", n, res2, entry.res);
-	
-	return;
+	return res2;
 }
 	

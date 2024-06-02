@@ -2,6 +2,13 @@
 #include <math.h>
 #include <stdio.h>
 
+typedef struct {
+	R_Rfun f;
+	double a;
+	double b;
+	double res;
+} test;
+
 static double SIN(double x) {
 	return sin(x);
 }
@@ -16,25 +23,29 @@ static double RATIO(double x) {
 
 int main(void) {
 	test entry[4] = {
-		{SIN, 1, 4, 1.1939459},
-		{SIN, 7, 5, 0.470240},
+		{SIN, -1, 0, 1.1939459},
 		{POLYNOM, 0, 4, 34.666667},
 		{RATIO, 3, 5, 0.527007},
+		{RATIO, 1, 3, INFINITY},
 	};
 	double eps = 0.00001;
 	int n;
-	int limit = 50;
-	double automatic;
+	int error;
+	double answ;
 	
 	for (int i=0; i<4; i++) {
-		integral(entry[i], eps, limit);
+		printf("%d : ", i+1);
 		
-		//fabs(n * C * (b-a)^2/n^2) < eps
-		//n > fabs(C * (b-a)^2)/eps
-		//константу опустим
-		n = ceil((entry[i].b-entry[i].a)*(entry[i].b-entry[i].a)/eps);
-		automatic = rect(entry[i].f, entry[i].a, entry[i].b, n);
-		printf("Автоматическое дробление: %d - %lf\n\n", n, automatic);
+		error = 0;
+		answ = integral(entry[i].f, entry[i].a, entry[i].b, eps, &error);
+		
+		if (error == 1) {
+			printf("Ошибка (превышен лимит операций)\n");
+		}
+		else {
+			printf("Итог - %lf, нужно %lf\n", answ, entry[i].res);
+		}
+		
 	}
 	
 	return 0;
