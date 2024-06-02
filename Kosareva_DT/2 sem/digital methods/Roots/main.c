@@ -1,30 +1,40 @@
-#include "root_3.h"
+#include "min_3.h"
 #include <math.h>
+#include <stdio.h>
 
 typedef struct {
 	R_Rfun f;
-	double begin;
-	double end;
-	double res;
+	double a;
+	double b;
 } test;
-
+	
 static double SIN(double x) {
 	return sin(x);
 }
 
-static double POLYNOM(double x) {
-	return (x*x*x - x*x + 2*x - 6);
+static double PARABOLA(double x) {
+	return (3*x*x - 2*x + 6);
 }
 
 int main(void) {
 	test entry[3] = {
-		{SIN, 1, 4, 3.1415926535897},
-		{SIN, 7, 5, 6.2831853071795},
-		{POLYNOM, 1, 2, 1.776045322},
+		{SIN, 1.6, 6},
+		{SIN, 7, 5},
+		{PARABOLA, -100, 100}
 	};
+	int error;
+	double eps = 0.0000001;
+	double min;
 	
 	for (int i=0; i<3; i++) {
-		root(entry[i].f, entry[i].begin, entry[i].end, 0.0000000001, 1, entry[i].res);
+		error = 0;
+		min = min_search(entry[i].f, entry[i].a, entry[i].b, eps, &error);
+		if (error == 1) {
+			printf("Ошибка\n");
+		}
+		else {
+			printf("%lf\n", min);
+		}
 	}
 	
 	return 0;
