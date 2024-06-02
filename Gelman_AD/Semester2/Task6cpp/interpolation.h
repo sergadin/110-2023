@@ -1,18 +1,14 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
-
-typedef struct
-{
-    double x, y;
-} point;
+#include <iostream>
+#include <vector>
 
 typedef enum
 {
     OK,
 } error;
 
-void interpolate(point* p, size_t n, point* i_p, size_t m, double* interp_y, error* err);
+std::vector<double> interpolate(std::vector<double> x, std::vector<double> y, std::vector<double> x1, error* err);
 
 /*
 A function for calculating approximate values ??from the given points
