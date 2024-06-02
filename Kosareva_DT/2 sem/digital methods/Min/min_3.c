@@ -7,6 +7,10 @@ typedef struct{
 } dot;
 
 double max(double a, double b, double c) {
+	a = fabs(a);
+	b = fabs(b);
+	c = fabs(c);
+	
 	if (b > a) {
 		a = b;
 	}
