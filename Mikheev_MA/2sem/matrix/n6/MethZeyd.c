@@ -35,7 +35,7 @@ void MethZeyd(double **matr, double **arr, Er *error, int n, int m, double EPS){
             x = (*arr)[i];
             (*arr)[i] = sum / matr[i][i]; // новое решение
             
-            if(fabs(x - (*arr)[i]) < EPS* fmax(1, (*arr)[i])){  //сравнение старого корня с новым
+            if(fabs(x - (*arr)[i]) < EPS* fmax(1, fabs((*arr)[i]))){  //сравнение старого корня с новым
                 count++;
             }
             //for(int i = 0; i < n; i++){
