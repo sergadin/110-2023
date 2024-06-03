@@ -1,0 +1,23 @@
+all : a.out run
+
+
+
+find_root.o : find_root.c find_root.h
+
+	gcc -c -g find_root.c
+
+
+
+main.o : main.c find_root.h
+
+	gcc -c -g main.c
+
+run : a.out
+
+	./a.out
+
+
+
+a.out : main.o find_root.o
+
+	gcc -g main.o find_root.o -lm
