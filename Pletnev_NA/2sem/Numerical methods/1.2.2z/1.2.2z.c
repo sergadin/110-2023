@@ -67,7 +67,7 @@ double trapezoid_method(FR_R f, double a, double b, double eps, Error* err)
 	I1 = 0;
 	I2 = Intergarl(f, a, b, n);
 
-	while (fabs(I2 - I1) > eps)
+	while ((fabs(I1 - I2) > max(I1, I2, 1.0) * eps))
 	{
 		I1 = I2;
 		n *= 2;
