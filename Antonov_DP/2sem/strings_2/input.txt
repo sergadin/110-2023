@@ -1,1 +1,1 @@
-aaaaaaaaaaaaa/*bbbb*/bbbb/*aaa*/ccccc
+aaaaaa/*bbbb/*bbbb*/aaa*/ccccc

@@ -33,10 +33,6 @@ static int del_com(char *str, int start, int end)
 		i++;
 	}
 	str[start + i - 1] = str[end + i];
-	for (i = start + i; str[start + i] != 0; i++)
-	{
-		str[start + i] = 0;
-	}
 	return 0;
 }
 
@@ -72,6 +68,7 @@ int del_comment (char *str, char *start, char *end, ERR *err)
 		}
 		else if (str2_in_str1(str, i, end) == 0)
 		{
+			i += (len2 - 1);
 			count --;
 		}
 		i++;

@@ -13,6 +13,7 @@ int main(void)
 	str = (char *)malloc(len * sizeof(char));
 	getline(&str, &len, input);
 	del_comment(str, start, end, &err);
+	free(str);
 	fclose(input);
 	return 0;
 }
