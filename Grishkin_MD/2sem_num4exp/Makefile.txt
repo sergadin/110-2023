@@ -1,0 +1,21 @@
+all : a.out run
+
+
+
+taylor_exp.o : taylor_exp.c taylor_exp.h
+
+	gcc -c -g taylor_exp.c
+
+
+
+main.o : main.c taylor_exp.h
+
+	gcc -c -g main.c
+
+run : a.out
+
+	./a.out
+
+
+
+a.out : main.o taylor_exp.o
