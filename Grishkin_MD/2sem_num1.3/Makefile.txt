@@ -19,4 +19,4 @@ run : a.out
 
 
 
-a.out : main.o find_root.o
+a.out : main.o find_root.o -lm
