@@ -4,33 +4,31 @@
 void function_string5 (FILE *output, FILE *input)
 {
 	int symbols_size = 256;
-   	int symbol_frequency[symbols_size];
+   	int *symbol_frequency = NULL;
    	int	current_length = 0;
    	int	counter_sym = 0;
    	int word_count = 0;
-	char symbols[LEN];
-	char c;
+	char symbol;
 	int mid = 0;
 	int max = 0;
 	int min = 0;
 	int check_gap = 2;
-	
+	symbol_frequency = (int*) malloc ((symbols_size) * sizeof(int));
 	for(int i = 0; i < symbols_size; i++)
 		symbol_frequency[i] = 0;
 
-	while(fgets(symbols, LEN, input)) 
+	while(!feof(input)) 
 	{
 		current_length = 0;
 		check_gap = 2;
 
-		for(int j = 0; symbols[j] != 0 && symbols[j] != '\n'; j++) 
+		while(fscanf(input, "%c", &symbol) == 1 && symbol != '\n') 
 		{ 
-			c = symbols[j];
-			symbol_frequency[c]++;
-			if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) 
+			symbol_frequency[(int)symbol]++;
+			if((symbol >= 'a' && symbol <= 'z') || (symbol >= 'A' && symbol <= 'Z')) 
 			{
-				current_length++;
-				check_gap = 0;
+				    current_length++;
+				    check_gap = 0;
 			}
 			else 
 			{
@@ -86,8 +84,8 @@ void function_string5 (FILE *output, FILE *input)
 	
 	for(int i = 0; i < symbols_size; i++)
 	{
-		if(i != '\0' && i != '\n' && symbol_frequency[i] != 0)
-			fprintf(output, "Frequency of symbol '%c': %lf percent \n", i, symbol_frequency[i]*100/counter_sym);
+		if( (char)i != '\0' && (char)i != '\n' && symbol_frequency[i] != 0)
+			fprintf(output, "Frequency of symbol '%c': %lf percent \n", i, (double)symbol_frequency[i]*100/counter_sym);
 	}
+	free(symbol_frequency);
 }
-

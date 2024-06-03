@@ -7,6 +7,10 @@ typedef struct{
 } dot;
 
 double max(double a, double b, double c) {
+	a = fabs(a);
+	b = fabs(b);
+	c = fabs(c);
+	
 	if (b > a) {
 		a = b;
 	}
@@ -25,7 +29,7 @@ void min_dots(R_Rfun f, double *a, double *b, int n, double eps) {
 		dx = *a;
 		*a = *b;
 		*b = dx;
-	}
+	}//Упорядочим края
 	
 	dx = (*b - *a)/n;
 	
@@ -58,15 +62,15 @@ void min_dots(R_Rfun f, double *a, double *b, int n, double eps) {
 double min_search(R_Rfun f, double a, double b, double eps, int *err) {
 	int n = 2;
 	
-	while (((fabs(a - b) > (eps * max(a, b, 1))) && (n < 1000))) {
+	while (fabs(a - b) > (eps * max(a, b, 1))) {
 		min_dots(f, &a, &b, n, eps);
-		n++;
+			n*=2;
+		if (n > 100000000) {
+			*err = 1;
+			return -1;
+		}
 	}
 	
-	if (fabs(a - b) > (eps * max(a, b, 1))) {
-		*err = 1;
-		return -1;
-	}
 	
-	return a;
+	return (*f)(a);
 }

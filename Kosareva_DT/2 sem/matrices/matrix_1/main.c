@@ -12,6 +12,7 @@ int main(void) {
 	FILE *f = NULL;
 	double *matrix = NULL;
 	int i, j, n, m;
+	double eps = 0.0000001;
 	struct Test entry[5] = {
 		{"a1.txt", 3, 4},
 		{"a2.txt", 5, 5},
@@ -22,28 +23,34 @@ int main(void) {
 	
 	for (i=0; i<5; i++) {
 		printf("%d: ", i+1);
+		
 		f = fopen(entry[i].name, "r");
 		if (f == NULL) {
 			printf("Файл не открылся\n");
-			goto error;
+			continue;
 		}
+		
 		n = entry[i].n;
 		m = entry[i].m;
 		matrix = (double *)malloc(n*m*sizeof(double));
+		if (matrix == NULL) {
+			printf("Ошибка памяти\n");
+			fclose(f);
+			continue;
+		}
+		
 		for (j=0; j<n*m; j++) {
 			if (fscanf(f, "%lf", &matrix[j]) != 1) {
 				printf("Ошибка чтения\n");
-				goto error;
+				break;
 			}
 		}
 		fclose(f);
-		rank(matrix, n, m, 0.00000001);
+		if (j == n*m) {
+			printf("%d\n", rank(matrix, n, m, eps));
+		}
 		free(matrix);
-		continue;
 		
-		error :
-			fclose(f);
-			free(matrix);
 	}
 	return 0;
 }

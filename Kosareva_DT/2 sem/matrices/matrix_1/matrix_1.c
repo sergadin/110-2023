@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "matrix_1.h"
 
-void rank(double *matrix, int n, int m, double eps) {
+int rank(double *matrix, int n, int m, double eps) {
 	int i, j, rank;
 	
 	rank = 0;
@@ -17,6 +17,5 @@ void rank(double *matrix, int n, int m, double eps) {
 			rank++;
 		}
 	}
-	printf("%d\n", rank);
-	return;
+	return rank;
 }
