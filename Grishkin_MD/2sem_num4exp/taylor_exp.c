@@ -15,8 +15,7 @@ double taylor_exp(double x, double eps)
 {
    double ans = 1, last_ans = 0, n = 1;
    int limit = 10000;
-
-
+	
 	while (fabs(last_ans - ans) > eps)
 	{
 		last_ans = ans;
@@ -26,11 +25,11 @@ double taylor_exp(double x, double eps)
 		n++;
 	}
 	if(limit < 0)
-    {
-        error_code = LIM;
+        {
+            error_code = LIM;
 	}
 	error_code = OK;
 
-	//printf("%lf \n", n);
+    //printf("%lf \n", n);
     return ans;
 }
