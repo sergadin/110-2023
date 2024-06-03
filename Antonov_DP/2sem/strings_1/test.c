@@ -13,6 +13,7 @@ int main(void)
 	getline(&str, &len, input);
 	str[strlen(str) - 1] = 0;
 	str_property(str, &err);
+	free(str);
 	fclose(input);
 	return 0;
 }
