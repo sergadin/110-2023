@@ -3,13 +3,14 @@
 int main(void)
 {
     double eps = 0.0001, x = 5, expected = 148.413159103, res;
-	res = taylor_exp(x, eps);
+	
+    res = taylor_exp(x, eps);
 
-	if(error_code == LIM)
+    if(error_code == LIM)
     {
         printf("the iteration limit has been exceeded\n");
         return -1;
-	}
+    }
     if(error_code == OK)
     {
 	    printf("%lf\n", res);
