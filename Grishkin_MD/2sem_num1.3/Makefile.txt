@@ -3,7 +3,7 @@ all : a.out run
 
 
 
-find_root.o : d.c find_root.h
+find_root.o : find_root.c find_root.h
 
 	gcc -c -g find_root.c
 
