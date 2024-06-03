@@ -1,18 +1,18 @@
-#include "str_property.h"
+#include "del_comment.h"
 
 
 int main(void)
 {
-	ERR err;
+	ERR err = OK;
 	FILE *input;
 	char *str;
+	char start[] = "/*";
+	char end[] = "*/";
 	size_t len = 1;
-	int count;
+	input = fopen("input.txt", "r");
 	str = (char *)malloc(len * sizeof(char));
-	input = fopen("input2.txt", "r");
 	getline(&str, &len, input);
-	str[strlen(str) - 1] = 0;
-	str_property(str, &err);
+	del_comment(str, start, end, &err);
 	fclose(input);
 	return 0;
 }

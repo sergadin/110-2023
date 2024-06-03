@@ -9,17 +9,17 @@ int str_property (char *str, ERR *err)
 		return -1;
 	}
 		// len - длина строки, quan - количество слов, i - позиция в str, j - позиция в sub_str, lenw - общая длина слов, sub - дополнительная переменная
-	int max, min, i = 0, len = strlen(str) - 1, quan = 0, count = 0, j = 0;
+	int max, min, i = 0, len = strlen(str), quan = 0, count = 0, j = 0;
 	char *sub_str, sub;
 	char space[] = "., ()[]{};:'/?!`";
 	double aver_len = 0;
 	FILE *output;
 	output = fopen("output.txt", "w");
-	sub_str = (char *)malloc(2 * len * sizeof(char));
+	sub_str = (char *)malloc(len * sizeof(char));
 	sub_str[0] = 0;
 	max = 0;
 	min = len;
-	while (str[i + 1] != 0)
+	while (str[i] != 0)
 	{
 		if(strchr(sub_str, str[i]) == 0)
 		{
