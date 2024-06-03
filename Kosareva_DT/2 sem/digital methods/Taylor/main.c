@@ -7,6 +7,7 @@ int main(void) {
 	double answ;
 	double eps = 0.00000001;
 	
+	printf("Напишите число в интервале (0; 2)\n");
 	if (scanf("%lf", &x) != 1) {
 		printf("Ошибка данных\n");
 		return -1;
