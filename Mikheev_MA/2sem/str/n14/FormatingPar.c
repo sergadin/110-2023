@@ -24,7 +24,7 @@ void PrintPar(FILE* output, int wide, char* paragraph){
             //length_line = 4;
             length_line = strlen("    ");
         }
-        if(length_line + length_word > wide){
+        if(length_line + length_word + 1> wide){
             length_line = 0;
             fprintf(output, "\n");
         }
