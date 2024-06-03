@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 all : a.out run
 
 
