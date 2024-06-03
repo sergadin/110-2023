@@ -17,8 +17,8 @@ int main(void)
 	double epsilon = 0.0001;
 	int n = 0; // The size of the matrix (from the file)
 	double** matrix = NULL; // The pointer to an array containing matrix elements (a variable for storing the result)
-	double* vector_b = NULL;
-	double* vector_x = NULL;
+	double* vector_b;
+	double* vector_x;
 	FILE* f = NULL;
 	Error error;
 
