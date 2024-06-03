@@ -1,9 +1,9 @@
 ﻿#include "1.2.2z.h"
 
 double Intergarl(FR_R f, double a, double b, int n);
-double Area_​​trapezoid(FR_R f, double x1, double x2);
+double Area(FR_R f, double x1, double x2);
 
-double Area_​​trapezoid(FR_R f, double x1, double x2)
+double Area(FR_R f, double x1, double x2)
 {
 	double dx = x2 - x1;
 	double m1 = (x1 + x2) / 2;
@@ -38,7 +38,7 @@ double Intergarl(FR_R f, double a, double b, int n)
 
 	for (int i = 0; i < n; i++)
 	{
-		sum += Area_​​trapezoid(f, a + dx * i, a + dx * (i + 1));
+		sum += Area(f, a + dx * i, a + dx * (i + 1));
 	}
 
 	return sum;
