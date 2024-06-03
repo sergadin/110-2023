@@ -2,7 +2,7 @@
 #include "int_1.h"
 
 
-int compare(double a, double b, double eps) {
+int are_equal(double a, double b, double eps) {
 	a = fabs(a);
 	b = fabs(b);
 	if (a>b && a>1) {
@@ -36,10 +36,12 @@ double rect(R_Rfun f, double a, double b, int n) {
 	return summ;
 }
 
-double integral(R_Rfun f, double a, double b, double eps, int *err) {
+double integral(R_Rfun f, double a, double b, double eps, ERROR *err) {
 	int n = 256;
 	double res1, res2; //суммы с увеличением разбиения
 	int limit = 15;
+	
+	*err = OK;
 	
 	res1 = rect(f, a, b, n);
 	
@@ -47,7 +49,7 @@ double integral(R_Rfun f, double a, double b, double eps, int *err) {
 	
 	res2 = rect(f, a, b, n);
 	
-	while (compare(res1, res2, eps) == 0) {
+	while (are_equal(res1, res2, eps) == 0) {
 		//printf("%d, %lf\n", n, res2);
 		n *= 2;
 		res1 = res2;
@@ -55,8 +57,8 @@ double integral(R_Rfun f, double a, double b, double eps, int *err) {
 		limit--;
 		
 		if (limit < 0) {
-			*err = 1;
-			return -1;
+			*err = E_LIMIT;
+			return res2;
 		}
 	}
 	
