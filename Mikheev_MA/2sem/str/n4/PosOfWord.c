@@ -2,29 +2,30 @@
 
 
 int PosOfWord(FILE* input, Er *error, const char *word){
-    int max = 1024;
-    //int val = value(input);
-    //printf("%d \n", val);
-    char line[1024];
+    
+    char *line = NULL; 
+    size_t length;
+    int read;
     int line_number = 0;
-    int counter = 0;
-    //line = (char*)malloc(max * sizeof(line));
+    int counter = 0; // количество обнаруженных слов
+    *error = OK;
 
-    while (fgets(line, sizeof(line), input)) {
-        
+
+    while ((read = getline(&line, &length, input)) != -1) {
+        if(line == NULL){
+            *error = MEMORY; 
+        }
         line_number++;
         char *pos = line;
-        int position = 0;
         
         while ((pos = strstr(pos, word)) != NULL) {
-            position = pos - line;
-            printf("Строка %d Позиция %d\n", line_number, position + 2); 
+            printf("Строка %d Позиция %ld\n", line_number, pos - line + 1); 
             pos = pos + 1;
             counter++;
         }
     }
-    *error = OK;
     
+    free(line);
+
     return counter;
 }
-

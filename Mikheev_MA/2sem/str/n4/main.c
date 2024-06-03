@@ -9,24 +9,19 @@ typedef struct{
 }Testcase;
 
 
-
 int main(void){
-    int length;
+    int length; // количество тестов
     Er error = OK;
-    int value;
-    int res = 0;
-    
-    
+    int res = 0; // результат работы функции
     
     
     Testcase test[] = {
-        {"input1.txt", 8, " the ", OK},
-        {"input2.txt", 2, " a ", OK},
-        {"input2.txt", 3, " of ", OK}
+        {"input1.txt", 8, "the", OK},
+        {"input2.txt", 2, "a ", OK},
+        {"input2.txt", 3, "of", OK}
     };
     
     length = sizeof(test)/sizeof(test[0]);
-    
     
     for(int i = 0; i < length; i++){
         FILE* input;
@@ -37,10 +32,7 @@ int main(void){
             return -1;
         }
         
-        
         res = PosOfWord(input, &error, test[i].word);
-        
-        //printf("counter = %d", counter);
         
         if(error == OK && res == test[i].value){
             printf("Тест №%d пройден успешно\n\n", i + 1);
@@ -49,12 +41,8 @@ int main(void){
             printf("Тест №%d не пройден\n\n", i + 1);
         }
         
-        
         fclose(input);
     }
-    
-    
-    
     
     
     return 0;
