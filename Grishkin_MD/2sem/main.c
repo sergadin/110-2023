@@ -41,7 +41,7 @@ int main(void){
 		{
 			(RRFun[]) {sine, plus, squaring},
 			0,
-			(double[]) {0.0, 1.0, 1.0},
+			(double[]) {0.0, 1.0, 0.0},
 			OK
 		},
 		{
