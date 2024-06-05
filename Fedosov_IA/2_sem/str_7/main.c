@@ -20,6 +20,13 @@ int main(void) {
     Error error;
     for (int i = 0; i < 3; i ++) {
         find_difference(tests[i].fileA, tests[i].fileB, tests[i].fout, &error);
+        if (error == INP) {
+            printf("Неверные входные данные\n");
+            return -1;
+        } else if (error == OUTP) {
+            printf("Ошибка открытия файла для записи результата\n");
+            return -1;
+        }
     }
 
     return 0;

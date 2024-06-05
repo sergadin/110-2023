@@ -30,7 +30,7 @@ int main(void) {
 	};
 	double eps = 0.00001;
 	int n;
-	int error;
+	ERROR error;
 	double answ;
 	
 	for (int i=0; i<4; i++) {

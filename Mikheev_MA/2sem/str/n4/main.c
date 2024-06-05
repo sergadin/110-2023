@@ -17,7 +17,7 @@ int main(void){
     
     Testcase test[] = {
         {"input1.txt", 8, "the", OK},
-        {"input2.txt", 2, "a ", OK},
+        {"input2.txt", 2, "a", OK},
         {"input2.txt", 3, "of", OK}
     };
     

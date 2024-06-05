@@ -44,6 +44,8 @@ int approx_line(double *x, double *y, double *a, double *b, int len, double eps,
 	{
 		*a = 100000;
 		*b = 0;
+		printf("точки находятся на вертикальной прямой \n");
+		*err = E_VL;
 		return 0;
 	}
 	*a = ((b0 * a10) - (b1 * a00)) / ((a01 * a10) - (a00 * a11));

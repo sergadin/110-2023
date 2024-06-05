@@ -71,15 +71,19 @@ int main(void)
 	{
 		x = trapezoid_method(tests[i].f, tests[i].a, tests[i].b, tests[i].eps, &err);
 
-		printf("Tht test %d\n", i + 1);
+		printf("Tht test %d ", i + 1);
 
 		if (err != tests[i].err)
 		{
-			printf("Failed\n", i + 1);
+			printf("failed\n");
+		}
+		else if (err == WRONG_AB)
+		{
+			printf("has been verified\n");
 		}
 		else
 		{
-			printf("has been verified\n", i + 1);
+			printf("has been verified\n");
 			printf("The difference between the found answer and the exact one is '%f'\n", fabs(x - tests[i].x));
 		}
 	}

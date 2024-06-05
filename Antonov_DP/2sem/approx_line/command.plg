@@ -1,2 +1,0 @@
-set term dumb
-load 'output.dat'
