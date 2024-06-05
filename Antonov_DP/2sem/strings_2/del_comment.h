@@ -8,8 +8,8 @@ typedef enum
        	ER_NL 	// ER_NL - строка пустая;
 } ERR;
 
-// функция создаёт файл output.txt в котором выводится строка char *str без подстрок ограниченных заданным типом скобок включительно
+// функция выводит в файл FILE *output строку char *str без подстрок ограниченных заданным типом скобок включительно
 // на вход нужны строка char * и открывающая 'скобка' char *start и закрывающая 'скобка' char *end
 // на выходе даёт 0 если выполнилась успешно и -1, если неуспешно
 
-int del_comment(char *str, char *start, char *end, ERR *err);
+int del_comment(char *str, char *start, char *end, FILE *output, ERR *err);

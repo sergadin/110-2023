@@ -37,17 +37,15 @@ static int del_com(char *str, int start, int end)
 }
 
 
-int del_comment (char *str, char *start, char *end, ERR *err)
+int del_comment (char *str, char *start, char *end, FILE *output, ERR *err)
 {
-	if (str == NULL)
+	if ((str == NULL) || (str[0] == 0))
 	{
 		*err = ER_NL;
-		printf("строка - пуста, ошибка");
+		printf("строка - пуста, ошибка \n");
 		return -1;
 	}
 	int i = 0, count = 0, start_i, end_i, len1 = strlen(start), len2 = strlen(end);
-	FILE *output;
-	output = fopen("output.txt", "w");
 	while (str[i] != 0)
 	{
 		if (str2_in_str1(str, i, start) == 0)
@@ -74,6 +72,5 @@ int del_comment (char *str, char *start, char *end, ERR *err)
 		i++;
 	}
 	fprintf(output, "%s", str);
-	fclose(output);
 	return 0;
 }
