@@ -12,6 +12,7 @@ double find_root(double (*f)(double x), double a, double b, double eps)
 {
 	double c=0, d=0;
 	int crack = 0;
+
 	if(fabs(f(a)) < eps){
         return a;
     }
@@ -33,10 +34,12 @@ double find_root(double (*f)(double x), double a, double b, double eps)
 		d=a;
 		crack += 1;
 	}
-	if (crack==1){
+	if (crack==1)
+    {
 	    double x1=c,x2=c;
 	    int iter = 0;
-	    while (fabs(d-x2)>eps)
+        error_code = OK;
+	    while (fabs(d-x2) >=eps/3)
 	    {
 		    iter++;
             x1 = d-f(d)*(c-d)/(f(c)-f(d));
@@ -48,7 +51,7 @@ double find_root(double (*f)(double x), double a, double b, double eps)
         else
 	    {
             printf("Method can't be used");// f''(x) ne soxranyaet znak
-            return a - 1;
+            error_code = ERR;
         }
 	return d;
 }
