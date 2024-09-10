@@ -10,4 +10,4 @@ run: a.out
 	./a.out
 
 a.out: main.o matrix.o
-	gcc main.o matrix.o - lm
+	gcc main.o matrix.o -lm

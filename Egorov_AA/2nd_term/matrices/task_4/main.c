@@ -4,7 +4,7 @@
 #include <math.h>
 
 typedef struct {          // Структура тестов:
-	char* input;               // Имя файла
+	const char* input;               // Имя файла
 	double* res;               // Ожидаемые значения
 	error err_code;             // Код ошибки
 } dataSet;
@@ -38,7 +38,7 @@ int main(void) {
 		},
 		{
 		"input5.txt",
-		(double[]) { 1000 },
+		(double[]) { 0 },
 		SINGULAR_MATRIX
 		}
 	};
@@ -66,8 +66,8 @@ int main(void) {
 			continue;
 		}
 
-		for (int i = 0; i < m * n; i++) {
-			if (fscanf(input, "%lf", &matrix[i]) != 1) {
+		for (int j = 0; j < m * n; j++) {
+			if (fscanf(input, "%lf", &matrix[j]) != 1) {
 				printf("%d-й тест не пройден. Ошибка чтения файла\n", i + 1);
 				fclose(input);
 				free(matrix);

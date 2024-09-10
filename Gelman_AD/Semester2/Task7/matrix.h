@@ -1,26 +1,27 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-/* Основные ошибки*/
-typedef enum 
+typedef enum
 {
-    OK, /*Нет ошибок*/
-    ZERO_MATRIX, /*Введена матрица без элементов*/
-    MEMORY_ERROR, /*Ошибка выделения памяти*/
-    FILE_ERROR, /*Ошибка открытия или чтения файла*/
+    OK,
+    ZERO_MATRIX,
+    MEMORY_ERROR,
+    FILE_ERROR,
+    ITERATION_LIMIT_EXEEDED,
 }Error;
 
+void descent_method(double** matrix, int n, double* vector_b, double* vector_x, double epsilon, Error* error);
 
-/*	Параметры: *matr - указатель на массив, содержащий элементы матрицы
- *          n - порядок передаваемой матрицы
- *          eps - погрешность.
- *         *err - указатель на код ошибки.
- * Функция ищет определитель переданной матрицы, рекурсивно сводя ее к поиску определителя матрицы 2х2. Она раскладывает определитель по
- * первой строке и рекурсивно подсчитывает значение миноров меньшей степени.
- * Вывод: Если функция выполнена без ошибок, возвращается код ошибки NA_OK и значение определителя матрицы.
- * Если возникла ошибка выделения памяти, возвращается код ошибки NA_MEMORY_ERR и значение -1.
- * Если передана пустая матрица (в которой нет ни одного значения), возвращается код ошибки NA_ZERO_MATR и значение -1.
- * Если возникли ошибки при работе с файлом, функция возвращает код ошибки FILE_WR и значение -1.
- */
-double determinate(double* matr, int n, double eps, Error* err);
+// Parameters
+// *matr - address to the array (original linear representation of the matrix)
+// *nmatr - address to the array (new linear representation of the matrix - its minor)
+//  n (= order) - dimention of the original matrix (the number of the equasions)
+//
+// The function solves a system of linear equations using the iterative method of steepest descent
+// The Data is entered from a file, the matrix is вЂ‹вЂ‹represented as a single array
+//
+// Conclusion: If the function executes without errors, the error code OK and the solution of the matrix are returned
+// If a memory allocation error occurs, the error code MEMORY_ERROR and the value -1 are returned.
+// If an empty matrix is вЂ‹вЂ‹passed (with no values вЂ‹вЂ‹in it), the error code ZERO_MATRIX and the value - 1 are returned.
+// If errors occur while working with the file, the function returns the error code FILE_ERROR and the value - 1.

@@ -41,8 +41,9 @@ void func(double* arr, double len, int x)
 int main(void)
 {
     FILE* inp;
-    double x, len;
+    int len;
     int i;
+    double x;
     double* arr;
 
     inp = fopen("input.txt", "r");
@@ -52,11 +53,12 @@ int main(void)
         printf("No input file");
         return -1;
     }
-    if (fscanf(inp, "%lf", &len) != 1) 
+    if (fscanf(inp, "%d", &len) != 1) 
     {
         printf("Error reading the file");
         fclose(inp);
         return -1;
+        printf("%d", len);
     }
 
     fscanf(inp, "%lf", &x);

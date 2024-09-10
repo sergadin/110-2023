@@ -1,0 +1,21 @@
+Maximum word length: 19
+Minimum word length: 1
+Average word length: 5
+Frequency of symbol ' ': 3.833866 percent 
+Frequency of symbol '"': 21.086262 percent 
+Frequency of symbol ''': 0.319489 percent 
+Frequency of symbol '/': 22.364217 percent 
+Frequency of symbol '?': 0.319489 percent 
+Frequency of symbol 'K': 0.319489 percent 
+Frequency of symbol 'N': 0.319489 percent 
+Frequency of symbol '[': 12.460064 percent 
+Frequency of symbol ']': 12.460064 percent 
+Frequency of symbol 'a': 3.514377 percent 
+Frequency of symbol 'b': 0.638978 percent 
+Frequency of symbol 'd': 0.319489 percent 
+Frequency of symbol 'e': 0.319489 percent 
+Frequency of symbol 'k': 0.319489 percent 
+Frequency of symbol 'l': 0.319489 percent 
+Frequency of symbol 'n': 3.194888 percent 
+Frequency of symbol '{': 8.945687 percent 
+Frequency of symbol '}': 8.945687 percent 

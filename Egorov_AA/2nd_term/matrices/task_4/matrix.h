@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 typedef enum {
     OK,               // Все хорошо
@@ -8,9 +9,9 @@ typedef enum {
     M_ALLOC_ERR       // Память не выделена
 }error;
 
-void writeMatrix(double* matrix, size_t m, size_t n);    // Функция выписывания матрицы в терминал
+void writeMatrix(double* matrix, int m, int n);
 
-double* solution(double* matrix, size_t m, size_t n, error* err);
+double* solution(double* matrix, int m, int n, error* err);
 
 /*
 ** Функция решения однородной системы линейных уравнений методом исключения Гаусса.

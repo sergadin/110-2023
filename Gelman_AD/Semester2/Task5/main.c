@@ -14,21 +14,20 @@ typedef struct
 
 int main(void) 
 {
-	int test_number, iterations_number;
+	int test_number;
 	error err;
 	double value;
 	dataSet tests[] = 
 	{
-		{10, 1e-4, 2.302585, OK},
-		{1, 0.0001, 0.000000, OK},
-		{0.5, 0.0001, -0.693147, OK},
+		{0.5, 0.000001, 0.405465, OK},
+		{0.4, 0.000001, 0.336472, OK},
+		{0.9, 0.000001, 0.641853, OK}
 	};
 
 	test_number = sizeof(tests) / sizeof(tests[0]);
 
 	for (int i = 0; i < test_number; i++) 
 	{
-		iterations_number = 0;
 		value = calculatelog(tests[i].x, tests[i].epsilon, &err);
 
 		if (err != tests[i].error_code) 
@@ -43,6 +42,8 @@ int main(void)
 		{
 			printf("The %d-th test is completed\n", i + 1);
 		}
+
+		printf("Taylor result: %lf\n", value);
 	}
 
 	return 0;

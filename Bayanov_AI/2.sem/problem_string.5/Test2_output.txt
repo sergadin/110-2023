@@ -1,0 +1,34 @@
+Maximum word length: 7
+Minimum word length: 3
+Average word length: 4
+Frequency of symbol ' ': 42.500000 percent 
+Frequency of symbol '!': 1.250000 percent 
+Frequency of symbol '#': 1.250000 percent 
+Frequency of symbol '$': 1.250000 percent 
+Frequency of symbol '%': 1.250000 percent 
+Frequency of symbol '&': 1.250000 percent 
+Frequency of symbol '(': 1.250000 percent 
+Frequency of symbol ')': 1.250000 percent 
+Frequency of symbol '*': 1.250000 percent 
+Frequency of symbol '0': 1.250000 percent 
+Frequency of symbol '1': 2.500000 percent 
+Frequency of symbol '?': 1.250000 percent 
+Frequency of symbol '@': 1.250000 percent 
+Frequency of symbol 'A': 1.250000 percent 
+Frequency of symbol 'B': 1.250000 percent 
+Frequency of symbol 'W': 1.250000 percent 
+Frequency of symbol '^': 1.250000 percent 
+Frequency of symbol 'a': 5.000000 percent 
+Frequency of symbol 'd': 1.250000 percent 
+Frequency of symbol 'e': 2.500000 percent 
+Frequency of symbol 'g': 1.250000 percent 
+Frequency of symbol 'h': 2.500000 percent 
+Frequency of symbol 'i': 3.750000 percent 
+Frequency of symbol 'n': 3.750000 percent 
+Frequency of symbol 'o': 2.500000 percent 
+Frequency of symbol 'r': 3.750000 percent 
+Frequency of symbol 's': 1.250000 percent 
+Frequency of symbol 't': 1.250000 percent 
+Frequency of symbol 'u': 2.500000 percent 
+Frequency of symbol 'v': 1.250000 percent 
+Frequency of symbol 'y': 3.750000 percent 

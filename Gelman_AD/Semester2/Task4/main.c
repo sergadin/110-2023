@@ -41,7 +41,7 @@ int main(void)
 	{                                   
 		{square, 1, 5, 1, OK},		
 		{cube, -1, 5, -1, OK},
-		{sum, -10, 10, -11, OK}
+		{sum, -10, 10, -9, OK}
 	};
 
 	test_number = sizeof(tests) / sizeof(tests[0]);
@@ -55,7 +55,7 @@ int main(void)
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}
-		else if ((err == OK) && (fabs(tests[i].result - value) / 2 < epsilon)) 
+		else if ((err == OK) && (fabs(tests[i].result - value) / 2 > epsilon)) 
 		{
 			printf("The %d-th test is not completed\n", i + 1);
 		}

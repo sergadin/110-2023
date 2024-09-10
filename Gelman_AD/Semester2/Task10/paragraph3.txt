@@ -1,0 +1,4 @@
+Fairy tales have inspired music, namely opera, such as the French Opera ferie and the German Merchenoper.
+#define the
+French examples include Gretry's Zamire et Azor, and Auber's Le cheval de bronze, German operas are Mozart's Die Zauberfl?te, Humperdinck's H?nsel und Gretel, Siegfried Wagner's An allem ist Hetchen schuld!, which is based on many fairy tales, and Carl Orff's Die Kluge.
+#undef and
