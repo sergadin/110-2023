@@ -8,7 +8,7 @@ intset::intset(int left, int right){
 	left_ = left;
 	right_ = right;
 	set_ = new int[right - left + 1];
-	for (int i = left; i < right + 1; i++){
+	for (int i = 0; i < right - left + 1; i++){
 		set_[i] = left - 1;
 	}
 }
@@ -17,7 +17,7 @@ intset::intset(const intset &other){
 	left_ = other.left_;
 	right_ = other.right_;
 	set_ = new int[right_ - left_ + 1];
-	for (int i = left_; i < right_ + 1; i++)
+	for (int i = 0; i < right_ - left_ + 1; i++)
 	{
 		set_[i] = other.set_[i];
 	}
@@ -43,13 +43,13 @@ void intset::del(const int elem){
 	if ((elem > right_) || (elem < right_)){
                 throw Intset_Exception(-2, "elem not in range of set");
         }
-	if (set_[elem - left_] == (left_ - 1)){
+	if (set_[elem - left_] != (left_ - 1)){
 		set_[elem - left_] = (left_ - 1);
         }
 }
 
 bool intset::check(){
-	for (int i = left_; i < right_ + 1; i++)
+	for (int i = 0; i < right_ - left_ + 1; i++)
 	{
 		if (set_[i] != (left_ - 1)){
 			return true;
@@ -60,7 +60,7 @@ bool intset::check(){
 
 int intset::len(){
 	int len = 0;
-	for (int i = left_; i < right_ + 1; i++)
+	for (int i = 0; i < right_ - left_ + 1; i++)
         {
                 if (set_[i] != (left_ - 1)){
                         len ++;
@@ -73,7 +73,7 @@ int intset::max(){
 	if (!(this->check())){
 		throw Intset_Exception(-3, "set is empty");
 	}
-	for (int i = right_; i > left_ - 1; i--)
+	for (int i = right_ - left_; i > -1; i--)
         {
                 if (set_[i] != (left_ - 1)){
                         return set_[i];
@@ -86,7 +86,7 @@ int intset::min(){
         if (!(this->check())){
                 throw Intset_Exception(-3, "set is empty");
         }
-        for (int i = left_; i < right_ + 1; i++)
+        for (int i = 0; i < right_ - left_ + 1; i++)
         {
                 if (set_[i] != (left_ - 1)){
                         return set_[i];
@@ -104,18 +104,17 @@ int intset::right(){
 }
 
 intset &intset::operator=(const intset &other){
-	if (this == &other){
+	if (*this == &other){
 		exit(-1);
-	}
-	intset temp(other.left_, other.right_);
-        temp.left_ = other.left_;
-        temp.right_ = other.right_;
-        temp.set_ = new int[right_ - left_ + 1];
-        for (int i = temp.left_; i < temp.right_ + 1; i++)
+}
+        left_ = other.left_;
+        right_ = other.right_;
+        set_ = new int[right_ - left_ + 1];
+        for (int i = 0; i < right_ - left_ + 1; i++)
         {
-                temp.set_[i] = other.set_[i];
+                set_[i] = other.set_[i];
         }
-	return &temp;
+	return *this;
 }
 
 intset operator*(const intset &other1, const intset &other2){
@@ -156,7 +155,7 @@ bool operator==(const intset &other1, const intset &other2){
         }
 	for (int i = other1.left_; i < other1.right_; i++){
                 if (other1.set_[i] != other2.set_[i]){
-                        return false
+                        return false;
                 }
         }
 	return true;
