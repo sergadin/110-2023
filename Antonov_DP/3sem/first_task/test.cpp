@@ -14,7 +14,6 @@ int main() {
         }
         if (iter > 0) {
             big = big * temp;
-            std::cout << big.max() << "\n";
         }
         else {
             big = temp;
@@ -22,5 +21,9 @@ int main() {
     }
     big = big;
     std::cout << "min = " << big.min() << ", max = " << big.max() << std::endl;
+    intset test(1, 100);
+    test.add(1);
+    test = test * test;
+    std::cout << test.max() << "\n";
     return 0;
 }

@@ -33,9 +33,6 @@ void intset::add(const int elem) {
 	if ((elem > right_) || (elem < left_)) {
 		throw Intset_Exception(-1, "elem not in range of set");
 	}
-	if (set_[elem - left_] != (left_ - 1)) {
-		return;
-	}
 	set_[elem - left_] = elem;
 }
 
@@ -43,9 +40,7 @@ void intset::del(const int elem) {
 	if ((elem > right_) || (elem < left_)) {
 		throw Intset_Exception(-1, "elem not in range of set");
 	}
-	if (set_[elem - left_] != (left_ - 1)) {
-		set_[elem - left_] = (left_ - 1);
-	}
+	set_[elem - left_] = (left_ - 1);
 }
 
 bool intset::check() {
@@ -117,7 +112,7 @@ intset& intset::operator=(const intset& other) {
 	return *this;
 }
 
-intset operator*(const intset& other1, const intset& other2) {
+intset operator*(const intset &other1, const intset &other2) {
 	intset temp(other1.left_, other1.right_);
 	if ((other1.right_ < other2.left_) || (other1.left_ > other2.right_))
 	{
@@ -130,8 +125,8 @@ intset operator*(const intset& other1, const intset& other2) {
 		temp.right_ = other2.right_;
 	}
 	for (int i = 0; i < temp.right_ - temp.left_ + 1; i++) {
-		if (other1.set_[i] == other2.set_[i]) {
-			temp.set_[i] = other1.set_[i];
+		if (other1.set_[i + (temp.left_ - other1.left_)] == other2.set_[i + (temp.left_ - other2.left_)]) {
+			temp.set_[i] = other1.set_[i + (temp.left_ - other1.left_)];
 		}
 		else {
 			temp.set_[i] = temp.left_ - 1;
@@ -140,11 +135,22 @@ intset operator*(const intset& other1, const intset& other2) {
 	return temp;
 }
 
-bool operator==(const intset& other1, const intset& other2) {
-	if (other1.left_ != other2.left_) {
-		return false;
+intset operator*=(intset &ours, const intset &other){
+	int left, right;
+	if (ours.left_ < other.left_){left = other.left_;}
+	else {left = ours.left_;}
+	if (ours.right_ > other.right_){right = other.right_;}
+        else {right = ours.right_;}
+	for(int i = 0; i < (right - left + 1); i++){
+		if(ours.set_[i + (left - ours.left_)] != other.set_[i + (left - other.left_)]){
+			ours.set_[i + (left - ours.left_)] = ours.left_ - 1;
+		}
 	}
-	if (other1.right_ != other2.right_) {
+	return ours;
+}
+
+bool operator==(const intset& other1, const intset& other2) {
+	if ((other1.left_ != other2.left_) || (other1.right_ != other2.right_)) {
 		return false;
 	}
 	for (int i = 0; i < other1.right_ - other1.left_ + 1; i++) {
