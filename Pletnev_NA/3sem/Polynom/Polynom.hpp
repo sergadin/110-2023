@@ -38,7 +38,10 @@ class Polynom
 
         void change(double x, int j);
         double value(double y);
-        friend Polynom operator+(const Polynom &p1, const Polynom &p2);
+
+        Polynom operator+(const Polynom &p1, const Polynom &p2);
+        Polynom &operator=(const Polynom &other);
+        Polynom &operator+=(const Polynom &other);
 
 };
 
@@ -61,12 +64,9 @@ Polynom::polynom(int n)
 
 Polynom::polynom(const Polynom &other)
 {
-    n_ = other.n;
+    data_ = nullptr;
 
-    for(int i = 0; i < n_; i++)
-    {
-        data_[i] = other.data[i];
-    }
+    *this = other;
 }
 
 Polynom::~polynom()
@@ -89,7 +89,7 @@ double Polynom::value(double y)
         s *= y;
     }
 
-    return s;
+    return s;   []
 }
 
 Polynom Polynom::operator+(const Polynom &p1, const Polynom &p2)
@@ -123,4 +123,30 @@ Polynom Polynom::operator+(const Polynom &p1, const Polynom &p2)
     }
 
     return p;
+}
+
+Polynom &Polynom::operator=(const Polynom &other)
+{
+    if (data_ == other.data_)
+    {
+        return *this;
+    }
+
+    n_ = other.n;
+    delete[] data_;
+    this->data_ = new double[n_]
+
+    for(int i = 0; i < n_; i++)
+    {
+        this->data_[i] = other.data[i];
+    }
+
+    return *this
+}
+
+Polynom &Polynom::operator+=(const Polynom &other)
+{
+    p = this + other;
+
+    return *p;
 }
