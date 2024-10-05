@@ -5,6 +5,7 @@ class intset{
 	int left_;
 	int right_;
 public:
+	intset() = delete;
 	// конструктор работает только с двумя входными данными, без входных данных будет ошибка
 	intset(int left, int right);
 	intset(const intset &other);
