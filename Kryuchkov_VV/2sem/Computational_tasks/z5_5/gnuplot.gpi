@@ -1,0 +1,16 @@
+#! /usr/bin/gnuplot -persist
+set terminal png
+set output "image1.png"
+plot "output1.txt" u 1:2 w l lc rgb "blue", "output1.txt" u 1:3 w l lc rgb "green"
+
+set terminal png
+set output "image2.png"
+plot "output2.txt" u 1:2 w l lc rgb "blue", "output2.txt" u 1:3 w l lc rgb "green"
+
+set terminal png
+set output "image3.png"
+plot "output3.txt" u 1:2 w l lc rgb "blue", "output3.txt" u 1:3 w l lc rgb "green"
+
+set terminal png
+set output "image4.png"
+plot "output4.txt" u 1:2 w l lc rgb "blue", "output4.txt" u 1:3 w l lc rgb "green"
