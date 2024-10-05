@@ -1,0 +1,14 @@
+all: do-test clear
+
+do-test: a.out
+	valgrind --track-origins=yes -s ./a.out
+
+a.out: polinom.o main.o
+	g++ -c polinom.cpp
+	g++ -c main.cpp
+	g++ polinom.o main.o -lm
+
+clear:
+	rm polinom.o main.o a.out
+
+
