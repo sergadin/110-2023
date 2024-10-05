@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\Makefile||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -27,14 +27,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "test.cpp",
-              "DocumentMoniker": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\test.cpp",
-              "RelativeDocumentMoniker": "test.cpp",
-              "ToolTip": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\test.cpp",
-              "RelativeToolTip": "test.cpp",
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\main.cpp",
+              "RelativeDocumentMoniker": "main.cpp",
+              "ToolTip": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\main.cpp",
+              "RelativeToolTip": "main.cpp",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-05T16:26:21.864Z",
+              "WhenOpened": "2024-10-05T16:33:06.251Z",
               "EditorCaption": ""
             },
             {
@@ -45,7 +45,7 @@
               "RelativeDocumentMoniker": "Makefile",
               "ToolTip": "C:\\msys64\\home\\ilyag\\110-2023\\Gorbachev_ID\\kr\\Makefile",
               "RelativeToolTip": "Makefile",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
               "WhenOpened": "2024-10-05T16:26:12.669Z",
               "EditorCaption": ""
