@@ -102,6 +102,7 @@ intset& intset::operator=(const intset& other) {
 	if (this == &other) {
 		return *this;
 	}
+	delete[] set_;
 	left_ = other.left_;
 	right_ = other.right_;
 	set_ = new int[right_ - left_ + 1];
@@ -113,17 +114,12 @@ intset& intset::operator=(const intset& other) {
 }
 
 intset operator*(const intset &other1, const intset &other2) {
-	intset temp(other1.left_, other1.right_);
 	if ((other1.right_ < other2.left_) || (other1.left_ > other2.right_))
 	{
-		throw Intset_Exception(-1, "not intersect");
+		intset temp(std::min(other1.left_, other2.left), std::max(other1.right_, other2.right_))
+			return temp;
 	}
-	if (other1.left_ < other2.left_) {
-		temp.left_ = other2.left_;
-	}
-	if (other1.right_ > other2.right_) {
-		temp.right_ = other2.right_;
-	}
+	intset temp(std::max(other1.left_, other2.left), std::min(other1.right_, other2.right_));
 	for (int i = 0; i < temp.right_ - temp.left_ + 1; i++) {
 		if (other1.set_[i + (temp.left_ - other1.left_)] == other2.set_[i + (temp.left_ - other2.left_)]) {
 			temp.set_[i] = other1.set_[i + (temp.left_ - other1.left_)];
@@ -136,16 +132,7 @@ intset operator*(const intset &other1, const intset &other2) {
 }
 
 intset operator*=(intset &ours, const intset &other){
-	int left, right;
-	if (ours.left_ < other.left_){left = other.left_;}
-	else {left = ours.left_;}
-	if (ours.right_ > other.right_){right = other.right_;}
-        else {right = ours.right_;}
-	for(int i = 0; i < (right - left + 1); i++){
-		if(ours.set_[i + (left - ours.left_)] != other.set_[i + (left - other.left_)]){
-			ours.set_[i + (left - ours.left_)] = ours.left_ - 1;
-		}
-	}
+	ours = ours * other;
 	return ours;
 }
 

@@ -27,6 +27,8 @@ public:
 	// выдаёт правую границу
 	int right();
 	intset &operator=(const intset &other);
+	// если отрезки не пересекаются то выдаёт пустое множество с границами left_ левого и right_ правого
+	// иначе честное пересечение множество с границами пересечения
 	friend intset operator*(const intset &other1, const intset &other2);
 	friend intset operator*=(intset &ours, const intset &other2);
 	friend bool operator==(const intset &other1, const intset &other2);
