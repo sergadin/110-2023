@@ -31,18 +31,22 @@ class Polynom
         double* data_;
 
     public:
-        polynom() = delete;
-        polynom(int n);
-        polynom(const Polynom &other);
-        ~polynom();
+        Polynom() = delete;
+        Polynom(int n);
+        Polynom(const Polynom &other);
+        ~Polynom();
 
         void change(double x, int j);
+        int degree();
         double value(double y);
-        friend Polynom operator+(const Polynom &p1, const Polynom &p2);
+
+        Polynom &operator+(const Polynom &p1, const Polynom &p2);
+        Polynom &operator=(const Polynom &other);
+        Polynom &operator+=(const Polynom &other);
 
 };
 
-Polynom::polynom(int n)
+Polynom::Polynom(int n)
 {
     n_ = n + 1;
 
@@ -59,68 +63,97 @@ Polynom::polynom(int n)
     }
 }
 
-Polynom::polynom(const Polynom &other)
+Polynom::Polynom(const Polynom &other)
 {
-    n_ = other.n;
+    data_ = nullptr;
 
-    for(int i = 0; i < n_; i++)
-    {
-        data_[i] = other.data[i];
-    }
+    *this = other;
 }
 
-Polynom::~polynom()
+Polynom::~Polynom()
 {
-    delete[] data;
+    delete[] data_;
 }
 
 void Polynom::change(double x, int j)
 {
-    this->data[j] = x;
+    this->data_[j] = x;
+}
+
+int Polynom::degree()
+{
+    return n_;
 }
 
 double Polynom::value(double y)
 {
     double s = 0;
 
-    for(int i = this->n; i > 0, i++)
+    for(int i = n_; i > 0; i++)
     {
-        s += this->data[i];
+        s += this->data_[i];
         s *= y;
     }
 
     return s;
 }
 
-Polynom Polynom::operator+(const Polynom &p1, const Polynom &p2)
+Polynom &Polynom::operator+(const Polynom &p1, const Polynom &p2)
 {
     int c = 0;
-    p(std::max(p1.n, p2.n));
+    Polynom p(std::max(p1.n_, p2.n_));
     
-    if (p1.n < p2.n)
+    if (p1.n_ < p2.n_)
     {
         c = 22;
     }
-    if (p1.n > p2.n)
+    if (p1.n_ > p2.n_)
     {
         c = 11;
     }
 
     for (int i = 0; i < p.n; i++)
     {
-        if (i < min(p1.n, p2.n))
+        if (i < min(p1.n_, p2.n_))
         {
-            p.data[i] = p1.data[i] + p2.data[i];
+            p.data_[i] = p1.data_[i] + p2.data_[i];
         }
         else if (c == 11)
         {
-            p.data[i] = p1.data[i];
+            p.data_[i] = p1.data_[i];
         }
         else if (c == 22)
         {
-            p.data[i] = p2.data[i];
+            p.data_[i] = p2.data_[i];
         }
     }
+
+    return p;
+}
+
+Polynom &Polynom::operator=(const Polynom &other)
+{
+    if (data_ == other.data_)
+    {
+        return *this;
+    }
+
+    n_ = other.n_;
+    delete[] data_;
+    this->data_ = new double[n_];
+
+    for(int i = 0; i < n_; i++)
+    {
+        this->data_[i] = other.data_[i];
+    }
+
+    return *this;
+}
+
+Polynom& Polynom::operator+=(const Polynom &other)
+{
+    Polynom p(1);
+    p = ((const Polynom)(*this) + other);
 
     return p;
 }

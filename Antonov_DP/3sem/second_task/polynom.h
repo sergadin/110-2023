@@ -8,9 +8,9 @@ public:
 	~polynom();
 	polynom(const polynom& other);
 	polynom &operator=(const polynom& other);
-	int deg();
-	double calc(const double &x);
-	double coef_deg(const int &n);
+	int deg() const;
+	double calc(const double &x) const;
+	double coef_deg(const int &n) const;
 	void change(const double &a, const int &n);
 	friend polynom operator+(const polynom& other1, const polynom& other2);
 };

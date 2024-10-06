@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "intset.h"
 
@@ -9,7 +10,7 @@ intset::intset(int left, int right) {
 	right_ = right;
 	set_ = new int[right - left + 1];
 	for (int i = 0; i < right - left + 1; i++) {
-		set_[i] = left - 1;
+		set_[i] = 0;
 	}
 }
 
@@ -33,68 +34,66 @@ void intset::add(const int elem) {
 	if ((elem > right_) || (elem < left_)) {
 		throw Intset_Exception(-1, "elem not in range of set");
 	}
-	set_[elem - left_] = elem;
+	set_[elem - left_] = 1;
 }
 
 void intset::del(const int elem) {
 	if ((elem > right_) || (elem < left_)) {
 		throw Intset_Exception(-1, "elem not in range of set");
 	}
-	set_[elem - left_] = (left_ - 1);
+	set_[elem - left_] = 0;
 }
 
-bool intset::check() {
+bool intset::is_empty() const {
 	for (int i = 0; i < right_ - left_ + 1; i++)
 	{
-		if (set_[i] != (left_ - 1)) {
-			return true;
+		if (set_[i] != 0) {
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
-int intset::len() {
+int intset::len() const{
 	int len = 0;
 	for (int i = 0; i < right_ - left_ + 1; i++)
 	{
-		if (set_[i] != (left_ - 1)) {
-			len++;
-		}
+		len += set_[i];
 	}
 	return len;
 }
 
-int intset::max() {
-	if (!(this->check())) {
-		return right_ + 1;
+int intset::max() const{
+	if (this->is_empty()) {
+		return (right_ + 1);
 	}
 	for (int i = right_ - left_; i > -1; i--)
 	{
-		if (set_[i] != (left_ - 1)) {
-			return set_[i];
+		if (set_[i]) {
+			return (left_ + i);
 		}
 	}
 	return 0;
 }
 
-int intset::min() {
-	if (!(this->check())) {
-		return left_ - 1;;
+int intset::min() const{
+	if (this->is_empty()) {
+		return (left_ - 1);
 	}
 	for (int i = 0; i < right_ - left_ + 1; i++)
 	{
-		if (set_[i] != (left_ - 1)) {
-			return set_[i];
+		if (set_[i]) {
+			return (i + left_);
 		}
 	}
 	return 0;
 }
 
-int intset::left() {
+int intset::left() const{
 	return left_;
 }
 
-int intset::right() {
+int intset::right() const{
 	return right_;
 }
 
@@ -113,25 +112,25 @@ intset& intset::operator=(const intset& other) {
 	return *this;
 }
 
-intset operator*(const intset &other1, const intset &other2) {
+intset operator*(const intset& other1, const intset& other2) {
 	if ((other1.right_ < other2.left_) || (other1.left_ > other2.right_))
 	{
-		intset temp(std::min(other1.left_, other2.left), std::max(other1.right_, other2.right_))
+		intset temp(std::min(other1.left_, other2.left_), std::max(other1.right_, other2.right_));
 			return temp;
 	}
-	intset temp(std::max(other1.left_, other2.left), std::min(other1.right_, other2.right_));
+	intset temp(std::max(other1.left_, other2.left_), std::min(other1.right_, other2.right_));
 	for (int i = 0; i < temp.right_ - temp.left_ + 1; i++) {
-		if (other1.set_[i + (temp.left_ - other1.left_)] == other2.set_[i + (temp.left_ - other2.left_)]) {
-			temp.set_[i] = other1.set_[i + (temp.left_ - other1.left_)];
+		if ((other1.set_[i + (temp.left_ - other1.left_)]) && (other2.set_[i + (temp.left_ - other2.left_)])) {
+			temp.set_[i] = 1;
 		}
 		else {
-			temp.set_[i] = temp.left_ - 1;
+			temp.set_[i] = 0;
 		}
 	}
 	return temp;
 }
 
-intset operator*=(intset &ours, const intset &other){
+intset operator*=(intset& ours, const intset& other) {
 	ours = ours * other;
 	return ours;
 }

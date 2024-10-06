@@ -32,7 +32,7 @@ polynom &polynom::operator=(const polynom& other){
 	return *this;
 }
 
-double polynom::calc(const double &x){
+double polynom::calc(const double &x) const{
 	double temp = 1, res = 0;
 	for (int i = 0; i < ord_ + 1; i++){
 		res = pol_[i] * temp;
@@ -41,7 +41,7 @@ double polynom::calc(const double &x){
 	return res;
 }
 
-double polynom::coef_deg(const int &n){
+double polynom::coef_deg(const int &n) const{
 	if((n > ord_) || (n < 0)){
 		throw Polynom_Exception(-1, "out of range");
 	}
@@ -55,7 +55,7 @@ void polynom::change(const double &a, const int &n){
 	pol_[n] = a;
 }
 
-int polynom::deg(){
+int polynom::deg() const{
 	return ord_;
 }
 
