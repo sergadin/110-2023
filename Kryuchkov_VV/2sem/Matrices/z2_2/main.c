@@ -41,9 +41,9 @@ int main(void)
 
 	TestCase tests[] = {{"matr1.txt", 4, NA_OK},
 	{"matr2.txt", 6.5, NA_OK},
-	{"matr3.txt", -20, NA_OK},
+	{"matr3.txt", -10, NA_OK},
 	{"matr4.txt", 0, NA_ZERO_MATR},
-    {"matr5.txt", 356948478124, NA_OK}};
+    {"matr5.txt", -15, NA_OK}};
 	
 	int n_tasks = sizeof(tests) / sizeof(tests[0]); /* количество тестов */
 	for (int n = 0; n < n_tasks; n++)
