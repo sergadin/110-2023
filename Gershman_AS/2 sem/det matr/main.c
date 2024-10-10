@@ -17,7 +17,7 @@ int main(void)
 	double *matr = NULL; //указатель на массив, содержащий элементы матрицы
 	FILE *f = NULL;
 	Error err;
-	Test tests[] = {{"test1.txt", 1, Ok}, {"test2.txt", 2, OK}, {"test3.txt", 0, ZER_MAT}, {"test4.txt", 0, OK}, {"test5.txt", -382.5, OK}};
+	Test tests[] = {{"test1.txt", 1, OK}, {"test2.txt", 2, OK}, {"test3.txt", 0, ZER_MAT}, {"test4.txt", 0, OK}, {"test5.txt", -382.5, OK}};
     for (int i = 0; i < 5; i++)
 	{
 		f = fopen(tests[i].file_name, "r");
@@ -25,14 +25,14 @@ int main(void)
 		if (f == NULL)
 		{								/*Открытие файла, считывание из него значений элементов матрицы и запись их в массив.*/
 			printf("Файл не открывается\n");
-			err = FILE_WR;
+			err = FILE_ER;
 			goto end;
 		}
 
 		if (fscanf(f, "%d", &n) != 1)
 		{
 			printf("Файл пуст\n");
-			err = FILE_WR;
+			err = FILE_ER;
 			fclose(f);
 			goto end;
 			
@@ -42,7 +42,7 @@ int main(void)
 		if (matr == NULL)
 		{
 			printf("Оперативная память не выделена\n");
-			err = NA_MEMORY_ERR;
+			err = MEM_ER;
 			fclose(f);
 			goto end;
 		}
@@ -51,7 +51,7 @@ int main(void)
 			if (fscanf(f, "%lf", &matr[i])!=1)
 			{
 				printf("В файле недостаточно значений\n");
-				err = FILE_WR;
+				err = FILE_ER;
 				free(matr);
 				fclose(f);
 				goto end;
