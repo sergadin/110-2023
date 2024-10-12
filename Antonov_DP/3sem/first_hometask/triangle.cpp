@@ -1,5 +1,6 @@
 #include <iostream>
 #include "triangle.h"
+#include <cmath>
 
 point segment::intersection(const segment& other) const{
 	double t1, t2;
@@ -234,7 +235,7 @@ double triangle::Area_intersection(triangle& other) {
 	}
 
 	double area = 0;
-	for (int i = 0; i < len - 1; i++) {
+	for (int i = 1; i < len - 1; i++) {
 		point *points = new point[3];
 		points[0] = vert[0];
 		points[1] = vert[i];

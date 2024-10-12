@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <cmath>
 class point {
 	double* point_;
 	bool real_;
@@ -26,6 +26,7 @@ public:
 		point_[0] = other.point_[0];
 		point_[1] = other.point_[1];
 		real_ = other.real_;
+		return *this;
 	}
 	double* get() const{
 		double* result;
