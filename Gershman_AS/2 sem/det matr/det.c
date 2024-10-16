@@ -1,11 +1,11 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
-#include <det.h>
+#include "det.h"
 
 void create_minor(double * matr, double *minor, int n, int m);
 
-void new_matr(double * matr, double *minor, int n, int m)
+void create_minor(double * matr, double *minor, int n, int m)
 {
     int j = 0;
     for(int i = n; i < n * n; i++)
