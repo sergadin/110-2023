@@ -1,11 +1,16 @@
 #ifndef OBJ
 #define OBJ
+#define eps 1e-6 
 
 #include <stdio.h>
 #include <iostream>
 #include <cmath>
 #include <vector>
 #include <cstdio>
+#include <algorithm>
+#include <set>
+#include <map>
+
 
 /*
  * Класс ошибок.
@@ -13,8 +18,8 @@
  */
 class MstError{ 
   private:
-    int code_;
-    std::string reason_;
+    int code_ = 0;
+    std::string reason_ = "";
   public:
     MstError(int code, std::string reason){ //Конструктор
       code_ = code;
@@ -30,22 +35,24 @@ class MstError{
 
 /*
  * Класс точек.
- * Переменные: x_ - первая координата, y_ - вторая координата, num_ - статическая переменная-счетчик точек, id_ - порядковый номер точки;
+ * Переменные: x_ - первая координата, y_ - вторая координата;
  */
 class Point{
   private:
-    double x_,y_;
-    static int num_;
-    int id_;
+    double x_ = 0, y_ = 0;
   public:
-    Point(double x, double y):x_(x), y_(y){ //Конструктор
-      x_ = x;
-      y_ = y;
-      id_ = num_++;
+    Point() : x_(0), y_(0){}//конструктор без входных данных
+    Point(double x, double y): x_(x), y_(y){}//конструктор
+    Point(const Point& p){ //конструктор копирования
+        x_=p.x_;
+        y_=p.y_;
     }
+    Point(Point&& p) noexcept : x_(p.x_), y_(p.y_){ //конструктор перемещения
+      p.x_ = 0;
+      p.y_ = 0;
+    }
+    Point& operator=(Point&& p) noexcept; //оператор перемещения
     ~Point() { //Деструктор
-      id_= 0;
-      num_--;
       x_ = 0;
       y_ = 0;
     }
@@ -55,26 +62,41 @@ class Point{
     double getY() const{ //Функция, возвращающая вторую координату
       return y_;
     }
-    
-    int getId() const{ //Функция, возвращающая номер точки
-      return id_;
-    }
     double distance(const Point &p) const{ //Расстояние между точками
-      return sqrt((x_-p.x_)*(x_-p.x_) + (y_-p.y_)*(y_-p.y_));
+      return sqrt((x_ - p.x_)*(x_ - p.x_) + (y_ - p.y_)*(y_ - p.y_));
     }
-    Point &operator=(const Point &p);
+    
+    bool operator==(const Point& other) const { //оператор сравнения - равенство
+      return (fabs(x_ - other.x_) < eps) && (fabs(y_ - other.y_) < eps);
+    }
+    
+    bool operator!=(const Point& other) const{ //оператор сравнения - не равен
+      return !(*this == other);
+    } 
+    bool operator<(const Point& other) const; //оператор сравнения - меньше: сперва сравнение по х, иначе по у
+    Point &operator=(const Point &p); //оператор присваивания
 };
+
+/*
+ * Параметры:
+ *  р - вектор точек - вершин графа, el - искомый элемент
+ * Функция ищет переданный элемент в полученном векторе
+ * Функция возвращает true, если элемент найден, иначе - false.
+ */
+bool findEl(const std::vector<Point> &p, Point el);
+
 
 /*
  * Класс ребер.
  * Переменные: p1_ - первый конец, p2_ - второй конец, weight_ - длина ребра(ее вес);
  */
-class Edge { 
+class Edge{ 
   private:
     Point p1_, p2_;
     double weight_;
   public:
-    Edge(const Point& p1, const Point& p2); //Конструктор
+    Edge() = default;//конструктор по умолчанию
+    Edge(const Point& p1, const Point& p2): p1_(p1), p2_(p2), weight_(p1.Point::distance(p2)){} //Конструктор
     Point get_St() const{ //Функция, возвращающая первый конец
       return p1_;
     }
@@ -84,25 +106,29 @@ class Edge {
     double get_Weight() const{ //Функция, возвращающая вес ребра
       return weight_;
     }
-    bool operator<(const Edge& e) const{
+    bool operator<(const Edge& e) const{ //оператор сравнения - сравнивает по весу ребер
       return (weight_ < e.weight_);
     }
 };
 
 /*
- * Класс компонент связности.
- * Переменные: parent_ - корневой элемент, rank_ - ранк(вес) элемента;
+ * Параметры:
+ *  р - вектор точек - вершин графа
+ * Функция по множеству точек собирает вектор из всевозможных ребер с концами в переданных вершинах.
+ * Функция возвращает вектор ребер.
  */
-class DifSets{
-  private:
-    std::vector<int> parent_;
-    std::vector<int> rank_;
-  public:
-    DifSets(const std::vector <Point> &p); //Конструктор
-    
-    int Find(int x); //Функция, ищущая корневой элемент
-    
-    void Union(int x, int y); //Функция, объединяющая две компоненты связности
-};
+std::vector<Edge> makeEdges(const std::vector<Point> &p);
 
+/*
+ * Класс компонент связности.
+ * Переменные: parent_ - корневой элемент
+ */
+class ConComp{
+  private:
+    std::map<Point, Point> parent_{};
+  public:
+    ConComp(const std::vector <Point> &p); //Конструктор
+    Point Find(Point x); //Функция, ищущая корневой элемент
+    void Union(Point x, Point y); //Функция, объединяющая две компоненты связности
+};
 #endif
