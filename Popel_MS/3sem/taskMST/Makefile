@@ -1,4 +1,3 @@
-CXX = g++
 CXXFL = -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self -Wswitch-default \
     -Wfloat-equal -Wshadow -Wpointer-arith -Wtype-limits -Wempty-body -Wlogical-op \
     -Wmissing-field-initializers -Wctor-dtor-privacy  -Wnon-virtual-dtor \
