@@ -1,9 +1,9 @@
 ﻿#include"integral.h"
 
 double partition(RRFun f, double a, double b, int n);
-double area(RRFun f, double x1, double x2);
+double trapezoid_create(RRFun f, double x1, double x2);
 
-double area(RRFun f, double x1, double x2)
+double trapezoid_create(RRFun f, double x1, double x2)
 {
 	double dx = x2 - x1;
 	double m1 = (x1 + x2) / 2;
@@ -38,7 +38,7 @@ double partition(RRFun f, double a, double b, int n)
 
 	for (int i = 0; i < n; i++)
 	{
-		sum += area(f, a + dx * i, a + dx * (i + 1));
+		sum += trapezoid_create(f, a + dx * i, a + dx * (i + 1));
 	}
 
 	return sum;
