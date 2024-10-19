@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+void freeMatrix(char ***matrix, int rows, int cols);
+char ***createMatrix(int rows, int cols);
+char *multiplyStrings(const char *a, const char *b);
+char *addStrings(const char *a, const char *b);
+char ***multiplyMatrices(char ***A, int rowsA, int colsA, char ***B, int rowsB, int colsB, int *rowsC, int *colsC);
+
 void freeMatrix(char ***matrix, int rows, int cols) 
 {
     for (int i = 0; i < rows; i++) 
@@ -54,6 +60,7 @@ char *addStrings(const char *a, const char *b)
 
 char ***multiplyMatrices(char ***A, int rowsA, int colsA, char ***B, int rowsB, int colsB, int *rowsC, int *colsC) 
 {
+    
     if (colsA != rowsB) 
     {
         printf("нельзя умножить.\n");
@@ -62,7 +69,7 @@ char ***multiplyMatrices(char ***A, int rowsA, int colsA, char ***B, int rowsB, 
 
     *rowsC = rowsA;
     *colsC = colsB;
-    char ***C = createMatrix(*rowsC, *colsC);
+   char ***C = createMatrix(*rowsC, *colsC);
 
     for (int i = 0; i < rowsA; i++) 
     {
@@ -98,19 +105,24 @@ char ***multiplyMatrices(char ***A, int rowsA, int colsA, char ***B, int rowsB, 
 
 int main() 
 {
-    int rowsA=0, colsA=0, rowsB=0, colsB=0;
+    int rowsA=0, colsA=0, rowsB=0, colsB=0, colsC=0, rowsC=0;
     FILE *matrIn = fopen("matrin.txt", "r");
-    if(matrIn == NULL){
+    FILE *matrOut = fopen("matrout.txt", "w");
+    char ***A, ***B, ***C;
+    if(matrIn == NULL)
+    {
       printf("не открылось\n");
       return -1;
     }
+
     if (fscanf(matrIn, "%d %d", &rowsA, &colsA)!=2)
     {
       printf("не прочиталось\n");
       fclose(matrIn);
       return -1;
     }
-    char ***A = createMatrix(rowsA, colsA);
+
+    A = createMatrix(rowsA, colsA);
     for (int i = 0; i < rowsA; i++) 
     {
         for (int j = 0; j < colsA; j++) 
@@ -133,9 +145,11 @@ int main()
       freeMatrix(A, rowsA, colsA);
       return -1;
     }
-    char ***B = createMatrix(rowsB, colsB);
+
+    B = createMatrix(rowsB, colsB);
     for (int i = 0; i < rowsB; i++) 
     {
+
         for (int j = 0; j < colsB; j++) 
         {
             B[i][j] = malloc(100 * sizeof(char));
@@ -149,12 +163,11 @@ int main()
             }
         }
     }
+
   fclose(matrIn);
-    int rowsC=0, colsC=0;
-    char ***C = multiplyMatrices(A, rowsA, colsA, B, rowsB, colsB, &rowsC, &colsC);
+    C = multiplyMatrices(A, rowsA, colsA, B, rowsB, colsB, &rowsC, &colsC);
     freeMatrix(A, rowsA, colsA);
     freeMatrix(B, rowsB, colsB);
-    FILE *matrOut = fopen("matrout.txt", "w");
     if(matrOut == NULL)
     {
       printf("не открылось\n");
@@ -171,9 +184,11 @@ int main()
             {
                 fprintf(matrOut, "%s ", C[i][j]);
             }
+
             fprintf(matrOut, "\n");
         }
     }
+
     fclose(matrOut);
     freeMatrix(C, rowsC, colsC);
     return 0;
