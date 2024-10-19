@@ -62,9 +62,6 @@ class Point{
     double getY() const{ //Функция, возвращающая вторую координату
       return y_;
     }
-    double distance(const Point &p) const{ //Расстояние между точками
-      return sqrt((x_ - p.x_)*(x_ - p.x_) + (y_ - p.y_)*(y_ - p.y_));
-    }
     
     bool operator==(const Point& other) const { //оператор сравнения - равенство
       return (fabs(x_ - other.x_) < eps) && (fabs(y_ - other.y_) < eps);
@@ -76,6 +73,14 @@ class Point{
     bool operator<(const Point& other) const; //оператор сравнения - меньше: сперва сравнение по х, иначе по у
     Point &operator=(const Point &p); //оператор присваивания
 };
+
+/*
+ * Параметры:
+ *  p1 - первая точка, p2 - вторая точка
+ * Функция ищет расстояние между точками
+ * Функция возвращает расстояние между точками.
+ */
+double distance(const Point &p1, const Point &p2);
 
 /*
  * Параметры:
@@ -96,7 +101,7 @@ class Edge{
     double weight_;
   public:
     Edge() = default;//конструктор по умолчанию
-    Edge(const Point& p1, const Point& p2): p1_(p1), p2_(p2), weight_(p1.Point::distance(p2)){} //Конструктор
+    Edge(const Point& p1, const Point& p2): p1_(p1), p2_(p2), weight_(distance(p1, p2)){} //Конструктор
     Point get_St() const{ //Функция, возвращающая первый конец
       return p1_;
     }

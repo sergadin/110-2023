@@ -27,12 +27,11 @@ MST_builder::MST_builder(const std::vector <Point> &p){
   }
 }
 
-void MST_builder::del_point(Point &p){
-      auto it = std::find(points_.begin(), points_.end(), p);
-      if(it!=points_.end()){
-        points_.erase(it);
-        pnt_.erase(*it);
-        }
+void MST_builder::del_point(const_iterator &it){
+    if((it >= points_.begin())&& (it <= points_.end())){
+      points_.erase(it);
+      pnt_.erase(*it);
+      }
     }
 std::vector<Edge> MST_builder::MST_build(){
   std::vector<Edge> edges = makeEdges(points_);

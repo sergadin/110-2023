@@ -8,7 +8,6 @@ int main(void){
 try{
     Points points = {{3, 2},{2, 6},{9, 1}, {14, 6}, {8, 4}, {6, 6}, {3, 2}, {11, 8}, {7, 9}, {4, 11},{12, 3}};
     Point pnt(2, 2);
-    Point dpnt(6, 6);
     
     printf("first - simple\n");
     MST_builder mst1(points);
@@ -20,7 +19,8 @@ try{
     vector<Edge> res2 = mst1.MST_build();
     plotMst(res2);
     
-    mst1.del_point(dpnt);
+    const_iterator dit = mst1.cbegin() + 4;
+    mst1.del_point(dit);
     printf("third - delete point\n");
     vector<Edge> res3 = mst1.MST_build();
     plotMst(res3);
