@@ -1,5 +1,7 @@
 #include "min_value.h"
 
+double test_function(double x);
+
 double test_function(double x)
 {
     return x * x + 2*x - 3;

@@ -1,5 +1,5 @@
 #include <math.h>
-#include "z2_2.h"
+#include "det.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -67,7 +67,7 @@ int main(void)
 		}
         else
         {
-            printf("Тест %d успешно пройден. Значение определителя матрицы: %lf\n", i + 1, res);
+            printf("Тест %d пройден. Значение определителя матрицы равно %lf\n", i + 1, res);
         }
     }
     return 0;

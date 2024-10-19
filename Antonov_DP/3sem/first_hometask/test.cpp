@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include <windows.h>
+#include <cmath>
 #include "triangle.h"
 
 using namespace sf;
@@ -178,6 +178,6 @@ int main()
         sleep(t);
     }
     double area = test.Area_intersection(other);
-    std::cout << area << "\n";
+    std::cout << area << " " << other.get_s() << "\n";
     return 0;
 }
