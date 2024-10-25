@@ -1,56 +1,51 @@
 #include "geom_obj.h"
 
-static int maxElofVect(const std::vector<Point> &v){
-if (v.size()<=0){
-  throw MstError(-3, std::string("Wrong size\n"));
-}
-int maxEl = v[0].getId();
-  for (int i = 0; i < v.size(); i++){
-    if(maxEl<v[i].getId()){
-      maxEl = v[i].getId();
-    }
-  }
-  return maxEl;
-}
-static int minElofVect(const std::vector<Point> &v){
-if (v.size()<=0){
-  throw MstError(-3, std::string("Wrong size\n"));
-}
-int minEl = v[0].getId();
-  for (int i = 0; i < v.size(); i++){
-    if(minEl>v[i].getId()){
-      minEl = v[i].getId();
-    }
-  }
-  return minEl;
-}
 Point& Point::operator=(const Point &p){
-      if(this == &p){
-      return *this;  
+      if(this != &p){
+        x_ = p.x_;
+        y_ = p.y_;
       }
-      x_ = p.x_;
-      y_ = p.y_;
       return *this;
     }
  
-Edge::Edge(const Point& p1, const Point& p2): p1_(p1), p2_(p2), weight_(p1.Point::distance(p2)){
-      p1_ = p1;
-      p2_ = p2;
-      weight_ = (p1.Point::distance(p2));
+ Point& Point::operator=(Point&& p) noexcept{
+      if(this != &p){
+        x_ = p.x_;
+        y_ = p.y_;
+        p.x_ = 0;
+        p.y_ = 0;
+      }
+      return *this;
     }
- 
-DifSets::DifSets(const std::vector<Point> &p){
-    parent_.resize(p.size(), -1);
-    rank_.resize(p.size(), 0);
-    for (int i = minElofVect(p); i <= maxElofVect(p); i++){
-      parent_[i] = i;
+    
+bool Point::operator<(const Point& other) const{
+    double x1 = x_, x2 = other.x_, y1 = y_, y2 =other.y_;
+      if((x1 < x2) || ((fabs(x1 - x2) < eps) && (y1 < y2))){
+        return true;
+      }else{
+        return false;
+      }
+    }
+    
+double distance(const Point &p1, const Point &p2){ 
+      return sqrt((p1.getX() - p2.getX())*(p1.getX() - p2.getX()) + (p1.getY() - p2.getY())*(p1.getY() - p2.getY()));
+    }
+    
+    
+bool findEl(const std::vector<Point> &p, Point el){
+  return (std::find(p.begin(), p.end(), el) != p.end());
+}
+
+ConComp::ConComp(const std::vector<Point> &p){
+    for (const auto&i : p){
+      parent_.emplace(i, i);
     }
   }
 
-int DifSets::Find(int x){
-/*if(x>=maxElofVect(parent_)){
+Point ConComp::Find(Point x){
+if(!parent_.count(x)){
   throw MstError(-2, std::string("Wrong index\n"));
-}*/
+}
      if (parent_[x] != x){
         parent_[x] = Find(parent_[x]);
       }
@@ -58,20 +53,11 @@ int DifSets::Find(int x){
     }
     
     
-void DifSets::Union(int x, int y){
-//parent_[x] = parent_[y];
-
-      int rootX = Find(x);
-      int rootY = Find(y);
+void ConComp::Union(Point x, Point y){
+      Point rootX = Find(x);
+      Point rootY = Find(y);
       parent_[rootY] = rootX;
-     /* if(rootX != rootY){
-        if(rank_[rootX] > rank_[rootY]){
-          parent_[rootY] = rootX;
-        }else if( rank_[rootX] < rank_[rootY]){
-          parent_[rootX] = rootY;
-        }else{
-          parent_[rootY] = rootX;
-          rank_[rootX]++;
-        }
-      }*/
     }
+
+
+

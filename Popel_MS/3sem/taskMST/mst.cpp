@@ -1,59 +1,68 @@
-#include "geom_obj.h"
+
 #include "mst.h"
 #include <algorithm>
 #include <fstream>
 
-std::vector<Edge> makeEdges(const std::vector<Point>& p){
+std::vector<Point> removeDuplicates(const std::vector<Point>& p){
+  std::set<Point> unique(p.begin(), p.end());
+  return (std::vector<Point>(unique.begin(), unique.end()));
+}
+
+std::vector<Edge> makeEdges(const std::vector<Point> &p){
   std::vector<Edge> e;
-  for(int i = 0; i < p.size(); i++){
-    for (int j = i+1; j < p.size(); j++){
-      double dist = p[i].distance(p[j]);
-      std::cout << "("<<p[i].getX() <<", " << p[i].getY() << ") - (" << p[j].getX() << ", " << p[j].getY() <<")" << p[i].getId() << " " << p[j].getId() << std::endl;
-      //Edge newE(p[i], p[j]);
+  int sz = p.size();
+  for(int i = 0; i < sz; i++){
+    for (int j = i + 1; j < sz; j++){
       e.push_back({p[i], p[j]}); 
     }
   }
   return e;
 }
+MST_builder::MST_builder(const std::vector <Point> &p){
+  int sz = 0;
+  points_ = removeDuplicates(p);
+  sz = points_.size();
+  for (int i = 0; i < sz; i++){
+    pnt_.emplace(points_[i], points_[i]);
+  }
+}
 
-std::vector<Edge> Mst(const std::vector<Point>& p){
-  std::vector<Edge> edges = makeEdges(p);
+void MST_builder::del_point(const_iterator &it){
+    if((it >= points_.begin())&& (it <= points_.end())){
+      points_.erase(it);
+      pnt_.erase(*it);
+      }
+    }
+std::vector<Edge> MST_builder::MST_build(){
+  std::vector<Edge> edges = makeEdges(points_);
   std::sort(edges.begin(), edges.end(), [](const Edge& e1, const Edge& e2) {
     return (e1 < e2);
   });
-  for (int i = 0 ; i < edges.size(); i++){
-    std::cout << "(" << edges[i].get_St().getX() << ", " << edges[i].get_St().getY() << ") "<< (edges[i].get_St()).getId()<<" (" << edges[i].get_End().getX() << ", " << edges[i].get_End().getY() << ") " <<(edges[i].get_End()).getId() << " number "<< i << std::endl;
-  }
-  //std::cout << p.size() << std::endl;
-  DifSets set(p);
+  ConComp set(points_);
   std::vector<Edge> res;
+  int sz = edges.size();
   
-  for(int i = 0; i < edges.size(); i++){
-    if(set.Find((edges[i].get_St()).getId()) != set.Find((edges[i].get_End()).getId())){
-    /*std::cout << "(" << edges[i].get_St().getX() << ", " << edges[i].get_St().getY() << ") "<< (edges[i].get_St()).getId()<<" (" << edges[i].get_End().getX() << ", " << edges[i].get_End().getY() << ") " <<(edges[i].get_End()).getId() << " number "<< i << std::endl;*/
-      set.Union((edges[i].get_St()).getId(), (edges[i].get_End()).getId());
+  for(int i = 0; i < sz; i++){
+    if(set.Find(edges[i].get_St()) != set.Find(edges[i].get_End())){
+      set.Union(edges[i].get_St(), edges[i].get_End());
       res.push_back(edges[i]);
     }
   }
   return res;
 }
 
-/*void addPoint(std::vector<Point>& p, Point newPoint){
-  p.push_back(newPoint);
-}*/
 
-void plotMst(const std::vector<Edge> &mst, const std::vector<Point> &p){
+void plotMst(const std::vector<Edge> &mst){
   std::ofstream fout;
+  int sz = mst.size();
   fout.open("output.txt");
   
   if (!fout){
     throw MstError(-1, std::string("File opening error\n"));
   }
   
-  for(int j = 0; j < mst.size(); j++){
-    fout << (mst[j].get_St()).getX() << " " << (mst[j].get_St()).getY() << " " << ((mst[j].get_End()).getX()- (mst[j].get_St()).getX())<< " " << ((mst[j].get_End()).getY() - (mst[j].get_St()).getY())<< std::endl;
-    //std::cout << (mst[j].get_St()).getX() << " " << (mst[j].get_St()).getY() << std::endl;
-    //std::cout << (mst[j].get_End()).getX() << " " << (mst[j].get_End()).getY() << std::endl;
+  for(int j = 0; j < sz; j++){
+    fout << (mst[j].get_St()).getX() << " " << (mst[j].get_St()).getY() << " " << ((mst[j].get_End()).getX()-       (mst[j].get_St()).getX()) << " " << ((mst[j].get_End()).getY() - (mst[j].get_St()).getY()) << std::endl;
   }
   fout.close();
   
