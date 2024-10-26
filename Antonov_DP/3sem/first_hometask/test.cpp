@@ -1,50 +1,29 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
 #include "triangle.h"
-
-using namespace sf;
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 int main()
 {
 
-    RenderWindow window(VideoMode(2440, 1440), L"Новый проект", Style::Default);
-
-    window.setVerticalSyncEnabled(true);
-
     double points[] = { 1,2,5,1,3,0 };
     double points2[] = { 2,3,3,2,3,1 };
+
     triangle test(points);
     triangle other(points2);
+
     double* centre = test.get_centre();
     double* centre1 = other.get_centre();
     double x = centre[0] - centre1[0];
     double y = centre[1] - centre1[1];
     double z = 0.1;
 
-    ConvexShape shape(3);
-    ConvexShape shape1(3);
-    CircleShape circle((test.S_ / test.p_) * 100);
-    circle.setPosition(200 + (centre[0] * 100), 200 + (centre[1] * 100));
-    circle.setOrigin(((test.S_ / test.p_) * 100), ((test.S_ / test.p_) * 100));
-    circle.setFillColor(Color(255, 0, 0));
-
-    shape.setPosition(200, 200);
-    for (int i = 0; i < 3; i++) {
-        shape.setPoint(i, Vector2f(test.points_[i][0] * 100, test.points_[i][1] * 100));
-    }
-    shape.setFillColor(Color(61, 112, 255));
-
-    shape1.setPosition(200, 200);
-    for (int i = 0; i < 3; i++) {
-        shape1.setPoint(i, Vector2f(other.points_[i][0] * 100, other.points_[i][1] * 100));
-    }
-    shape1.setFillColor(Color(61, 112, 0));
-
     std::cout << centre[0] << " " <<centre[1] << "\n";
-
-    while (window.isOpen())
-    {
+        
+    if (fork()==0) wait(0);
+    else execl("ls", "ls", 0);
         if (std::abs(centre[0] - centre1[0]) > 0.0001)
         {
             other.move(x * z, y * z);
@@ -54,12 +33,6 @@ int main()
         else {
             other.rotate(centre1, 0.03);
         }
-        shape1.setPosition(200, 200);
-        for (int i = 0; i < 3; i++) {
-            shape1.setPoint(i, Vector2f(other.points_[i][0] * 100, other.points_[i][1] * 100));
-        }
-        shape1.setFillColor(Color(61, 112, 0));
-
         int len = 0;
         point* vert = new point[10];
         for (int i = 0; i < 3; i++) {
@@ -146,37 +119,14 @@ int main()
         delete[] length;
         delete[] angles;
 
-        
-        Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == Event::Closed)
-                window.close();
-        }
-
-        window.clear(Color::Black);
-        window.draw(shape);
-        window.draw(circle);
-        window.draw(shape1);
         if (len < 3) {
             delete[] vert;
             len = 0;
         }
         else {
-            ConvexShape inter(len);
-            inter.setPosition(200, 200);
-            for (int i = 0; i < len; i++) {
-                inter.setPoint(i, Vector2f(vert[i][0] * 100, vert[i][1] * 100));
-            }
-            inter.setFillColor(Color(200, 112, 255));
-            window.draw(inter);
             delete[] vert;
             len = 0;
         }
-        window.display();
-        Time t = sf::seconds(0.1);
-        sleep(t);
-    }
     double area = test.Area_intersection(other);
     std::cout << area << " " << other.get_s() << "\n";
     return 0;

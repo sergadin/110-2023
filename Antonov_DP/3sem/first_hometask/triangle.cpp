@@ -33,7 +33,6 @@ point segment::intersection(const segment& other) const{
 	return res;
 }
 
-
 triangle::triangle(double* points) {
 	points_ = new point[3];
 	for (int i = 0; i < 3; i++) {
