@@ -35,7 +35,7 @@ class HashTbl {
       HashEl() : key(""), val{}, ntEmpty(false){} //конструктор без элементов
       HashEl(const std::string& k, const T& v) : key(k), val(v), ntEmpty(true) { //конструктор по ключу и значению
         if (k.empty()) {
-          throw HashEr(-6, std::string("Key cannot be empty\n"));
+          throw HashEr(-1, std::string("Key cannot be empty2\n"));
         }
         key = k;
         ntEmpty = true;
@@ -52,9 +52,12 @@ class HashTbl {
     public:
       HashTbl(int newCap = 10) : table(newCap), curSize(0), tblSize(newCap){ //конструктор хэш-таблицы
       if(newCap <= 0 ){
-        throw HashEr(-5, std::string("Table size must be positive\n"));
+      //printf("This is the worst!\n");
+        throw HashEr(-2, std::string("Table size must be positive\n"));
       }
+      //printf("but it's better\n");
         table.resize(newCap);
+        //printf("OR NOT!\n");
         for (auto& el : table){
           el.ntEmpty = false;
         }
@@ -105,9 +108,7 @@ class HashTbl {
         return Iterator(*this, tblSize);
       }
 
-      std::string gen_rnd_key(); //генератор случайных ключей
-      int gen_rnd_val(); //генератор случайных значений (целочисленный)
-      void gen_rnd_set(int sz); //генератор случайных множеств
+      
       void readFile(const std::string& filename); //чтение множества из файла
 };
 
@@ -123,6 +124,7 @@ int HashTbl<T>::hash(const std::string& str) const{
 template<typename T>
       void HashTbl<T>::rehash() {
       int counter = 0;
+      int oldSize = tblSize;
       tblSize *= 2;
       std::vector<HashEl> oldTable = table;
       table = std::vector<HashEl>(tblSize);
@@ -132,32 +134,52 @@ template<typename T>
         el.ntEmpty = false;
       }
       
-      for (int i = 0; i < tblSize; i++) {
-        if (oldTable[i].ntEmpty){
+      for (int i = 0; i < oldSize; i++) {
+      //printf("Or in another iteration - %d - %d?\n", i, tblSize);
+        if (oldTable[i].ntEmpty && !oldTable[i].key.empty()){
+        //printf("Or almost there?\n");
           this->add(oldTable[i].key, oldTable[i].val);
+          //printf("There is problem?\n");
           table[counter].ntEmpty = true;
+          //printf("Something there?\n");
           counter++;
         }
+        //printf("I wasn't there\n");
       }
     }
 
   template<typename T>
   void HashTbl<T>::add(const std::string& key, const T& value) {
+        bool whole_circle = 0;
+        //std::cout << key << " Is it empty?"<< std::endl;
         if (key.empty()) {
-          throw HashEr(-6, std::string("Key cannot be empty\n"));
+        //printf("Is there smth wrong?\n");
+        //std::cout << "Must be empty " << key << "the end"<< std::endl;
+          throw HashEr(-1, std::string("Key cannot be empty1\n"));
         }
+        //printf("My current size is - %d and tblSize is - %d\n", curSize, tblSize);
         if (curSize >= (tblSize / 2)){
+        //printf("Let's rehash!!\n");
           this->rehash();
         }
-        int index = hash(key)%tblSize;
-        while ((table[index].ntEmpty) && !(table[index].key.empty())) {
+        int index = abs(hash(key))%tblSize;
+        //printf("%d - %d I just can't understand\n", index, tblSize);
+        while ((table[index].ntEmpty) && !(table[index].key.empty()) && !(((index + 1) >= tblSize) && whole_circle)) {
+        //printf("I believed in my progress\n");
           if (table[index].key == key){
+          //printf("But it's become worse and worse\n");
             table[index].val = value;
             return;
           }
+          if (((index + 1) >= tblSize) && !(whole_circle)){
+          //printf("Woah! First circle is done\n");
+              whole_circle = 1;
+        }
           index = (index + 1) % tblSize;
         }
+        //printf("I'm just there\n");
         table[index] = HashEl(key, value);
+        //printf("And you\n");
         table[index].ntEmpty = true;
         curSize++;
       }
@@ -165,75 +187,50 @@ template<typename T>
       template<typename T>
       T HashTbl<T>::get(const std::string& key) const {
         bool whole_circle = 0;
-        int index = HashTbl::hash(key) % tblSize;
-        while (table[index].ntEmpty){
+        int index = abs(HashTbl::hash(key)) % tblSize;
+        while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)){
           if (table[index].key == key){
             return table[index].val;
           }
           if (((index + 1) >= tblSize) && !(whole_circle)){
               whole_circle = 1;
-        }else if(((index + 1) >= tblSize)){
-            throw HashEr(-1, std::string("Key not found\n"));
         }
           index = (index + 1) % tblSize;
         }
-        throw HashEr(-1, std::string("Key not found\n"));
+        throw HashEr(-3, std::string("Key not found\n"));
       }
 
 template<typename T>
 void HashTbl<T>::remove(const std::string& key) {
-  int index = HashTbl::hash(key) % tblSize;
+  int index = abs(HashTbl::hash(key)) % tblSize;
   int nextIndex = 0;
-  while (table[index].ntEmpty) {
+  bool whole_circle = 0;
+  while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)) {
     if (table[index].key == key){
       //table[index].ntEmpty = false;
       curSize--;
       
       nextIndex = (index + 1) % tblSize;
-      while ((nextIndex < tblSize) && (table[nextIndex].ntEmpty)){
+      bool wh_c = 0;
+      while ((hash(table[nextIndex].key)%tblSize == hash(table[index].key)%tblSize) && (table[nextIndex].ntEmpty) && !(((nextIndex + 1) >= tblSize) && wh_c)){
         table[index] = table[nextIndex];
         index = nextIndex;
+        if (((nextIndex + 1) >= tblSize) && !(wh_c)){
+              wh_c = 1;
+        }
         nextIndex = (nextIndex + 1) % tblSize;
       }
       table[index].ntEmpty = false;
       return;
     }
+    if (((index + 1) >= tblSize) && !(whole_circle)){
+              whole_circle = 1;
+        }
     index = (index + 1) % tblSize;
   }
-}
-template <typename T>
-std::string HashTbl<T>::gen_rnd_key(){
-  const std::string chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
-  const int k_sz = 10;
-  
-  std::random_device rd; //генератор случайных чисел
-  std::mt19937 gen(rd()); //инициализация генератора случайных чисел
-  std::uniform_int_distribution<> dist(0, chars.size() - 1);//равномерное распределение значений
-  
-  std::string key(k_sz, ' ');
-  for (int i = 0; i < k_sz; ++i){
-    key[i] = chars[dist(gen)];
-  }
-  
-  return key;
-}
-template <typename T>
-int HashTbl<T>::gen_rnd_val(){
-  std::random_device rd; //можно обращаться к темплейтному методу и через него все генерировать. T::метод
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dist(1, 100);
-  
-  return dist(gen);
+  throw HashEr(-3, std::string("Key not found\n"));
 }
 
-template <typename T>
-void HashTbl<T>::gen_rnd_set(int sz){
-  for (int i = 0; i < sz; ++i){
-    std::string k = gen_rnd_key();
-    T v = gen_rnd_val();
-    this->add(k, v);
-  }
-}
 
 template <typename T>
 void HashTbl<T>::readFile(const std::string& filename){
@@ -245,6 +242,10 @@ void HashTbl<T>::readFile(const std::string& filename){
   std::string type;
   T val;
   std::getline(input_file, type);
+  if (type.empty()){
+    input_file.close();
+    throw HashEr(-6, std::string("This is not type\n"));
+  }
   if (type == "std::string"){
       while (input_file >> key >> val){
         this->add(key, val);
@@ -258,12 +259,12 @@ void HashTbl<T>::readFile(const std::string& filename){
         this->add(key, val);
   }
   }else if (type == "char"){
-        while (input_file >> key >> val){
-    this->add(key, val);
-  }
+      while (input_file >> key >> val){
+        this->add(key, val);
+    }
   }else {
-  input_file.close();
-    throw HashEr(-3, std::string("This type isn't allowed\n"));
+    input_file.close();
+    throw HashEr(-5, std::string("This type isn't allowed\n"));
   }
   input_file.close();
 }
