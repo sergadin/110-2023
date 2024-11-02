@@ -32,7 +32,7 @@ class HashTbl {
       T val; //соответствующее ключу значение
       bool ntEmpty; //есть или нет значения
       
-      HashEl() : key(""), val(0), ntEmpty(false){} //конструктор без элементов
+      HashEl() : key(""), val{}, ntEmpty(false){} //конструктор без элементов
       HashEl(const std::string& k, const T& v) : key(k), val(v), ntEmpty(true) { //конструктор по ключу и значению
         if (k.empty()) {
           throw HashEr(-6, std::string("Key cannot be empty\n"));
@@ -164,11 +164,17 @@ template<typename T>
       
       template<typename T>
       T HashTbl<T>::get(const std::string& key) const {
-        int index = HashTbl::hash(key);
-        while (table[index].ntEmpty) {
+        bool whole_circle = 0;
+        int index = HashTbl::hash(key) % tblSize;
+        while (table[index].ntEmpty){
           if (table[index].key == key){
             return table[index].val;
           }
+          if (((index + 1) >= tblSize) && !(whole_circle)){
+              whole_circle = 1;
+        }else if(((index + 1) >= tblSize)){
+            throw HashEr(-1, std::string("Key not found\n"));
+        }
           index = (index + 1) % tblSize;
         }
         throw HashEr(-1, std::string("Key not found\n"));
@@ -213,7 +219,7 @@ std::string HashTbl<T>::gen_rnd_key(){
 }
 template <typename T>
 int HashTbl<T>::gen_rnd_val(){
-  std::random_device rd;
+  std::random_device rd; //можно обращаться к темплейтному методу и через него все генерировать. T::метод
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dist(1, 100);
   
@@ -241,15 +247,15 @@ void HashTbl<T>::readFile(const std::string& filename){
   std::getline(input_file, type);
   if (type == "std::string"){
       while (input_file >> key >> val){
-    this->add(key, val);
+        this->add(key, val);
   }
   }else if (type == "double"){
         while (input_file >> key >> val){
-    this->add(key, val);
+        this->add(key, val);
   }
   }else if (type == "int"){
         while (input_file >> key >> val){
-    this->add(key, val);
+        this->add(key, val);
   }
   }else if (type == "char"){
         while (input_file >> key >> val){

@@ -72,10 +72,10 @@ int main(void){
   assert(h1.size() == 5);
 
   // Проверка итератора
-  std::cout << "Проверка итератора:\n";
+  */std::cout << "Проверка итератора:\n";
   for (auto it = h1.begin(); it != h1.end(); ++it) {
     std::cout << "Ключ: " << (*it).first << ", значение: " << (*it).second << std::endl;
-  }
+  }/*
 
   // Добавление строк
   h2.add("ключ1", "значение1");
@@ -101,6 +101,14 @@ int main(void){
   for (auto it = h2.begin(); it != h2.end(); ++it) {
     std::cout << "Ключ: " << (*it).first << ", значение: " << (*it).second << std::endl;
   }*/
-
+  try {
+  HashTbl<std::string> h2;
+  h2.get("key3");
+  std::cout << "Test FAILED" << std::endl;
+  }catch(HashEr &er){
+      if (er.getCode() != -1){
+          std::cout << "Test FAILED" << std::endl;
+      }
+  }
   return 0;
 }
