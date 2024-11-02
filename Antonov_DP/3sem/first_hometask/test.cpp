@@ -23,7 +23,9 @@ int main()
     std::cout << centre[0] << " " <<centre[1] << "\n";
         
     if (fork()==0) wait(0);
-    else execl("ls", "ls", 0);
+    else {
+	 system("gnuplot -persist mygnuplot.gnu");
+    }
         if (std::abs(centre[0] - centre1[0]) > 0.0001)
         {
             other.move(x * z, y * z);
