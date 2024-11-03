@@ -10,10 +10,9 @@ all: run clear
 run: a.out
 	valgrind --track-origins=yes --leak-check=full -s ./a.out
 
-a.out: hashTable.cpp main.cpp hashTable.h
-	g++ $(CXXFL) -c hashTable.cpp
+a.out: main.cpp hashTable.h
 	g++ $(CXXFL) -c main.cpp
-	g++ hashTable.o main.o -lm
+	g++ main.o -lm
 
 clear:
-	rm hashTable.o main.o a.out
+	rm main.o a.out

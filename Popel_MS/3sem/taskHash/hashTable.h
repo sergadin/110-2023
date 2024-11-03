@@ -45,29 +45,22 @@ class HashTbl {
     std::vector<HashEl> table; //Вектор элементов структуры
     int curSize; //Количество хранящихся ключей
     int tblSize; //Максимальное количество ключей (количество выделенной памяти)
-    
-    
     void rehash(); //Перезапись Хэш-таблицы - увеличение памяти
     
     public:
       HashTbl(int newCap = 10) : table(newCap), curSize(0), tblSize(newCap){ //конструктор хэш-таблицы
       if(newCap <= 0 ){
-      //printf("This is the worst!\n");
         throw HashEr(-2, std::string("Table size must be positive\n"));
       }
-      //printf("but it's better\n");
         table.resize(newCap);
-        //printf("OR NOT!\n");
         for (auto& el : table){
           el.ntEmpty = false;
         }
       }
       
       int hash(const std::string& str) const; //хэш-функция
-      void add(const std::string& key, const T& value); //Функция добавления точки
-      
-      T get(const std::string& key) const; //Функция получения точки
-      
+      void add(const std::string& key, const T& value); //Функция добавления точки      
+      T get(const std::string& key) const; //Функция получения точки      
       void remove(const std::string& key); //Функция удаления ключа
       int size() const { //Функция получения количества ключей
         return curSize;
@@ -78,7 +71,7 @@ class HashTbl {
           const HashTbl& table;//хэш-таблица
           int ind; //текущая позиция
          
-         public:
+        public:
           Iterator(const HashTbl& t, int i) : table(t), ind(i) {} //конструктор
           
           bool operator!=(const Iterator& other) const { //оператор неравенства
@@ -107,7 +100,6 @@ class HashTbl {
       Iterator end() const {
         return Iterator(*this, tblSize);
       }
-
       
       void readFile(const std::string& filename); //чтение множества из файла
 };
@@ -122,83 +114,67 @@ int HashTbl<T>::hash(const std::string& str) const{
 }
 
 template<typename T>
-      void HashTbl<T>::rehash() {
-      int counter = 0;
-      int oldSize = tblSize;
-      tblSize *= 2;
-      std::vector<HashEl> oldTable = table;
-      table = std::vector<HashEl>(tblSize);
-      curSize = 0;
-      
-      for (auto& el : table){
-        el.ntEmpty = false;
-      }
-      
-      for (int i = 0; i < oldSize; i++) {
-      //printf("Or in another iteration - %d - %d?\n", i, tblSize);
-        if (oldTable[i].ntEmpty && !oldTable[i].key.empty()){
-        //printf("Or almost there?\n");
-          this->add(oldTable[i].key, oldTable[i].val);
-          //printf("There is problem?\n");
-          table[counter].ntEmpty = true;
-          //printf("Something there?\n");
-          counter++;
-        }
-        //printf("I wasn't there\n");
-      }
+void HashTbl<T>::rehash() {
+  int counter = 0;
+  int oldSize = tblSize;
+  tblSize *= 2;
+  std::vector<HashEl> oldTable = table;
+  table = std::vector<HashEl>(tblSize);
+  curSize = 0;
+  
+  for (auto& el : table){
+    el.ntEmpty = false;
+  }
+  
+  for (int i = 0; i < oldSize; i++) {
+    if (oldTable[i].ntEmpty && !oldTable[i].key.empty()){
+      this->add(oldTable[i].key, oldTable[i].val);
+      table[counter].ntEmpty = true;
+      counter++;
     }
+  }
+}
 
-  template<typename T>
-  void HashTbl<T>::add(const std::string& key, const T& value) {
-        bool whole_circle = 0;
-        //std::cout << key << " Is it empty?"<< std::endl;
-        if (key.empty()) {
-        //printf("Is there smth wrong?\n");
-        //std::cout << "Must be empty " << key << "the end"<< std::endl;
-          throw HashEr(-1, std::string("Key cannot be empty1\n"));
-        }
-        //printf("My current size is - %d and tblSize is - %d\n", curSize, tblSize);
-        if (curSize >= (tblSize / 2)){
-        //printf("Let's rehash!!\n");
-          this->rehash();
-        }
-        int index = abs(hash(key))%tblSize;
-        //printf("%d - %d I just can't understand\n", index, tblSize);
-        while ((table[index].ntEmpty) && !(table[index].key.empty()) && !(((index + 1) >= tblSize) && whole_circle)) {
-        //printf("I believed in my progress\n");
-          if (table[index].key == key){
-          //printf("But it's become worse and worse\n");
-            table[index].val = value;
-            return;
-          }
-          if (((index + 1) >= tblSize) && !(whole_circle)){
-          //printf("Woah! First circle is done\n");
-              whole_circle = 1;
-        }
-          index = (index + 1) % tblSize;
-        }
-        //printf("I'm just there\n");
-        table[index] = HashEl(key, value);
-        //printf("And you\n");
-        table[index].ntEmpty = true;
-        curSize++;
-      }
+template<typename T>
+void HashTbl<T>::add(const std::string& key, const T& value){
+  bool whole_circle = 0;
+  if (key.empty()) {
+    throw HashEr(-1, std::string("Key cannot be empty1\n"));
+  }
+  if (curSize >= (tblSize / 2)){
+    this->rehash();
+  }
+  int index = (abs(hash(key)) % tblSize);
+  while ((table[index].ntEmpty) && !(table[index].key.empty()) && !(((index + 1) >= tblSize) && whole_circle)) {
+    if (table[index].key == key){
+      table[index].val = value;
+      return;
+    }
+    if (((index + 1) >= tblSize) && !(whole_circle)){
+        whole_circle = 1;
+  }
+    index = (index + 1) % tblSize;
+  }
+  table[index] = HashEl(key, value);
+  table[index].ntEmpty = true;
+  curSize++;
+}
       
-      template<typename T>
-      T HashTbl<T>::get(const std::string& key) const {
-        bool whole_circle = 0;
-        int index = abs(HashTbl::hash(key)) % tblSize;
-        while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)){
-          if (table[index].key == key){
-            return table[index].val;
-          }
-          if (((index + 1) >= tblSize) && !(whole_circle)){
-              whole_circle = 1;
-        }
-          index = (index + 1) % tblSize;
-        }
-        throw HashEr(-3, std::string("Key not found\n"));
-      }
+template<typename T>
+T HashTbl<T>::get(const std::string& key) const {
+  bool whole_circle = 0;
+  int index = abs(HashTbl::hash(key)) % tblSize;
+  while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)){
+    if (table[index].key == key){
+      return table[index].val;
+    }
+    if (((index + 1) >= tblSize) && !(whole_circle)){
+        whole_circle = 1;
+  }
+    index = (index + 1) % tblSize;
+  }
+  throw HashEr(-3, std::string("Key not found\n"));
+}
 
 template<typename T>
 void HashTbl<T>::remove(const std::string& key) {
@@ -207,7 +183,6 @@ void HashTbl<T>::remove(const std::string& key) {
   bool whole_circle = 0;
   while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)) {
     if (table[index].key == key){
-      //table[index].ntEmpty = false;
       curSize--;
       
       nextIndex = (index + 1) % tblSize;
