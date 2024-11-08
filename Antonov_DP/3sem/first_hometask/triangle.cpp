@@ -94,6 +94,10 @@ double triangle::get_s()const {
 	return S_;
 }
 
+double triangle:: get_p()const{
+	return p_;
+}
+
 void triangle::move(const double& x, const double& y) {
 	for (int i = 0; i < 3; i++) {
 		points_[i][0] += x;
@@ -149,6 +153,19 @@ bool triangle::contains(point &A) const{
 }
 
 double triangle::Area_intersection(triangle& other) {
+
+	double a = points_[1][0] - points_[0][0];
+        double b = points_[1][1] - points_[0][1];
+        if (std::fabs(b * points_[2][0] - a * points_[2][1] - (b * points_[0][0] - a * points_[0][1])) < 0.001){
+		return 0;
+        }
+
+	a = other.points_[1][0] - other.points_[0][0];
+        b = other.points_[1][1] - other.points_[0][1];
+        if (std::fabs(b * other.points_[2][0] - a * other.points_[2][1] - (b * other.points_[0][0] - a * other.points_[0][1])) < 0.001){
+                return 0;
+        }
+
 	int len = 0;
 	point* vert = new point[6];
 	for (int i = 0; i < 3; i++) {

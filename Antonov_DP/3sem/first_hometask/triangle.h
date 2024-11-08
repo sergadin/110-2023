@@ -91,6 +91,7 @@ public:
 	triangle(const triangle& other);
 	triangle& operator=(const triangle& other);
 	double get_s() const;
+	double get_p() const;
 	void move(const double &x, const double &y);
 	void rotate(const double *centre, const double &angle);
 	double* get_centre() const;
