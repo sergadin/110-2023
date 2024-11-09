@@ -162,14 +162,14 @@ void HashTbl<T>::add(const std::string& key, const T& value){
       
 template<typename T>
 T HashTbl<T>::get(const std::string& key) const {
-  bool whole_circle = 0;
+  bool whole_circle = false;
   int index = abs(HashTbl::hash(key)) % tblSize;
   while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)){
     if (table[index].key == key){
       return table[index].val;
     }
     if (((index + 1) >= tblSize) && !(whole_circle)){
-        whole_circle = 1;
+        whole_circle = true;
   }
     index = (index + 1) % tblSize;
   }
@@ -180,18 +180,18 @@ template<typename T>
 void HashTbl<T>::remove(const std::string& key) {
   int index = abs(HashTbl::hash(key)) % tblSize;
   int nextIndex = 0;
-  bool whole_circle = 0;
+  bool whole_circle = false;
   while (table[index].ntEmpty && !(((index + 1) >= tblSize) && whole_circle)) {
     if (table[index].key == key){
       curSize--;
       
       nextIndex = (index + 1) % tblSize;
-      bool wh_c = 0;
+      bool wh_c = false;
       while ((hash(table[nextIndex].key)%tblSize == hash(table[index].key)%tblSize) && (table[nextIndex].ntEmpty) && !(((nextIndex + 1) >= tblSize) && wh_c)){
         table[index] = table[nextIndex];
         index = nextIndex;
         if (((nextIndex + 1) >= tblSize) && !(wh_c)){
-              wh_c = 1;
+              wh_c = true;
         }
         nextIndex = (nextIndex + 1) % tblSize;
       }
@@ -199,7 +199,7 @@ void HashTbl<T>::remove(const std::string& key) {
       return;
     }
     if (((index + 1) >= tblSize) && !(whole_circle)){
-              whole_circle = 1;
+              whole_circle = true;
         }
     index = (index + 1) % tblSize;
   }
