@@ -34,7 +34,7 @@ void draw_tr(triangle &test, triangle &other){
 static int compRR(double a, double b, double eps);
 static void move_horiz(triangle &tr, double x);
 static double max_value_parab(double x1, double y1, double x2, double y2, double x3, double y3, double eps);
-static void max_value(void (*move)(triangle &, double &), triangle &test, triangle &other, OPTION opt);
+static void max_value(void (*move)(triangle &, double), triangle &test, triangle &other, OPTION opt);
 static void move_vert(triangle &tr, double y);
 static void rotate(triangle &tr, double a);
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -91,6 +91,7 @@ static void move_vert(triangle &tr, double y){
 static void rotate(triangle &tr, double a){
 	double *centre = tr.get_centre();
 	tr.rotate(centre, a);
+	delete[] centre;
 	return;
 }
 
@@ -131,28 +132,34 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
                         		{       
                         		        result = max_par;
                         		      	a2_v = a1_v + (d * j);
+						a2_h = a1_h + (d * i);
                         		}
 				}
 				move_vert(other, (a1_v - b1_v));
+				move(other, d);
 			}
-			f_prev = f_curr;
-			move(other, (d / 2));
-			f_mid = test.Area_intersection(other);
-			move(other, (d / 2));
-			f_curr = test.Area_intersection(other);
-			max_par = max_value_parab(0, f_prev, (d / 2), f_mid, d, f_curr, eps);
-			if (max_par > (result + 0.01))
-			{
-				result = max_par;
-				a2_h = a1_h + (d * i);
+			else{
+				f_prev = f_curr;
+				move(other, (d / 2));
+				f_mid = test.Area_intersection(other);
+				move(other, (d / 2));
+				f_curr = test.Area_intersection(other);
+				max_par = max_value_parab(0, f_prev, (d / 2), f_mid, d, f_curr, eps);
+				if (max_par > (result + 0.01))
+				{
+					result = max_par;
+					a2_h = a1_h + (d * i);
+				}
 			}
 		}
 		move(other, a2_h - b1_h);
 		a1_h = a2_h;
 		b1_h = a2_h + d;
-		move_vert(other, a2_v);
-                a1_v = a2_v;
-                b1_v = a2_v + d;
+		if (opt == MOVE){
+			move_vert(other, a2_v - a1_v);
+                	a1_v = a2_v;
+                	b1_v = a2_v + d;
+		}
 		draw_tr(test, other);
 	}
 	return;
@@ -172,7 +179,7 @@ int main()
     double x = centre[0] - centre1[0];
     double y = centre[1] - centre1[1];
     double z = 0.1;
-	pid_t parent = getpid();
+	//pid_t parent = getpid();
         pid_t pid = fork();
 
         if (pid == -1)
@@ -181,7 +188,7 @@ int main()
         }
         else if (pid > 0)
         {
-            int status;
+            //int status;
 	    system("gnuplot mygnuplot.gnu");
             exit(1);
         }
@@ -208,6 +215,8 @@ int main()
 	    area_prev = area;
 	    area = test.Area_intersection(other);
     }
+    delete[] centre;
+    delete[] centre1;
     std::cout << area << " " << test.get_s() << "\n";
     return 0;
 }
