@@ -31,7 +31,11 @@ std::vector<Point> ConvexHull::findLowerHull(const std::vector<Point>& points) {
                Point::orientation(hull[hull.size() - 2], hull[hull.size() - 1], points[i]) != 2) {
             hull.pop_back();
         }
-        hull.push_back(points[i]);
+
+        if(hull.back() != points[i]){
+            hull.push_back(points[i]);
+        }
+
     }
 
     return hull;
@@ -43,17 +47,19 @@ std::vector<Point> ConvexHull::findUpperHull(const std::vector<Point>& points) {
     hull.push_back(points[points.size() - 2]);
 
     for (int i = points.size() - 3; i >= 0; --i) {
-        while (hull.size() >= 2 &&
-               Point::orientation(hull[hull.size() - 2], hull[hull.size() - 1], points[i]) != 2) {
+        while (hull.size() >= 2 && Point::orientation(hull[hull.size() - 2], hull[hull.size() - 1], points[i]) != 2) {
             hull.pop_back();
         }
-        hull.push_back(points[i]);
+	if(hull.back() != points[i]){
+            hull.push_back(points[i]);
+	}
     }
 
     return hull;
 }
 
 void ConvexHull::removeDuplicates(std::vector<Point>& points) {
-    std::sort(points.begin(), points.end());
-    points.erase(std::unique(points.begin(), points.end()), points.end());
+    std::sort(points.begin() , points.end() );
+    auto last = std:: unique(points.begin(), points.end());
+    points.erase(last, points.end());
 }

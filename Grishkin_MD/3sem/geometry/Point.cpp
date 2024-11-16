@@ -29,7 +29,7 @@ int Point::orientation(const Point& p, const Point& q, const Point& r) {
     double val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
     double eps = 0.00001;
 
-    if (labs(val - 0)<eps) {
+    if (labs(val) < eps) {
         return 0;
     } else if (val > 0) {
         return 1;
