@@ -4,12 +4,32 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fstream>
+#include <string>
+#include <cstring>
 
 typedef enum { MOVE = 0, ROTATE } OPTION;
 
-void draw_tr(triangle &test, triangle &other);
+void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, std::string &pid_str);
 
-void draw_tr(triangle &test, triangle &other){
+void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, std::string &pid_str){
+	//pid_t parent = getpid();
+        pid_t pid = fork();
+        std::string pid_str_other = "kill -STOP ";
+	pid_str_other += pid_str;
+        if (pid == -1)
+        {
+            // error, failed to fork()
+        }
+        else if (pid > 0)
+        {
+            //int status;
+            system(pid_str_other.c_str());
+	    delete[] centre;
+            delete[] centre1;
+	    test.~triangle();
+            other.~triangle();
+            exit(0);
+        }
 	std::ofstream out1("triangle1.txt");
 	std::ofstream out2("triangle2.txt");
         for (int i = 0; i < 3; i++){
@@ -26,6 +46,25 @@ void draw_tr(triangle &test, triangle &other){
 
         out2.close();
 	
+	//pid_t parent = getpid();
+        pid_t pid_other = fork();
+        pid_str_other = "kill -CONT ";
+        pid_str_other += pid_str;
+        if (pid_other == -1)
+        {
+            // error, failed to fork()
+        }
+        else if (pid_other > 0)
+        {
+            //int status;
+            system(pid_str_other.c_str());
+	    delete[] centre;
+    	    delete[] centre1;
+	    test.~triangle();
+            other.~triangle();
+            exit(0);
+        }
+
 	usleep(100000);
 
 	return;
@@ -34,7 +73,7 @@ void draw_tr(triangle &test, triangle &other){
 static int compRR(double a, double b, double eps);
 static void move_horiz(triangle &tr, double x);
 static double max_value_parab(double x1, double y1, double x2, double y2, double x3, double y3, double eps);
-static void max_value(void (*move)(triangle &, double), triangle &test, triangle &other, OPTION opt);
+static void max_value(void (*move)(triangle &, double), triangle &test, triangle &other, double *centre, double *centre1, OPTION opt, std::string &pid_str);
 static void move_vert(triangle &tr, double y);
 static void rotate(triangle &tr, double a);
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -95,7 +134,7 @@ static void rotate(triangle &tr, double a){
 	return;
 }
 
-static void max_value(void (*move)(triangle &, double ), triangle &test, triangle &other, OPTION opt)
+static void max_value(void (*move)(triangle &, double ), triangle &test, triangle &other, double *centre, double *centre1, OPTION opt, std::string &pid_str)
 {
 	double a, b;
 	if (opt == MOVE){
@@ -128,7 +167,7 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
                         		move_vert(other, (d / 2));
                         		f_curr = test.Area_intersection(other);
                         		max_par = max_value_parab(0, f_prev, (d / 2), f_mid, d, f_curr, eps);
-                        		if (max_par > (result + 0.01))
+                        		if (max_par > (result + 0.1))
                         		{       
                         		        result = max_par;
                         		      	a2_v = a1_v + (d * j);
@@ -145,7 +184,7 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
 				move(other, (d / 2));
 				f_curr = test.Area_intersection(other);
 				max_par = max_value_parab(0, f_prev, (d / 2), f_mid, d, f_curr, eps);
-				if (max_par > (result + 0.01))
+				if (max_par > (result + 0.1))
 				{
 					result = max_par;
 					a2_h = a1_h + (d * i);
@@ -160,7 +199,7 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
                 	a1_v = a2_v;
                 	b1_v = a2_v + d;
 		}
-		draw_tr(test, other);
+		draw_tr(test, other, centre, centre1, pid_str);
 	}
 	return;
 }
@@ -179,9 +218,10 @@ int main()
     double x = centre[0] - centre1[0];
     double y = centre[1] - centre1[1];
     double z = 0.1;
-	//pid_t parent = getpid();
+	pid_t parent = getpid();
         pid_t pid = fork();
-
+	parent += 2;
+	std::string pid_str = std::to_string(parent);
         if (pid == -1)
         {
             // error, failed to fork()
@@ -189,13 +229,19 @@ int main()
         else if (pid > 0)
         {
             //int status;
-	    system("gnuplot mygnuplot.gnu");
-            exit(1);
+	    //char *const args[] = {strdup("gnuplot")};
+	    //execv("mygnuplot.gnu", args);
+	    system("gnuplot -persist mygnuplot.gnu");
+	    delete[] centre;
+	    delete[] centre1;
+	    test.~triangle();
+	    other.~triangle();
+            exit(0);
         }
 
     	std::cout << centre[0] << " " << centre1[0] << "\n";
 
-	draw_tr(test, other);
+	draw_tr(test, other, centre, centre1, pid_str);
 
     while (std::abs(centre[0] - centre1[0]) > 0.0001)
     {
@@ -203,20 +249,35 @@ int main()
         centre1[0] += (x * z);
         centre1[1] += (y * z);
 	
-	draw_tr(test, other);
+	draw_tr(test, other, centre, centre1, pid_str);
     }
 
     double area = test.Area_intersection(other);
     std::cout << area << "\n";
     double area_prev = 0;
     while (std::fabs(area - area_prev) > 0.001){
-	    max_value(rotate, test, other, ROTATE);
-	    max_value(move_horiz, test, other, MOVE);
+	    max_value(rotate, test, other, centre, centre1, ROTATE, pid_str);
+	    max_value(move_horiz, test, other, centre, centre1, MOVE, pid_str);
 	    area_prev = area;
 	    area = test.Area_intersection(other);
     }
     delete[] centre;
     delete[] centre1;
     std::cout << area << " " << test.get_s() << "\n";
+    pid_t pid_other = fork();
+    std::string pid_str_other = "kill ";
+    pid_str_other += pid_str;
+    if (pid_other == -1)
+    {
+        // error, failed to fork()
+    }
+    else if (pid_other > 0)
+    {
+        //int status;
+        system(pid_str_other.c_str());
+        test.~triangle();
+        other.~triangle();
+        exit(0);
+    }
     return 0;
 }
