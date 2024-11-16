@@ -1,4 +1,4 @@
-#include "Polygon.h"
+#include "polygon.h"
 
 Polygon::Polygon(const std::vector<Point>& vertices) : vertices(vertices) {}
 

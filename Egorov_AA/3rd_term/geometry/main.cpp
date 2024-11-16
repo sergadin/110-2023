@@ -1,4 +1,4 @@
-﻿
+﻿#include "polygon.h"
 
 int main() {
     Polygon polygon;

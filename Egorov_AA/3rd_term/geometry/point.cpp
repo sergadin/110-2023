@@ -1,4 +1,4 @@
-#include "Point.h"
+#include "point.h"
 
 // Конструктор
 Point::Point(double x, double y) : x(x), y(y) {}
@@ -17,7 +17,10 @@ Point Point::operator-(const Point& other) const {
 }
 
 bool Point::operator==(const Point& other) const {
-    return x == other.x && y == other.y;
+    if ((fabs(x - other.x) > 1e-6) || (fabs(y - other.y) > 1e-6)){
+        return false;
+    }
+    return true;
 }
 
 // Отрисовка (для gnuplot можно создать файл с координатами)

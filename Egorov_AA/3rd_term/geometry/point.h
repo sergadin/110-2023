@@ -2,6 +2,7 @@
 #define POINT_H
 
 #include <iostream>
+#include <math.h>
 
 class Point {
 private:
