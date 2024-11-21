@@ -206,6 +206,9 @@ double triangle::Area_intersection(triangle& other) {
 		center[0] += vert[i][0];
 		center[1] += vert[i][1];
 	}
+	center[0] = center[0] / len;
+	center[1] = center[1] / len;
+
 	double* length = new double[len];
 	for (int i = 0; i < len; i++) {
 		vert[i][0] -= center[0];
@@ -217,7 +220,7 @@ double triangle::Area_intersection(triangle& other) {
 	double* angles = new double[len];
 	for (int i = 0; i < len; i++) {
 		if ((std::asin(vert[i][1]) < 0)) {
-			angles[i] = std::acos(vert[i][0]) + std::acos(-1);
+			angles[i] = (-1) * std::acos(vert[i][0]);
 		}
 		else { angles[i] = std::acos(vert[i][0]); }
 	}
@@ -260,6 +263,12 @@ double triangle::Area_intersection(triangle& other) {
 		area += part_of_area.get_s();
 		delete[] points;
 	}
+
+	for (int i = 0; i < len; i++) {
+                std::cout << vert[i][0] << " " << vert[i][1] << "\n";
+        }
+	std::cout << "\n";
+
 	delete[] vert;
 	delete[] length;
 	delete[] angles;

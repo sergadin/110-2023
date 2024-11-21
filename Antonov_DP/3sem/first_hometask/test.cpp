@@ -9,27 +9,12 @@
 
 typedef enum { MOVE = 0, ROTATE } OPTION;
 
-void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, std::string &pid_str);
+void draw_tr(triangle &test, triangle &other, std::string &pid_str);
 
-void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, std::string &pid_str){
-	//pid_t parent = getpid();
-        pid_t pid = fork();
+void draw_tr(triangle &test, triangle &other, std::string &pid_str){
         std::string pid_str_other = "kill -STOP ";
 	pid_str_other += pid_str;
-        if (pid == -1)
-        {
-            // error, failed to fork()
-        }
-        else if (pid > 0)
-        {
-            //int status;
-            system(pid_str_other.c_str());
-	    delete[] centre;
-            delete[] centre1;
-	    test.~triangle();
-            other.~triangle();
-            exit(0);
-        }
+        system(pid_str_other.c_str());
 	std::ofstream out1("triangle1.txt");
 	std::ofstream out2("triangle2.txt");
         for (int i = 0; i < 3; i++){
@@ -46,26 +31,11 @@ void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, s
 
         out2.close();
 	
-	//pid_t parent = getpid();
-        pid_t pid_other = fork();
         pid_str_other = "kill -CONT ";
         pid_str_other += pid_str;
-        if (pid_other == -1)
-        {
-            // error, failed to fork()
-        }
-        else if (pid_other > 0)
-        {
-            //int status;
-            system(pid_str_other.c_str());
-	    delete[] centre;
-    	    delete[] centre1;
-	    test.~triangle();
-            other.~triangle();
-            exit(0);
-        }
+        system(pid_str_other.c_str());
 
-	usleep(100000);
+	usleep(50000);
 
 	return;
 }
@@ -73,7 +43,7 @@ void draw_tr(triangle &test, triangle &other, double *centre, double *centre1, s
 static int compRR(double a, double b, double eps);
 static void move_horiz(triangle &tr, double x);
 static double max_value_parab(double x1, double y1, double x2, double y2, double x3, double y3, double eps);
-static void max_value(void (*move)(triangle &, double), triangle &test, triangle &other, double *centre, double *centre1, OPTION opt, std::string &pid_str);
+static void max_value(void (*move)(triangle &, double), triangle &test, triangle &other, OPTION opt, std::string &pid_str);
 static void move_vert(triangle &tr, double y);
 static void rotate(triangle &tr, double a);
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -134,11 +104,11 @@ static void rotate(triangle &tr, double a){
 	return;
 }
 
-static void max_value(void (*move)(triangle &, double ), triangle &test, triangle &other, double *centre, double *centre1, OPTION opt, std::string &pid_str)
+static void max_value(void (*move)(triangle &, double ), triangle &test, triangle &other, OPTION opt, std::string &pid_str)
 {
 	double a, b;
 	if (opt == MOVE){
-		a = -1 * test.get_p();
+		a = -1 * std::min((test.get_s() / other.get_p()), (other.get_s() / other.get_p()));
 		b = -1 * a;
 	}
 	else{
@@ -167,12 +137,13 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
                         		move_vert(other, (d / 2));
                         		f_curr = test.Area_intersection(other);
                         		max_par = max_value_parab(0, f_prev, (d / 2), f_mid, d, f_curr, eps);
-                        		if (max_par > (result + 0.1))
+                        		if (max_par > (result))
                         		{       
                         		        result = max_par;
                         		      	a2_v = a1_v + (d * j);
 						a2_h = a1_h + (d * i);
                         		}
+					draw_tr(test, other, pid_str);
 				}
 				move_vert(other, (a1_v - b1_v));
 				move(other, d);
@@ -190,6 +161,7 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
 					a2_h = a1_h + (d * i);
 				}
 			}
+			draw_tr(test, other, pid_str);
 		}
 		move(other, a2_h - b1_h);
 		a1_h = a2_h;
@@ -199,7 +171,6 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
                 	a1_v = a2_v;
                 	b1_v = a2_v + d;
 		}
-		draw_tr(test, other, centre, centre1, pid_str);
 	}
 	return;
 }
@@ -207,8 +178,8 @@ static void max_value(void (*move)(triangle &, double ), triangle &test, triangl
 int main()
 {
 
-    double points[] = { 2,3,5,6,3,5 };
-    double points2[] = { 3,3,2,2,5,1 };
+    double points[] = { 6,5,2,3,1,4 };
+    double points2[] = { 4,3,0,2,5,1 };
 
     triangle test(points);
     triangle other(points2);
@@ -241,7 +212,7 @@ int main()
 
     	std::cout << centre[0] << " " << centre1[0] << "\n";
 
-	draw_tr(test, other, centre, centre1, pid_str);
+	draw_tr(test, other, pid_str);
 
     while (std::abs(centre[0] - centre1[0]) > 0.0001)
     {
@@ -249,35 +220,24 @@ int main()
         centre1[0] += (x * z);
         centre1[1] += (y * z);
 	
-	draw_tr(test, other, centre, centre1, pid_str);
+	draw_tr(test, other, pid_str);
     }
 
     double area = test.Area_intersection(other);
     std::cout << area << "\n";
     double area_prev = 0;
-    while (std::fabs(area - area_prev) > 0.001){
-	    max_value(rotate, test, other, centre, centre1, ROTATE, pid_str);
-	    max_value(move_horiz, test, other, centre, centre1, MOVE, pid_str);
+    while ((std::fabs(area - area_prev) > 0.001) && (std::fabs(area - other.get_s()) > 0.001) && (std::fabs(area - test.get_s()) > 0.001)){
+	    max_value(rotate, test, other, ROTATE, pid_str);
+	    max_value(move_horiz, test, other, MOVE, pid_str);
 	    area_prev = area;
 	    area = test.Area_intersection(other);
+	    std::cout << area << " " << test.get_s() << " " << other.get_s() << "\n";
     }
     delete[] centre;
     delete[] centre1;
     std::cout << area << " " << test.get_s() << "\n";
-    pid_t pid_other = fork();
     std::string pid_str_other = "kill ";
     pid_str_other += pid_str;
-    if (pid_other == -1)
-    {
-        // error, failed to fork()
-    }
-    else if (pid_other > 0)
-    {
-        //int status;
-        system(pid_str_other.c_str());
-        test.~triangle();
-        other.~triangle();
-        exit(0);
-    }
+    system(pid_str_other.c_str());
     return 0;
 }
