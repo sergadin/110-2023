@@ -1,5 +1,7 @@
 #include "ConvexHull.h"
 #include <algorithm>
+#include <cmath>
+
 
 ConvexHull::ConvexHull() {}
 
@@ -62,4 +64,12 @@ void ConvexHull::removeDuplicates(std::vector<Point>& points) {
     std::sort(points.begin() , points.end() );
     auto last = std:: unique(points.begin(), points.end());
     points.erase(last, points.end());
+}
+
+double ConvexHull::getPerimeter(const std::vector<Point>& hull) {
+    double perimeter = 0.0;
+    for (size_t i = 0; i < hull.size(); ++i) {
+        perimeter += hull[i].distanceTo(hull[(i + 1) % hull.size()]);
+    }
+    return perimeter;
 }
