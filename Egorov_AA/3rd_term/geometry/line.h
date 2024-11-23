@@ -5,10 +5,9 @@
 
 class Line {
 private:
-    double a, b, c; // ax + by + c = 0
 
 public:
-
+    double a, b, c; // ax + by + c = 0
     Line(double a, double b, double c);
     Line(const Point& p1, const Point& p2);
 
