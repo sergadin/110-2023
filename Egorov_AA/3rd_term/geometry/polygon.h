@@ -7,17 +7,17 @@
 
 class Polygon {
 private:
-    std::vector<Point> vertices; // Вершины многоугольника
+    std::vector<Point> vertices;
 
 public:
-    Polygon(const std::vector<Point>& vertices);
+    // конструктор
+    Polygon(const std::vector<Point>& vertices) : vertices(vertices) {}
 
-    // Получение сечения многоугольника с прямой
-    Polygon intersect(const Line& line) const;
+    const std::vector<Point>& getVertices() const;
 
-    // Отрисовка
-    void draw() const;
+    std::vector<Polygon> splitByLine(const Line& line) const;
+
+    void print() const;
 };
 
 #endif // POLYGON_H
-
