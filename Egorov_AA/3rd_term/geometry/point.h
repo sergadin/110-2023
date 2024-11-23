@@ -1,28 +1,29 @@
 #ifndef POINT_H
 #define POINT_H
 
-#include <iostream>
-#include <math.h>
-
 class Point {
 private:
-    double x;
-    double y;
+    double x, y;
 
 public:
-    // Конструктор
+    // конструктор
     Point(double x = 0.0, double y = 0.0);
 
-    // Получение координат
+    // геттеры
     double getX() const;
     double getY() const;
 
-    // Перегрузка операторов
+    // сеттеры
+    void setX(double x_value);
+    void setY(double y_value);
+
+    // керегрузка операторов
     Point operator+(const Point& other) const;
     Point operator-(const Point& other) const;
     bool operator==(const Point& other) const;
+    bool operator<(const Point& other) const;
 
-    // Отрисовка точки (можно использовать для gnuplot)
+    // отрисовка точки
     void draw() const;
 };
 
