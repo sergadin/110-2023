@@ -264,11 +264,6 @@ double triangle::Area_intersection(triangle& other) {
 		delete[] points;
 	}
 
-	for (int i = 0; i < len; i++) {
-                std::cout << vert[i][0] << " " << vert[i][1] << "\n";
-        }
-	std::cout << "\n";
-
 	delete[] vert;
 	delete[] length;
 	delete[] angles;
