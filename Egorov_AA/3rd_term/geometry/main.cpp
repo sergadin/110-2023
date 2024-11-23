@@ -1,20 +1,19 @@
-﻿#include "polygon.h"
+﻿#include <iostream>
+#include <vector>
+#include "polygon.h"
+#include "point.h"
+#include "line.h"
 
 int main() {
-    Polygon polygon;
+    std::vector<Point> points = {Point(0,0), Point(0,4), Point(4,4), Point(4,0)};
+    Polygon polygon({{0, 0}, {4, 0}, {4, 4}, {0, 4}});
+    Line line(1, -1, 0);
+    std::vector<Polygon> result = polygon.splitByLine(line);
 
-    // Добавляем вершины многоугольника
-    polygon.addVertex(Point(0, 0));
-    polygon.addVertex(Point(4, 0));
-    polygon.addVertex(Point(4, 3));
-    polygon.addVertex(Point(0, 3));
+    for (const auto& poly : result) {
+        poly.print();
+    }
 
-    // Выводим вершины
-    polygon.print();
-
-    // Вычисляем периметр и площадь
-    cout << "Perimeter: " << polygon.getPerimeter() << endl;
-    cout << "Area: " << polygon.getArea() << endl;
 
     return 0;
 }

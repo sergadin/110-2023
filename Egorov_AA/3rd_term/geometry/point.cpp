@@ -1,6 +1,6 @@
-#include "point.h"
 #include <iostream>
 #include <cmath>
+#include "point.h"
 
 Point::Point(double x, double y) : x(x), y(y) {}
 
@@ -20,14 +20,14 @@ Point Point::operator-(const Point& other) const {
 }
 
 bool Point::operator==(const Point& other) const {
-    if ((std::fabs(x - other.x) > 1e-6) || (std::fabs(y - other.y) > 1e-6)) {
+    if ((std::fabs(x - other.x) > 1e-9) || (std::fabs(y - other.y) > 1e-9)) {
         return false;
     }
     return true;
 }
 
 bool Point::operator<(const Point& other) const {
-    if (x != other.x)
+    if (std::abs(x - other.x) > 1e-9)
         return x < other.x;
     return y < other.y;
 }

@@ -1,22 +1,17 @@
-all: a.out run clear
+CXX = g++
 
-point.o: point.cpp point.h
-	g++ -c point.cpp
+SRC = main.cpp line.cpp point.cpp polygon.cpp
+OBJ = $(SRC:.cpp=.o)
+DEPS = line.h point.h polygon.h
+TARGET = prog
 
-line.o: line.cpp line.h
-	g++ -c line.cpp
+all: $(TARGET)
 
-polygon.o: polygon.cpp polygon.h
-	g++ -c polygon.cpp
+$(TARGET): $(OBJ)
+	g++ -o $@ $^
 
-main.o: main.cpp point.h line.h polygon.h
-	g++ -c main.cpp
-
-run: a.out
-	./a.out
-
-a.out: point.o line.o polygon.o main.o
-	g++ -o point.o line.o polygon.o main.o -lm
-
+%.o: %.cpp $(DEPS)
+	g++ -c $< -o $@
+	
 clear:
-	rm -f *.o main
+	rm -f $(OBJ) $(TARGET)
