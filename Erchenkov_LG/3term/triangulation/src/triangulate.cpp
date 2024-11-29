@@ -23,7 +23,7 @@ bool Triangulate::InsideTriangle(
                 ) 
 {
   double ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
-  double cCROSSap, bCROSScp, aCROSSbp;
+  double product_1, product_2, product_3;
 
   ax = Cx - Bx;  ay = Cy - By;
   bx = Ax - Cx;  by = Ay - Cy;
@@ -32,15 +32,15 @@ bool Triangulate::InsideTriangle(
   bpx= Px - Bx;  bpy= Py - By;
   cpx= Px - Cx;  cpy= Py - Cy;
 
-  aCROSSbp = ax*bpy - ay*bpx;
-  cCROSSap = cx*apy - cy*apx;
-  bCROSScp = bx*cpy - by*cpx;
+  product_1 = ax*bpy - ay*bpx;
+  product_2 = cx*apy - cy*apx;
+  product_3 = bx*cpy - by*cpx;
 
-  return ((aCROSSbp >= 0.0) && (bCROSScp >= 0.0) && (cCROSSap >= 0.0));
+  return ((product_1 >= 0.0) && (product_2 >= 0.0) && (product_3 >= 0.0));
 };
 
 bool Triangulate::isConvex(const std::vector<Point> &polygon, int prev, int cur, int next, int n,int *V) {
-  int p;
+  int vert;
   double Ax, Ay, Bx, By, Cx, Cy, Px, Py;
 
   Ax = polygon[V[prev]].GetX();
@@ -55,11 +55,11 @@ bool Triangulate::isConvex(const std::vector<Point> &polygon, int prev, int cur,
   if ((((Bx - Ax) * (Cy - Ay)) - ((By - Ay) * (Cx - Ax))) < eps) 
     return false;
 
-  for (p = 0; p < n; p++)
+  for (vert = 0; vert < n; vert++)
   {
-    if( (p == prev) || (p == cur) || (p == next) ) continue;
-    Px = polygon[V[p]].GetX();
-    Py = polygon[V[p]].GetY();
+    if( (vert == prev) || (vert == cur) || (vert == next) ) continue;
+    Px = polygon[V[vert]].GetX();
+    Py = polygon[V[vert]].GetY();
     if (InsideTriangle(Ax, Ay, Bx, By, Cx, Cy, Px, Py)) 
       return false;
   }
