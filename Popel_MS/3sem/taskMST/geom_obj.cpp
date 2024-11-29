@@ -26,6 +26,12 @@ bool Point::operator<(const Point& other) const{
         return false;
       }
     }
+    
+double distance(const Point &p1, const Point &p2){ 
+      return sqrt((p1.getX() - p2.getX())*(p1.getX() - p2.getX()) + (p1.getY() - p2.getY())*(p1.getY() - p2.getY()));
+    }
+    
+    
 bool findEl(const std::vector<Point> &p, Point el){
   return (std::find(p.begin(), p.end(), el) != p.end());
 }

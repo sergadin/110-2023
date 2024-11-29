@@ -6,18 +6,18 @@ void local_clock::iteration(size_t &k, std::string a, std::ostream &stream){
 		throw local_clock_Exception(-1, "out of range");
 	}
 	local_clock_[k] += 1;
-	stream << a;
+	stream << a << "\n";
 }
 
 void local_clock::get_message(const local_clock &other, std::string a, std::ostream &stream){
 	if(len_ != other.len_){
                 throw local_clock_Exception(-1, "size are not equal");
         }
-	stream << a;
+	stream << a << "\n";
 	for (size_t i = 0; i < len_; i++){
 		local_clock_[i] = std::max(local_clock_[i], other.local_clock_[i]);
 	}
-	stream << "acceptor hear" << a;
+	stream << "acceptor hear" << a << "\n";
 }
 
 bool operator<(const local_clock &other1, const local_clock &other2){

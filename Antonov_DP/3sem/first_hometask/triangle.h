@@ -77,13 +77,13 @@ public:
 };
 
 class triangle {
-public:
 	point* points_;
 	double a_, b_, c_;
 	// площадь треугольника
 	double S_;
 	// полу-периметр треугольника
 	double p_;
+public:
 	triangle() = delete;
 	triangle(double* points);
 	triangle(point points[3]);
@@ -91,6 +91,7 @@ public:
 	triangle(const triangle& other);
 	triangle& operator=(const triangle& other);
 	double get_s() const;
+	double get_p() const;
 	void move(const double &x, const double &y);
 	void rotate(const double *centre, const double &angle);
 	double* get_centre() const;
@@ -104,4 +105,6 @@ public:
 		return points_[n];
 	}
 	double Area_intersection(triangle& other);
+	friend double Max_Area_inter(triangle &test, triangle &other);
+
 };

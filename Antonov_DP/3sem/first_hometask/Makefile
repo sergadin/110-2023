@@ -1,9 +1,8 @@
 all: a.out
-	export LD_LIBRARY_PATH=sfml/lib && ./sfml-app
-triangle.o: triangle.cpp triangle.h
-	g++ -c triangle.cpp
-test.o: test.cpp triangle.cpp
-	g++ -c test.cpp -Isfml/include
-a.out: test.o triangle.o
-	g++ test.o -o sfml-app -Lsfml/lib -lsfml-graphics -lsfml-window -lsfml-system triangle.o
-
+	valgrind ./a.out
+triangle.o: triangle.cpp triangle.h max_area.cpp
+	g++ -c triangle.cpp max_area.cpp
+test.o: test.cpp triangle.cpp max_area.cpp
+	g++ -c test.cpp
+a.out: test.o triangle.o max_area.o
+	g++ test.o triangle.o max_area.o

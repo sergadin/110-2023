@@ -3,6 +3,7 @@ Grishkin_MD/2sem_num2.1/integral.depend
 Grishkin_MD/2sem_num2.1/integral.cbp
 Grishkin_MD/2sem_num2.1/integral.layout
 
-.o
+*.o
 a.out
-
+*.exe
+.vs

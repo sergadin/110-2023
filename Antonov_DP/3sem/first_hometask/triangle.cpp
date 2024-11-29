@@ -33,7 +33,6 @@ point segment::intersection(const segment& other) const{
 	return res;
 }
 
-
 triangle::triangle(double* points) {
 	points_ = new point[3];
 	for (int i = 0; i < 3; i++) {
@@ -95,6 +94,10 @@ double triangle::get_s()const {
 	return S_;
 }
 
+double triangle:: get_p()const{
+	return p_;
+}
+
 void triangle::move(const double& x, const double& y) {
 	for (int i = 0; i < 3; i++) {
 		points_[i][0] += x;
@@ -150,6 +153,19 @@ bool triangle::contains(point &A) const{
 }
 
 double triangle::Area_intersection(triangle& other) {
+
+	double a = points_[1][0] - points_[0][0];
+        double b = points_[1][1] - points_[0][1];
+        if (std::fabs(b * points_[2][0] - a * points_[2][1] - (b * points_[0][0] - a * points_[0][1])) < 0.001){
+		return 0;
+        }
+
+	a = other.points_[1][0] - other.points_[0][0];
+        b = other.points_[1][1] - other.points_[0][1];
+        if (std::fabs(b * other.points_[2][0] - a * other.points_[2][1] - (b * other.points_[0][0] - a * other.points_[0][1])) < 0.001){
+                return 0;
+        }
+
 	int len = 0;
 	point* vert = new point[6];
 	for (int i = 0; i < 3; i++) {
@@ -190,6 +206,9 @@ double triangle::Area_intersection(triangle& other) {
 		center[0] += vert[i][0];
 		center[1] += vert[i][1];
 	}
+	center[0] = center[0] / len;
+	center[1] = center[1] / len;
+
 	double* length = new double[len];
 	for (int i = 0; i < len; i++) {
 		vert[i][0] -= center[0];
@@ -201,7 +220,7 @@ double triangle::Area_intersection(triangle& other) {
 	double* angles = new double[len];
 	for (int i = 0; i < len; i++) {
 		if ((std::asin(vert[i][1]) < 0)) {
-			angles[i] = std::acos(vert[i][0]) + std::acos(-1);
+			angles[i] = (-1) * std::acos(vert[i][0]);
 		}
 		else { angles[i] = std::acos(vert[i][0]); }
 	}
@@ -244,6 +263,7 @@ double triangle::Area_intersection(triangle& other) {
 		area += part_of_area.get_s();
 		delete[] points;
 	}
+
 	delete[] vert;
 	delete[] length;
 	delete[] angles;
