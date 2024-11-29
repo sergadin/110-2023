@@ -39,8 +39,7 @@ bool Triangulate::InsideTriangle(
   return ((aCROSSbp >= 0.0) && (bCROSScp >= 0.0) && (cCROSSap >= 0.0));
 };
 
-bool Triangulate::isConvex(const std::vector<Point> &polygon, int prev, int cur, int next, int n,int *V)
-{
+bool Triangulate::isConvex(const std::vector<Point> &polygon, int prev, int cur, int next, int n,int *V) {
   int p;
   double Ax, Ay, Bx, By, Cx, Cy, Px, Py;
 
@@ -68,8 +67,7 @@ bool Triangulate::isConvex(const std::vector<Point> &polygon, int prev, int cur,
   return true;
 }
 
-bool Triangulate::makeTriangulation(const std::vector<Point> &polygon, std::vector<Point> &result)
-{
+bool Triangulate::makeTriangulation(const std::vector<Point> &polygon, std::vector<Point> &result) {
   int sz = polygon.size(); // amount of vertices
   if (sz < 3) 
     return false;
