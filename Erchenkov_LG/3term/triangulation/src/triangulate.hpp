@@ -2,8 +2,7 @@
 
 #include <vector> 
 
-class Point 
-{
+class Point  {
 
 private:
   double mX;
@@ -12,14 +11,21 @@ private:
 public:
   Point(double x,double y) : mX(x), mY(y) {}
 
-  double GetX(void) const { return mX; };
+  double GetX(void) const { 
+    return mX; 
+  };
 
-  double GetY(void) const { return mY; };
+  double GetY(void) const { 
+    return mY; 
+  };
 
 };
 
-class Triangulate
-{
+class Triangulate {
+
+private:
+  static bool isConvex(const std::vector<Point> &contour, int u, int v, int w, int n, int *V);
+
 public:
 
   // triangulate a polygon using ear-clipping algorithm
@@ -38,9 +44,6 @@ public:
   // draw polygon using gnuplot
   static void plotPolygon(const std::vector<Point> &contour);
 
-
-private:
-  static bool isConvex(const std::vector<Point> &contour, int u, int v, int w, int n,int *V);
 };
 
 

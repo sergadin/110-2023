@@ -119,7 +119,6 @@ bool Triangulate::makeTriangulation(const std::vector<Point> &polygon, std::vect
         V[s] = V[t]; 
       nv--;
 
-      /* resest error detection counter */
       count = 2*nv;
     }
   }
