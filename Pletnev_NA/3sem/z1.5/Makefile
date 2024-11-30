@@ -1,20 +1,28 @@
-all : a.out run
-
-Vector.o : Vector.h Vector.cpp
-	gcc -c Vector.cpp
-
-Dot.o : Dot.h Dot.cpp
-	gcc -c Dot.cpp
-
-Polygon.o : Polygon.h Polygon.cpp Dot.o
-	gcc -c Polygon.cpp
-
-
-main.o : main.cpp Vector.o Dot.o Polygon.o
-	gcc -c main.cpp
+CXXFL = -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self -Wswitch-default \
+    -Wfloat-equal -Wshadow -Wpointer-arith -Wtype-limits -Wempty-body -Wlogical-op \
+    -Wmissing-field-initializers -Wctor-dtor-privacy  -Wnon-virtual-dtor \
+    -Wstrict-null-sentinel  -Wold-style-cast -Woverloaded-virtual \
+    -Wsign-promo -Weffc++ -std=gnu++11
 	
-run : a.out
-	./a.out
-	
-a.out : main.o Vector.o Dot.o Polygon.o
-	gcc main.o Vector.o Dot.o Polygon.o -lm
+all: run clear
+
+Error.o : Error.cpp Error.h
+	g++ $(CXXFL) -c Error.cpp
+
+Point.o : Point.cpp Point.h Error.o
+	g++ $(CXXFL) -c Point.cpp
+
+Polygon.o : Polygon.cpp Polygon.h Point.o
+	g++ $(CXXFL) -c Polygon.cpp
+
+main.o : main.cpp Polygon.h
+	g++ $(CXXFL) -c main.cpp
+
+a.out: Error.o Point.o Polygon.o main.o
+	g++ $(CXXFL) Error.o Point.o Polygon.o main.o -o a.out -lm # Link all object files
+
+run: a.out
+	valgrind --track-origins=yes --leak-check=full -s ./a.out
+
+clear:
+	rm Error.o Point.o Polygon.o main.o a.out

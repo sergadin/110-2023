@@ -1,26 +1,36 @@
+#ifndef ERROR_H
+#define ERROR_H
+
 #include <stdio.h>
 #include <string>
 #include <iostream>
-
-#pragma once
-
-using namespace std;
+#include <fstream>
+#include <cmath>
+#include <vector>
+#include <cstdio>
+#include <algorithm>
+#include <set>
+#include <map>
 
 class Error
-{
+{ 
 private:
-    int code_;
-    string message_;
-
+    int code_ = 0;
+    std::string reason_ = "";
 public:
-    Error(int code, string message)
-    {
-        code_ = code;
-        message_ = message;
+    Error(int code, std::string reason)
+    { 
+      code_ = code;
+      reason_ = reason;
     }
-    
-    const string get_mess() const
+    std::string getReason()
     {
-        return message_;
+      return reason_;
+    }
+    int getCode()
+    { 
+      return code_;
     }
 };
+
+#endif
