@@ -5,7 +5,7 @@ all: run clear
 
 run: a.out
 	valgrind --track-origins=yes --leak-check=full -s ./a.out
-	load polygon.gpl
+	gnuplot -persist script.gp
 
 a.out: point.o line.o polygon.o main.o
 	g++ $(CXXFL) -c point.cpp
