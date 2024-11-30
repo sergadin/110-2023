@@ -44,12 +44,48 @@ public:
 };
 
 class rectangle{
-	// задаётся по двум диаметрально противоположным точкам
+protected:
+	// прямоугольник, стороны которого параллельны осям координат, 
+	// задаётся по двум диаметрально противоположным точкам.
 	point a_;
 	point b_;
 public:
-	rectangle(point a, point b){
+	rectangle(point a = 0, point b = 0){
 		a_ = a;
 		b_ = b;
 	}
+	operator=(const rectangle &other){
+		a_ = other.a_;
+		b_ = other.b_;
+	}
+	rectangle(const rectangle &other){
+		a_ = other.a_;
+		b_ = other.b_;
+	}
+	point &get_a() const{
+		return a_;
+	}
+	point &get_b() const{
+                return b_;
+        }
 }
+
+class TreeNode : public rectangle{
+	TreeNode *small_;
+public:
+	TreeNode(double a, double b, n = 10) : rectangle(a, b){
+		small_ = new TreeNode[n * n];
+		double d_a(b_[0] - a_[0]), d_b(b_[1] - a_[1]);
+		for (int i = 0; i < n ; i++){
+			for (int j = 0){
+				small_
+			}
+		}
+	}
+}
+
+
+
+
+
+
