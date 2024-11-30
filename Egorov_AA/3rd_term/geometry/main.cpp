@@ -14,21 +14,21 @@ try {
         return 1;
     }
     
-    Point p1, p2;
+    //Point p1, p2;
     std::vector<Point> polyPoints;
     std::string stroke;
     
-    for (int i = 0; i < 2; i++	) {
-        std::getline(input, stroke);
-        std::istringstream iss(stroke);
-        double x, y;
-        if (iss >> x >> y) {
-            linePoints.emplace_back(x, y);
-        }
-        else {
-            std::cerr << "Invalid format: " << stroke << std::endl;
-        }
-    }
+ //  for (int i = 0; i < 2; i++	) {
+ //       std::getline(input, stroke);
+  //      std::istringstream iss(stroke);
+ //       double x, y;
+ //       if (iss >> x >> y) {
+ //          linePoints.emplace_back(x, y);
+  //      }
+  //      else {
+  //          std::cerr << "Invalid format: " << stroke << std::endl;
+  //      }
+  //  }
 
     while (std::getline(input, stroke)) {
         std::istringstream iss(stroke);
@@ -41,7 +41,7 @@ try {
         }
     }
     
-    Line line(p1, p2);    
+    Line line(1, 0, -2);    
 
     Polygon polygon(polyPoints);
     
