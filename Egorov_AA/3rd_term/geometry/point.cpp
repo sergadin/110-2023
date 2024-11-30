@@ -2,6 +2,7 @@
 #include <cmath>
 #include "point.h"
 
+Point::Point() : x(0), y(0) {}
 Point::Point(double x, double y) : x(x), y(y) {}
 
 double Point::getX() const { return x; }
@@ -30,8 +31,4 @@ bool Point::operator<(const Point& other) const {
     if (std::abs(x - other.x) > 1e-9)
         return x < other.x;
     return y < other.y;
-}
-
-void Point::draw() const {
-    std::cout << x << " " << y << std::endl;
 }

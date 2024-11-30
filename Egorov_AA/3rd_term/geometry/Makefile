@@ -1,17 +1,18 @@
 CXX = g++
+CXXFL = -Wall -Werror
 
-SRC = main.cpp line.cpp point.cpp polygon.cpp
-OBJ = $(SRC:.cpp=.o)
-DEPS = line.h point.h polygon.h
-TARGET = prog
+all: run clear
 
-all: $(TARGET)
+run: a.out
+	valgrind --track-origins=yes --leak-check=full -s ./a.out
+	load polygon.gpl
 
-$(TARGET): $(OBJ)
-	g++ -o $@ $^
-
-%.o: %.cpp $(DEPS)
-	g++ -c $< -o $@
+a.out: point.o line.o polygon.o main.o
+	g++ $(CXXFL) -c point.cpp
+	g++ $(CXXFL) -c line.cpp
+	g++ $(CXXFL) -c polygon.cpp
+	g++ $(CXXFL) -c main.cpp
+	g++ point.o line.o polygon.o main.o -lm
 	
 clear:
-	rm -f $(OBJ) $(TARGET)
+	rm point.o line.o polygon.o main.o a.out

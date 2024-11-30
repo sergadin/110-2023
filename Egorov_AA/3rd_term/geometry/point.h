@@ -3,11 +3,13 @@
 
 class Point {
 private:
+
     double x, y;
 
 public:
     // конструктор
-    Point(double x = 0.0, double y = 0.0);
+    Point();
+    Point(double x, double y);
 
     // геттеры
     double getX() const;
@@ -23,8 +25,6 @@ public:
     bool operator==(const Point& other) const;
     bool operator<(const Point& other) const;
 
-    // отрисовка точки
-    void draw() const;
 };
 
 #endif // POINT_H

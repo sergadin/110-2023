@@ -4,14 +4,18 @@
 #include "point.h"
 
 class Line {
-private:
-
 public:
     double a, b, c; // ax + by + c = 0
+    
+    // конструкторы
     Line(double a, double b, double c);
     Line(const Point& p1, const Point& p2);
 
-    bool intersectSegment(const Point& p1, const Point& p2, Point& intersection) const;
+    // поиск пересечения полигона прямой
+    bool intersection(const Point& p1, const Point& p2, Point& intersection) const;
+    
+    // ориентация точки относительно прямой
+    int side(const Point& p) const;
 };
 
 #endif // LINE_H
