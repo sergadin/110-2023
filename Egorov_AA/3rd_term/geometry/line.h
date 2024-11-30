@@ -16,6 +16,8 @@ public:
     
     // ориентация точки относительно прямой
     int side(const Point& p) const;
+
+    void draw() const;
 };
 
 #endif // LINE_H

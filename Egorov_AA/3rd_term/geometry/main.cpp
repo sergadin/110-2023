@@ -14,23 +14,19 @@ try {
         return 1;
     }
     
-    //Point p1, p2;
+    int verticesNum;
+    std::vector<Point> linePoints;
     std::vector<Point> polyPoints;
     std::string stroke;
-    
- //  for (int i = 0; i < 2; i++	) {
- //       std::getline(input, stroke);
-  //      std::istringstream iss(stroke);
- //       double x, y;
- //       if (iss >> x >> y) {
- //          linePoints.emplace_back(x, y);
-  //      }
-  //      else {
-  //          std::cerr << "Invalid format: " << stroke << std::endl;
-  //      }
-  //  }
 
-    while (std::getline(input, stroke)) {
+    input >> verticesNum;
+
+    std::cout << verticesNum << std::endl;
+
+    std::getline(input, stroke);
+
+    for (int i = 0; i < verticesNum + 1; i++) {
+        std::getline(input, stroke);
         std::istringstream iss(stroke);
         double x, y;
         if (iss >> x >> y) {
@@ -39,16 +35,25 @@ try {
         else {
             std::cerr << "Invalid format: " << stroke << std::endl;
         }
+
+        polyPoints[i].draw();
     }
-    
-    Line line(1, 0, -2);    
+
+    std::getline(input, stroke);
+    std::istringstream iss(stroke);
+    double a, b, c;
+    iss >> a >> b >> c;
+    Line line(a, b, c);
+
+    line.draw();
 
     Polygon polygon(polyPoints);
     
-    auto [leftPolygon, rightPolygon] = polygon.split(line);
-        
-    Polygon(leftPolygon).print("output1.txt");
-    Polygon(rightPolygon).print("output2.txt");
+    std::pair<std::vector<Point>, std::vector<Point>> pairOfPolygons = polygon.split(line);
+
+    Polygon(polygon).print("output.txt");
+    Polygon(pairOfPolygons.first).print("output1.txt");
+    Polygon(pairOfPolygons.second).print("output2.txt");
 
     input.close();
     return 0;

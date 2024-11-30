@@ -32,3 +32,7 @@ bool Point::operator<(const Point& other) const {
         return x < other.x;
     return y < other.y;
 }
+
+void Point::draw() const {
+    std::cout << x << " " << y << std::endl;
+}

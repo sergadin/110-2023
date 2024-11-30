@@ -1,5 +1,5 @@
 reset
-set yrange [-5:5]
+set yrange [-7:7]
 set xrange[-10:10]
 set xzeroaxis lt -1
 set yzeroaxis lt -1
@@ -10,6 +10,6 @@ set ytics axis -99999,1,99999 font "Helvetica, 4" scale 0.5
 set xtics axis -99999,1,99999 font "Helvetica, 4" scale 0.5
 set grid
 set title "Geometry task" font "Helvetica Bold, 20"
-plot "input.txt" using 1:2 with lines linewidth 8 lc rgb "red" title "Initial polygon",\
+plot "output.txt" using 1:2 with lines linewidth 8 lc rgb "red" title "Initial polygon",\
      "output1.txt" using 1:2 with lines linewidth 2 lc rgb "green" title "first polygon",\
-     "output2.txt" using 1:2 with lines linewidth 2 lc rgb "green" title "second polygon",\
+     "output2.txt" using 1:2 with lines linewidth 2 lc rgb "#006400" title "second polygon",\

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <iostream>
 #include "line.h"
 
 Line::Line(double a, double b, double c) : a(a), b(b), c(c) {}
@@ -32,8 +33,8 @@ bool Line::intersection(const Point& p1, const Point& p2, Point& intersection) c
     intersection.setY(yi);
 
     // проверяем, лежит ли точка на отрезке
-    if (std::min(x1, x2) - 1e-9 <= xi && xi <= std::max(x1, x2) + 1e-9 &&
-        std::min(y1, y2) - 1e-9 <= yi && yi <= std::max(y1, y2) + 1e-9) {
+    if (std::fmin(x1, x2) - 1e-9 <= xi && xi <= std::fmax(x1, x2) + 1e-9 &&
+        std::fmin(y1, y2) - 1e-9 <= yi && yi <= std::fmax(y1, y2) + 1e-9) {
         return true;
     }
 
@@ -45,4 +46,8 @@ int Line::side(const Point& p) const {
     if (value > 0) return 1;
     if (value < 0) return -1;
     return 0;
+}
+
+void Line::draw() const {
+    std::cout << a << "x + " << b << "y + " << c << std::endl;
 }
