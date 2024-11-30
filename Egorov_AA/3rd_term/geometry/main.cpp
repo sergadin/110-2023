@@ -13,24 +13,37 @@ try {
         std::cerr << "Unable to open input file" << std::endl;
         return 1;
     }
-        	
-    std::vector<Point> points;
+    
+    Point p1, p2;
+    std::vector<Point> polyPoints;
     std::string stroke;
     
-    while (std::getline(input, stroke)) {
-       std::istringstream iss(stroke);
-       double x, y;
-       if (iss >> x >> y) {
-           points.emplace_back(x, y);
-       }
-       else {
-           std::cerr << "Invalid format: " << stroke << std::endl;
-       }
+    for (int i = 0; i < 2; i++	) {
+        std::getline(input, stroke);
+        std::istringstream iss(stroke);
+        double x, y;
+        if (iss >> x >> y) {
+            linePoints.emplace_back(x, y);
+        }
+        else {
+            std::cerr << "Invalid format: " << stroke << std::endl;
+        }
     }
 
-    Polygon polygon(points);
+    while (std::getline(input, stroke)) {
+        std::istringstream iss(stroke);
+        double x, y;
+        if (iss >> x >> y) {
+            polyPoints.emplace_back(x, y);
+        }
+        else {
+            std::cerr << "Invalid format: " << stroke << std::endl;
+        }
+    }
     
-    Line line(1, 0, -2);    
+    Line line(p1, p2);    
+
+    Polygon polygon(polyPoints);
     
     auto [leftPolygon, rightPolygon] = polygon.split(line);
         
