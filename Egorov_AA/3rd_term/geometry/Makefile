@@ -15,4 +15,4 @@ a.out: point.o line.o polygon.o main.o
 	g++ point.o line.o polygon.o main.o -lm
 	
 clear:
-	rm point.o line.o polygon.o main.o a.out
+	rm point.o line.o polygon.o main.o a.out pic.png
