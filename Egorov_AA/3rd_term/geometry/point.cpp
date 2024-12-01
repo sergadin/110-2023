@@ -1,13 +1,17 @@
+#include <iostream>
+#include <cmath>
 #include "point.h"
 
-// Конструктор
+Point::Point() : x(0), y(0) {}
 Point::Point(double x, double y) : x(x), y(y) {}
 
-// Получение координат
 double Point::getX() const { return x; }
 double Point::getY() const { return y; }
 
-// Перегрузка операторов
+void Point::setX(double x_value) { x = x_value; }
+void Point::setY(double y_value) { y = y_value; }
+
+
 Point Point::operator+(const Point& other) const {
     return Point(x + other.x, y + other.y);
 }
@@ -17,13 +21,18 @@ Point Point::operator-(const Point& other) const {
 }
 
 bool Point::operator==(const Point& other) const {
-    if ((fabs(x - other.x) > 1e-6) || (fabs(y - other.y) > 1e-6)){
+    if ((std::fabs(x - other.x) > 1e-9) || (std::fabs(y - other.y) > 1e-9)) {
         return false;
     }
     return true;
 }
 
-// Отрисовка (для gnuplot можно создать файл с координатами)
+bool Point::operator<(const Point& other) const {
+    if (std::abs(x - other.x) > 1e-9)
+        return x < other.x;
+    return y < other.y;
+}
+
 void Point::draw() const {
     std::cout << x << " " << y << std::endl;
 }

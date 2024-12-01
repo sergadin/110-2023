@@ -4,20 +4,19 @@
 #include "point.h"
 
 class Line {
-private:
-    double a, b, c; // Коэффициенты уравнения прямой ax + by + c = 0
-
 public:
+    double a, b, c; // ax + by + c = 0
+    
+    // конструкторы
     Line(double a, double b, double c);
     Line(const Point& p1, const Point& p2);
 
-    // Проверка, пересекается ли прямая с другой
-    bool intersects(const Line& other) const;
+    // поиск пересечения полигона прямой
+    bool intersection(const Point& p1, const Point& p2, Point& intersection) const;
+    
+    // ориентация точки относительно прямой
+    int side(const Point& p) const;
 
-    // Получение точки пересечения
-    Point intersection(const Line& other) const;
-
-    // Отрисовка линии для gnuplot
     void draw() const;
 };
 

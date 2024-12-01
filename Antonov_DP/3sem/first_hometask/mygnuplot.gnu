@@ -9,7 +9,6 @@ set pointsize 1.5
 while(-1){
 plot    "triangle1.txt" using 1:2 with lines linecolor rgb "red", \
 	"triangle2.txt" using 1:2 with lines linecolor rgb "blue"
-pause 0.1
 }
 
 
