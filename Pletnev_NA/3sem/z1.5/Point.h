@@ -10,7 +10,7 @@ private:
     double y_;
     
 public:
-    Point(double x = 0.0, double y = 0.0) : x_(x), y_(y) {}
+    Point(double x, double y) : x_(x), y_(y) {}
     Point(const Point& other) : x_(other.x_), y_(other.y_) {}
 
     double get_x() const;

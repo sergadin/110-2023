@@ -14,11 +14,21 @@ double minDistance(const Polygon& P1, const Polygon& P2)
     int m = P2.get_n();
     double minDist = pointToPointDist(P1.getPoint_i(0), P2.getPoint_i(0));
 
-    for (int i = 0; i < n; ++i) 
+    for (int i = 0; i < n; i++) 
     {
-        for (int j = 0; j < m; ++j) 
+        for (int j = 0; j < m; j++) 
         {
-            double currDist = segmentDistance(P1.getPoint_i(i), P1.getPoint_i((i + 1) % n), P2.getPoint_i(j), P2.getPoint_i((j + 1) % m));
+            //std::cout << "i = " << i << " j = " << j << std::endl;
+            Point A1 = P1.getPoint_i(i);
+            Point A2 = P1.getPoint_i((i + 1) % n);
+            //std::cout << "a1.x = " << A1.get_x() << " a1.y = " << A1.get_y() << std::endl;
+            //std::cout << "a2.x = " << A2.get_x() << " a2.y = " << A2.get_y() << std::endl;
+
+            Point B1 = P2.getPoint_i(j);
+            Point B2 = P2.getPoint_i((j + 1) % m);
+            //std::cout << "b1.x = " << B1.get_x() << " b1.y = " << B1.get_y() << std::endl;
+            //std::cout << "b2.x = " << B2.get_x() << " b2.y = " << B2.get_y() << "\n" << std::endl;
+            double currDist = segmentDistance(A1, A2, B1, B2);
             minDist = std::min(minDist, currDist);
         }
     }
@@ -37,7 +47,9 @@ int main()
     TestBox tests[] = {
         {"int1.txt", 2},
         {"int2.txt", 0},
-        {"int3.txt", std::sqrt(2)}
+        {"int3.txt", std::sqrt(2)},
+        {"int4.txt", 1},
+        {"int5.txt", std::sqrt(5)}
     };
 
     int k = std::size(tests);
@@ -62,29 +74,30 @@ int main()
             std::vector<Point> vertices2;
 
             inputFile >> n;
-            //std::cout << "n = " << n << "\n" << std::endl;
+            //std::cout << "n = " << n << std::endl;
 
-            for(int j = 0; j < n; ++j)
+            for(int i = 0; i < n; ++i)
             {
                 inputFile >> x >> y;
-                //std::cout << "x = " << x << " y = " << y << "\n" << std::endl;
+                //std::cout << "x = " << x << " y = " << y << std::endl;
                 Point Dot(x, y);
-                vertices1.emplace_back(Dot);
+                vertices1.push_back(Dot);
             }
 
             inputFile >> m;
-            //std::cout << "m = " << m << "\n" << std::endl;
+            //std::cout << "m = " << m << std::endl;
 
             for(int j = 0; j < m; ++j)
             {
                 inputFile >> x >> y;
-                //std::cout << "x = " << x << " y = " << y << "\n" << std::endl;
+                //std::cout << "x = " << x << " y = " << y << std::endl;
                 Point Dot(x, y);
-                vertices2.emplace_back(Dot);
+                vertices2.push_back(Dot);
             }
 
             Polygon P1(vertices1);
             Polygon P2(vertices2);
+
 
             double Ans = minDistance(P1, P2);
 

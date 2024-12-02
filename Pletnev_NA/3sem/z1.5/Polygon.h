@@ -15,14 +15,15 @@ public:
         if (isEmpty(vertices_)) {
             throw Error(-10, "Polygon cannot be empty\n");
         }
+        if (vertices_.size() < 3) {
+            throw Error(-12, "Polygon must have min 3 peaks\n");
+        }
         if (!isConvex(vertices_)) {
             throw Error(-11, "Polygon must be convex\n");
         }
     }
-    double get_n() const;
+    int get_n() const;
     const Point& getPoint_i(int i) const;
-    Polygon minkowskiSum(const Polygon& other) const;
-    double distanceToPoint(const Point& A) const;
 };
 
 #endif

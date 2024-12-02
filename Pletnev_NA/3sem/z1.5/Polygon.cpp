@@ -31,7 +31,7 @@ bool isConvex(const std::vector<Point>& Polygon)
     return true;
 };
 
-double Polygon::get_n() const
+int Polygon::get_n() const
 {
     return vertices_.size();
 }
