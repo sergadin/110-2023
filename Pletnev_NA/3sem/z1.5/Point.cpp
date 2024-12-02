@@ -63,34 +63,19 @@ double cross_product(const Point& a, const Point& b, const Point& c)
 //Расстояние от точки до отрезка
 double pointToSegmentDist(const Point& p, const Point& a, const Point& b) 
 {
-
-    //std::cout << "p.x = " << p.get_x() << " p.y = " << p.get_y() << std::endl;
-    //std::cout << "a.x = " << a.get_x() << " a.y = " << a.get_y() << std::endl;
-    //std::cout << "b.x = " << b.get_x() << " b.y = " << b.get_y() << std::endl;
-
     Point ap(p.get_x() - a.get_x(), p.get_y() - a.get_y());
-    //std::cout << "ap.x = " << ap.get_x() << " ap.y = " << ap.get_y() << std::endl;
-
     Point ab(b.get_x() - a.get_x(), b.get_y() - a.get_y());
-    //std::cout << "ab.x = " << ab.get_x() << " ab.y = " << ab.get_y() << std::endl;
-
     double dot_ab_ab = dot_product(ab, ab);
-    //std::cout << "dot_ab_ab = " << dot_ab_ab << std::endl;
     if (dot_ab_ab < eps) return pointToPointDist(p, a); // отрезок вырожден в точку
 
     double t = dot_product(ap, ab) / dot_ab_ab;
-    //std::cout << "t = " << t << std::endl;
     t = std::max(0.0, std::min(1.0, t));
-    //std::cout << "tp = " << t << std::endl;
 
     Point C(0, 0);
     C.set_x(a.get_x() + t * ab.get_x());
     C.set_y(a.get_y() + t * ab.get_y());
 
-    //std::cout << "c.x = " << C.get_x() << " c.y = " << C.get_y() << std::endl;
-
     double r = pointToPointDist(p, C);
-    //std::cout << "r = " << r << "\n" << std::endl;
 
     return r;
 }
@@ -118,7 +103,6 @@ bool intersect(const Point &a,const Point &b,const Point &c,const Point &d)
 }
 double segmentDistance(const Point& a, const Point& b, const Point& c, const Point& d) 
 {
-    
     if (intersect(a, b, c, d))
     {
         return 0;

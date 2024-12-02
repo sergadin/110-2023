@@ -19,7 +19,7 @@ main.o : main.cpp Polygon.h
 	g++ $(CXXFL) -c main.cpp
 
 a.out: Error.o Point.o Polygon.o main.o
-	g++ $(CXXFL) Error.o Point.o Polygon.o main.o -o a.out -lm # Link all object files
+	g++ $(CXXFL) Error.o Point.o Polygon.o main.o -o a.out -lm
 
 run: a.out
 	valgrind --track-origins=yes --leak-check=full -s ./a.out

@@ -2,36 +2,50 @@
 
 #define eps 1e-6 
 
-double dot_product(const Point& a, const Point& b);
 double pointToPointDist(const Point& a, const Point& b);
-double cross_product(const Point& a, const Point& b, const Point& c);
 double pointToSegmentDist(const Point& p, const Point& a, const Point& b);
 double segmentDistance(const Point& a, const Point& b, const Point& c, const Point& d);
+
+double orientedAngle(const Point& a, const Point& b, const Point& c) 
+{
+    double dx1 = b.get_x() - a.get_x();
+    double dy1 = b.get_y() - a.get_y();
+    double dx2 = c.get_x() - b.get_x();
+    double dy2 = c.get_y() - b.get_y();
+    return std::atan2(dx1 * dy2 - dy1 * dx2, dx1 * dx2 + dy1 * dy2);
+}
+
 
 double minDistance(const Polygon& P1, const Polygon& P2) 
 {
     int n = P1.get_n();
     int m = P2.get_n();
-    double minDist = pointToPointDist(P1.getPoint_i(0), P2.getPoint_i(0));
+    double minDist = segmentDistance(P1.getPoint_i(0), P1.getPoint_i(1), P2.getPoint_i(0), P2.getPoint_i(1));
 
-    for (int i = 0; i < n; i++) 
-    {
-        for (int j = 0; j < m; j++) 
+    int i = 1;
+    int j = 1;
+    double angle1 = 0;
+    double angle2 = 0;
+
+    Point OxOy(0.0, 0.0);
+    do {
+        Point A1 = P1.getPoint_i(i);
+        Point A2 = P1.getPoint_i((i + 1) % n);
+        Point B1 = P2.getPoint_i(j);
+        Point B2 = P2.getPoint_i((j + 1) % m);
+        minDist = std::min(minDist, segmentDistance(A1, A2, B1, B2));
+
+        angle1 = orientedAngle(A1, A2, OxOy);
+        angle2 = orientedAngle(B1, B2, OxOy);
+
+        if (angle1 <= angle2) 
         {
-            //std::cout << "i = " << i << " j = " << j << std::endl;
-            Point A1 = P1.getPoint_i(i);
-            Point A2 = P1.getPoint_i((i + 1) % n);
-            //std::cout << "a1.x = " << A1.get_x() << " a1.y = " << A1.get_y() << std::endl;
-            //std::cout << "a2.x = " << A2.get_x() << " a2.y = " << A2.get_y() << std::endl;
-
-            Point B1 = P2.getPoint_i(j);
-            Point B2 = P2.getPoint_i((j + 1) % m);
-            //std::cout << "b1.x = " << B1.get_x() << " b1.y = " << B1.get_y() << std::endl;
-            //std::cout << "b2.x = " << B2.get_x() << " b2.y = " << B2.get_y() << "\n" << std::endl;
-            double currDist = segmentDistance(A1, A2, B1, B2);
-            minDist = std::min(minDist, currDist);
+            i = (i + 1) % n;
+        } else {
+            j = (j + 1) % m;
         }
-    }
+
+    } while (i != 0 && j != 0);
 
     return minDist;
 }
@@ -49,7 +63,7 @@ int main()
         {"int2.txt", 0},
         {"int3.txt", std::sqrt(2)},
         {"int4.txt", 1},
-        {"int5.txt", std::sqrt(5)}
+        {"int5.txt", std::sqrt(5)},
     };
 
     int k = std::size(tests);
@@ -74,7 +88,6 @@ int main()
             std::vector<Point> vertices2;
 
             inputFile >> n;
-            //std::cout << "n = " << n << std::endl;
 
             for(int i = 0; i < n; ++i)
             {
