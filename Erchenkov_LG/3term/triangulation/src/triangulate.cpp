@@ -146,7 +146,7 @@ void Triangulate::plotPolygon(const std::vector<Point> &result) {
     out << p1.GetX() << " " << p1.GetY() << std::endl;
     out << p3.GetX() << " " << p3.GetY() << std::endl;
   }
-  system("gnuplot -e \"plot 'output.txt' using 1:2 with lines\" -p");
+  system("gnuplot -e \"plot 'output.txt' using 1:2 with lines linewidth 4 lc rgb 'red' \" -p");
   out.close();
 
 }

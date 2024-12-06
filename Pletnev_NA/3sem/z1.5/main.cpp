@@ -1,124 +1,136 @@
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <fstream> 
-#include <math.h>
-#include <vector>
-
-#include "Error.h"
-#include "Dot.h"
-#include "Vector.h"
 #include "Polygon.h"
 
-using namespace std;
+#define eps 1e-6 
 
-double interval(const Dot& A, const Dot& B) 
+double pointToPointDist(const Point& a, const Point& b);
+double pointToSegmentDist(const Point& p, const Point& a, const Point& b);
+double segmentDistance(const Point& a, const Point& b, const Point& c, const Point& d);
+
+double orientedAngle(const Point& a, const Point& b, const Point& c) 
 {
-    return sqrt(pow(A.get_x() - B.get_x(), 2) + pow(A.get_y() - B.get_y(), 2));
+    double dx1 = b.get_x() - a.get_x();
+    double dy1 = b.get_y() - a.get_y();
+    double dx2 = c.get_x() - b.get_x();
+    double dy2 = c.get_y() - b.get_y();
+    return std::atan2(dx1 * dy2 - dy1 * dx2, dx1 * dx2 + dy1 * dy2);
 }
 
-double determinant(const Vector& v1, const Vector& v2) 
-{
-    return v1.get_vx() * v2.get_vy() - v1.get_vy() * v2.get_vx();
-}
 
-
-// Метод вращающихся калиперов для нахождения минимального расстояния
-double Distance(const Polygon& P1, const Polygon& P2) 
+double minDistance(const Polygon& P1, const Polygon& P2) 
 {
     int n = P1.get_n();
     int m = P2.get_n();
+    double minDist = segmentDistance(P1.getPoint_i(0), P1.getPoint_i(1), P2.getPoint_i(0), P2.getPoint_i(1));
 
-    int index = 0;
+    int i = 1;
+    int j = 1;
+    double angle1 = 0;
+    double angle2 = 0;
 
-    for (int i = 1; i < m; ++i) 
-    {
-        if (P2.get_dot(i).get_x() < P2.get_dot(index).get_x()) 
+    Point OxOy(0.0, 0.0);
+    do {
+        Point A1 = P1.getPoint_i(i);
+        Point A2 = P1.getPoint_i((i + 1) % n);
+        Point B1 = P2.getPoint_i(j);
+        Point B2 = P2.getPoint_i((j + 1) % m);
+        minDist = std::min(minDist, segmentDistance(A1, A2, B1, B2));
+
+        angle1 = orientedAngle(A1, A2, OxOy);
+        angle2 = orientedAngle(B1, B2, OxOy);
+
+        if (angle1 <= angle2) 
         {
-            index = i;
+            i = (i + 1) % n;
+        } else {
+            j = (j + 1) % m;
         }
-    }
 
-    double minDist = interval(P1.get_dot(0), P2.get_dot(0));
-
-    for (int i = 0; i < n; ++i) 
-    {
-        Dot I1 = P1.get_dot(i);
-        Dot I2 = P1.get_dot((i + 1) % n);
-        int j = index;
-
-        for (int k = 0; k < m; ++k) {
-
-            Dot J1 = P2.get_dot(j);
-            Dot J2 = P2.get_dot((j + 1) % m);
-
-            Vector v1(I2.get_x() - I1.get_x(), I2.get_y() - I1.get_y());
-            Vector v2(J1.get_x() - I1.get_x(), J1.get_y() - I1.get_y());
-            Vector v3(J2.get_x() - I1.get_x(), J2.get_y() - I1.get_y());
-            
-
-            if (determinant(v1, v2) > determinant(v1, v3)) {
-                j = (j + 1) % m;
-            }
-            else
-            {
-                double dist1 = interval(I1, J1);
-                double dist2 = interval(I2, J1);
-
-                minDist = min(minDist, min(dist1, dist2));
-            }
-
-
-        }
-    }
+    } while (i != 0 && j != 0);
 
     return minDist;
 }
 
+struct TestBox 
+{
+    std::string filename;
+    double answer;
+};
 
 int main() 
 {
-    int n;
-    int m;
-    ifstream inp_f("input.txt");
+    TestBox tests[] = {
+        {"int1.txt", 2},
+        {"int2.txt", 0},
+        {"int3.txt", std::sqrt(2)},
+        {"int4.txt", 1},
+        {"int5.txt", std::sqrt(5)},
+    };
 
-    if (!inp_f.is_open()) 
+    int k = std::size(tests);
+
+    for(int i = 0; i < k; ++i)
     {
-        cerr << "Error opening file" << endl;
-        return -2;
+        try 
+        {
+            std::ifstream inputFile(tests[i].filename);
+
+            if (!inputFile.is_open()) 
+            {
+                throw Error(-100,"Ошибка открытия файла: " + tests[i].filename);
+            }
+
+            int n;
+            int m;
+            double x;
+            double y;
+
+            std::vector<Point> vertices1;
+            std::vector<Point> vertices2;
+
+            inputFile >> n;
+
+            for(int i = 0; i < n; ++i)
+            {
+                inputFile >> x >> y;
+                //std::cout << "x = " << x << " y = " << y << std::endl;
+                Point Dot(x, y);
+                vertices1.push_back(Dot);
+            }
+
+            inputFile >> m;
+            //std::cout << "m = " << m << std::endl;
+
+            for(int j = 0; j < m; ++j)
+            {
+                inputFile >> x >> y;
+                //std::cout << "x = " << x << " y = " << y << std::endl;
+                Point Dot(x, y);
+                vertices2.push_back(Dot);
+            }
+
+            Polygon P1(vertices1);
+            Polygon P2(vertices2);
+
+
+            double Ans = minDistance(P1, P2);
+
+            if (std::abs(Ans - tests[i].answer) < eps) 
+            {
+                std::cout << "CORRECT test " << i + 1 << ": Расстояние = " << Ans << std::endl;
+            } else {
+                std::cerr << "NOT correct test " << i + 1
+                          << ": Ожидалось " << tests[i].answer
+                          << ", получено " << Ans << std::endl;
+            }
+        }
+        catch(Error &err)
+        {
+            std::cout << "EXCEPTION: " << err.getReason() << "\n" << std::endl;
+        }
+        catch(...)
+        {
+            std::cout << "Something wrong\n" << std::endl;
+        }
     }
-
-    inp_f >> n;
-    Polygon P1(n);
-
-    for (int i = 0; i < n; ++i) 
-    {
-        double x, y;
-        inp_f >> x >> y;
-        P1.add_dot(Dot(x, y), i);
-    }
-
-    inp_f >> m;
-    Polygon P2(m);
-
-    for (int i = 0; i < m; ++i) 
-    {
-        double x, y;
-        inp_f >> x >> y;
-        P2.add_dot(Dot(x, y), i);
-    }
-
-    inp_f.close();
-		
-    try 
-    {
-        double result = Distance(P1, P2);
-        cout << "Минимальное расстояние между двумя многоугольниками: " << result << endl;
-    }
-    catch (const exception& e) 
-    {
-        cerr << "Ошибка: " << e.what() << endl;
-    }
-
     return 0;
 }

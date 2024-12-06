@@ -12,12 +12,15 @@ private:
 public:
     // конструктор
     Polygon(const std::vector<Point>& vertices) : vertices(vertices) {}
-
+    
+    // геттер
     const std::vector<Point>& getVertices() const;
 
-    std::vector<Polygon> splitByLine(const Line& line) const;
-
-    void print() const;
+    // разрезание многоугольника
+    std::pair<std::vector<Point>, std::vector<Point>> split(const Line& line) const;
+    
+    // отрисовка многоугольника
+    void print(const std::string& filename) const;
 };
 
 #endif // POLYGON_H

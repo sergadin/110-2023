@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 
 rm triangulation.out 2>/dev/null
 make

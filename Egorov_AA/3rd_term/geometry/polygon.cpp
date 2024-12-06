@@ -1,83 +1,49 @@
 #include <iostream>
-#include <map>
-#include <vector>
-#include <deque>
+#include <fstream>
 #include "polygon.h"
+#include "point.h"
 
 
 const std::vector<Point>& Polygon::getVertices() const {
     return vertices;
 }
 
-std::vector<Polygon> Polygon::splitByLine(const Line& line) const {
-    std::vector<Point> intersectionPoints;
-    std::vector<std::vector<Point>> polygons;
-    std::vector<Point> currentPolygon;
-    bool sideOnLine = false;
+std::pair<std::vector<Point>, std::vector<Point>> Polygon::split(const Line& line) const {
+    std::vector<Point> left, right;
 
     for (size_t i = 0; i < vertices.size(); ++i) {
-        Point p1 = vertices[i];
-        Point p2 = vertices[(i + 1) % vertices.size()];
-        currentPolygon.push_back(p1);
+        Point current = vertices[i];
+        Point next = vertices[(i + 1) % vertices.size()];
 
-        Point intersection;
-        if (line.intersectSegment(p1, p2, intersection)) {
-            if (intersectionPoints.empty() || !(intersection == intersectionPoints.back())){
-                intersectionPoints.push_back(intersection);
-            }
-            currentPolygon.push_back(intersection);
-            polygons.push_back(currentPolygon);
-            currentPolygon.clear();
-            currentPolygon.push_back(intersection);
-        }
-        else if (std::abs(line.a * p1.getX() + line.b * p1.getY() + line.c) < 1e-9 &&
-                 std::abs(line.a * p2.getX() + line.b * p2.getY() + line.c) < 1e-9) {
-                sideOnLine = true;
-            }
-    }
+        int currentSide = line.side(current);
+        int nextSide = line.side(next);
 
-    // добавляем последний многоугольник
-    if (!currentPolygon.empty()) {
-        currentPolygon.push_back(currentPolygon.front());
-        polygons.push_back(currentPolygon);
-    }
+        // добавляем текущую вершину в соответствующую часть
+        if (currentSide >= 0) left.push_back(current);
+        if (currentSide <= 0) right.push_back(current);
 
-    // Если прямая совпадает с одной из сторон, возвращаем две части
-        if (sideOnLine) {
-            std::vector<Point> upper, lower;
-            for (const auto& p : vertices) {
-                if (line.a * p.getX() + line.b * p.getY() + line.c > 0) {
-                    upper.push_back(p);
-                } else if (line.a * p.getX() + line.b * p.getY() + line.c < 0) {
-                    lower.push_back(p);
-                }
-            }
-            if (!upper.empty()) polygons.push_back(upper);
-            if (!lower.empty()) polygons.push_back(lower);
-        }
-
-
-
-    // формируем результат
-    std::vector<Polygon> result;
-    for (const auto& poly : polygons) {
-        std::vector<Point> uniquePoly;
-        for (const auto& point: poly){
-            if (uniquePoly.empty() || !(point == uniquePoly.back())){
-                uniquePoly.push_back(point);
-            }
-        }
-        if (uniquePoly.size() >= 3){
-            result.emplace_back(uniquePoly);
+        // если ребро пересекает прямую, добавляем точку пересечения
+        Point intersectionPoint;
+        if (currentSide * nextSide < 0 && 
+            line.intersection(current, next, intersectionPoint)) {
+            left.push_back(intersectionPoint);
+            right.push_back(intersectionPoint);
         }
     }
 
-    return result;
+    return {left, right};
 }
 
-void Polygon::print() const {
-    for (const auto& vertex : vertices) {
-        std::cout << "(" << vertex.getX() << ", " << vertex.getY() << ") ";
+void Polygon::print(const std::string& filename) const {
+    std::ofstream output(filename);
+    if (!output.is_open()) {
+        std::cerr << "Unable to open output file" << std::endl;
+        return;
     }
-    std::cout << std::endl;
+    
+    for (const auto& vertex : vertices) {
+        output << vertex.getX() << " " << vertex.getY() << std::endl;
+    }
+    
+    output.close();
 }

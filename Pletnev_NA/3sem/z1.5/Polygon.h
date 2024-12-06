@@ -1,33 +1,29 @@
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <math.h>
-#include <vector>
+#ifndef POLYGON_H
+#define POLYGON_H
+#include "Point.h"
 
-#pragma once
-#include "Error.h"
-#include "Dot.h"
-#include "Vector.h"
+bool isEmpty(const std::vector<Point>& Polygon);
+bool isConvex(const std::vector<Point>& Polygon);
 
-#define epsilon 1e-10
-
-using namespace std;
-
-class Polygon
+class Polygon 
 {
 private:
-    int n_;
-    vector<Dot> data_;
+    std::vector<Point> vertices_;
 public:
-    Polygon() = delete;
-    Polygon(int n);
-    Polygon(const Polygon &other);
-    ~Polygon();
-
+    Polygon(const std::vector<Point>& vertices) : vertices_(vertices) 
+    {
+        if (isEmpty(vertices_)) {
+            throw Error(-10, "Polygon cannot be empty\n");
+        }
+        if (vertices_.size() < 3) {
+            throw Error(-12, "Polygon must have min 3 peaks\n");
+        }
+        if (!isConvex(vertices_)) {
+            throw Error(-11, "Polygon must be convex\n");
+        }
+    }
     int get_n() const;
-    void add_dot(const Dot &A, int i);
-    Dot get_dot(int i) const;
-
-    Polygon &operator=(const Polygon &other);
+    const Point& getPoint_i(int i) const;
 };
 
+#endif

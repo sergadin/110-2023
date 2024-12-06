@@ -1,65 +1,42 @@
-#include <stdio.h>
-#include <string>
-#include <iostream>
-#include <math.h>
-#include <vector>
-
-#pragma once
-#include "Error.h"
-#include "Dot.h"
 #include "Polygon.h"
 
-Polygon::Polygon(int n) : n_(n)
+// Проверка на пустоту
+bool isEmpty(const std::vector<Point>& Polygon) 
 {
-    if (n_ <= 0)
+    return Polygon.size() < 1;
+};
+
+// Проверка на выпуклость
+bool isConvex(const std::vector<Point>& Polygon) 
+{
+    if (Polygon.size() < 3) return true; //Отрезок или точка - выпуклы
+
+    int n = Polygon.size();
+    bool is_p = false;
+    bool is_n = false;
+
+    for (int i = 0; i < n; ++i) 
     {
-        throw Error(-10, string("There is no such polygon\n"));
+        Point A = Polygon[(i + 1) % n];
+        Point B = Polygon[i];
+        Point C = Polygon[(i + 2) % n];
+        double val = (A.get_x() - B.get_x()) * (C.get_y() - A.get_y()) -
+                     (A.get_y() - B.get_y()) * (C.get_x() - A.get_x());
+
+        if (val > 0) is_p = true;
+        if (val < 0) is_n = true;
+
+        if (is_p && is_n) return false;
     }
-
-    data_.resize(n_);
-}
-
-Polygon::Polygon(const Polygon &other) : n_(other.n_), data_(other.data_)
-{
-}
-
-Polygon::~Polygon()
-{
-}
+    return true;
+};
 
 int Polygon::get_n() const
 {
-    return n_;
+    return vertices_.size();
 }
 
-void Polygon::add_dot(const Dot &A, int i)
+const Point& Polygon::getPoint_i(int i) const
 {
-    if ((i < 0) || (i >= n_))
-    {
-        throw Error(-11, string("Index out of bounds\n"));
-    }
-
-    data_[i] = A;
-}
-
-Polygon &Polygon::operator=(const Polygon &other)
-{
-    if (this == &other)
-    {
-        return *this;
-    }
-
-    n_ = other.n_;
-    data_ = other.data_; // Assign the vector directly
-    return *this; 
-}
-
-Dot Polygon::get_dot(int i) const
-{
-    if ((i < 0) || (i >= n_))
-    {
-        throw Error(-11, string("Index out of bounds\n"));
-    }
-
-    return data_[i];
+    return vertices_[i];
 }
