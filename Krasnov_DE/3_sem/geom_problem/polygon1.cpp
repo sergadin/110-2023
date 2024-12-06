@@ -253,6 +253,9 @@ Point calculateParallelPoint(const Point& basePoint, double direction_x, double 
 void drawPolygonWithParallelLines(const std::vector<Point>& points, int index1, int index2, double direction_x, double direction_y) {
     
     Gnuplot gp;
+    gp << "set xrange [-20:20]\n";
+    gp << "set yrange [-20:20]\n";
+    gp << "set size square\n";
 
     std::vector<std::pair<double, double>> polygon;
     for (const auto& point : points) {
