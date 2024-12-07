@@ -49,5 +49,5 @@ int Line::side(const Point& p) const {
 }
 
 void Line::draw() const {
-    std::cout << a << "x + " << b << "y + " << c << std::endl;
+    std::cout <<"(" << a << ")" << "x + " << "(" << b << ")" << "y + " << "(" << c << ") = 0" << std::endl;
 }

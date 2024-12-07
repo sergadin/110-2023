@@ -7,7 +7,6 @@
 #include "line.h"
 
 int main() {
-try {
     std::ifstream input("input.txt");
     if (!input.is_open()) {
         std::cerr << "Unable to open input file" << std::endl;
@@ -41,6 +40,7 @@ try {
 
     std::getline(input, stroke);
     std::istringstream iss(stroke);
+
     double a, b, c;
     iss >> a >> b >> c;
     Line line(a, b, c);
@@ -57,8 +57,4 @@ try {
 
     input.close();
     return 0;
-}catch( ... ){
-
-}
-return 0;
 }
