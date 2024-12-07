@@ -95,6 +95,9 @@ point TreeNode::operator[](int n){
 		}
 		throw Rectangle_Exception(-1, "out of range");
 	}
+	if (n >= len_){
+		throw Rectangle_Exception(-1, "out of range");
+	}
 	return points_[n];
 }
 
