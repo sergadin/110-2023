@@ -16,7 +16,7 @@ main.o : main.cpp ParameterContainer.h
 	g++ $(CXXFL) -c main.cpp
 
 a.out: Error.o ParameterContainer.o main.o
-	g++ $(CXXFL) Error.o ParameterContainer.o main.o -o a.out -lm
+	g++ $(CXXFL) Error.o ParameterContainer.o main.o -o a.out
 
 run: a.out
 	valgrind --track-origins=yes --leak-check=full -s ./a.out

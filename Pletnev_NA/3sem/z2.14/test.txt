@@ -1,0 +1,16 @@
+myInt = 123
+myDouble = 3.14159     
+
+myArrayInt = [1, 2, 3, 4, 5]
+myArrayDouble = [1.1, 2.2, 3.3, 4.4, 5.5]
+myString = Hello, world!
+gggglll
+
+h =
+
+myR1 = 321$myInt
+myR2 = $myR1$myString
+
+myInt = 3854
+
+myArrayDouble2 = [1.1, 2.2, fff , 4.4, 5.5]
