@@ -4,7 +4,6 @@
 #include "Error.h"
 
 //Структура для хранения параметров
-
 struct ParameterValue 
 {
     enum class Type { INT, DOUBLE, STRING, INT_ARRAY, DOUBLE_ARRAY };

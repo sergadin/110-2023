@@ -19,14 +19,13 @@ void ParameterContainer::loadFromFile(const std::string& filename)
     {
         try 
         {
-            line = trim(line);
-            if (line.empty() || line[0] == '#') continue;
+            line = trim(line); //remove leading/trailing whitespaces
+            if (line.empty() || line[0] == '#') continue; // Skip empty lines and comments
 
             size_t eqPos = line.find('=');
-
-            if (eqPos == std::string::npos) 
+            if (eqPos == std::string::npos || eqPos == 0 || eqPos == line.length() - 1) 
             {
-                throw Error(-202, "Неверный формат строки (" + std::to_string(lineNumber) + "): " + line);
+                throw Error(-202, "Неверный формат строки (ожидается '='): строка " + std::to_string(lineNumber) + ": " + line);
             }
 
             std::string key = trim(line.substr(0, eqPos));
@@ -34,15 +33,23 @@ void ParameterContainer::loadFromFile(const std::string& filename)
 
             if (key.empty()) 
             {
-                throw Error(-202, "Пустой ключ в строке (" + std::to_string(lineNumber) + "): " + line);
+                throw Error(-203, "Пустой ключ: строка " + std::to_string(lineNumber) + ": " + line);
             }
 
+            //Improved error handling:
             insert(key, parseValue(valueStr));
 
         } catch (const Error& e) {
-            throw Error(e.getCode(), "Ошибка в строке " + std::to_string(lineNumber) + ": " + e.getReason());
+            std::cerr << "Ошибка в строке " << lineNumber << ": " << e.what() << std::endl;
+        } catch (const std::invalid_argument& e) {
+            std::cerr << "Неверный аргумент в строке " << lineNumber << ": " << e.what() << std::endl;
+            throw Error(-204, "Неверный формат числа: строка " + std::to_string(lineNumber) + ": " + line);
+        } catch (const std::out_of_range& e) {
+            std::cerr << "Число вне диапазона в строке " << lineNumber << ": " << e.what() << std::endl;
+            throw Error(-205, "Число слишком большое или слишком маленькое: строка " + std::to_string(lineNumber) + ": " + line);
         } catch (const std::exception& e) {
-            throw Error(-203, "Ошибка в строке " + std::to_string(lineNumber) + ": " + e.what());
+            std::cerr << "Неожиданная ошибка в строке " << lineNumber << ": " << e.what() << std::endl;
+            throw Error(-206, "Неизвестная ошибка: строка " + std::to_string(lineNumber) + ": " + line);
         }
 
         lineNumber++;
@@ -136,23 +143,27 @@ ParameterValue parseValue(const std::string& valueStr)
                 throw std::runtime_error("Ошибка разбора массива целых чисел: " + valueStr);
             }
         }
+        
     } else { // Разбор одиночного значения
 
         try 
         {
+            result.value = std::stoi(valueStr);
+            result.type = ParameterValue::Type::INT;
+            
+        } catch (const std::invalid_argument& e) {}
+
+        try  
+        {
             result.value = std::stod(valueStr);
             result.type = ParameterValue::Type::DOUBLE;
-        } catch (const std::invalid_argument&) {
+        }  catch (const std::invalid_argument& e) {}
 
-            try 
-            {
-                result.value = std::stoi(valueStr);
-                result.type = ParameterValue::Type::INT;
-            } catch (const std::invalid_argument&) {
-                result.value = valueStr;
-                result.type = ParameterValue::Type::STRING;
-            }
-        }
+        try
+        {
+            result.value = valueStr;
+            result.type = ParameterValue::Type::STRING;
+        } catch (const std::invalid_argument& e) {}       
     }
 
     return result;
@@ -252,7 +263,8 @@ int ParameterContainer::GetInt(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::INT) {
+    if (!node || node->value.type != ParameterValue::Type::INT) 
+    {
         throw Error(-110,"GetInt: ключ не найден или неверный тип: " + key);
     }
 

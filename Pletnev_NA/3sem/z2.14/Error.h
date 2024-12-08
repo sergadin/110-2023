@@ -19,22 +19,14 @@
 #include <optional>
 #include <limits>
 
-class Error 
-{
+class Error : public std::runtime_error {
 private:
-    int code_ = 0;
-    std::string reason_ = "";
+    int code_;
 public:
-    Error(int code, std::string reason) : code_(code), reason_(std::move(reason)) {}
+    Error(int code, const std::string& reason) : std::runtime_error(reason), code_(code) {}
+    Error(int code, std::string&& reason) : std::runtime_error(std::move(reason)), code_(code) {}
 
-    std::string getReason() const 
-    { 
-        return reason_;
-    }
-    int getCode() const 
-    { 
-        return code_;
-    }
+    int getCode() const { return code_; }
 };
 
 #endif
