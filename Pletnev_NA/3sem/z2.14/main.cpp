@@ -2,7 +2,6 @@
 
 int main() 
 {
-
     std::cout << "test 1: " << std::endl;
     ParameterContainer pc1;
     pc1.loadFromFile("test1.txt");
@@ -88,6 +87,17 @@ int main()
         std::cerr << "Error: " << e.what() << std::endl;
     }
 
+    std::cout << "test 5: " << std::endl;
+    ParameterContainer pc5;
+    pc5.loadFromFile("test5.txt");
+
+    try 
+    {
+        std::cout << "myR2: " << pc5.GetString("myR2") << std::endl;
+
+    } catch (const std::runtime_error& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 
     return 0;
 }

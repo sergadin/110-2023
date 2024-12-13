@@ -98,7 +98,7 @@ ParameterValue parseValue(const std::string& valueStr, const ParameterContainer&
                     if (strI.has_value()) {
                         processedSTR_1.push_back(toString(strI.value()));
                     } else {
-                        throw Error(-109,"Ключ не найден:" + STR_1[j]);
+                        throw Error(-109,"Значение отсылает на ключ, который не был объявлен раньше:" + STR_1[j]);
                     }
                 }
             }
@@ -154,7 +154,7 @@ ParameterValue parseValue(const std::string& valueStr, const ParameterContainer&
                 if (strI.has_value()) {
                     STR2.push_back(toString(strI.value())); 
                 } else {
-                    throw Error(-109,"Ключ не найден:" + STR[i]);
+                    throw Error(-109,"Значение отсылает на ключ, который не был объявлен раньше:" + STR[i]);
                 }
             }
         }
@@ -363,7 +363,6 @@ std::vector<int> ParameterContainer::parseIntArray(const std::string& valueStr) 
 
     return arr;
 }
-
 
 std::vector<double> ParameterContainer::parseDoubleArray(const std::string& valueStr) const 
 {
