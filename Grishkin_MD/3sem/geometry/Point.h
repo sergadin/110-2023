@@ -8,14 +8,14 @@ class Point {
 public:
     double x;
     double y;
-    double eps = 0.000001;
+    //double eps = 0.000001;
 
     bool operator!=(const Point& other) const {
-        return !(labs(this->x - other.x) < eps && labs(this->y - other.y)< eps);
+        return !(this->x == other.x && this->y == other.y);
     }
 
     bool operator==(const Point& other) const {
-           return (labs(this->x - other.x) < eps && labs(this->y - other.y)<eps);
+           return (this->x == other.x   && this->y == other.y);
        }
 
     Point();
