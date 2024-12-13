@@ -8,26 +8,26 @@
 #include <ctime>
 
 template <typename T>
-class NodeOfTree{
+class NodeOfTree{ // класс вершины дерева
 public:
     
-    std::string key;
-    T value;
-    std::shared_ptr<NodeOfTree<T>> left;
-    std::shared_ptr<NodeOfTree<T>> right;
+    std::string key; // ключ
+    T value; // значение 
+    std::shared_ptr<NodeOfTree<T>> left; // левый потомок
+    std::shared_ptr<NodeOfTree<T>> right; // правый потомок
     
-    NodeOfTree(const std::string& k, const T& v) : key(k), value(v), left(nullptr), right(nullptr) {}
+    NodeOfTree(const std::string& k, const T& v) : key(k), value(v), left(nullptr), right(nullptr) {} // конструктор
     
 };
 
 
 template <typename T>
-class Map{
+class Map{ // класс дерева
 private:
 
-    std::shared_ptr<NodeOfTree<T>> root;
+    std::shared_ptr<NodeOfTree<T>> root; // корень дерева
     
-    // добавление узла
+    // добавление вершины 
     void add(std::shared_ptr<NodeOfTree<T>>& node, const std::string& key, const T& value){
         
         if(!node){
@@ -83,15 +83,15 @@ private:
         
         else{ // нашли нужный ключ
             
-            if(!node -> left){
+            if(!node -> left){  // отсутствие левой ветки
                 node = node -> right;
             }
             
-            else if(!node -> right){
+            else if(!node -> right){ // отсутствие правой втеки
                 node = node -> left;
             }
             
-            else{ // случай, когда узел дерева имеет 2 ветви
+            else{ // случай, когда вершина дерева имеет 2 ветви
                 std::shared_ptr<NodeOfTree<T>> Min = SearchingMinNode(node -> right);
                 node -> key = Min -> key;
                 node -> value = Min -> value;
@@ -99,7 +99,6 @@ private:
             }
         
         }
-        
         
     }
     
@@ -136,12 +135,12 @@ public:
 
     Map() : root(nullptr){}
     
-    void add(const std::string& key, const T& value){
+    void add(const std::string& key, const T& value){ //добавление вершины 
         add(root, key, value);
     }
     
-    T search(const std::string& key){
-        auto node = search(root, key);
+    T search(const std::string& key){ // поиск значения по ключу
+        std::shared_ptr<NodeOfTree<T>> node = search(root, key);
         
         if(node){
             return node -> value; // Возвращение значения ключа
@@ -151,15 +150,15 @@ public:
         }
     }
     
-    void remove(const std::string& key){
+    void remove(const std::string& key){ // удаление ключа
         remove(root, key);
     }
     
-    int Keys(){
+    int Keys(){ // количество ключей
         return Keys(root);    
     }
     
-    void OrderedList(){
+    void OrderedList(){ // список всех ключей
         OrderedList(root);
     }
     
