@@ -18,6 +18,7 @@
 #include <map>
 #include <optional>
 #include <limits>
+#include <regex>
 
 class Error : public std::runtime_error {
 private:

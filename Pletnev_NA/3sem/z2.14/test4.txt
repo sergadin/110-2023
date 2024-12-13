@@ -13,3 +13,7 @@ myString = Hello, world!
 myR1 = 321$myInt
 myR2 = $myR1$myString
 
+myInt = 3854
+
+myArrayDouble2 = [55.55, 34, $myR1]
+myArrayDouble3 = [55.55$myDouble, 5.6, $myR1]

@@ -1,6 +1,10 @@
 #include "ParameterContainer.h"
 
-ParameterValue parseValue(const std::string& valueStr);
+ParameterValue parseValue(const std::string& valueStr, const ParameterContainer& container);
+std::string concatenateStringsStream(const std::vector<std::string>& strings);
+std::vector<std::string> splitStringManual(const std::string& str, char delimiter);
+std::string toString(const ParameterValue& param);
+std::string toString(const char* value);
 
 // Реализация функции загрузки параметров из файла
 void ParameterContainer::loadFromFile(const std::string& filename) 
@@ -37,7 +41,7 @@ void ParameterContainer::loadFromFile(const std::string& filename)
             }
 
             //Improved error handling:
-            insert(key, parseValue(valueStr));
+            insert(key, parseValue(valueStr, *this));
 
         } catch (const Error& e) {
             std::cerr << "Ошибка в строке " << lineNumber << ": " << e.what() << std::endl;
@@ -65,122 +69,270 @@ std::string ParameterContainer::trim(const std::string& str) const
 }
 
 // Функция для разбора строки в значение параметра
-ParameterValue parseValue(const std::string& valueStr) 
+ParameterValue parseValue(const std::string& valueStr, const ParameterContainer& container)
 {
     ParameterValue result; // Создаем объект для результата
 
     // Проверяем, является ли строка массивом (начинается с '[' и заканчивается ']')
     if (valueStr[0] == '[' && valueStr.back() == ']') 
     {
-        std::string innerStr = valueStr.substr(1, valueStr.length() - 2); // Извлекаем внутреннюю часть строки (без скобок)
-        bool hasDecimal = std::any_of(innerStr.begin(), innerStr.end(), [](char c){ return c == '.'; }); // Проверяем наличие десятичной точки
+        std::string innerStr = valueStr.substr(1, valueStr.length() - 2);
+        std::vector<std::string> STR = splitStringManual(innerStr, ',');
+        size_t n = STR.size();
+        std::vector<std::string> STR2;
 
-        // Разные лямбда-функции для разбора массивов целых и вещественных чисел
-        auto parseDoubleArray = [&]() -> std::optional<std::vector<double>> 
+        for (size_t i = 0; i < n; ++i) 
         {
-            std::vector<double> arr;
-            std::stringstream ss(innerStr);
-            double num;
-            char comma;
+            bool isDollar = std::any_of(STR[i].begin(), STR[i].end(), [](char c){ return c == '$'; });
+            std::vector<std::string> processedSTR_1;
 
-            while (ss >> num) 
-            {
-                arr.push_back(num);
-                if (!(ss >> comma) || comma != ',') 
+            if (!isDollar) {
+                    processedSTR_1.push_back(STR[i]);
+            } else {
+                std::vector<std::string> STR_1 = splitStringManual(STR[i], '$');
+                processedSTR_1.push_back(STR_1[0]);
+                for (size_t j = 1; j < STR_1.size(); j++) 
                 {
-                  break; //Дошли до конца строки
+                    std::optional<ParameterValue> strI = container.GetValue(STR_1[j]);
+
+                    if (strI.has_value()) {
+                        processedSTR_1.push_back(toString(strI.value()));
+                    } else {
+                        throw Error(-109,"Значение отсылает на ключ, который не был объявлен раньше:" + STR_1[j]);
+                    }
                 }
             }
-            if (ss.fail() && !ss.eof()) 
-            {
-              return std::nullopt; //Ошибка чтения
-            }
-            return arr;
-        };
+            
+            STR2.push_back(concatenateStringsStream(processedSTR_1) + ',');
+        }
 
-        auto parseIntArray = [&]() -> std::optional<std::vector<int>> 
-        {
-            std::vector<int> arr;
-            std::stringstream ss(innerStr);
-            int num;
-            char comma;
-
-            while (ss >> num) 
-            {
-                arr.push_back(num);
-                if (!(ss >> comma) || comma != ',') 
-                {
-                  break; //Дошли до конца строки
-                }
-            }
-            if (ss.fail() && !ss.eof()) 
-            {
-              return std::nullopt; //Ошибка чтения
-            }
-            return arr;
-        };
+        std::string innerStr_1 = concatenateStringsStream(STR2);
+        innerStr_1 = innerStr_1.substr(0, valueStr.length() - 1);
+        bool isDouble = std::any_of(innerStr_1.begin(), innerStr_1.end(), [](char c){ return c == '.'; });
 
         // Выбираем функцию разбора в зависимости от наличия десятичной точки
-        if (hasDecimal) 
+        if (isDouble) 
         {
-            auto parsedArray = parseDoubleArray();
-            if (parsedArray.has_value()) 
+            try
             {
-                result.value = *parsedArray;
+                std::vector<double> dArray = container.doubleArrayGet(innerStr_1);
+                result.value = dArray;
                 result.type = ParameterValue::Type::DOUBLE_ARRAY;
-            } else {
-                throw std::runtime_error("Ошибка разбора массива вещественных чисел: " + valueStr);
+            } catch (const std::invalid_argument& e) {
+                result.value = "[" + innerStr_1 + "]";
+                result.type = ParameterValue::Type::STRING;
             }
+            
         } else {
 
-            auto parsedArray = parseIntArray();
-
-            if (parsedArray.has_value()) 
+            try
             {
-                result.value = *parsedArray;
+                std::vector<int> iArray = container.intArrayGet(innerStr_1);
+                result.value = iArray;
                 result.type = ParameterValue::Type::INT_ARRAY;
-            } else {
-                throw std::runtime_error("Ошибка разбора массива целых чисел: " + valueStr);
+            } catch (const std::invalid_argument& e) {
+                result.value = "[" + innerStr_1 + "]";
+                result.type = ParameterValue::Type::STRING;
             }
+            
         }
-        
+
     } else { // Разбор одиночного значения
 
-        try 
+        bool isDollar = std::any_of(valueStr.begin(), valueStr.end(), [](char c){ return c == '$'; });
+        std::vector<std::string> STR2; //Corrected: Initialize STR2
+
+        if (!isDollar) {
+                    STR2.push_back(valueStr);
+        } else {
+            std::vector<std::string> STR = splitStringManual(valueStr, '$');
+            STR2.push_back(STR[0]);
+            for (size_t i = 1; i < STR.size(); i++) 
+            {
+                std::optional<ParameterValue> strI = container.GetValue(STR[i]);
+
+                if (strI.has_value()) {
+                    STR2.push_back(toString(strI.value())); 
+                } else {
+                    throw Error(-109,"Значение отсылает на ключ, который не был объявлен раньше:" + STR[i]);
+                }
+            }
+        }
+
+        std::string innerStr = concatenateStringsStream(STR2);
+
+        if (innerStr.find('.') != std::string::npos) 
         {
-            result.value = std::stoi(valueStr);
-            result.type = ParameterValue::Type::INT;
+            try 
+            {
+                result.value = container.doubleGet(innerStr);
+                result.type = ParameterValue::Type::DOUBLE;
+            } catch (const Error& e) {
+                result.value = innerStr;
+                result.type = ParameterValue::Type::STRING;
+            }
+
+        } else {
             
-        } catch (const std::invalid_argument& e) {}
-
-        try  
-        {
-            result.value = std::stod(valueStr);
-            result.type = ParameterValue::Type::DOUBLE;
-        }  catch (const std::invalid_argument& e) {}
-
-        try
-        {
-            result.value = valueStr;
-            result.type = ParameterValue::Type::STRING;
-        } catch (const std::invalid_argument& e) {}       
+            try 
+            {
+                result.value = container.intGet(innerStr);
+                result.type = ParameterValue::Type::INT;
+            } catch (const Error& e) {
+                result.value = innerStr;
+                result.type = ParameterValue::Type::STRING;
+            }
+        }
     }
 
     return result;
+}
+
+std::optional<ParameterValue> ParameterContainer::GetValue(const std::string& key) const 
+{
+    Node* node = findNode(root_.get(), key);
+    if (node != nullptr) 
+    {
+        return node->value;
+    } else {
+        return std::nullopt;
+    }
+}
+
+template <typename T>
+std::string toString(const T& value) 
+{
+    std::stringstream ss;
+    ss << value;
+    return ss.str();
+}
+
+std::string toString(const ParameterValue& param) 
+{
+    std::stringstream ss;
+    std::visit([&](const auto& val) 
+    {
+        using T = std::decay_t<decltype(val)>;
+
+        if constexpr (std::is_same_v<T, int>) 
+        {
+            ss << std::get<int>(param.value);
+        } else if constexpr (std::is_same_v<T, double>) {
+            ss << std::get<double>(param.value);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            ss << std::get<std::string>(param.value);
+        } else {
+            ss << "Unsupported ParameterValue type";
+        }
+    }, param.value);
+
+    return ss.str();
+}
+
+//Специально для строк C
+std::string toString(const char* value) 
+{
+    return value ? std::string(value) : "";
+}
+
+std::string concatenateStringsStream(const std::vector<std::string>& strings) 
+{
+    std::stringstream ss;
+    for (const auto& str : strings) 
+    {
+        ss << str;
+    }
+    return ss.str();
+}
+
+std::vector<std::string> splitStringManual(const std::string& str, char delimiter) 
+{
+    std::vector<std::string> tokens;
+    std::stringstream ss(str);
+    std::string token;
+
+    while (std::getline(ss, token, delimiter)) 
+    {
+        tokens.push_back(token);
+    }
+    return tokens;
+}
+
+int ParameterContainer::parseInt(const std::string& valueStr) const 
+{
+    std::string currentNum;
+    int count_minus = 0;
+    for (char c : valueStr) 
+    {
+        if (isdigit(c) || c == '-') 
+        {
+            currentNum += c;
+        } else if (c == '-') {
+            count_minus++;
+            if (count_minus > 1)
+            {
+                throw Error(-305, "parseInt: в числе два минуса");
+            }
+            currentNum += c;
+        } else {
+            throw Error(-322, "parseInt: Не цифры в занчение");
+        }
+    }
+
+    return std::stoi(currentNum);
+}
+
+double ParameterContainer::parseDouble(const std::string& valueStr) const 
+{
+    std::string currentNum;
+    int count_dot = 0;
+    int count_minus = 0;
+    for (char c : valueStr) 
+    {
+        if (isdigit(c)) 
+        {
+            currentNum += c;
+        } else if (c == '.') {
+            count_dot++;
+            if (count_dot > 1)
+            {
+                throw Error(-305, "parseDouble: в числе две точки");
+            }
+            currentNum += c;
+        } else if (c == '-') {
+            count_minus++;
+            if (count_minus > 1)
+            {
+                throw Error(-305, "parseDouble: в числе два минуса");
+            }
+            currentNum += c;
+        } else {
+            throw Error(-322, "parseDouble: Не цифры в занчение");
+        }
+    }
+
+    return std::stod(currentNum);
 }
 
 std::vector<int> ParameterContainer::parseIntArray(const std::string& valueStr) const 
 {
     std::vector<int> arr;
     std::string currentNum;
+    int count_minus = 0;
 
     for (char c : valueStr) 
     {
-        if (isdigit(c) || c == '-') 
-        { // Проверяем только цифры и знак минуса
+        if (isdigit(c)) 
+        {
+            currentNum += c;
+        } else if (c == '-') {
+            count_minus++;
+            if (count_minus > 1)
+            {
+                throw Error(-305, "parseIntArray: в числе два минуса");
+            }
             currentNum += c;
         } else if (c == ',') {
-
             if (!currentNum.empty()) 
             {
                 try 
@@ -188,12 +340,12 @@ std::vector<int> ParameterContainer::parseIntArray(const std::string& valueStr) 
                     arr.push_back(std::stoi(currentNum));
                     currentNum.clear();
                 } catch (const std::invalid_argument& e) {
-                    throw Error(-301, "parseIntArray: Недопустимое целочисленное значение в массиве");
+                    throw Error(-301, "parseIntArray: Недопустимое значение в массиве");
                 } catch (const std::out_of_range& e) {
                     throw Error(-302, "parseIntArray: Целочисленное значение вне диапазона в массиве");
                 }
             }
-        } // Другие символы игнорируются
+        }
     }
 
     // Обработка последнего числа
@@ -203,9 +355,9 @@ std::vector<int> ParameterContainer::parseIntArray(const std::string& valueStr) 
         {
             arr.push_back(std::stoi(currentNum));
         } catch (const std::invalid_argument& e) {
-            throw Error(-301, "parseIntArray: Недопустимое целочисленное значение в массиве");
+            throw Error(-301, "parseIntArray: недопустимое значение в массиве");
         } catch (const std::out_of_range& e) {
-            throw Error(-302, "parseIntArray: Целочисленное значение вне диапазона в массиве");
+            throw Error(-302, "parseIntArray: значение вне диапазона в массиве");
         }
     }
 
@@ -216,11 +368,19 @@ std::vector<double> ParameterContainer::parseDoubleArray(const std::string& valu
 {
     std::vector<double> arr;
     std::string currentNum;
-
+    int count_dot = 0;
     for (char c : valueStr) 
     {
-        if (isdigit(c) || c == '.' || c == '-') 
+        if (isdigit(c) || c == '-') 
         {
+            currentNum += c;
+        } else if (c == '.')
+        {
+            count_dot++;
+            if (count_dot > 1)
+            {
+                throw Error(-305, "parseDoubleArray: в числе две точки");
+            }
             currentNum += c;
         } else if (c == ',') {
             if (!currentNum.empty()) {
@@ -228,13 +388,13 @@ std::vector<double> ParameterContainer::parseDoubleArray(const std::string& valu
                     arr.push_back(std::stod(currentNum));
                     currentNum.clear();
                 } catch (const std::invalid_argument& e) {
-                    throw Error(-303, "parseDoubleArray: недопустимое вещественное значение в массиве");
+                    throw Error(-303, "parseDoubleArray: недопустимое  значение в массиве");
                 } catch (const std::out_of_range& e) {
-                    throw Error(-304, "parseDoubleArray: вещественное значение вне диапазона в массиве");
+                    throw Error(-304, "parseDoubleArray: значение вне диапазона в массиве");
                 }
             }
+            count_dot = 0;
         }
-        // Игнорируем другие символы
     }
     // Обработка последнего числа
     if (!currentNum.empty()) 
@@ -253,8 +413,8 @@ std::vector<double> ParameterContainer::parseDoubleArray(const std::string& valu
 
 Node* ParameterContainer::findNode(Node* node, const std::string& key) const 
 {
-    if (!node) return nullptr; // Базовый случай: узел не найден
-    if (key == node->key) return node; // Базовый случай: ключ найден
+    if (!node) return nullptr;          // Базовый случай: узел не найден
+    if (key == node->key) return node;  // Базовый случай: ключ найден
     if (key < node->key) return findNode(node->left.get(), key); // Рекурсивный вызов для левого поддерева
     return findNode(node->right.get(), key); // Рекурсивный вызов для правого поддерева
 }
@@ -311,14 +471,13 @@ const std::string& ParameterContainer::GetString(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::STRING) 
+    if (!node || node->value.type != ParameterValue::Type::STRING)
     {
         throw Error(-114,"GetString: ключ не найден или неверный тип: " + key);
     }
 
     return std::get<std::string>(node->value.value);
 }
-
 
 void ParameterContainer::insert(const std::string& key, const ParameterValue& value) 
 {
