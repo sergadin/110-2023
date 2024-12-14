@@ -3,185 +3,113 @@
 #include <string>
 using namespace std;
 
-// BTreeNode class
+// Узел B-дерева
 class BTreeNode {
 public:
-    vector<string*> keys; // Keys (pointers to strings)
-    vector<BTreeNode*> children; // Child pointers
-    bool leaf; // True if this node is a leaf
-    int t; // Minimum degree
+    vector<string*> keys;   // Ключи (указатели на строки)
+    vector<BTreeNode*> children; // Дочерние узлы
+    bool isLeaf;            // Лист или нет
+    int t;                  // Минимальная степень
 
-    BTreeNode(int t, bool leaf);
-
-    void traverse();
-
-    BTreeNode* search(const string& k);
-
-    void insertNonFull(string* k);
-
+    BTreeNode(int t, bool isLeaf);
+    void insertNonFull(string* key);
     void splitChild(int i, BTreeNode* y);
-
-    int findKey(const string& k);
-
-    void remove(const string& k);
-
-    void removeFromLeaf(int idx);
-
-    void removeFromNonLeaf(int idx);
-
-    string* getPred(int idx);
-
-    string* getSucc(int idx);
-
-    void fill(int idx);
-
-    void borrowFromPrev(int idx);
-
-    void borrowFromNext(int idx);
-
-    void merge(int idx);
-
-    friend class BTree;
+    void traverse();
+    BTreeNode* search(string* key);
 };
 
-// BTree class
-class BTree {
-private:
-    BTreeNode* root; // Pointer to root node
-    int t; // Minimum degree
-public:
-    BTree(int t) : root(nullptr), t(t) {}
+// Конструктор узла
+BTreeNode::BTreeNode(int t, bool isLeaf) {
+    this->t = t;
+    this->isLeaf = isLeaf;
+}
 
-    void traverse() {
-        if (root) root->traverse();
-    }
-
-    BTreeNode* search(const string& k) {
-        return root ? root->search(k) : nullptr;
-    }
-
-    void insert(string* k);
-
-    void remove(const string& k);
-};
-
-// Constructor for BTreeNode
-BTreeNode::BTreeNode(int t, bool leaf) : t(t), leaf(leaf) {}
-
-// Traverse the tree
+// Метод обхода
 void BTreeNode::traverse() {
     int i;
     for (i = 0; i < keys.size(); i++) {
-        if (!leaf) children[i]->traverse();
-        cout << *(keys[i]) << " ";
+        if (!isLeaf)
+            children[i]->traverse();
+        cout << *keys[i] << " ";
     }
-    if (!leaf) children[i]->traverse();
+    if (!isLeaf)
+        children[i]->traverse();
 }
 
-// Search for a key in the tree
-BTreeNode* BTreeNode::search(const string& k) {
+// Метод поиска
+BTreeNode* BTreeNode::search(string* key) {
     int i = 0;
-    while (i < keys.size() && k > *(keys[i]))
+    while (i < keys.size() && *key > *keys[i])
         i++;
-    if (i < keys.size() && *(keys[i]) == k)
+    if (i < keys.size() && *keys[i] == *key)
         return this;
-    if (leaf) return nullptr;
-    return children[i]->search(k);
+    if (isLeaf)
+        return nullptr;
+    return children[i]->search(key);
 }
 
-//Вставка нового ключа в дерево
-void BTree::insert(string* k) {
+// Вставка в неполный узел
+void BTreeNode::insertNonFull(string* key) {
+    int i = keys.size() - 1;
+    if (isLeaf) {
+        keys.push_back(nullptr);
+        while (i >= 0 && *key < *keys[i]) {
+            keys[i + 1] = keys[i];
+            i--;
+        }
+        keys[i + 1] = key;
+    } else {
+        while (i >= 0 && *key < *keys[i])
+            i--;
+        if (children[i + 1]->keys.size() == 2 * t - 1) {
+            splitChild(i + 1, children[i + 1]);
+            if (*key > *keys[i + 1])
+                i++;
+        }
+        children[i + 1]->insertNonFull(key);
+    }
+}
+
+// Разделение дочернего узла
+void BTreeNode::splitChild(int i, BTreeNode* y) {
+    BTreeNode* z = new BTreeNode(y->t, y->isLeaf);
+    z->keys.insert(z->keys.end(), y->keys.begin() + t, y->keys.end());
+    y->keys.resize(t - 1);
+    if (!y->isLeaf) {
+        z->children.insert(z->children.end(), y->children.begin() + t, y->children.end());
+        y->children.resize(t);
+    }
+    children.insert(children.begin() + i + 1, z);
+    keys.insert(keys.begin() + i, y->keys[t - 1]);
+}
+
+// B-дерево
+class BTree {
+public:
+    BTreeNode* root;
+    int t;
+
+    BTree(int t) { root = nullptr; this->t = t; }
+    void traverse() { if (root) root->traverse(); }
+    BTreeNode* search(string* key) { return (root ? root->search(key) : nullptr); }
+    void insert(string* key);
+};
+
+// Вставка в дерево
+void BTree::insert(string* key) {
     if (!root) {
         root = new BTreeNode(t, true);
-        root->keys.push_back(k);
-    }
-    else {
+        root->keys.push_back(key);
+    } else {
         if (root->keys.size() == 2 * t - 1) {
             BTreeNode* s = new BTreeNode(t, false);
             s->children.push_back(root);
             s->splitChild(0, root);
-            int i = (s->keys[0] && *k > *(s->keys[0])) ? 1 : 0;
-            s->children[i]->insertNonFull(k);
+            int i = (*key > *s->keys[0]) ? 1 : 0;
+            s->children[i]->insertNonFull(key);
             root = s;
+        } else {
+            root->insertNonFull(key);
         }
-        else {
-            root->insertNonFull(k);
-        }
     }
-}
-
-// Insert a key into a non-full node
-void BTreeNode::insertNonFull(string* k) {
-    int i = keys.size() - 1;
-    if (leaf) {
-        keys.insert(keys.begin() + (i + 1), k);
-        while (i >= 0 && *keys[i] > *k) {
-            keys[i + 1] = keys[i];
-            i--;
-        }
-        keys[i + 1] = k;
-    }
-    else {
-        while (i >= 0 && *keys[i] > *k)
-            i--;
-        i++;
-        if (children[i]->keys.size() == 2 * t - 1) {
-            splitChild(i, children[i]);
-            if (*keys[i] < *k)
-                i++;
-        }
-        children[i]->insertNonFull(k);
-    }
-}
-
-// Split a child node
-void BTreeNode::splitChild(int i, BTreeNode* y) {
-    BTreeNode* z = new BTreeNode(y->t, y->leaf);
-    for (int j = 0; j < t - 1; j++)
-        z->keys.push_back(y->keys[j + t]);
-    if (!y->leaf) {
-        for (int j = 0; j < t; j++)
-            z->children.push_back(y->children[j + t]);
-    }
-    y->keys.resize(t - 1);
-    children.insert(children.begin() + (i + 1), z);
-    keys.insert(keys.begin() + i, y->keys[t - 1]);
-    y->keys.pop_back();
-}
-
-// Remove a key from the tree
-void BTree::remove(const string& k) {
-    if (!root) {
-        cout << "The tree is empty\n";
-        return;
-    }
-    root->remove(k);
-    if (root->keys.empty()) {
-        BTreeNode* tmp = root;
-        root = root->leaf ? nullptr : root->children[0];
-        delete tmp;
-    }
-}
-
-// More remove and helper methods can be added here...
-
-int main() {
-    BTree t(3); // A B-tree with minimum degree 3
-    string s1 = "hello";
-    string s2 = "world";
-    string s3 = "tree";
-    string s4 = "b-tree";
-    string s5 = "data";
-
-    t.insert(&s1);
-    t.insert(&s2);
-    t.insert(&s3);
-    t.insert(&s4);
-    t.insert(&s5);
-
-    cout << "Traversal of the constructed B-tree is:\n";
-    t.traverse();
-    cout << endl;
-
-    return 0;
 }
