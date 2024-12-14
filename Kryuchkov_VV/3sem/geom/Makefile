@@ -1,6 +1,6 @@
 all: a.out run
 
-main.o: main.cpp Tree.h
+main.o: main.cpp geom.h
 	g++ -c main.cpp
 	
 run: a.out 
