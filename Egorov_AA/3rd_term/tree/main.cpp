@@ -89,7 +89,7 @@ BTreeNode* BTreeNode::search(const string& k) {
     return children[i]->search(k);
 }
 
-// Insert a new key into the tree
+//Вставка нового ключа в дерево
 void BTree::insert(string* k) {
     if (!root) {
         root = new BTreeNode(t, true);

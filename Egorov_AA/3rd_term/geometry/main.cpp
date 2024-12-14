@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <vector>
 #include <iomanip>
+#include <cmath>
 
 class Point {
 public:
@@ -66,7 +67,7 @@ std::vector<Cross> findIntersected(Polygon poly, Line l) {
     double b = l.findCoeffB();
     double c = l.findCoeffC();
 
-    for (int i = 0; i < (poly.size() - 1); i++) {
+    for (int i = 0; i < int(poly.size() - 1); i++) {
         double x1 = poly[i].x, y1 = poly[i].y,
             x2 = poly[i + 1].x, y2 = poly[i + 1].y,
             xi, yi;
@@ -133,7 +134,7 @@ bool isIntersecting(Point p, Point p1, Point p2) {
     if (p1.y > p2.y) {
         std::swap(p1, p2);
     }
-    if (p.y == p1.y || p.y == p2.y) {
+    if (std::fabs(p.y - p1.y) < 1e-9 || std::fabs(p.y - p2.y) < 1e-9) {
         p.y += 1e-9;
     }
 
@@ -169,11 +170,11 @@ bool isPointInsidePolygon(const Polygon& polygon, Point p) {
 
 int main() {
     std::cout << std::fixed << std::setprecision(2) << "x\ty\tindex\n";
-    Polygon poly = std::vector<Point>({ Point(5, 2), Point(2, 5), Point(5, 6), Point(4, 8), Point(6, 10), Point(7, 14), Point(10, 6), Point(9, 4), Point(6, 4), Point(5, 2) });
+    Polygon poly = std::vector<Point>({ Point(5, 2), Point(2, 5), Point(5, 6), Point(4, 8), Point(6, 11), Point(10, 6), Point(9, 4), Point(6, 4), Point(5, 2) });
     for (Point p : poly) {
         std::cout << p.x << "\t" << p.y << "\t" << p.index << "\n";
     }
-    std::vector<Cross> cs = findIntersected(poly, Line(Point(0, 4), Point(6, 10)));
+    std::vector<Cross> cs = findIntersected(poly, Line(Point(2, 4), Point(8, 10)));
     Point::index_global = 1;
 
     Polygon new_poly = poly;
@@ -237,7 +238,7 @@ int main() {
     }
 
 
-    for (int k = 0; k < new_polys_array.size(); k++) {
+    for (int k = 0; k < int(new_polys_array.size()); k++) {
         double xc = (new_polys_array[k][0].x + new_polys_array[k][new_polys_array[k].size() - 1].x) / 2;
         double yc = (new_polys_array[k][0].y + new_polys_array[k][new_polys_array[k].size() - 1].y) / 2;
 
@@ -247,7 +248,7 @@ int main() {
         }
 
     }
-    std::cout << "\n\n";
+    std::cout << "\n\nПолученные многоугольники:\n";
 
 
 
