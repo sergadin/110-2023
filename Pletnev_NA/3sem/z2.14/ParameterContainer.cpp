@@ -118,7 +118,7 @@ ParameterValue parseValue(const std::string& valueStr, const ParameterContainer&
                 std::vector<double> dArray = container.doubleArrayGet(innerStr_1);
                 result.value = dArray;
                 result.type = ParameterValue::Type::DOUBLE_ARRAY;
-            } catch (const std::invalid_argument& e) {
+            } catch (const Error& e) {
                 result.value = "[" + innerStr_1 + "]";
                 result.type = ParameterValue::Type::STRING;
             }
@@ -130,7 +130,7 @@ ParameterValue parseValue(const std::string& valueStr, const ParameterContainer&
                 std::vector<int> iArray = container.intArrayGet(innerStr_1);
                 result.value = iArray;
                 result.type = ParameterValue::Type::INT_ARRAY;
-            } catch (const std::invalid_argument& e) {
+            } catch (const Error& e) {
                 result.value = "[" + innerStr_1 + "]";
                 result.type = ParameterValue::Type::STRING;
             }
@@ -423,57 +423,75 @@ int ParameterContainer::GetInt(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::INT) 
+    if (!node) 
     {
-        throw Error(-110,"GetInt: ключ не найден или неверный тип: " + key);
+        throw Error(-110,"GetInt: ключ не найден: " + key);
+    } else if (node->value.type != ParameterValue::Type::INT) {
+        throw Error(-111,"GetInt: Неверный тип: " + key);
     }
 
     return std::get<int>(node->value.value);
 }
 
-double ParameterContainer::GetDouble(const std::string& key) const 
+double ParameterContainer::GetDouble(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::DOUBLE) 
+    if (!node)
     {
-        throw Error(-111,"GetDouble: ключ не найден или неверный тип: " + key);
+        throw Error(-110, "GetDouble: ключ не найден: " + key);
+    }
+    else if (node->value.type != ParameterValue::Type::DOUBLE)
+    {
+        throw Error(-111, "GetDouble: Неверный тип: " + key);
     }
 
     return std::get<double>(node->value.value);
 }
 
-const std::vector<int>& ParameterContainer::GetIntArray(const std::string& key) const 
+const std::vector<int>& ParameterContainer::GetIntArray(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::INT_ARRAY) 
+    if (!node)
     {
-        throw Error(-112,"GetIntArray: ключ не найден или неверный тип: " + key);
+        throw Error(-110, "GetIntArray: ключ не найден: " + key);
+    }
+    else if (node->value.type != ParameterValue::Type::INT_ARRAY)
+    {
+        throw Error(-112, "GetIntArray: Неверный тип: " + key);
     }
 
     return std::get<std::vector<int>>(node->value.value);
 }
 
-const std::vector<double>& ParameterContainer::GetDoubleArray(const std::string& key) const 
+const std::vector<double>& ParameterContainer::GetDoubleArray(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::DOUBLE_ARRAY) 
+    if (!node)
     {
-        throw Error(-113,"GetDoubleArray: ключ не найден или неверный тип: " + key);
+        throw Error(-110, "GetDoubleArray: ключ не найден: " + key);
+    }
+    else if (node->value.type != ParameterValue::Type::DOUBLE_ARRAY)
+    {
+        throw Error(-113, "GetDoubleArray: Неверный тип: " + key);
     }
 
     return std::get<std::vector<double>>(node->value.value);
 }
 
-const std::string& ParameterContainer::GetString(const std::string& key) const 
+const std::string& ParameterContainer::GetString(const std::string& key) const
 {
     Node* node = findNode(root_.get(), key);
 
-    if (!node || node->value.type != ParameterValue::Type::STRING)
+    if (!node)
     {
-        throw Error(-114,"GetString: ключ не найден или неверный тип: " + key);
+        throw Error(-110, "GetString: ключ не найден: " + key);
+    }
+    else if (node->value.type != ParameterValue::Type::STRING)
+    {
+        throw Error(-114, "GetString: Неверный тип: " + key);
     }
 
     return std::get<std::string>(node->value.value);
