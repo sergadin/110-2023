@@ -1,307 +1,296 @@
 #include <iostream>
-#include <cmath>
-#include <vector>
-#include <bits/stdc++.h>
- 
+#include <fstream>
+#include <string>
+#include <cstdlib>
+#include <ctime>
+
 using namespace std;
- 
-struct Point
-{
-double x, y;
-};
- 
-class ConvexPolygon
-{
-public:
-std::vector<Point> vertices_;
- 
-ConvexPolygon() = delete;
- 
-ConvexPolygon(const std::vector<Point>& points); 
-ConvexPolygon(const ConvexPolygon& other);
-~ConvexPolygon();
- 
-void print() const
-{
-for (const auto& vertex : vertices_)
-{
-cout << "(" << vertex.x << ", " << vertex.y << ")" << endl;
-}
-};
- 
-static int countPoints(const ConvexPolygon& points)
-{
-return points.vertices_.size();
-}
- 
-static bool comparePoints(const Point& p1, const Point& p2) {
- 
-if (abs(p1.x - p2.x) < 0.0000000000000001) {
-return p1.y <= p2.y; 
-return p1.x < p2.x;
-}
- 
-static void sortPoints(ConvexPolygon& points) {
-std::sort(points.vertices_.begin(), points.vertices_.end(), comparePoints);
-}
- 
-bool searchPoint(std::vector<Point> points, Point p);
-vector<Point> intersect(double a, double b, double c);
-double crossProduct(Point a, Point b, Point c);
-//vector<Point> intersection(Point a, Point b);
-vector<Point> pointsAboveAndBelowLine(Point a, Point b);
-static void writePolygon(const std::string& filename, const ConvexPolygon& points);
-static void writePolygonToFile(const std::string& filename, const ConvexPolygon& points);
-bool isSegmentInside(Point a, Point b);
-vector<vector<Point>> splitPolygon(const ConvexPolygon& poly1, const ConvexPolygon& poly2, const ConvexPolygon& poly3, const int t);
- 
-ConvexPolygon& operator=(const ConvexPolygon& other);
-};
- 
-class ConvexPolygon_Exception
+
+template<typename K, typename V>
+class Map
 {
 private:
-int code_;
-std::string message_;
+    struct Node
+    {
+        K key;
+        V value;
+        Node* left;
+        Node* right;
+        Node(K k, V v) : key(k), value(v), left(nullptr), right(nullptr) {}
+    };
+    Node* root;
+    int size;
+
+    // Filling the tree
+    void insert(Node*& node, K key, V value)
+    {
+        if (node == nullptr)
+        {
+            node = new Node(key, value);
+            size++;
+        }
+
+        else if (key < node->key)
+        {
+            insert(node->left, key, value);
+        }
+
+        else if (key > node->key)
+        {
+            insert(node->right, key, value);
+        }
+
+        else
+        {
+            node->value = value; // Update value if key already exists
+        }
+    }
+
+    // Searching for values
+    V search(Node* node, K key)
+    {
+        if (node == nullptr)
+        {
+            cerr << "Key not found" << endl;
+            exit(1);
+        }
+
+        if (key < node->key)
+        {
+            return search(node->left, key);
+        }
+
+        else if (key > node->key)
+        {
+            return search(node->right, key);
+        }
+
+        else
+        {
+            return node->value;
+        }
+    }
+
+    // Removing the notes
+    Node* remove(Node* node, K key)
+    {
+        if (node == nullptr)
+        {
+            cerr << "Key not found" << endl;
+            return nullptr;
+        }
+
+        if (key < node->key)
+        {
+            node->left = remove(node->left, key);
+        }
+
+        else if (key > node->key)
+        {
+            node->right = remove(node->right, key);
+        }
+
+        else
+        {
+            if (node->left == nullptr)
+            {
+                Node* temp = node->right;
+                delete node;
+                size--;
+                return temp;
+            }
+
+            else if (node->right == nullptr)
+            {
+                Node* temp = node->left;
+                delete node;
+                size--;
+                return temp;
+            }
+            Node* temp = minValueNode(node->right);
+            node->key = temp->key;
+            node->value = temp->value;
+            node->right = remove(node->right, temp->key);
+        }
+        return node;
+    }
+
+    Node* minValueNode(Node* node)
+    {
+        Node* current = node;
+        while (current && current->left != nullptr)
+        {
+            current = current->left;
+        }
+        return current;
+    }
+
+    // Function to traverse the tree, starting from a specified line to the right
+    void printInOrderRight(Node* current, K key, V value)
+    {
+        if (current == nullptr)
+        {
+            return;
+        }
+
+        printInOrderRight(current->left, key, value);
+
+        if (current->key > key)
+        {
+            std::cout << current->key << " : " << current->value << std::endl;
+        }
+
+        printInOrderRight(current->right, key, value);
+    }
+
+    // Function to traverse a tree, starting from a specified line to the left
+    void printInOrderLeft(Node* current, K key, V value)
+    {
+        if (current == nullptr)
+        {
+            return;
+        }
+
+        printInOrderLeft(current->right, key, value);
+
+        if (current->key < key)
+        {
+            std::cout << current->key << " : " << current->value << std::endl;
+        }
+
+        printInOrderLeft(current->left, key, value);
+    }
+
+
 public:
-ConvexPolygon_Exception(int code, const std::string& message) : code_(code), message_(message) {}
-const std::string& message() const { return message_; }
-int code() const { return code_; }
+    Map() : root(nullptr), size(0) {}
+
+    void insert(K key, V value)
+    {
+        insert(root, key, value);
+    }
+
+    V search(K key)
+    {
+        return search(root, key);
+    }
+
+    void remove(K key)
+    {
+        root = remove(root, key);
+    }
+
+    int getSize()
+    {
+        return size;
+    }
+
+    // Рекурсивная функция для обхода дерева и запоминания значений
+    void traverse(Node* node) {
+        if (node == nullptr) {
+            return;
+        }
+
+        traverse(node->left);
+        std::cout << "Key: " << node->key << ", Value: " << node->value << std::endl;
+        traverse(node->right);
+    }
+
+    Node* getRoot()
+    {
+        return root;
+    }
+
+    // Print elements after
+    void printAfter(K key, V value)
+    {
+        printInOrderRight(root, key, value);
+    }
+
+    // Print elements before
+    void printBefore(K key, V value)
+    {
+        printInOrderLeft(root, key, value);
+    }
+
+    // Function of cleaning memory after process
+    void cleanUpMemory() {
+        cleanUpMemory(root);
+        root = nullptr;
+    }
+
+    void cleanUpMemory(Node* node) {
+        if (node != nullptr) {
+            cleanUpMemory(node->left);
+            cleanUpMemory(node->right);
+            delete node;
+        }
+    }
+
 };
- 
-ConvexPolygon::ConvexPolygon(const std::vector<Point>& points)
-{
-vertices_ = points;
-}
- 
-ConvexPolygon::ConvexPolygon(const ConvexPolygon& other)
-{
-vertices_ = other.vertices_;
-}
- 
-ConvexPolygon::~ConvexPolygon() {}
 
+// Random key and value generator
+std::string generateRandomKey(int length)
+{
+    static const char alphanum[] =
+        "0123456789"
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        "abcdefghijklmnopqrstuvwxyz";
 
- 
-bool ConvexPolygon::searchPoint(std::vector<Point> points, Point p) {
-int n = points.size();
-for (int i = 0; i < n; i++) {
-if (points[i].x == p.x && points[i].y == p.y) {
-return true;
+    std::string key;
+    for (int i = 0; i < length; ++i)
+    {
+        key += alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    return key;
 }
-}
-return false;
-}
- 
-double ConvexPolygon::crossProduct(Point a, Point b, Point c) {
-return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-}
- 
-vector<Point> ConvexPolygon::intersect(double a, double b, double c) {
-vector<Point> newPoints;
-int n = vertices_.size();
- 
-for (int i = 0; i < n; i++) {
-int next = (i + 1) % n;
-double val1 = a * vertices_[i].x + b * vertices_[i].y + c;
-double val2 = a * vertices_[next].x + b * vertices_[next].y + c;
- 
-if (val1 * val2 <= 0) {
-double x = (vertices_[i].x * abs(val2) + vertices_[next].x * abs(val1)) / (abs(val1) + abs(val2));
-double y = (vertices_[i].y * abs(val2) + vertices_[next].y * abs(val1)) / (abs(val1) + abs(val2));
-newPoints.push_back({ x,y });
-}
- 
-if (val2 == 0) {
-newPoints.push_back(vertices_[next]);
-}
-}
- 
-cout << "Points of intersection:" << endl;
-for (auto p : newPoints) {
-cout << "(" << p.x << ", " << p.y << ")" << endl;
-}
- 
-return newPoints;
+
+int generateRandomValue()
+{
+    return rand() % 100;
 }
 
 
- 
-vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) {
-vector<Point> above, below;
-int l = vertices_.size();
-for (int i = 0; i < l; i++) {
-if (crossProduct(a, b, vertices_[i]) > 0) {
-above.push_back(vertices_[i]);
-}
-else {
-below.push_back(vertices_[i]);
-}
-}
-cout << "Points above the line:" << endl;
-for (auto p : above) {
-cout << "(" << p.x << ", " << p.y << ")" << endl;
-}
- 
-return above;
-}
- 
-void ConvexPolygon::writePolygon(const std::string& filename, const ConvexPolygon& points)
+int main()
 {
-std::ofstream file(filename);
- 
-for (const auto& point : points.vertices_)
-{
-file << point.x << " " << point.y << std::endl;
-}
- 
-file << points.vertices_[0].x << " " << points.vertices_[0].y << std::endl;
- 
-file.close();
-}
- 
-void ConvexPolygon::writePolygonToFile(const std::string& filename, const ConvexPolygon& points)
-{
-std::ofstream file(filename);
- 
-for (const auto& point : points.vertices_)
-{
-file << point.x << " " << point.y << std::endl;
-}
- 
-file.close();
-}
- 
-bool ConvexPolygon::isSegmentInside(Point a, Point b) 
-{
-int n = vertices_.size()
-for (int i = 0; i < n; i++) {
-int j = (i + 1) % n;
-if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) {
-return false;
-}
-}
-return true;
-}
- 
-vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, const ConvexPolygon& poly2, const ConvexPolygon& poly3, const int t)
-{
-vector<vector<Point>> result;
-vector<Point> inters = poly1.vertices_;
-vector<Point> above = poly2.vertices_;
-vector<Point> polygon = poly3.vertices_;
-int k = 0;
-// (t = 5)
- 
-vector<Point> a;
-for (int i = 0; i < polygon.size(); i++) { 
-if (searchPoint(above, polygon[i]) != searchPoint(above, polygon[i + 1]))
-{
-if (!(searchPoint(above, polygon[i])) && t != 5)
-{
-a.push_back(polygon[i]);
-}
-if (searchPoint(above, polygon[i]) && t == 5)
-{
- 
-a.push_back(polygon[i]);
-a.push_back(inters[k]);
-result.push_back(a);
-a.push_back(inters[k-1]);
- 
-writePolygonToFile("above.txt", a);
-vector<Point> a = {{ 0,0 }};
-k++;
-continue;
-}
-else
-{
-a.push_back(inters[k]);
-k++;
-}
-}
- 
-else if ((t != 5) && !(searchPoint(above, polygon[i])))
-{
-a.push_back(polygon[i]);
-}
-else if ((t == 5) && searchPoint(above, polygon[i]))
-{
-a.push_back(polygon[i]);
-}
- 
-if (t != 5)
-{
-writePolygon("below.txt", a);
-}
-}
-cout << "Points of a2:" << endl;
-for (auto p : a) {
-cout << "(" << p.x << ", " << p.y << ")" << endl;
-}
-result.push_back(a);
-a.clear();
- 
-cout << "Size of result:" << result.size() << endl;
- 
-return result;
-}
+    // Random numbers generator
+    srand(static_cast<unsigned>(time(0)));
 
+    Map<string, int> map;
+    const int numOfElements = 10;
+    const int keyLength = 5;
 
- 
-ConvexPolygon& ConvexPolygon::operator=(const ConvexPolygon& other)
-{
- 
-vertices_ = other.vertices_;
- 
-return *this;
-}
+    for (int i = 0; i < numOfElements; ++i)
+    {
+        std::string key = generateRandomKey(keyLength);
+        int value = generateRandomValue();
 
+        map.insert(key, value);
+    }
 
+    std::cout << "Generated keys and values:" << std::endl;
+    for (int i = 0; i < numOfElements; ++i)
+    {
+        std::string key = generateRandomKey(keyLength);
+        int value = generateRandomValue();
 
+        std::cout << key << ": " << value << std::endl;
+    }
 
+    cout << "Size of map: " << map.getSize() << endl;
 
+    std::cout << "Elements after 'key3':" << std::endl;
+    map.printAfter("key3", 7);
 
+    std::cout << "Elements before 'key3':" << std::endl;
+    map.printBefore("key3", 7);
 
+    // Обходим дерево и выводим значения
+    std::cout << "Values in the binary search tree:" << std::endl;
+    map.traverse(map.getRoot());
 
- 
-int main() {
- 
-//ConvexPolygon polygon({ {2, 0}, {2, 3}, {4, 2}, {7, 4}, {7, 0} }); // ��������� ����� ��������������
- 
-double a = 0.6;
-double b = -1;
-double c = 0.8;
- 
-Point lineStart = { 0, (-c / b) };
-Point lineEnd = { 1, (-a - c) / b };
- 
-ConvexPolygon polygon({ {2, 0}, {2, 4}, {5, 2}, {9, 3}, {11, 6}, {12, 9}, {13, 10}, {14, 9}, {13, 5}, {13, 0} });
-ConvexPolygon polygon1(polygon.intersect(a, b, c));
-ConvexPolygon polygon2(polygon.pointsAboveAndBelowLine(lineStart, lineEnd));
- 
-/*
-cout << "Intersection points with the line:" << endl;
-polygon.intersect(-1, 5, -8); // ������ ������� ������
- 
-cout << endl;
- 
-cout << "Points above and below the line:" << endl;
-polygon.pointsAboveAndBelowLine(lineStart, lineEnd);
-*/
- 
-//ConvexPolygon polygon1({ {2, 2}, {3.428, 2.285}, {4.857, 2.571}, {7, 3} });
-//ConvexPolygon polygon2({ {2, 3}, {7, 4} });
- 
-//ConvexPolygon polygon2({ {2, 4}, {12, 9}, { 13, 10 } });
-//ConvexPolygon polygon3({ {2, 0}, {5, 2}, {9, 3}, {11, 6}, {14, 9}, {13, 5}, {13, 0} });
-//ConvexPolygon polygon1({ {2, 2}, {3.6, 2.9}, {11.6, 7.8}, {13.8, 9.2} });
- 
-polygon.splitPolygon(polygon1, polygon2, polygon, 1);
- 
-cout << endl;
- 
-cout << "Is segment inside the polygon? " << (polygon.isSegmentInside({ 1, 1 }, { 3, 6 }) ? "Yes" : "No") << endl;
- 
-return 0;
+    map.cleanUpMemory();
+
+    return 0;
 }
