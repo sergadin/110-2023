@@ -37,19 +37,29 @@ public:
         return points.vertices_.size(); // ���������� ���������� ��������� � �������.
     }
 
+<<<<<<< HEAD
     static bool comparePoints(const Point& p1, const Point& p2) 
     {
         // ���������� �� ���������� x, ���� ��� �����, ���������� �� y
         if (abs(p1.x - p2.x) < 1e-10)
         {
+=======
+    static bool comparePoints(const Point& p1, const Point& p2) {
+        // ���������� �� ���������� x, ���� ��� �����, ���������� �� y
+        if (abs(p1.x - p2.x) < 0.0000000000000001) {
+>>>>>>> 535ffd1 (check)
             return p1.y <= p2.y; // ���� x �����, ��������� �� y
         }
         return p1.x < p2.x; // ��������� �� x
     }
 
     // ������� ��� ���������� ������� �����
+<<<<<<< HEAD
     static void sortPoints(ConvexPolygon& points) 
     {
+=======
+    static void sortPoints(ConvexPolygon& points) {
+>>>>>>> 535ffd1 (check)
         std::sort(points.vertices_.begin(), points.vertices_.end(), comparePoints);
     }
 
@@ -105,8 +115,12 @@ bool ConvexPolygon::searchPoint(std::vector<Point> points, Point p)
 }
 
 // ������� ��� ���������� ���������� ������������ ���� ��������
+<<<<<<< HEAD
 double ConvexPolygon::crossProduct(Point a, Point b, Point c) 
 {
+=======
+double ConvexPolygon::crossProduct(Point a, Point b, Point c) {
+>>>>>>> 535ffd1 (check)
     return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }
 
@@ -146,8 +160,12 @@ vector<Point> ConvexPolygon::intersect(double a, double b, double c)
 
 
 // ������� ��� ������ ���� �������� �����, ������� ����� ������������ �������� ������ ������ � �����
+<<<<<<< HEAD
 vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) 
 {
+=======
+vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) {
+>>>>>>> 535ffd1 (check)
     vector<Point> above, below;
     int l = vertices_.size();
     for (int i = 0; i < l; i++) 
@@ -199,12 +217,19 @@ void ConvexPolygon::writePolygonToFile(const std::string& filename, const Convex
 // ������� ��� �������� ����� �� �������� ������� ������ ��������������
 bool ConvexPolygon::isSegmentInside(Point a, Point b) 
 {
+<<<<<<< HEAD
     int n = vertices_.size()
     for (size_t i = 0; i < n; i++) 
     {
         int j = (i + 1) % n;
         if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) 
         {
+=======
+    size_t n = vertices_.size();
+    for (size_t i = 0; i < n; i++) {
+        int j = (i + 1) % n;
+        if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) {
+>>>>>>> 535ffd1 (check)
             return false; // ������� ���������� ������� ��������������
         }
     }
@@ -223,8 +248,12 @@ vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, co
     // ������� ����� ������������� (t = 5)
 
     vector<Point> a;
+<<<<<<< HEAD
     for (int i = 0; i < polygon.size(); i++) 
     {  
+=======
+    for (size_t i = 0; i < polygon.size(); i++) {  
+>>>>>>> 535ffd1 (check)
         if (searchPoint(above, polygon[i]) != searchPoint(above, polygon[i + 1]))
         {
             if (!(searchPoint(above, polygon[i])) && t != 5)
