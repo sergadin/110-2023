@@ -23,11 +23,12 @@ shared_ptr<BTreeNode> BTreeNode::search(const string& k) {
 
 // Обход дерева
 void BTreeNode::traverse() {
-    for (int i = 0; i < int(keys.size()); i++) {
+    int i;
+    for (i = 0; i < int(keys.size()); i++) {
         if (!isLeaf) children[i]->traverse();
-        cout << keys[i] << " ";
+        cout << *(keys[i]) << " ";
     }
-    if (!isLeaf) children[keys.size()]->traverse();
+    if (!isLeaf) children[i]->traverse();
 }
 
 // Вставка ключа в неполный узел
@@ -43,10 +44,10 @@ void BTreeNode::insertNonFull(string* k) {
         keys[i + 1] = k;
     }
     else {
-        while (i >= 0 && k < keys[i]) i--;
+        while (i >= 0 && *k < *keys[i]) i--;
         if (int(children[i + 1]->keys.size()) == 2 * t - 1) {
             splitChild(i + 1, children[i + 1]);
-            if (k > keys[i + 1]) i++;
+            if (*k > *keys[i + 1]) i++;
         }
         children[i + 1]->insertNonFull(k);
     }
@@ -68,7 +69,7 @@ void BTreeNode::splitChild(int i, shared_ptr<BTreeNode> y) {
 }
 
 // Вставка ключа в дерево
-void BTree::insert(int k) {
+void BTree::insert(string* k) {
     if (!root) {
         root = make_shared<BTreeNode>(t, true);
         root->keys.push_back(k);
@@ -79,7 +80,7 @@ void BTree::insert(int k) {
             s->children.push_back(root);
             s->splitChild(0, root);
 
-            int i = (s->keys[0] < k) ? 1 : 0;
+            int i = (*(s->keys[0]) < *k && s->keys[0]) ? 1 : 0;
             s->children[i]->insertNonFull(k);
             root = s;
         }
@@ -90,7 +91,7 @@ void BTree::insert(int k) {
 }
 
 // Удаление ключа из узла
-void BTree::remove(int k) {
+void BTree::remove(const string& k) {
     if (!root) {
         cout << "Tree is empty!\n";
         return;
@@ -99,7 +100,9 @@ void BTree::remove(int k) {
     root->remove(k);
 
     if (root->keys.empty()) {
+        BTreeNode* tmp = root;
         root = root->isLeaf ? nullptr : root->children[0];
+        delete tmp;
     }
 }
 
@@ -123,9 +126,9 @@ void BTreeNode::remove(int k) {
     }
 }
 
-int BTreeNode::findKey(int k) {
+int BTreeNode::findKey(const string& k) {
     int idx = 0;
-    while (idx < int(keys.size()) && keys[idx] < k) idx++;
+    while (idx < int(keys.size()) && *keys[idx] < *k) idx++;
     return idx;
 }
 
@@ -134,7 +137,7 @@ void BTreeNode::removeFromLeaf(int idx) {
 }
 
 void BTreeNode::removeFromNonLeaf(int idx) {
-    int k = keys[idx];
+    int *k = *keys[idx];
 
     if (int(children[idx]->keys.size()) >= t) {
         int pred = getPredecessor(idx);
