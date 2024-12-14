@@ -200,7 +200,7 @@ void ConvexPolygon::writePolygonToFile(const std::string& filename, const Convex
 bool ConvexPolygon::isSegmentInside(Point a, Point b) 
 {
     int n = vertices_.size()
-    for (int i = 0; i < n; i++) 
+    for (size_t i = 0; i < n; i++) 
     {
         int j = (i + 1) % n;
         if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) 
