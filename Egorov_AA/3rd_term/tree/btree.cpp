@@ -37,7 +37,7 @@ void BTreeNode::insertNonFull(string* k) {
 
     if (isLeaf) {
         keys.push_back(0);
-        while (i >= 0 && *k < keys[i]) {
+        while (i >= 0 && *k < *keys[i]) {
             keys[i + 1] = keys[i];
             i--;
         }
@@ -100,13 +100,13 @@ void BTree::remove(const string& k) {
     root->remove(k);
 
     if (root->keys.empty()) {
-        BTreeNode* tmp = root;
+        shared_ptr<BTreeNode>* tmp = root;
         root = root->isLeaf ? nullptr : root->children[0];
-        delete tmp;
+        delete *tmp;
     }
 }
 
-void BTreeNode::remove(int k) {
+void BTreeNode::remove(const string& k) {
     int idx = findKey(k);
 
     if (int(idx < int(keys.size())) && keys[idx] == k) {

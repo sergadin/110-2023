@@ -47,7 +47,7 @@ public:
         cout << endl;
     }
 
-    shared_ptr<BTreeNode> search(int k) {
+    shared_ptr<BTreeNode> search(const string& k) {
         return (root == nullptr) ? nullptr : root->search(k);
     }
 
