@@ -15,25 +15,8 @@ int main() {
 
     cout << "Traversal of the tree: ";
     tree.traverse();
-
     tree.remove(6);
     cout << "After deleting 6: ";
-    tree.traverse();
-
-    tree.remove(13);
-    cout << "After deleting 13: ";
-    tree.traverse();
-
-    tree.remove(7);
-    cout << "After deleting 7: ";
-    tree.traverse();
-
-    tree.remove(4);
-    cout << "After deleting 4: ";
-    tree.traverse();
-
-    tree.remove(20);
-    cout << "After deleting 20: ";
     tree.traverse();
 
     return 0;
