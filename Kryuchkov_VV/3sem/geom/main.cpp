@@ -2,6 +2,8 @@
 #include <cmath>
 #include <vector>
 #include <bits/stdc++.h>
+#include <stdlib.h>
+#define eps 1e-10
 
 using namespace std;
 
@@ -14,13 +16,13 @@ struct Point
 class ConvexPolygon
 {
 public:
-    std::vector<Point> vertices_; // Вектор для хранения вершин многоугольника
+    std::vector<Point> vertices_; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     ConvexPolygon() = delete;
 
-    ConvexPolygon(const std::vector<Point>& points); // Конструктор
-    ConvexPolygon(const ConvexPolygon& other); // Конструктор копирования
-    ~ConvexPolygon(); // Деструктор
+    ConvexPolygon(const std::vector<Point>& points); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    ConvexPolygon(const ConvexPolygon& other); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    ~ConvexPolygon(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     void print() const
     {
@@ -32,19 +34,22 @@ public:
 
     static int countPoints(const ConvexPolygon& points)
     {
-        return points.vertices_.size(); // Возвращает количество элементов в векторе.
+        return points.vertices_.size(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
     }
 
-    static bool comparePoints(const Point& p1, const Point& p2) {
-        // Сравниваем по координате x, если они равны, сравниваем по y
-        if (abs(p1.x - p2.x) < 0.0000000000000001) {
-            return p1.y <= p2.y; // Если x равны, сортируем по y
+    static bool comparePoints(const Point& p1, const Point& p2) 
+    {
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ x, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ y
+        if (abs(p1.x - p2.x) < 1e-10)
+        {
+            return p1.y <= p2.y; // пїЅпїЅпїЅпїЅ x пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ y
         }
-        return p1.x < p2.x; // Сортируем по x
+        return p1.x < p2.x; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ x
     }
 
-    // Функция для сортировки вектора точек
-    static void sortPoints(ConvexPolygon& points) {
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    static void sortPoints(ConvexPolygon& points) 
+    {
         std::sort(points.vertices_.begin(), points.vertices_.end(), comparePoints);
     }
 
@@ -86,44 +91,53 @@ ConvexPolygon::~ConvexPolygon() {}
 
 
 
-bool ConvexPolygon::searchPoint(std::vector<Point> points, Point p) {
+bool ConvexPolygon::searchPoint(std::vector<Point> points, Point p) 
+{
     int n = points.size();
-    for (int i = 0; i < n; i++) {
-        if (points[i].x == p.x && points[i].y == p.y) {
+    for (int i = 0; i < n; i++) 
+    {
+        if ((abs(points[i].x - p.x) < 1e-10) && (abs(points[i].y - p.y) < 1e-10)) 
+        {
             return true;
         }
     }
     return false;
 }
 
-// Функция для вычисления векторного произведения двух векторов
-double ConvexPolygon::crossProduct(Point a, Point b, Point c) {
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+double ConvexPolygon::crossProduct(Point a, Point b, Point c) 
+{
     return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 }
 
 
-vector<Point> ConvexPolygon::intersect(double a, double b, double c) {
+vector<Point> ConvexPolygon::intersect(double a, double b, double c) 
+{
     vector<Point> newPoints;
     int n = vertices_.size();
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) 
+    {
         int next = (i + 1) % n;
         double val1 = a * vertices_[i].x + b * vertices_[i].y + c;
         double val2 = a * vertices_[next].x + b * vertices_[next].y + c;
 
-        if (val1 * val2 <= 0) {
+        if (val1 * val2 <= 0) 
+        {
             double x = (vertices_[i].x * abs(val2) + vertices_[next].x * abs(val1)) / (abs(val1) + abs(val2));
             double y = (vertices_[i].y * abs(val2) + vertices_[next].y * abs(val1)) / (abs(val1) + abs(val2));
             newPoints.push_back({ x,y });
         }
 
-        if (val2 == 0) {
+        if (abs(val2) < 1e-10) 
+        {
             newPoints.push_back(vertices_[next]);
         }
     }
 
     cout << "Points of intersection:" << endl;
-    for (auto p : newPoints) {
+    for (auto p : newPoints) 
+    {
         cout << "(" << p.x << ", " << p.y << ")" << endl;
     }
 
@@ -131,12 +145,15 @@ vector<Point> ConvexPolygon::intersect(double a, double b, double c) {
 }
 
 
-// Функция для вывода двух векторов точек, которые лежат относительно заданной прямой сверху и снизу
-vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) {
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
+vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) 
+{
     vector<Point> above, below;
     int l = vertices_.size();
-    for (int i = 0; i < l; i++) {
-        if (crossProduct(a, b, vertices_[i]) > 0) {
+    for (int i = 0; i < l; i++) 
+    {
+        if (crossProduct(a, b, vertices_[i]) > 0) 
+        {
             above.push_back(vertices_[i]);
         }
         else {
@@ -144,7 +161,8 @@ vector<Point> ConvexPolygon::pointsAboveAndBelowLine(Point a, Point b) {
         }
     }
     cout << "Points above the line:" << endl;
-    for (auto p : above) {
+    for (auto p : above) 
+    {
         cout << "(" << p.x << ", " << p.y << ")" << endl;
     }
     
@@ -160,7 +178,7 @@ void ConvexPolygon::writePolygon(const std::string& filename, const ConvexPolygo
         file << point.x << " " << point.y << std::endl;
     }
 
-    // Замыкаем многоугольник, добавляя первую точку в конец
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
     file << points.vertices_[0].x << " " << points.vertices_[0].y << std::endl;
 
     file.close();
@@ -178,21 +196,23 @@ void ConvexPolygon::writePolygonToFile(const std::string& filename, const Convex
     file.close();
 }
 
-// Функция для проверки лежит ли заданный отрезок внутри многоугольника
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 bool ConvexPolygon::isSegmentInside(Point a, Point b) 
 {
     int n = vertices_.size()
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) 
+    {
         int j = (i + 1) % n;
-        if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) {
-            return false; // Отрезок пересекает границу многоугольника
+        if (crossProduct(vertices_[i], vertices_[j], a) * crossProduct(vertices_[i], vertices_[j], b) < 0) 
+        {
+            return false; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         }
     }
-    return true; // Отрезок целиком лежит внутри многоугольника
+    return true; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 
-// Функция для разделения многоугольника прямой
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, const ConvexPolygon& poly2, const ConvexPolygon& poly3, const int t)
 {
     vector<vector<Point>> result;
@@ -200,10 +220,11 @@ vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, co
     vector<Point> above = poly2.vertices_;
     vector<Point> polygon = poly3.vertices_;
     int k = 0;
-    // верхний обход переключатель (t = 5)
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (t = 5)
 
     vector<Point> a;
-    for (int i = 0; i < polygon.size(); i++) {  
+    for (int i = 0; i < polygon.size(); i++) 
+    {  
         if (searchPoint(above, polygon[i]) != searchPoint(above, polygon[i + 1]))
         {
             if (!(searchPoint(above, polygon[i])) && t != 5)
@@ -261,7 +282,8 @@ vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, co
         }
     }
     cout << "Points of a2:" << endl;
-    for (auto p : a) {
+    for (auto p : a) 
+    {
         cout << "(" << p.x << ", " << p.y << ")" << endl;
     }
     result.push_back(a);
@@ -273,13 +295,13 @@ vector<vector<Point>> ConvexPolygon::splitPolygon(const ConvexPolygon& poly1, co
 }
 
 
-// Оператор присваивания
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 ConvexPolygon& ConvexPolygon::operator=(const ConvexPolygon& other)
 {
-    // Копируем данные из другого объекта
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     vertices_ = other.vertices_;
 
-    return *this; // Возвращаем ссылку на текущий объект
+    return *this; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 
@@ -290,9 +312,10 @@ ConvexPolygon& ConvexPolygon::operator=(const ConvexPolygon& other)
 
 
 
-int main() {
+int main() 
+{
 
-    //ConvexPolygon polygon({ {2, 0}, {2, 3}, {4, 2}, {7, 4}, {7, 0} }); // Добавляем точки многоугольника
+    //ConvexPolygon polygon({ {2, 0}, {2, 3}, {4, 2}, {7, 4}, {7, 0} }); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     double a = 0.6;
     double b = -1;
@@ -307,7 +330,7 @@ int main() {
 
 /*
     cout << "Intersection points with the line:" << endl;
-    polygon.intersect(-1, 5, -8); // Пример сечения прямой
+    polygon.intersect(-1, 5, -8); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 
     cout << endl;
