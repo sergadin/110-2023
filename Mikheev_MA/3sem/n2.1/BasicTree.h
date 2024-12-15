@@ -13,8 +13,8 @@ public:
     
     std::string key; // ключ
     T value; // значение 
-    std::shared_ptr<NodeOfTree<T>> left; // левый потомок
-    std::shared_ptr<NodeOfTree<T>> right; // правый потомок
+    NodeOfTree* left; // левый потомок
+    NodeOfTree* right; // правый потомок
     
     NodeOfTree(const std::string& k, const T& v) : key(k), value(v), left(nullptr), right(nullptr) {} // конструктор
     
@@ -25,13 +25,14 @@ template <typename T>
 class Map{ // класс дерева
 private:
 
-    std::shared_ptr<NodeOfTree<T>> root; // корень дерева
+    NodeOfTree<T>* root; // корень дерева
     
     // добавление вершины 
-    void add(std::shared_ptr<NodeOfTree<T>>& node, const std::string& key, const T& value){
+    void add(NodeOfTree<T>*& node, const std::string& key, const T& value){
         
         if(!node){
-            node = std::make_shared<NodeOfTree<T>>(key, value);
+            node = new NodeOfTree<T>(key, value);
+            // ??return
         }
         
         if(key < node -> key){
@@ -48,14 +49,15 @@ private:
     }
     
     // поиск узла по ключу
-    std::shared_ptr<NodeOfTree<T>> search(std::shared_ptr<NodeOfTree<T>>& node, const std::string& key){
+    NodeOfTree<T>* search(NodeOfTree<T>*& node, const std::string& key){
         
         if(!node){
-            return node;
+            return nullptr;
         }
         
         if(key < node -> key){
             return search(node -> left, key);
+            
         }
         
         if(key > node -> key){
@@ -68,7 +70,7 @@ private:
     }
     
     // удаление узла
-    void remove(std::shared_ptr<NodeOfTree<T>>& node, const std::string& key){
+    void remove(NodeOfTree<T>*& node, const std::string& key){
         
         if(!node){
             return;
@@ -84,18 +86,22 @@ private:
         else{ // нашли нужный ключ
             
             if(!node -> left){  // отсутствие левой ветки
+                NodeOfTree<T>* cureent = node;
                 node = node -> right;
+                delete cureent;
             }
             
             else if(!node -> right){ // отсутствие правой втеки
+                NodeOfTree<T>* cureent = node;
                 node = node -> left;
+                delete cureent;
             }
             
             else{ // случай, когда вершина дерева имеет 2 ветви
-                std::shared_ptr<NodeOfTree<T>> Min = SearchingMinNode(node -> right);
-                node -> key = Min -> key;
-                node -> value = Min -> value;
-                remove(node->right, Min -> key);
+                NodeOfTree<T>* cureent = SearchingMinNode(node -> right);
+                node -> key = cureent -> key;
+                node -> value = cureent -> value;
+                remove(node->right, cureent -> key);
             }
         
         }
@@ -103,7 +109,7 @@ private:
     }
     
     // Поиск минимального приемника для удаления узла с двумя ветвями
-    std::shared_ptr<NodeOfTree<T>> SearchingMinNode(std::shared_ptr<NodeOfTree<T>> node){
+    NodeOfTree<T>* SearchingMinNode(NodeOfTree<T>* node){
        while(node && node -> left){
            node = node -> left;
        }
@@ -112,7 +118,7 @@ private:
     }
     
     // упорядоченный список ключей
-    void OrderedList(std::shared_ptr<NodeOfTree<T>>& node){
+    void OrderedList(NodeOfTree<T>* node){
         
         if(node){
             OrderedList(node -> left);
@@ -123,7 +129,7 @@ private:
     }
     
     // подсчет количества ключей
-    int Keys(std::shared_ptr<NodeOfTree<T>>& node){
+    int Keys(NodeOfTree<T>* node){
         if(!node){
             return 0;
         }
@@ -135,12 +141,24 @@ public:
 
     Map() : root(nullptr){}
     
+    ~Map(){  // деструктор
+        clear(root);
+    }
+    
+    void clear(NodeOfTree<T>* node){ // Функция удаления
+        if(node){
+            clear(node -> left);
+            clear(node -> right);
+            delete node;
+        }
+    }
+    
     void add(const std::string& key, const T& value){ //добавление вершины 
         add(root, key, value);
     }
     
     T search(const std::string& key){ // поиск значения по ключу
-        std::shared_ptr<NodeOfTree<T>> node = search(root, key);
+        NodeOfTree<T>* node = search(root, key);
         
         if(node){
             return node -> value; // Возвращение значения ключа
@@ -166,12 +184,8 @@ public:
 
 
 
-
-
 std::string GenRandomString(int length){ // Функция, генерирующая рандомный ключ
-    static const char alphabet[]{
-        "abcdefghijklmnopqrstuvwxyz"
-    };
+    static const char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
     
     std::string key;
     
