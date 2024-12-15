@@ -338,6 +338,29 @@ void BTree::remove(std::string k) {
     return;
 }
 
+
+void BNode::clear() {
+    if (!leaf) {
+        for (int i = 0; i <= key_number; i++) {
+            if (children[i]) {
+                children[i]->clear();
+                delete children[i];
+            }
+        }
+    }
+    delete[] keys;
+    delete[] children;
+}
+
+
+void BTree::clear() {
+    if (root) {
+        root->clear();
+        delete root;
+        root = nullptr;
+    }
+}
+
 // Функция для обхода всех узлов поддерева, корнем которого является этот узел
 void BNode::traverse() {
     int i;

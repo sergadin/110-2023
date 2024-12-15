@@ -37,9 +37,10 @@ public:
     void merge(int idx);
 
     BNode* search(std::string k);
-
+    
+    void clear();
+    
     friend class BTree;
-
 };
 
 
@@ -55,6 +56,8 @@ public:
     BNode* search(std::string k) {
         return (root == NULL) ? NULL : root->search(k);
     }
+    
+    void clear();
 
     void insert(std::string k);
 

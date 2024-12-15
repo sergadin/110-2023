@@ -18,4 +18,5 @@ int main() {
     std::cout << "\n";
     t.traverse();
 
+    t.clear();
 }
