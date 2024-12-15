@@ -24,7 +24,7 @@ int main() {
     }
     std::cout << std::endl;
 
-    tree.remove("cisiroh);
+    tree.remove("cisiroh");
     std::cout << "Contains 'cisiroh' after removal: " << tree.contains("hello") << std::endl;
 
     return 0;
