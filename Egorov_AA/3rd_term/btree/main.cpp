@@ -1,22 +1,34 @@
 #include "btree.h"
 
 int main() {
-    BTree t(3);
-    t.insert("abcdefg"); // 1
-    t.insert("basdbasb"); // 2
-    t.insert("eabtsdbdsf"); // 5
-    t.insert("shjnmsnf"); // 7
-    t.insert("lotugj"); // 6
-    t.insert("dhm77m"); // 4
-    t.insert("lotugj"); // 6
-    t.insert("dghn5ey"); // 3
+    int n = 10;    // Количество элементов B - дерева
+    std::string s;
+    BTree tree(3);
 
-    t.traverse();
+    for (int j = 0; j < n; j++) {
+        s = "";
+        for (int i = 0; i < 10; i++)
+        {
+            s += char(70 + rand() % (80 - 70));
+        }
+        std::cout << s << std::endl;
+        tree.insert(s);
+    }
+    std::cout << "\n\n";
 
-    t.remove("lotugj");
+    tree.traverse();
 
-    std::cout << "\n";
-    t.traverse();
+    //tree.insert("abcdefg");
+    //t.insert("basdbasb");
+    //t.insert("eabtsdbdsf");
+    //t.insert("shjnmsnf");
+    //t.insert("lotugj");
+    //t.insert("dhm77m");
+    //t.insert("lotugj");
 
-    t.clear();
+    //t.remove("lotugj");
+
+    //std::cout << "\n";
+    //t.traverse();
+
 }
