@@ -363,18 +363,95 @@ void BTree::clear() {
 
 // Функция для обхода всех узлов поддерева, корнем которого является этот узел
 void BNode::traverse() {
+    bool started = false;
     int i;
     for (i = 0; i < key_number; i++) {
         if (leaf == false)
             children[i]->traverse();
-        std::cout << keys[i] << "\n";
+        if ((keys[i] == k) || started) {
+            std::cout << keys[i] << "\n";
+            started = true;
+        }
     }
 
     if (leaf == false)
         children[i]->traverse();
 }
 
+
 void BTree::traverse() {
     if (root != NULL)
-        root->traverse();
+        root->traverse(k);
+}
+
+
+void BNode::iterateFrom(std::string k) {
+    bool started = false;
+    int i;
+    for (i = 0; i < key_number; i++) {
+        if (leaf == false)
+            children[i]->traverse();
+        if ((keys[i] == k) || started) {
+            std::cout << keys[i] << "\n";
+            started = true;
+        }
+    }
+
+    if (leaf == false)
+        children[i]->traverse();
+}
+
+
+void BTree::iterateFrom(std::string k) {
+    if (root != NULL)
+        root->traverse(k);
+}
+
+
+void BNode::iterateTo(std::string k) {
+    bool started = true;
+    int i;
+    for (i = 0; i < key_number; i++) {
+        if (leaf == false)
+            children[i]->traverse();
+        if ((keys[i] == k) || started) {
+            std::cout << keys[i] << "\n";
+            started = false;
+        }
+    }
+
+    if (leaf == false)
+        children[i]->traverse();
+}
+
+
+void BTree::iterateTo(std::string k) {
+    if (root != NULL)
+        root->traverse(k);
+}
+
+
+void BNode::iterateFromTo(std::string start, std::string stop) {
+    bool started = false;
+    int i;
+    for (i = 0; i < key_number; i++) {
+        if (leaf == false)
+            children[i]->traverse();
+        if ((keys[i] == start) || started) {
+            if (keys[i] == stop) {
+                started = false;
+                break;
+            }
+            std::cout << keys[i] << "\n";
+        }
+    }
+
+    if (leaf == false)
+        children[i]->traverse();
+}
+
+
+void BTree::iterateTo(std::string k) {
+    if (root != NULL)
+        root->traverse(k);
 }
