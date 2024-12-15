@@ -15,17 +15,17 @@ int main() {
     tree.insert("q-kovjbji64");
     tree.insert("gjqw89a");
 
-    std::cout << "Contains 'q-kovjbji64': " << tree.contains("hello") << std::endl;
-    std::cout << "Contains 'abcdefg': " << tree.contains("test") << std::endl;
+    std::cout << "Contains 'q-kovjbji64': " << tree.contains("q-kovjbji64") << std::endl;
+    std::cout << "Contains 'abcdefg': " << tree.contains("abc") << std::endl;
 
-    BTree::Iterator it = tree.iteratorFrom("b-tree");
+    BTree::Iterator it = tree.iteratorFrom("asdgsad");
     while (it.hasNext()) {
         std::cout << it.next() << " ";
     }
     std::cout << std::endl;
 
     tree.remove("cisiroh");
-    std::cout << "Contains 'cisiroh' after removal: " << tree.contains("hello") << std::endl;
+    std::cout << "Contains 'cisiroh' after removal: " << tree.contains("cisiroh") << std::endl;
 
     return 0;
 }
