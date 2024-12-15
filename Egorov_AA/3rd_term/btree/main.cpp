@@ -7,12 +7,16 @@
 
 int main() {
     BTree tree;
-    tree.insert("hello");
-    tree.insert("world");
-    tree.insert("b-tree");
+    tree.insert("asdgsad");
+    tree.insert("atkreu,j");
+    tree.insert("cisiroh");
+    tree.insert("apoejb");
+    tree.insert("[apfo3ew");
+    tree.insert("q-kovjbji64");
+    tree.insert("gjqw89a");
 
-    std::cout << "Contains 'hello': " << tree.contains("hello") << std::endl;
-    std::cout << "Contains 'test': " << tree.contains("test") << std::endl;
+    std::cout << "Contains 'q-kovjbji64': " << tree.contains("hello") << std::endl;
+    std::cout << "Contains 'abcdefg': " << tree.contains("test") << std::endl;
 
     BTree::Iterator it = tree.iteratorFrom("b-tree");
     while (it.hasNext()) {
@@ -20,8 +24,8 @@ int main() {
     }
     std::cout << std::endl;
 
-    tree.remove("hello");
-    std::cout << "Contains 'hello' after removal: " << tree.contains("hello") << std::endl;
+    tree.remove("cisiroh);
+    std::cout << "Contains 'cisiroh' after removal: " << tree.contains("hello") << std::endl;
 
     return 0;
 }
