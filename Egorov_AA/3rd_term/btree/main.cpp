@@ -1,31 +1,55 @@
-﻿#include <iostream>
-#include <vector>
-#include <string>
-#include <queue>
-#include <algorithm>
 #include "btree.h"
+#include "stringSet.h"
 
 int main() {
-    BTree tree;
-    tree.insert("asdgsad");
-    tree.insert("atkreu,j");
-    tree.insert("cisiroh");
-    tree.insert("apoejb");
-    tree.insert("[apfo3ew");
-    tree.insert("q-kovjbji64");
-    tree.insert("gjqw89a");
+    int n = 10;    // Количество элементов B - дерева
+    std::string s;
+    BTree tree(3);
 
-    std::cout << "Contains 'q-kovjbji64': " << tree.contains("q-kovjbji64") << std::endl;
-    std::cout << "Contains 'abcdefg': " << tree.contains("abc") << std::endl;
-
-    BTree::Iterator it = tree.iteratorFrom("asdgsad");
-    while (it.hasNext()) {
-        std::cout << it.next() << " ";
+    for (int j = 0; j < n; j++) {
+        s = "";
+        for (int i = 0; i < 10; i++)
+        {
+            s += char(70 + rand() % (80 - 70));
+        }
+        std::cout << s << std::endl;
+        tree.insert(s);
     }
-    std::cout << std::endl;
+    std::cout << "\n\n";
 
-    tree.remove("cisiroh");
-    std::cout << "Contains 'cisiroh' after removal: " << tree.contains("cisiroh") << std::endl;
+
+
+    //tree.insert("abcdefg");
+    //t.insert("basdbasb");
+    //t.insert("eabtsdbdsf");
+    //t.insert("shjnmsnf");
+    //t.insert("lotugj");
+    //t.insert("dhm77m");
+    //t.insert("lotugj");
+
+    //t.remove("lotugj");
+
+    //std::cout << "\n";
+    //t.traverse();
+
+}
+
+
+int main() {
+    OrderedStringSet fruits;
+    oss.addString("apple");
+    oss.addString("banana");
+    oss.addString("cherry");
+
+    std::cout << "Size: " << oss.size() << "\n";
+    oss.iterateFrom("banana");
+
+    if (oss.findString("banana")) {
+        std::cout << "Banana found in the set.\n";
+    }
+
+    oss.removeString("banana");
+    oss.iterateFrom("banana");
 
     return 0;
 }
