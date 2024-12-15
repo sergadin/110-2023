@@ -10,34 +10,20 @@ private:
     BTree btree;
 
 public:
-    void addString(std::string str) {
-        btree.insert(str);
+    OrderedStringSet() {
+    	
     }
 
-    void removeString(std::string str) {
-        btree.remove(str);
-    }
+    void addString(std::string str);
 
-    bool findString(std::string str) const {
-        if (btree.search(str) != NULL) return true;
-        else return false;
-    }
+    void removeString(std::string str);
 
-    void iterateFrom(string start) const {
-        btree.iterateFrom(start);
-        std::cout << "\n";
-    }
+    bool findString(std::string str) const;
 
-    void iterateTo(std::string stop) const {
-        btree.iterateTo(stop);
-        std::cout << "\n";
-    }
+    void iterateFrom(std::string start) const;
 
-    void iterateFromTo(std::string start, std::string stop) const {
-        if(start > stop)
-            std::cout << "Неправильно заданы начальный и конечный элементы."
-        btree.iterateFromTo(start, stop);
-        std::cout << "\n";
-    }
+    void iterateTo(std::string stop) const;
+
+    void iterateFromTo(std::string start, std::string stop) const;
 
 };

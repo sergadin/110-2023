@@ -12,11 +12,14 @@ class BNode {
     int t;
     bool leaf;
 
+public:
+
     void insertNonFull(std::string k);  // Вставка в неполный узел
     void splitChild(int i, BNode* y);   // 
     void traverse();
     void iterateFrom(std::string k);
     void iterateTo(std::string k);
+    void iterateFromTo(std::string start, std::string stop);
 
     int findKey(std::string k);
     void remove(std::string k);
@@ -29,11 +32,9 @@ class BNode {
     void borrowFromNext(int idx);
     void merge(int idx);
 
-    BNode* search(std::string k);
 
     void clear();
 
-public:
     BNode(int t1, bool leaf1) {
         t = t1;
         leaf = leaf1;
@@ -41,6 +42,8 @@ public:
         children = new BNode * [2 * t];
         key_number = 0;
     }
+    
+    BNode* search(std::string k);
      
     friend class BTree;
 };
@@ -52,11 +55,11 @@ private:
     int t;
 
 
-    void clear();
 
 public:
     BTree(int temp);
     
+    void clear();
 
     BNode* search(std::string k) {
         return (root == NULL) ? NULL : root->search(k);
@@ -67,6 +70,8 @@ public:
     void iterateFrom(std::string k);
 
     void iterateTo(std::string k);
+    
+    void iterateFromTo(std::string start, std::string stop);
     
     void insert(std::string k);
 

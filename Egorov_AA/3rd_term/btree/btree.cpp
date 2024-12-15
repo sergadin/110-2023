@@ -368,10 +368,8 @@ void BNode::traverse() {
     for (i = 0; i < key_number; i++) {
         if (leaf == false)
             children[i]->traverse();
-        if ((keys[i] == k) || started) {
-            std::cout << keys[i] << "\n";
-            started = true;
-        }
+        std::cout << keys[i] << "\n";
+        started = true;
     }
 
     if (leaf == false)
@@ -381,7 +379,7 @@ void BNode::traverse() {
 
 void BTree::traverse() {
     if (root != NULL)
-        root->traverse(k);
+        root->traverse();
 }
 
 
@@ -390,7 +388,7 @@ void BNode::iterateFrom(std::string k) {
     int i;
     for (i = 0; i < key_number; i++) {
         if (leaf == false)
-            children[i]->traverse();
+            children[i]->iterateFrom(k);
         if ((keys[i] == k) || started) {
             std::cout << keys[i] << "\n";
             started = true;
@@ -398,13 +396,13 @@ void BNode::iterateFrom(std::string k) {
     }
 
     if (leaf == false)
-        children[i]->traverse();
+        children[i]->iterateFrom(k);
 }
 
 
 void BTree::iterateFrom(std::string k) {
     if (root != NULL)
-        root->traverse(k);
+        root->iterateFrom(k);
 }
 
 
@@ -413,7 +411,7 @@ void BNode::iterateTo(std::string k) {
     int i;
     for (i = 0; i < key_number; i++) {
         if (leaf == false)
-            children[i]->traverse();
+            children[i]->iterateTo(k);
         if ((keys[i] == k) || started) {
             std::cout << keys[i] << "\n";
             started = false;
@@ -421,13 +419,13 @@ void BNode::iterateTo(std::string k) {
     }
 
     if (leaf == false)
-        children[i]->traverse();
+        children[i]->iterateTo(k);
 }
 
 
 void BTree::iterateTo(std::string k) {
     if (root != NULL)
-        root->traverse(k);
+        root->iterateTo(k);
 }
 
 
@@ -436,7 +434,7 @@ void BNode::iterateFromTo(std::string start, std::string stop) {
     int i;
     for (i = 0; i < key_number; i++) {
         if (leaf == false)
-            children[i]->traverse();
+            children[i]->iterateFromTo(start, stop);
         if ((keys[i] == start) || started) {
             if (keys[i] == stop) {
                 started = false;
@@ -447,11 +445,11 @@ void BNode::iterateFromTo(std::string start, std::string stop) {
     }
 
     if (leaf == false)
-        children[i]->traverse();
+        children[i]->iterateFromTo(start, stop);
 }
 
 
-void BTree::iterateTo(std::string k) {
+void BTree::iterateFromTo(std::string start, std::string stop) {
     if (root != NULL)
-        root->traverse(k);
+        root->iterateFromTo(start, stop);
 }
