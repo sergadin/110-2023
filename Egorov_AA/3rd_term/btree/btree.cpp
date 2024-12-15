@@ -6,7 +6,7 @@
 #include "btree.h"
 
 
-void BTree::insert(const std::string& value) {
+void BTree::insert(const std::string& value) {  // Добавление строки в дерево
     if (root->keys.size() == 2 * T - 1) {
         BTreeNode* newRoot = new BTreeNode(false);
         newRoot->children.push_back(root);
@@ -18,49 +18,7 @@ void BTree::insert(const std::string& value) {
 }
 
 
-bool BTree::remove(const std::string& value){
-    if (!contains(value)) {
-        return false;
-    }
-    removeFromNode(root, value);
-    if (!root->isLeaf && root->keys.empty()) {
-        BTreeNode* oldRoot = root;
-        root = root->children[0];
-        delete oldRoot;
-    }
-    --size;
-    return true;
-}
-
-
-bool BTree::contains(const std::string& value) {
-    return search(root, value) != nullptr;
-}
-
-
-size_t BTree::count() const {
-    return size;
-}
-
-
-void BTree::splitChild(BTreeNode* parent, int idx) {
-    BTreeNode* child = parent->children[idx];
-    BTreeNode* newChild = new BTreeNode(child->isLeaf);
-
-    parent->keys.insert(parent->keys.begin() + idx, child->keys[T - 1]);
-    parent->children.insert(parent->children.begin() + idx + 1, newChild);
-
-    newChild->keys.assign(child->keys.begin() + T, child->keys.end());
-    child->keys.resize(T - 1);
-
-    if (!child->isLeaf) {
-        newChild->children.assign(child->children.begin() + T, child->children.end());
-        child->children.resize(T);
-    }
-}
-
-
-void BTree::insertNonFull(BTreeNode* node, std::string* value) {
+void BTree::insertNonFull(BTreeNode* node, std::string* value) { // Вставка в неполный узел
     if (node->isLeaf) {
         auto pos = std::lower_bound(node->keys.begin(), node->keys.end(), value, comparePointers);
         node->keys.insert(pos, value);
@@ -78,7 +36,12 @@ void BTree::insertNonFull(BTreeNode* node, std::string* value) {
 }
 
 
-void BTree::removeFromNode(BTreeNode* node, const std::string& value) {
+bool BTree::contains(const std::string& value) { // Содержится ли строка в дереве
+    return search(root, value) != nullptr;
+}
+
+
+void BTree::removeFromNode(BTreeNode* node, const std::string& value) { // Удаление из узла
     int idx = findKey(node, value);
 
     if (idx < int(node->keys.size()) && *node->keys[idx] == value) {
@@ -124,6 +87,43 @@ void BTree::removeFromNode(BTreeNode* node, const std::string& value) {
 }
 
 
+bool BTree::remove(const std::string& value){  // Удаление строки
+    if (!contains(value)) {
+        return false;
+    }
+    removeFromNode(root, value);
+    if (!root->isLeaf && root->keys.empty()) {
+        BTreeNode* oldRoot = root;
+        root = root->children[0];
+        delete oldRoot;
+    }
+    --size;
+    return true;
+}
+
+
+size_t BTree::count() const {
+    return size;
+}
+
+
+void BTree::splitChild(BTreeNode* parent, int idx) {  // Разделение переполненного дочернего узла
+    BTreeNode* child = parent->children[idx];
+    BTreeNode* newChild = new BTreeNode(child->isLeaf);
+
+    parent->keys.insert(parent->keys.begin() + idx, child->keys[T - 1]);
+    parent->children.insert(parent->children.begin() + idx + 1, newChild);
+
+    newChild->keys.assign(child->keys.begin() + T, child->keys.end());
+    child->keys.resize(T - 1);
+
+    if (!child->isLeaf) {
+        newChild->children.assign(child->children.begin() + T, child->children.end());
+        child->children.resize(T);
+    }
+}
+
+
 int BTree::findKey(BTreeNode* node, const std::string& value) {
     int idx = 0;
     while (idx < int(node->keys.size()) && *node->keys[idx] < value) {
@@ -133,7 +133,7 @@ int BTree::findKey(BTreeNode* node, const std::string& value) {
 }
 
 
-std::string* BTree::getPredecessor(BTreeNode* node, int idx) {
+std::string* BTree::getPredecessor(BTreeNode* node, int idx) { // Геттер предшественника 
     BTreeNode* cur = node->children[idx];
     while (!cur->isLeaf) {
         cur = cur->children[cur->keys.size()];
@@ -142,7 +142,7 @@ std::string* BTree::getPredecessor(BTreeNode* node, int idx) {
 }
 
 
-std::string* BTree::getSuccessor(BTreeNode* node, int idx) {
+std::string* BTree::getSuccessor(BTreeNode* node, int idx) {  // Геттер поледователя
     BTreeNode* cur = node->children[idx + 1];
     while (!cur->isLeaf) {
         cur = cur->children[0];
@@ -151,7 +151,7 @@ std::string* BTree::getSuccessor(BTreeNode* node, int idx) {
 }
 
 
-void BTree::merge(BTreeNode* node, int idx) {
+void BTree::merge(BTreeNode* node, int idx) {  // Слияние узла с соседом
     BTreeNode* child = node->children[idx];
     BTreeNode* sibling = node->children[idx + 1];
 
@@ -169,7 +169,7 @@ void BTree::merge(BTreeNode* node, int idx) {
 }
 
 
-void BTree::fill(BTreeNode* node, int idx) {
+void BTree::fill(BTreeNode* node, int idx) {  // Обеспечение минимального количества ключей в узле
     if (idx != 0 && node->children[idx - 1]->keys.size() >= T) {
         borrowFromPrev(node, idx);
     }
@@ -219,7 +219,7 @@ void BTree::borrowFromNext(BTreeNode* node, int idx) {
 }
 
 
-std::string* BTree::search(BTreeNode* node, const std::string& value) {
+std::string* BTree::search(BTreeNode* node, const std::string& value) { // Поиск
     auto it = std::lower_bound(node->keys.begin(), node->keys.end(), &value, comparePointers);
     int idx = it - node->keys.begin();
     if (it != node->keys.end() && **it == value) {
@@ -234,7 +234,7 @@ std::string* BTree::search(BTreeNode* node, const std::string& value) {
 }
 
 
-void BTree::clear(BTreeNode* node) {
+void BTree::clear(BTreeNode* node) {  // Очистка памяти
     if (node == nullptr) return;
     for (auto child : node->children) {
         clear(child);
