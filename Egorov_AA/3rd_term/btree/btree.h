@@ -33,18 +33,18 @@ public:
         Iterator(BTreeNode* node, int idx) : currentNode(node), currentIndex(idx) {}
 
         bool hasNext() const {
-            return currentNode != nullptr && (currentIndex < int(currentNode->keys.size()) || !path.empty());
+            return currentNode != nullptr;;
         }
 
         const std::string& next() {
             if (currentIndex < int(currentNode->keys.size())) {
                 return *currentNode->keys[currentIndex++];
             }
-            else if (!path.empty()) {
-                currentNode = path.back();
-                path.pop_back();
-                currentIndex = 0;
-                return next();
+            else {
+                moveToNextNode();
+                if (currentNode != nullptr && currentIndex < currentNode->keys.size()) {
+                    return *currentNode->keys[currentIndex++];
+                }
             }
             throw std::out_of_range("Iterator reached the end");
         }
@@ -57,11 +57,34 @@ public:
         BTreeNode* currentNode;
         int currentIndex;
         std::vector<BTreeNode*> path;
+
+        void moveToNextNode() {
+            while (!path.empty()) {
+                BTreeNode* parent = path.back();
+                path.pop_back();
+                int childIndex = std::find(parent->children.begin(), parent->children.end(), currentNode)
+                    - parent->children.begin();
+
+                if (childIndex + 1 < int(parent->children.size())) {
+                    currentNode = parent->children[childIndex + 1];
+                    while (!currentNode->isLeaf) {
+                        path.push_back(currentNode);
+                        currentNode = currentNode->children[0];
+                    }
+                    currentIndex = 0;
+                    return;
+                }
+
+                currentNode = parent;
+            }
+            currentNode = nullptr;
+        }
     };
 
     Iterator iteratorFrom(const std::string& value) {
         BTreeNode* node = root;
         int idx = 0;
+        std::vector<BTreeNode*> path;
         while (node != nullptr) {
             auto it = std::lower_bound(node->keys.begin(), node->keys.end(), &value, comparePointers);
             idx = it - node->keys.begin();
