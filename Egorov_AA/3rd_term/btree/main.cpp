@@ -37,9 +37,9 @@ int main() {
 
 int main() {
     OrderedStringSet fruits;
-    oss.addString("apple");
-    oss.addString("banana");
-    oss.addString("cherry");
+    fruits.addString("apple");
+    fruits.addString("banana");
+    fruits.addString("cherry");
 
     std::cout << "Size: " << oss.size() << "\n";
     oss.iterateFrom("banana");
