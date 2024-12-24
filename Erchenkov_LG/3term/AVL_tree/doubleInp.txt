@@ -1,0 +1,9 @@
+double
+to -1 
+seek 0 
+to 3.14 
+find 3.15 
+and 4.38 
+yield 10.0
+to 4.4
+
