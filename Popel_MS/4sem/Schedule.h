@@ -58,15 +58,15 @@ class Subject{
 class Schedule{
   private: 
     std::vector<Subject*> schedule_;
-    std::map<FullName, std::vector<int>> teacherIndex;
-    std::map<int, std::vector<int>> groupIndex;
-    std::map<int, std::vector<int>> roomIndex;
-    std::map<TimeHM, std::vector<int>> timeIndex;
-    std::map<char[128], std::vector<int>> subjectIndex;
+    std::map<FullName, std::vector<int>> teacherInd;
+    std::map<int, std::vector<int>> groupInd;
+    std::map<int, std::vector<int>> roomInd;
+    std::map<TimeHM, std::vector<int>> timeInd;
+    std::map<char[128], std::vector<int>> subjectInd;
     
-    void buildIndexes();
-    std::vector<int> parseCriteria(const std::string& criteria);
-    std::vector<int> intersectIndexes(const std::vector<int>& indexes1, const std::vector<int>& indexes2);
+    void buildInd();
+    std::vector<int> getCritInd(const std::string& crit);
+    std::vector<int> intersectInd(const std::vector<int>& ind1, const std::vector<int>& ind2);
   public:
     Schedule();
     Schedule(FILE* fin);
@@ -74,8 +74,8 @@ class Schedule{
     void addEntry(Subject* entry);
     void deleteEntry(const TimeHM& time, int room);
     void updateEntry(const TimeHM& time, int room, Subject* newEntry);
-    std::vector<Subject*> select(const std::vector<Cond>& criteria);
-    std::vector<Subject*> reselect(const std::vector<Subject*>& selected, const std::vector<Cond>& criteria);
+    std::vector<Subject*> select(const std::vector<Cond>& crit);
+    std::vector<Subject*> reselect(const std::vector<Subject*>& selected, const std::vector<Cond>& crit);
     void print(const std::vector<Subject*>& entries/*, const std::vector<Field>& fields*/);
     void saveToFile(FILE* fout);
     
