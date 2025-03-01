@@ -95,17 +95,14 @@ class Query{
 /*
  * Подкласс запрсов вида select, reselect (для выборки данных).
  * Переменная: condition_ - вектор условий 
- * fields_ - вектор полей, которые нужно вывести.
  */
 class SelectingQuery : public Query{
 public:
   SelectingQuery(const std::string &query);
   void parse() override;
   const std::vector<Cond>& getConditions() const { return condition_; }
-  const std::vector<Field>& getFields() const {return fields_; }
 private:
   std::vector<Cond> condition_;
-  std::vector<Field> fields_;
 };
 
 /*
@@ -127,6 +124,7 @@ private:
 class UpdateQuery : public SelectingQuery, public AssigningQuery { 
 public:
   UpdateQuery(const std::string &query);
+  void parseKeyVal();
   void parse() override;
 };
 
@@ -232,7 +230,6 @@ class DataBase{
     ~DataBase();
     //Функция, получающая в виде строчки результат обработки запроса
     result startQuery(Query& query);
-    Schedule* getSchedule() const {return schedule_;}
 };
 
 /*
