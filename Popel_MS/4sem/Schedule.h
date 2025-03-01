@@ -49,13 +49,13 @@ struct result {
 };
 
 //Методы(запросы) для работы с базой данных.
-typedef enum {SELECT, RESELECT, INSERT, UPDATE, DELETE, PRINT} ComType;
+enum class ComType {SELECT, RESELECT, INSERT, UPDATE, DELETE, PRINT};
 //Названия столбцов в базе данных.
-typedef enum {TIME, ROOM, SUBJNAME, TEACHER, GROUP} Field;
+enum class Field {TIME, ROOM, SUBJNAME, TEACHER, GROUP};
 //Оператор сортировки.
-typedef enum {ASC, DESC} Order;
+enum class Order {ASC, DESC};
 //Бинарные операции.
-typedef enum {LT, GT, EQ, LT_EQ, GT_EQ, NEQ, LIKE} BinOp;
+enum class BinOp {LT, GT, EQ, LT_EQ, GT_EQ, NEQ, LIKE};
 
 
 /*
@@ -98,6 +98,7 @@ class Query{
  * fields_ - вектор полей, которые нужно вывести.
  */
 class SelectingQuery : public Query{
+public:
   SelectingQuery(const std::string &query);
   void parse() override;
   const std::vector<Cond>& getConditions() const { return condition_; }
@@ -112,6 +113,7 @@ private:
  * Переменная: values_ - вектор пар для добавления или удаления.
  */
 class AssigningQuery : public Query {
+public:
   AssigningQuery(const std::string &query);
   void parse() override;
   const std::vector<std::pair<Field, Value>>& getValues() const { return values_;}
@@ -123,6 +125,7 @@ private:
  * Подкласс запрсов update (для обновления данных). 
  */
 class UpdateQuery : public SelectingQuery, public AssigningQuery { 
+public:
   UpdateQuery(const std::string &query);
   void parse() override;
 };
