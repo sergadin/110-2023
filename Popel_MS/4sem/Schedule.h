@@ -16,8 +16,10 @@
  *    minute - минуты.
  */
 struct TimeHM {
-  int hour;
-  int minute;
+  int startHour;
+  int startMinute;
+  int endHour;
+  int endMinute;
 };
 
 /*
@@ -39,25 +41,23 @@ using Value = std::variant<int, double, std::string>;
  * Переменные:
  */
 struct result {
-    std::vector<Entry> entries;// результаты выборки, построенные по запросу
-    std::vector<std::string> messages; //сообщения о статусе операций
-    std::map<std::string, std::string> statistics; //статистическая информация про выборки
-    /*std::map<std::string, std::vector<std::string>> free_rooms; //свободные аудитории по времени
-    std::map<std::string, std::vector<std::string>> teachers;//расписание преподавателей по времени
-    std::map<std::string, std::vector<std::string>> groups;//расписание групп по времени
-    std::map<std::string, std::vector<std::string>> subjects;//расписание предметов по времени
-    std::map<std::string, std::vector<std::string>> times;//расписание в определенное время */
-    std::map<std::string, std::string> errors; //ошибки
+    std::vector<Entry> entry;// результаты выборки, построенные по запросу
+    std::string message; //сообщения о статусе операций
+    std::map<std::string, Value> statistics; //статистическая информация про выборки
+    /*std::map<TimeHM, std::vector<int>> free_rooms; //свободные аудитории по времени
+    std::map<TimeHM, std::vector<FullName>> teachers;//расписание преподавателей по времени
+    std::map<TimeHM, std::vector<int>> groups;//расписание групп по времени
+    std::map<TimeHM, std::vector<std::string> subjects;//расписание предметов по времени*/
+    Exception error; //ошибки
 
-    void addEntry(const Entry& entry);
-    void addMessage(const std::string& message);
-    void addStatistic(const std::string& key, const std::string& value);
-    /*void addFreeRoom(const std::string& time, const std::string& room);
-    void addTeacher(const std::string& teacher, const std::string& info);
-    void addGroup(const std::string& group, const std::string& info);
-    void addSubject(const std::string& subject, const std::string& info);
-    void addTime(const std::string& time, const std::string& info);*/
-    void addError(const std::string& key, const std::string& message);
+    void addEntry(const Entry& ent);
+    void addMessage(const std::string& mes);
+    void addStatistic(const std::string& key, const Value& value);
+    /*void addFreeRoom(const TimeHM& time, const int& room);
+    void addTeacher(const TimeHM& time, const FullName& teacher);
+    void addGroup(const TimeHM& time, const int& group);
+    void addSubject(const TimeHM& time, const std::string& subject);*/
+    void addError(const Exception& err);
 };
 
 //Методы(запросы) для работы с базой данных.
