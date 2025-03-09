@@ -272,4 +272,6 @@ class Exception {
       code_ = c;
       mess_ = m;
     }
+    int getCode() const { return code_; }
+    std::string getMessage() const { return mess_; }
 };
