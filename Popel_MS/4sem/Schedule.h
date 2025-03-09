@@ -12,8 +12,10 @@
 /*
  * Структура, хранящая данные о времени. 
  * Переменные: 
- *    hour - час,
- *    minute - минуты.
+ *    startHour - час начала,
+ *    startMinute - минута начала,
+ *    endHour - час окончания,
+ *    endMinute - минута окончания.
  */
 struct TimeHM {
   int startHour;
