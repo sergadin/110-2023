@@ -132,7 +132,7 @@ class Query{
   private:
     ComType command_;
     std::string query_;
-    using parser_fn = Query * (*)(const std::string &query);
+    using parser_fn = void (*)(Query&, const std::string &query);
     static std::list<parser_fn> parsers;
   public:
     Query(const std::string &query);
@@ -157,8 +157,8 @@ class SelectingQuery : public Query{
   virtual void parseCondTriple(const std::string &frag);
   const std::vector<Cond>& getConditions() const { return condition_; }
   const std::vector<Field>& getFields() const {return fields_; }
-  //Функция ля регистрации местной функции для парсинга
-  static Query * create(const std::string &query);
+  //Функция, позволяющая проверить тип запроса и допускающая запрос до парсинга
+  static void parse(Query& q, const std::string &query);
 private:
   std::vector<Cond> condition_;
   std::vector<Field> fields_;
@@ -175,7 +175,7 @@ class AssigningQuery : public Query {
   virtual void parseKeyVal();
   virtual void parseKeyValTriple(const std::string &frag);
   const std::vector<std::pair<Field, Value>>& getValues() const { return values_;}
-  static Query * create(const std::string &query);
+  static void parse(Query& q, const std::string &query);
 private:
   std::vector<std::pair<Field, Value>> values_;
 };
@@ -189,7 +189,7 @@ class UpdateQuery : public SelectingQuery, public AssigningQuery {
   void parseKeyVal() override;
   void parseCondTriple(const std::string &frag) override;
   void parseKeyValTriple(const std::string &frag) override;
-  static Query * create(const std::string &query);
+  static void parse(Query& q, const std::string &query);
 };
 
 /*
@@ -207,7 +207,7 @@ public:
   void parseTriple(const std::string &frag);
   const std::vector<Field>& getFields() const { return fields_;}
   const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_;}
-  static Query * create(const std::string &query);
+  static void parse(Query& q, const std::string &query);
 };
 
 
@@ -240,6 +240,8 @@ class Schedule{
     std::vector<int> getCritInd(const std::string& crit);
     //Функция, "пересекающая" множество индексов (для поиска по нескольким критериям)
     std::vector<int> intesectInd(const std::vector<int>& ind1, const std::vector<int>& ind2);
+    //Функция, проверяющая совпадение времени для одной аудитории, группы и т.п.
+    bool checkTimeCross(const TimeHM& time1, const TimeHM& time2);
     //Функция добавления новой ячейки
     void addEntry(Entry* entry);
     //Функция удаления ячейки
