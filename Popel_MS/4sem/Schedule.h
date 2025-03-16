@@ -5,6 +5,8 @@
 #include <map>
 #include <variant>
 #include <cstring>
+#include <list>
+#include <fstream>
 
 //using namespace std;
 
@@ -37,7 +39,48 @@ struct FullName {
   char patronymic[64];
 };
 
+/*
+ * Класс ошибок.
+ * Переменные: code_ - код ошибки, mess_ - причина ошибки;
+ */
+class Exception {
+  private:
+    int code_;
+    std::string mess_;
+  public:
+    Exception(int c, std::string m){
+      code_ = c;
+      mess_ = m;
+    }
+    int getCode() const { return code_; }
+    std::string getMessage() const { return mess_; }
+};
+
 using Value = std::variant<int, double, std::string>;
+
+/*
+ * Класс ячеек в базе данных.
+ * Переменные:
+ * time_ - время пары в расписании
+ * room_ - номер аудитории
+ * subject_name_ - название предмета
+ * teacher_ - ФИО преподавателя
+ * group_ - номер группы
+ */
+class Entry{
+  private: 
+    TimeHM time_;
+    int room_;
+    char subject_name_[128];
+    FullName teacher_;
+    int group_;
+    
+  public:
+    Entry(TimeHM time, int room, const char* subjName, FullName teacher, int group): time_(time), room_(room), teacher_(teacher), group_(group){
+      strncpy(subject_name_, subjName, sizeof(subject_name_));
+    }
+};
+
 /*
  * Структура, хранящая данные о результате работы с базой данных.
  * Переменные:
@@ -45,20 +88,10 @@ using Value = std::variant<int, double, std::string>;
 struct result {
     std::vector<Entry> entry;// результаты выборки, построенные по запросу
     std::string message; //сообщения о статусе операций
-    std::map<std::string, Value> statistics; //статистическая информация про выборки
-    /*std::map<TimeHM, std::vector<int>> free_rooms; //свободные аудитории по времени
-    std::map<TimeHM, std::vector<FullName>> teachers;//расписание преподавателей по времени
-    std::map<TimeHM, std::vector<int>> groups;//расписание групп по времени
-    std::map<TimeHM, std::vector<std::string> subjects;//расписание предметов по времени*/
     Exception error; //ошибки
 
     void addEntry(const Entry& ent);
     void addMessage(const std::string& mes);
-    void addStatistic(const std::string& key, const Value& value);
-    /*void addFreeRoom(const TimeHM& time, const int& room);
-    void addTeacher(const TimeHM& time, const FullName& teacher);
-    void addGroup(const TimeHM& time, const int& group);
-    void addSubject(const TimeHM& time, const std::string& subject);*/
     void addError(const Exception& err);
 };
 
@@ -98,13 +131,17 @@ class Cond{
 class Query{
   private:
     ComType command_;
+    std::string query_;
+    using parser_fn = Query * (*)(const std::string &query);
+    static std::list<parser_fn> parsers;
   public:
     Query(const std::string &query);
     virtual ~Query() = default;
     //Функция, выделяющая запрос из строчки и определяющая тип команды (функция для парсинга).
     virtual void parse() = 0;
-    virtual void parseTriple(const std::string &frag)=0;
     ComType getCommand() const { return command_;}
+    static Query * do_parse(const std::string &query);
+    static void register_parser(parser_fn p);
 };
 
 /*
@@ -117,10 +154,11 @@ class SelectingQuery : public Query{
   void parse() override;
   //Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
   virtual void parseCond();
-  void parseTriple(const std::string &frag) override;
   virtual void parseCondTriple(const std::string &frag);
   const std::vector<Cond>& getConditions() const { return condition_; }
   const std::vector<Field>& getFields() const {return fields_; }
+  //Функция ля регистрации местной функции для парсинга
+  static Query * create(const std::string &query);
 private:
   std::vector<Cond> condition_;
   std::vector<Field> fields_;
@@ -135,9 +173,9 @@ class AssigningQuery : public Query {
   void parse() override;
 //Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
   virtual void parseKeyVal();
-  void parseTriple(const std::string &frag) override;
   virtual void parseKeyValTriple(const std::string &frag);
   const std::vector<std::pair<Field, Value>>& getValues() const { return values_;}
+  static Query * create(const std::string &query);
 private:
   std::vector<std::pair<Field, Value>> values_;
 };
@@ -151,6 +189,7 @@ class UpdateQuery : public SelectingQuery, public AssigningQuery {
   void parseKeyVal() override;
   void parseCondTriple(const std::string &frag) override;
   void parseKeyValTriple(const std::string &frag) override;
+  static Query * create(const std::string &query);
 };
 
 /*
@@ -165,36 +204,10 @@ private:
 public:
   PrintQuery(const std::string &query);
   void parse() override;
-  void parseTriple(const std::string &frag) override;
+  void parseTriple(const std::string &frag);
   const std::vector<Field>& getFields() const { return fields_;}
   const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_;}
-};
-
-
-
-
-
-/*
- * Класс ячеек в базе данных.
- * Переменные:
- * time_ - время пары в расписании
- * room_ - номер аудитории
- * subject_name_ - название предмета
- * teacher_ - ФИО преподавателя
- * group_ - номер группы
- */
-class Entry{
-  private: 
-    TimeHM time_;
-    int room_;
-    char subject_name_[128];
-    FullName teacher_;
-    int group_;
-    
-  public:
-    Entry(TimeHM time, int room, const char* subjName, FullName teacher, int group): time_(time), room_(room), teacher_(teacher), group_(group){
-      strncpy(subject_name_, subjName, sizeof(subject_name_));
-    }
+  static Query * create(const std::string &query);
 };
 
 
@@ -211,6 +224,10 @@ class Entry{
 class Schedule{
   private: 
     std::vector<Entry*> schedule_;
+  public:
+    Schedule();
+    Schedule(FILE* fin);
+    ~Schedule();
     std::map<FullName, std::vector<int>> teacherInd;
     std::map<int, std::vector<int>> groupInd;
     std::map<int, std::vector<int>> roomInd;
@@ -223,10 +240,6 @@ class Schedule{
     std::vector<int> getCritInd(const std::string& crit);
     //Функция, "пересекающая" множество индексов (для поиска по нескольким критериям)
     std::vector<int> intesectInd(const std::vector<int>& ind1, const std::vector<int>& ind2);
-  public:
-    Schedule();
-    Schedule(FILE* fin);
-    ~Schedule();
     //Функция добавления новой ячейки
     void addEntry(Entry* entry);
     //Функция удаления ячейки
@@ -257,21 +270,4 @@ class DataBase{
     //Функция, получающая в виде строчки результат обработки запроса
     result startQuery(std::string& query);
     Schedule* getSchedule() const {return schedule_;}
-};
-
-/*
- * Класс ошибок.
- * Переменные: code_ - код ошибки, mess_ - причина ошибки;
- */
-class Exception {
-  private:
-    int code_;
-    std::string mess_;
-  public:
-    Exception(int c, std::string m){
-      code_ = c;
-      mess_ = m;
-    }
-    int getCode() const { return code_; }
-    std::string getMessage() const { return mess_; }
 };
