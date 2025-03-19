@@ -1,5 +1,10 @@
 #include "Schedule.h"
 
+//Функция, подбирающая элементы, подходящие по маске.
+static bool maskLike(const std::string& str, const std::string& ptrn) {
+    std::regex re(ptrn);
+    return std::regex_match(str, re);
+}
 std::list<Query::parser_fn> Query::parsers;
 
 void result::addEntry(const Entry& ent) {
@@ -40,28 +45,28 @@ void SelectingQuery::parse() {
 
 void SelectingQuery::parseCond() {
     size_t pos = 0;
-    std::string token;
+    std::string tkn;
     while ((pos = query_.find(' ')) != std::string::npos) {
-        token = query_.substr(0, pos);
-        if (token == "select") {
+        tkn = query_.substr(0, pos);
+        if (tkn == "select") {
             command_ = SELECT;
-        }else if (token == "reselect") {
+        }else if (tkn == "reselect") {
             command_ = RESELECT;
-        }else if(token == "update"){
+        }else if(tkn == "update"){
           command_ = UPDATE;
-        } else if (token == "end") {
+        } else if (tkn == "end") {
             break;
         } else {
-            parseCondTriple(token);
+            parseCondTriple(tkn);
         }
         query_.erase(0, pos + 1);
     }
     if (!query_.empty()) {
-        token = query_;
-        if (token == "end") {
+        tkn = query_;
+        if (tkn == "end") {
             return;
         } else {
-            parseCondTriple(token);
+            parseCondTriple(tkn);
         }
     }
 }
@@ -157,8 +162,8 @@ void SelectingQuery::parseCondTriple(const std::string &frag) {
 
 void SelectingQuery::parse(Query& q, const std::string &query) {
     size_t pos = query.find(' ');
-    std::string token = query.substr(0, pos);
-    if (token == "select" || token == "reselect") {
+    std::string tkn = query.substr(0, pos);
+    if (tkn == "select" || tkn == "reselect") {
         SelectingQuery* sq = dynamic_cast<SelectingQuery*>(&q);
         if (sq) {
             sq->parse();
@@ -174,28 +179,28 @@ void AssigningQuery::parse(){
 
 void AssigningQuery::parseKeyVal(){
     size_t pos = 0;
-    std::string token;
+    std::string tkn;
     while ((pos = query_.find(' ')) != std::string::npos) {
-        token = query_.substr(0, pos);
-        if (token == "insert") {
+        tkn = query_.substr(0, pos);
+        if (tkn == "insert") {
             command_ = INSERT;
-        }else if (token == "delete") {
+        }else if (tkn == "delete") {
             command_ = DELETE;
-        }else if(token == "update"){
+        }else if(tkn == "update"){
           command_ = UPDATE;
-        }else if (token == "end") {
+        }else if (tkn == "end") {
             break;
         } else {
-            parseKeyValTriple(token);
+            parseKeyValTriple(tkn);
         }
         query_.erase(0, pos + 1);
     }
     if (!query_.empty()) {
-        token = query_;
-        if (token == "end") {
+        tkn = query_;
+        if (tkn == "end") {
             return;
         } else {
-            parseKeyValTriple(token);
+            parseKeyValTriple(tkn);
         }
     }
 }
@@ -227,8 +232,8 @@ void AssigningQuery::parseKeyValTriple(const std::string &frag){
 
 void AssigningQuery::parse(Query& q, const std::string &query) {
     size_t pos = query.find(' ');
-    std::string token = query.substr(0, pos);
-    if (token == "insert" || token == "delete") {
+    std::string tkn = query.substr(0, pos);
+    if (tkn == "insert" || tkn == "delete") {
         AssigningQuery* aq = dynamic_cast<AssigningQuery*>(&q);
         if (aq) {
             aq->parse();
@@ -256,8 +261,8 @@ void UpdateQuery::parseKeyValTriple(const std::string &frag){
 
 void UpdateQuery::parse(Query& q, const std::string &query) {
     size_t pos = query.find(' ');
-    std::string token = query.substr(0, pos);
-    if (token == "update") {
+    std::string tkn = query.substr(0, pos);
+    if (tkn == "update") {
         UpdateQuery* up = dynamic_cast<UpdateQuery*>(&q);
         if (up) {
             up->parseCond();
@@ -341,12 +346,22 @@ bool matchCond(const Entry& entry, const Cond& cond) {
             return entry.room == room;
         }
         case SUBJNAME: {
-            std::string subject = std::get<std::string>(cond.getVal());
+            std::string subject = std::get<std::string>(cond.getVal());//здесь и в случае УЧИТЕЛЬ также рассматриваются запросы, подходящие по маске
+            if (cond.getOperation()==LIKE){
+              return maskLike(entry.subject_name, subject);
+            }else{
             return strcmp(entry.subject_name, subject.c_str()) == 0;
+            }
         }
         case TEACHER: {
             FullName teacher = std::get<FullName>(cond.getVal());
+            if (cond.getOperation() == LIKE){
+              std::string teacherName = std::string(teacher.surname) + " " + std::string(teacher.name) + " " + std::string(teacher.patronymic);
+              return maskLike(teacherName, std::get<std::string>(cond.getVal()));
+              
+            }else{
             return strcmp(entry.teacher.surname, teacher.surname) == 0 && strcmp(entry.teacher.name, teacher.name) == 0 && strcmp(entry.teacher.patronymic, teacher.patronymic) == 0;
+          }
         }
         case GROUP: {
             int group = std::get<int>(cond.getVal());
@@ -475,6 +490,7 @@ result DataBase::startQuery(std::string& query) {
 
     return res;
 }
+
 
 Query::register_parser(SelectingQuery::parse);
 Query::register_parser(AssigningQuery::parse);
