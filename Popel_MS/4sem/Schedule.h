@@ -7,7 +7,7 @@
 #include <cstring>
 #include <list>
 #include <fstream>
-#include <regex> //Это ля масок и шаблонов
+#include <regex> //Это для масок и шаблонов
 
 //using namespace std;
 
