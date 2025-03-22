@@ -313,7 +313,8 @@ public:
 	}
 };
 
-
+// function parse first command and create necessary Query 
+Query* parseCommand(string& query);
 
 
 
