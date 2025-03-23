@@ -8,6 +8,8 @@
 #include <list>
 #include <fstream>
 #include <regex> //Это для масок и шаблонов
+#include <memory>
+#include <sstream>
 
 //using namespace std;
 
@@ -80,6 +82,12 @@ class Entry{
     Entry(TimeHM time, int room, const char* subjName, FullName teacher, int group): time_(time), room_(room), teacher_(teacher), group_(group){
       strncpy(subject_name_, subjName, sizeof(subject_name_));
     }
+    
+  TimeHM getTime() const { return time_; }
+  int getRoom() const { return room_; }
+  const char* getSubjectName() const { return subject_name_; }
+  FullName getTeacher() const { return teacher_; }
+  int getGroup() const { return group_; }
 };
 
 /*
@@ -133,16 +141,20 @@ class Query{
   private:
     ComType command_;
     std::string query_;
-    using parser_fn = void (*)(Query&, const std::string &query);
+    using parser_fn = Query * (*)(const std::string &query);
     static std::list<parser_fn> parsers;
   public:
-    Query(const std::string &query);
+    Query(const std::string &query) : query_(query){}
+
     virtual ~Query() = default;
     //Функция, выделяющая запрос из строчки и определяющая тип команды (функция для парсинга).
     virtual void parse() = 0;
     ComType getCommand() const { return command_;}
     static Query * do_parse(const std::string &query);
     static void register_parser(parser_fn p);
+    protected:
+    void setCommand(ComType command) { command_ = command; }
+    const std::string& getQueryString() const { return query_; }
 };
 
 /*
@@ -151,18 +163,19 @@ class Query{
  * fields_ - вектор полей, которые нужно вывести.
  */
 class SelectingQuery : public Query{
-  SelectingQuery(const std::string &query);
+public:
+  SelectingQuery(const std::string &query) : Query(query) {}
   void parse() override;
   //Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
   virtual void parseCond();
-  virtual void parseCondTriple(const std::string &frag);
   const std::vector<Cond>& getConditions() const { return condition_; }
   const std::vector<Field>& getFields() const {return fields_; }
   //Функция, позволяющая проверить тип запроса и допускающая запрос до парсинга
-  static void parse(Query& q, const std::string &query);
+  //static void parse(Query& q, const std::string &query);
 private:
   std::vector<Cond> condition_;
   std::vector<Field> fields_;
+  bool parseTriple(const std::string& triple);
 };
 
 /*
@@ -170,27 +183,34 @@ private:
  * Переменная: values_ - вектор пар для добавления или удаления.
  */
 class AssigningQuery : public Query {
-  AssigningQuery(const std::string &query);
+public:
+  AssigningQuery(const std::string &query) : Query(query) {}
   void parse() override;
 //Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
-  virtual void parseKeyVal();
-  virtual void parseKeyValTriple(const std::string &frag);
   const std::vector<std::pair<Field, Value>>& getValues() const { return values_;}
-  static void parse(Query& q, const std::string &query);
+  //static void parse(Query& q, const std::string &query);
 private:
   std::vector<std::pair<Field, Value>> values_;
+  bool parseAssignmentTriple(const std::string& triple);
 };
 
 /*
  * Подкласс запрсов update (для обновления данных). 
  */
 class UpdateQuery : public SelectingQuery, public AssigningQuery { 
-  UpdateQuery(const std::string &query);
-  void parseCond() override;
-  void parseKeyVal() override;
-  void parseCondTriple(const std::string &frag) override;
-  void parseKeyValTriple(const std::string &frag) override;
-  static void parse(Query& q, const std::string &query);
+  UpdateQuery(const std::string &query) : SelectingQuery(query), AssigningQuery(query) {}
+  void parse() override;
+  //static void parse(Query& q, const std::string &query);
+};
+
+/*
+ * Подкласс запросов insert для вставки новых данных.
+ */
+
+class InsertQuery : public AssigningQuery {
+public:
+    InsertQuery(const std::string& query) : AssigningQuery(query) {}
+    void parse() override;
 };
 
 /*
@@ -203,14 +223,34 @@ private:
   std::vector<Field> fields_;
   std::vector<std::pair<Field, Order>> sort_fields_;
 public:
-  PrintQuery(const std::string &query);
+  PrintQuery(const std::string &query) : Query(query) {}
   void parse() override;
-  void parseTriple(const std::string &frag);
   const std::vector<Field>& getFields() const { return fields_;}
   const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_;}
-  static void parse(Query& q, const std::string &query);
+  //static void parse(Query& q, const std::string &query);
 };
 
+/*
+ * Подкласс запросов delete для удаления данных.
+ */
+
+class DeleteQuery : public Query {
+private:
+    std::vector<Cond> conditions;
+
+public:
+    DeleteQuery(const std::string& query) : Query(query) {}
+    void parse() override;
+
+    const std::vector<Cond>& getConditions() const { return conditions; }
+};
+
+
+//Функции для более простого парсинга
+Field parseField(const std::string& fieldStr);
+BinOp parseBinOp(const std::string& opStr);
+Value parseValue(const std::string& valueStr);
+std::pair<TimeHM, TimeHM> parseTimeRange(const std::string& timeStr);
 
 /*
  * Класс расписания.
@@ -274,3 +314,12 @@ class DataBase{
     result startQuery(std::string& query);
     Schedule* getSchedule() const {return schedule_;}
 };
+
+//Вспомогательные функции для парсера каждого из подклассов
+
+Query* parseSelectingQuery(const std::string& query);
+Query* parseUpdateQuery(const std::string& query);
+Query* parseInsertQuery(const std::string& query);
+Query* parsePrintQuery(const std::string& query);
+Query* parseDeleteQuery(const std::string& query);
+
