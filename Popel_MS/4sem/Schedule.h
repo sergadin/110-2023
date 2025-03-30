@@ -10,7 +10,6 @@
 #include <regex> //Это для масок и шаблонов
 #include <memory>
 #include <sstream>
-
 //using namespace std;
 
 /*
