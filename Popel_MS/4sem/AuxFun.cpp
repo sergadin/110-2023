@@ -5,7 +5,8 @@
 #include "Schedule.h"
 
 Field parseField(const std::string& fieldStr) {
-    if (fieldStr == "time") return TIME;
+    if (fieldStr == "day") return DAY;
+    if (fieldStr == "lessonNum") return LESSON_NUM;
     if (fieldStr == "room") return ROOM;
     if (fieldStr == "subject") return SUBJNAME;
     if (fieldStr == "group") return GROUP;
@@ -43,26 +44,83 @@ Value parseValue(const std::string& valueStr) {
     return val;
 }
 
-std::pair<TimeHM, TimeHM> parseTimeRange(const std::string& timeStr) {
-    std::pair<TimeHM, TimeHM> timeRange;
-    std::stringstream ss(timeStr);
-    std::string startTime, endTime;
+std::vector<std::pair<Date, Date>> parseDateRange(const std::string& dateStr) {
+    std::vector<std::pair<Date, Date>> dateRanges;
+    std::stringstream ss(dateStr);
+    std::string token;
 
-    if (std::getline(ss, startTime, '-') && std::getline(ss, endTime)) {
-        size_t colonPosStart = startTime.find(':');
-        size_t colonPosEnd = endTime.find(':');
+    while (std::getline(ss, token, ',')) {
+        std::stringstream tokenStream(token);
+        std::string startDate, endDate;
 
-        if (colonPosStart != std::string::npos && colonPosEnd != std::string::npos) {
-            timeRange.first.startHour = std::stoi(startTime.substr(0, colonPosStart));
-            timeRange.first.startMinute = std::stoi(startTime.substr(colonPosStart + 1));
-            timeRange.second.endHour = std::stoi(endTime.substr(0, colonPosEnd));
-            timeRange.second.endMinute = std::stoi(endTime.substr(colonPosEnd + 1));
+        if (std::getline(tokenStream, startDate, '-') && std::getline(tokenStream, endDate)) {
+            size_t dotPosStart = startDate.find('.');
+            size_t dotPosEnd = endDate.find('.');
+
+            if (dotPosStart != std::string::npos && dotPosEnd != std::string::npos) {
+                try {
+                    Date start;
+                    start.day = std::stoi(startDate.substr(0, dotPosStart));
+                    start.month = std::stoi(startDate.substr(dotPosStart + 1));
+
+                    Date end;
+                    end.day = std::stoi(endDate.substr(0, dotPosEnd));
+                    end.month = std::stoi(endDate.substr(dotPosEnd + 1));
+
+                    dateRanges.push_back({start, end});
+                } catch (const std::invalid_argument&) {
+                    throw std::runtime_error("Invalid date format");
+                }
+            } else {
+                throw std::runtime_error("Invalid date format");
+            }
         } else {
-            throw Exception(11, "Time problems");
+            size_t dotPos = startDate.find('.');
+            if (dotPos != std::string::npos) {
+                try {
+                    Date date;
+                    date.day = std::stoi(startDate.substr(0, dotPos));
+                    date.month = std::stoi(startDate.substr(dotPos + 1));
+
+                    dateRanges.push_back({date, date});
+                } catch (const std::invalid_argument&) {
+                    throw std::runtime_error("Invalid date format");
+                }
+            } else {
+                throw std::runtime_error("Invalid date format");
+            }
         }
-    } else {
-        throw Exception(11, "Time problems");
     }
 
-    return timeRange;
+    return dateRanges;
+}
+
+std::vector<std::pair<int, int>> parseLessonRange(const std::string& lessonStr) {
+    std::vector<std::pair<int, int>> lessonRanges;
+    std::stringstream ss(lessonStr);
+    std::string token;
+
+    while (std::getline(ss, token, ',')) {
+        std::stringstream tokenStream(token);
+        std::string startLesson, endLesson;
+
+        if (std::getline(tokenStream, startLesson, '-') && std::getline(tokenStream, endLesson)) {
+            try {
+                int start = std::stoi(startLesson);
+                int end = std::stoi(endLesson);
+                lessonRanges.push_back({start, end});
+            } catch (const std::invalid_argument&) {
+                throw std::runtime_error("Invalid lesson format");
+            }
+        } else {
+            try {
+                int lesson = std::stoi(startLesson);
+                lessonRanges.push_back({lesson, lesson});
+            } catch (const std::invalid_argument&) {
+                throw std::runtime_error("Invalid lesson format");
+            }
+        }
+    }
+
+    return lessonRanges;
 }

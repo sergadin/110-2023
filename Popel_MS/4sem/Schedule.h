@@ -13,21 +13,17 @@
 
 //using namespace std;
 
-
 /*
- * Структура, хранящая данные о времени. 
- * Переменные: 
- *    startHour - час начала,
- *    startMinute - минута начала,
- *    endHour - час окончания,
- *    endMinute - минута окончания.
+ * Структура, хранящая данные о дате пары.
+ * Переменные:
+ *  day - день,
+ *  month - месяц,
  */
-struct TimeHM {
-  int startHour;
-  int startMinute;
-  int endHour;
-  int endMinute;
+struct Date{
+  int day;
+  int month;
 };
+
 
 /*
  * Структура, хранящая данные о ФИО преподавателя.
@@ -56,7 +52,7 @@ class Exception {
     std::string getMessage() const { return mess_; }
 };
 
-using Value = std::variant<int, double, std::string, TimeHM, FullName>;
+using Value = std::variant<int, double, std::string, Date, FullName>;
 
 /*
  * Класс ячеек в базе данных.
@@ -69,22 +65,33 @@ using Value = std::variant<int, double, std::string, TimeHM, FullName>;
  */
 class Entry{
   private: 
-    TimeHM time_;
+    Date date_;
+    int lesson_;
     int room_;
     char subject_name_[128];
     FullName teacher_;
     int group_;
     
   public:
-    Entry(TimeHM time, int room, const char* subjName, FullName teacher, int group): time_(time), room_(room), teacher_(teacher), group_(group){
+    Entry(Date date, int lesson, int room, const char* subjName, FullName teacher, int group): date_(date), lesson_(lesson), room_(room), teacher_(teacher), group_(group){
       strncpy(subject_name_, subjName, sizeof(subject_name_));
     }
     
-  TimeHM getTime() const { return time_; }
+  Date getDate() const { return date_; }
+  int getLesson() const { return lesson_; }
   int getRoom() const { return room_; }
   const char* getSubjectName() const { return subject_name_; }
   FullName getTeacher() const { return teacher_; }
   int getGroup() const { return group_; }
+  
+  void setDate(const Date& date) { date_ = date; }
+    void setLesson(int lesson) { lesson_ = lesson; }
+    void setRoom(int room) { room_ = room; }
+    void setSubjectName(const char* subjName) {
+        strncpy(subject_name_, subjName, sizeof(subject_name_));
+    }
+    void setTeacher(const FullName& teacher) { teacher_ = teacher; }
+    void setGroup(int group) { group_ = group; }
 };
 
 /*
@@ -104,9 +111,9 @@ struct result {
 };
 
 //Методы(запросы) для работы с базой данных.
-typedef enum {SELECT, RESELECT, INSERT, UPDATE, DELETE, PRINT} ComType;
+typedef enum {SELECT, RESELECT, ASSIGN, INSERT, UPDATE, DELETE, PRINT} ComType;
 //Названия столбцов в базе данных.
-typedef enum {TIME, ROOM, SUBJNAME, TEACHERNAME, TEACHERPATR, TEACHERLASTNAME, GROUP, NONE_FIELD} Field;
+typedef enum {DAY, LESSON_NUM, ROOM, SUBJNAME, TEACHERNAME, TEACHERPATR, TEACHERLASTNAME, GROUP, NONE_FIELD} Field;
 //Оператор сортировки.
 typedef enum {ASC, DESC} Order;
 //Бинарные операции.
@@ -151,6 +158,7 @@ class Query{
     ComType getCommand() const { return command_;}
     static Query * do_parse(const std::string &query);
     static void register_parser(parser_fn p);
+    static void clear_parsers();
   protected:
     void setCommand(ComType command) { command_ = command; }
     virtual const std::string& getQueryString() const { return query_; }
@@ -161,7 +169,7 @@ class Query{
  * Переменная: condition_ - вектор условий 
  * fields_ - вектор полей, которые нужно вывести.
  */
-class SelectingQuery : public Query{
+class SelectingQuery : virtual public Query{
 public:
   SelectingQuery(const std::string &query) : Query(query), condition_(), fields_() {}
   void parse() override;
@@ -181,7 +189,7 @@ private:
  * Подкласс запрсов вида insert, delete.
  * Переменная: values_ - вектор пар для добавления или удаления.
  */
-class AssigningQuery : public Query {
+class AssigningQuery : virtual public Query {
 public:
   AssigningQuery(const std::string &query) : Query(query), values_() {}
   void parse() override;
@@ -200,7 +208,7 @@ private:
  */
 class UpdateQuery : public SelectingQuery, public AssigningQuery { 
 public:
-  UpdateQuery(const std::string &query) : SelectingQuery(query), AssigningQuery(query) {}
+  UpdateQuery(const std::string &query) : Query(query), SelectingQuery(query), AssigningQuery(query) {}
   void parse() override;
   //static void parse(Query& q, const std::string &query);
 };
@@ -211,7 +219,7 @@ public:
 
 class InsertQuery : public AssigningQuery {
 public:
-    InsertQuery(const std::string& query) : AssigningQuery(query) {}
+    InsertQuery(const std::string& query) : Query(query), AssigningQuery(query) {}
     void parse() override;
 };
 
@@ -241,7 +249,7 @@ private:
     std::vector<Cond> conditions;
 
 public:
-    DeleteQuery(const std::string& query) : SelectingQuery(query), conditions() {}
+    DeleteQuery(const std::string& query) : Query(query), SelectingQuery(query), conditions() {}
     void parse() override;
 
     const std::vector<Cond>& getConditions() const { return conditions; }
@@ -252,7 +260,8 @@ public:
 Field parseField(const std::string& fieldStr);
 BinOp parseBinOp(const std::string& opStr);
 Value parseValue(const std::string& valueStr);
-std::pair<TimeHM, TimeHM> parseTimeRange(const std::string& timeStr);
+std::vector<std::pair<Date, Date>> parseDateRange(const std::string& dateStr);
+std::vector<std::pair<int, int>> parseLessonRange(const std::string& lessonStr);
 
 /*
  * Класс расписания.
@@ -284,13 +293,13 @@ class Schedule{
     //Функция, "пересекающая" множество индексов (для поиска по нескольким критериям)
     //std::vector<int> intesectInd(const std::vector<int>& ind1, const std::vector<int>& ind2);
     //Функция, проверяющая совпадение времени для одной аудитории, группы и т.п.
-    bool checkTimeCross(const TimeHM& time1, const TimeHM& time2);
+    bool checkTimeCross(const Date& date1, const Date& date2);
     //Функция добавления новой ячейки
     void addEntry(Entry* entry);
     //Функция удаления ячейки
-    void deleteEntry(const TimeHM& time, int room);
-    //Функция обновления уже существующей ячейки
-    void updateEntry(const TimeHM& time, int room, Entry* newEntry);
+    void deleteEntry(const Date& date, int lesson, int room);
+    // Функция обновления уже существующей ячейки
+    void updateEntry(const Date& date, int lesson, int room, Entry* newEntry);
     //Функция выбора ячейки для работы с ней
     std::vector<Entry*> select(const std::vector<Cond>& crit);
     //Функция выбора из уже имеющихся ячеек
@@ -320,12 +329,11 @@ class DataBase{
     Schedule* getSchedule() const {return schedule_;}
 };
 
-//Вспомогательные функции для парсера каждого из подклассов
+bool compareDates(const Date& date1, const Date& date2, BinOp operation);
 
-static Query* parseSelectingQuery(const std::string& query);
-static Query* parseAssigningQuery(const std::string& query);
-static Query* parseUpdateQuery(const std::string& query);
-static Query* parseInsertQuery(const std::string& query);
-static Query* parsePrintQuery(const std::string& query);
-static Query* parseDeleteQuery(const std::string& query);
+bool compareLessons(int lesson, int lessonNum, BinOp operation);
+
+bool compareInts(int val1, int val2, BinOp operation);
+
+bool compareStrings(const std::string& str1, const std::string& str2, BinOp operation);
 

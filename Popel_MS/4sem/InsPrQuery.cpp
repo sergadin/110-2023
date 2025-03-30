@@ -10,7 +10,6 @@ void InsertQuery::parse() {
 void PrintQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-
     ss >> token;
     if (token == "PRINT") {
         setCommand(PRINT);
@@ -63,3 +62,4 @@ void DeleteQuery::parse() {
         }
     }
 }
+ 

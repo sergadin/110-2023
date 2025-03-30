@@ -6,7 +6,6 @@
 void AssigningQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-
     ss >> token;
     if (token == "INSERT") {
         setCommand(INSERT);
@@ -20,7 +19,7 @@ void AssigningQuery::parse() {
         if (token == "end") {
             break; 
         } else {
-            if (!parseAssigningTriple(token)) {
+            if (!parseAssigningTriple(token)) {;
                 throw Exception(15,"Incorrect syntax in INSERT/DELETE query");
             }
         }
@@ -41,7 +40,6 @@ bool AssigningQuery::parseAssigningTriple(const std::string& triple) {
 
     std::string valueStr = triple.substr(eqPos + 1);
     Value value = parseValue(valueStr);
-
     values_.push_back(std::make_pair(field, value));
     return true;
 }

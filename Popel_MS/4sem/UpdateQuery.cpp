@@ -19,7 +19,7 @@ void UpdateQuery::parse() {
         if (token == "WHERE") {
             parsingState = ASSIGN;
         } else if (token == "end") {
-            break; // End of query
+            break;
         } else {
             if (parsingState == SELECT) { 
                 if (!SelectingQuery::parseTriple(token)) { 

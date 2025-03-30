@@ -4,96 +4,43 @@
 #include <fstream>
 #include <string>
 
-Schedule::Schedule() {}
+Schedule::Schedule() : schedule_() {}
 
-Schedule::Schedule(FILE* fin) {
-    if (fin){
-
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), fin)) {
-        TimeHM time;
+Schedule::Schedule(FILE* fin) : schedule_() {
+    if (fin) {
+        Date date;
+        int lesson;
         int room;
         char subject_name[128];
         FullName teacher;
         int group;
 
-        if (sscanf(buffer, "%d:%d-%d:%d %d %127s %63s %63s %63s %d",
-            &time.startHour, &time.startMinute, &time.endHour, &time.endMinute,
-            &room, subject_name,
-            teacher.surname, teacher.name, teacher.patronymic, &group) == 9) {
-            Entry* newEntry = new Entry(time, room, subject_name, teacher, group);
+        while (fscanf(fin, "%d %d %d %d %63s %31s %63s %127s %d",
+                       &date.day, &date.month, &lesson, &room,
+                       teacher.surname, teacher.name, teacher.patronymic,
+                       subject_name, &group) == 9) {
+            Entry* newEntry = new Entry(date, lesson, room, subject_name, teacher, group);
             schedule_.push_back(newEntry);
-
-            } else {
-                throw Exception(5, "Error parsing line: " + std::string(buffer));
-            }
         }
-        //buildInd();
-    }else{
-
-        throw Exception(1, "File isn't open");
     }
 }
-
-
 
 Schedule::~Schedule() {
     for (Entry* entry : schedule_) {
         delete entry;
     }
-    schedule_.clear(); 
+    schedule_.clear();
 }
 
-/*void Schedule::buildInd() {
-    teacherInd.clear();
-
-    groupInd.clear();
-    roomInd.clear();
-    timeInd.clear();
-
-    subjectInd.clear();
-
-    for (size_t i = 0; i < schedule_.size(); ++i) {
-
-        Entry* entry = schedule_[i];
-
-        teacherInd[entry->getTeacher()].push_back(i);
-
-        groupInd[entry->getGroup()].push_back(i);
-
-        roomInd[entry->getRoom()].push_back(i);
-
-        timeInd[entry->getTime()].push_back(i);
-
-        subjectInd[entry->getSubjectName()].push_back(i);
-    }
+bool Schedule::checkTimeCross(const Date& date1, const Date& date2) {
+    return date1.day == date2.day && date1.month == date2.month;
 }
 
-std::vector<int> Schedule::getCritInd(const std::string& crit) {
-
-    // Return indexes based on specified parameter
-    return std::vector<int>();
-}
-
-std::vector<int> Schedule::intesectInd(const std::vector<int>& ind1, const std::vector<int>& ind2) {
-    std::vector<int> result;
-    std::set_intersection(ind1.begin(), ind1.end(), ind2.begin(), ind2.end(), std::back_inserter(result));
-    return result;
-}*/
-
-bool Schedule::checkTimeCross(const TimeHM& time1, const TimeHM& time2) {
-    if (time1.startHour < time2.endHour || (time1.startHour == time2.endHour && time1.startMinute <= time2.endMinute)) {
-        if (time2.startHour < time1.endHour || (time2.startHour == time1.endHour && time2.startMinute <= time1.endMinute)) {
-            return true; 
-        }
-    }
-    return false;
-}
 
 void Schedule::addEntry(Entry* entry) {
      for (Entry* existingEntry : schedule_) {
-        if (existingEntry->getRoom() == entry->getRoom() && checkTimeCross(existingEntry->getTime(), entry->getTime())) {
-            std::cerr << "Error: Time conflict with existing entry in room " << entry->getRoom() << std::endl;
+        if (existingEntry->getRoom() == entry->getRoom() && checkTimeCross(existingEntry->getDate(), entry->getDate())) {
+            //std::cerr << "Error: Time conflict with existing entry in room " << entry->getRoom() << std::endl;
             delete entry; 
             return;
         }
@@ -102,40 +49,30 @@ void Schedule::addEntry(Entry* entry) {
     //buildInd();
 }
 
-void Schedule::deleteEntry(const TimeHM& time, int room) {
-    for (size_t i = 0; i < schedule_.size(); ++i) {
-         Entry* entry = schedule_[i];
-        if (entry->getTime().startHour == time.startHour &&
-             entry->getTime().startMinute == time.startMinute &&
-             entry->getRoom() == room) {
-
-            delete entry;
-            schedule_.erase(schedule_.begin() + i);
-            //buildInd();
-            return;
+void Schedule::deleteEntry(const Date& date, int lesson, int room) {
+    for (auto it = schedule_.begin(); it != schedule_.end(); ++it) {
+        if ((*it)->getDate().day == date.day && (*it)->getDate().month == date.month &&
+            (*it)->getLesson() == lesson && (*it)->getRoom() == room) {
+            delete *it;
+            schedule_.erase(it);
+            break;
         }
     }
-     std::cerr << "Error: Entry not found" << std::endl;
 }
 
-void Schedule::updateEntry(const TimeHM& time, int room, Entry* newEntry) {
-     for (size_t i = 0; i < schedule_.size(); ++i) {
-          Entry* entry = schedule_[i];
-           if (entry->getTime().startHour == time.startHour &&
-                entry->getTime().startMinute == time.startMinute &&
-                entry->getRoom() == room) {
-                // Found the entry to update
-                delete entry;  // Remove old entry
-                schedule_[i] = newEntry; // Replace with new entry
-                //buildInd();
-                return;
-            }
+void Schedule::updateEntry(const Date& date, int lesson, int room, Entry* newEntry) {
+    for (Entry* entry : schedule_) {
+        if (entry->getDate().day == date.day && entry->getDate().month == date.month &&
+            entry->getLesson() == lesson && entry->getRoom() == room) {
+            *entry = *newEntry;
+            break;
         }
-    std::cerr << "Error: Entry not found" << std::endl;
+    }
 }
+
 
 std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
-    std::vector<Entry*> selectedEntries;
+    std::vector<Entry*> result;
     for (Entry* entry : schedule_) {
         bool match = true;
         for (const Cond& condition : crit) {
@@ -144,106 +81,83 @@ std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
             Value value = condition.getVal();
 
             switch (field) {
-            case TIME:{
-                  TimeHM timeValue = std::get<TimeHM>(value);
-                    if (operation == EQ &&
-                        (entry->getTime().startHour != timeValue.startHour ||
-                         entry->getTime().startMinute != timeValue.startMinute ||
-                         entry->getTime().endHour != timeValue.endHour ||
-                         entry->getTime().endMinute != timeValue.endMinute)) {
+                case DAY: {
+                    Date date = entry->getDate();
+                    Date condDate = std::get<Date>(value);
+                    if (!compareDates(date, condDate, operation)) {
                         match = false;
                     }
-                  break;
-            }
-
-            case ROOM: {
-                int roomValue = std::get<int>(value);
-                if (operation == EQ && entry->getRoom() != roomValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getRoom() == roomValue) {
-                    match = false;
-                } else if (operation == LT && entry->getRoom() >= roomValue) {
-                    match = false;
-                } else if (operation == GT && entry->getRoom() <= roomValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getRoom() > roomValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getRoom() < roomValue) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-            case SUBJNAME: {
-                std::string subjNameValue = std::get<std::string>(value);
-                if (operation == LIKE) {
-                    std::regex pattern(subjNameValue);
-                    if (!std::regex_match(entry->getSubjectName(), pattern)) {
+                case LESSON_NUM: {
+                    int lesson = entry->getLesson();
+                    int condLessonNum = std::get<int>(value);
+                    if (!compareLessons(lesson, condLessonNum, operation)) {
                         match = false;
                     }
-                } else if (operation == EQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) == 0) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-             case TEACHERNAME: {
-                std::string teacherNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) == 0) {
-                    match = false;
+                case ROOM: {
+                    int room = entry->getRoom();
+                    int condRoom = std::get<int>(value);
+                    if (!compareInts(room, condRoom, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERLASTNAME: {
-                std::string teacherLastNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) == 0) {
-                    match = false;
+                case SUBJNAME: {
+                    const char* subject = entry->getSubjectName();
+                    std::string condSubject = std::get<std::string>(value);
+                    if (!compareStrings(subject, condSubject, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERPATR: {
-                std::string teacherPatrValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) == 0) {
-                    match = false;
+                case TEACHERNAME: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condName = std::get<std::string>(value);
+                    if (!compareStrings(teacher.name, condName, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case GROUP: {
-                int groupValue = std::get<int>(value);
-                if (operation == EQ && entry->getGroup() != groupValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getGroup() == groupValue) {
-                    match = false;
-                } else if (operation == LT && entry->getGroup() >= groupValue) {
-                    match = false;
-                } else if (operation == GT && entry->getGroup() <= groupValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getGroup() > groupValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getGroup() < groupValue) {
-                    match = false;
+                case TEACHERLASTNAME: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condSurname = std::get<std::string>(value);
+                    if (!compareStrings(teacher.surname, condSurname, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                break;
+                case TEACHERPATR: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condPatronymic = std::get<std::string>(value);
+                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                case GROUP: {
+                    int group = entry->getGroup();
+                    int condGroup = std::get<int>(value);
+                    if (!compareInts(group, condGroup, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         }
         if (match) {
-            selectedEntries.push_back(entry);
+            result.push_back(entry);
         }
     }
-    return selectedEntries;
+    return result;
 }
 
 std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, const std::vector<Cond>& crit) {
-    std::vector<Entry*> reselectedEntries;
+    std::vector<Entry*> result;
     for (Entry* entry : selected) {
         bool match = true;
         for (const Cond& condition : crit) {
@@ -251,138 +165,105 @@ std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, cons
             BinOp operation = condition.getOperation();
             Value value = condition.getVal();
 
-           switch (field) {
-            case TIME:{
-                  TimeHM timeValue = std::get<TimeHM>(value);
-                    if (operation == EQ &&
-                        (entry->getTime().startHour != timeValue.startHour ||
-                         entry->getTime().startMinute != timeValue.startMinute ||
-                         entry->getTime().endHour != timeValue.endHour ||
-                         entry->getTime().endMinute != timeValue.endMinute)) {
+            switch (field) {
+                case DAY: {
+                    Date date = entry->getDate();
+                    Date condDate = std::get<Date>(value);
+                    if (!compareDates(date, condDate, operation)) {
                         match = false;
                     }
-                  break;
-            }
-
-            case ROOM: {
-                int roomValue = std::get<int>(value);
-                if (operation == EQ && entry->getRoom() != roomValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getRoom() == roomValue) {
-                    match = false;
-                } else if (operation == LT && entry->getRoom() >= roomValue) {
-                    match = false;
-                } else if (operation == GT && entry->getRoom() <= roomValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getRoom() > roomValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getRoom() < roomValue) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-            case SUBJNAME: {
-                std::string subjNameValue = std::get<std::string>(value);
-                if (operation == LIKE) {
-                    std::regex pattern(subjNameValue);
-                    if (!std::regex_match(entry->getSubjectName(), pattern)) {
+                case LESSON_NUM: {
+                    int lesson = entry->getLesson();
+                    int condLessonNum = std::get<int>(value);
+                    if (!compareLessons(lesson, condLessonNum, operation)) {
                         match = false;
                     }
-                } else if (operation == EQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) == 0) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-             case TEACHERNAME: {
-                std::string teacherNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) == 0) {
-                    match = false;
+                case ROOM: {
+                    int room = entry->getRoom();
+                    int condRoom = std::get<int>(value);
+                    if (!compareInts(room, condRoom, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERLASTNAME: {
-                std::string teacherLastNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) == 0) {
-                    match = false;
+                case SUBJNAME: {
+                    const char* subject = entry->getSubjectName();
+                    std::string condSubject = std::get<std::string>(value);
+                    if (!compareStrings(subject, condSubject, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERPATR: {
-                std::string teacherPatrValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) == 0) {
-                    match = false;
+                case TEACHERNAME: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condName = std::get<std::string>(value);
+                    if (!compareStrings(teacher.name, condName, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case GROUP: {
-                int groupValue = std::get<int>(value);
-                if (operation == EQ && entry->getGroup() != groupValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getGroup() == groupValue) {
-                    match = false;
-                } else if (operation == LT && entry->getGroup() >= groupValue) {
-                    match = false;
-                } else if (operation == GT && entry->getGroup() <= groupValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getGroup() > groupValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getGroup() < groupValue) {
-                    match = false;
+                case TEACHERLASTNAME: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condSurname = std::get<std::string>(value);
+                    if (!compareStrings(teacher.surname, condSurname, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                break;
+                case TEACHERPATR: {
+                    FullName teacher = entry->getTeacher();
+                    std::string condPatronymic = std::get<std::string>(value);
+                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                case GROUP: {
+                    int group = entry->getGroup();
+                    int condGroup = std::get<int>(value);
+                    if (!compareInts(group, condGroup, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         }
         if (match) {
-            reselectedEntries.push_back(entry);
+            result.push_back(entry);
         }
     }
-    return reselectedEntries;
+    return result;
 }
 
 void Schedule::print(const std::vector<Entry*>& entries) {
     for (Entry* entry : entries) {
-        std::cout << "Time: " << entry->getTime().startHour << ":" << entry->getTime().startMinute << "-" << entry->getTime().endHour << ":" << entry->getTime().endMinute
-            << ", Room: " << entry->getRoom()
-            << ", Subject: " << entry->getSubjectName()
-            << ", Teacher: " << entry->getTeacher().surname << " " << entry->getTeacher().name << " " << entry->getTeacher().patronymic
-            << ", Group: " << entry->getGroup() << std::endl;
+        std::cout << "Date: " << entry->getDate().day << "." << entry->getDate().month
+                  << ", Lesson: " << entry->getLesson()
+                  << ", Room: " << entry->getRoom()
+                  << ", Subject: " << entry->getSubjectName()
+                  << ", Teacher: " << entry->getTeacher().surname << " " << entry->getTeacher().name << " " << entry->getTeacher().patronymic
+                  << ", Group: " << entry->getGroup() << std::endl;
     }
 }
 
 void Schedule::saveToFile(FILE* fout) {
-    if (!fout) {
-        throw Exception(2, "File is not open for writing");
-    }
-
     for (Entry* entry : schedule_) {
-        TimeHM time = entry->getTime();
-        int room = entry->getRoom();
-        const char* subjectName = entry->getSubjectName();
-        FullName teacher = entry->getTeacher();
-        int group = entry->getGroup();
-
-        fprintf(fout, "%02d:%02d-%02d:%02d,%d,%s,%s,%s,%s,%d\n",
-                time.startHour, time.startMinute, time.endHour, time.endMinute,
-                room, subjectName, teacher.surname, teacher.name, teacher.patronymic, group);
+        fprintf(fout, "%d %d %d %d %s %s %s %s %d\n",
+                entry->getDate().day, entry->getDate().month, entry->getLesson(), entry->getRoom(),
+                entry->getTeacher().surname, entry->getTeacher().name, entry->getTeacher().patronymic,
+                entry->getSubjectName(), entry->getGroup());
     }
 }
 
 std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
     std::vector<Entry*> deletedEntries;
-    std::vector<Entry*> remainingEntries; 
-
-    for (Entry* entry : schedule_) {
+    for (auto it = schedule_.begin(); it != schedule_.end();) {
         bool match = true;
         for (const Cond& condition : crit) {
             Field field = condition.getField();
@@ -390,103 +271,159 @@ std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
             Value value = condition.getVal();
 
             switch (field) {
-             case TIME:{
-                  TimeHM timeValue = std::get<TimeHM>(value);
-                    if (operation == EQ &&
-                        (entry->getTime().startHour != timeValue.startHour ||
-                         entry->getTime().startMinute != timeValue.startMinute ||
-                         entry->getTime().endHour != timeValue.endHour ||
-                         entry->getTime().endMinute != timeValue.endMinute)) {
+                case DAY: {
+                    Date date = (*it)->getDate();
+                    Date condDate = std::get<Date>(value);
+                    if (!compareDates(date, condDate, operation)) {
                         match = false;
                     }
-                  break;
-            }
-            case ROOM: {
-                int roomValue = std::get<int>(value);
-                if (operation == EQ && entry->getRoom() != roomValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getRoom() == roomValue) {
-                    match = false;
-                } else if (operation == LT && entry->getRoom() >= roomValue) {
-                    match = false;
-                } else if (operation == GT && entry->getRoom() <= roomValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getRoom() > roomValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getRoom() < roomValue) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-            case SUBJNAME: {
-                std::string subjNameValue = std::get<std::string>(value);
-                if (operation == LIKE) {
-                    std::regex pattern(subjNameValue);
-                    if (!std::regex_match(entry->getSubjectName(), pattern)) {
+                case LESSON_NUM: {
+                    int lesson = (*it)->getLesson();
+                    int condLessonNum = std::get<int>(value);
+                    if (!compareLessons(lesson, condLessonNum, operation)) {
                         match = false;
                     }
-                } else if (operation == EQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getSubjectName(), subjNameValue.c_str()) == 0) {
-                    match = false;
+                    break;
                 }
-                break;
-            }
-               case TEACHERNAME: {
-                std::string teacherNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().name, teacherNameValue.c_str()) == 0) {
-                    match = false;
+                case ROOM: {
+                    int room = (*it)->getRoom();
+                    int condRoom = std::get<int>(value);
+                    if (!compareInts(room, condRoom, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERLASTNAME: {
-                std::string teacherLastNameValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().surname, teacherLastNameValue.c_str()) == 0) {
-                    match = false;
+                case SUBJNAME: {
+                    const char* subject = (*it)->getSubjectName();
+                    std::string condSubject = std::get<std::string>(value);
+                    if (!compareStrings(subject, condSubject, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case TEACHERPATR: {
-                std::string teacherPatrValue = std::get<std::string>(value);
-                if (operation == EQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) != 0) {
-                    match = false;
-                } else if (operation == NEQ && std::strcmp(entry->getTeacher().patronymic, teacherPatrValue.c_str()) == 0) {
-                    match = false;
+                case TEACHERNAME: {
+                    FullName teacher = (*it)->getTeacher();
+                    std::string condName = std::get<std::string>(value);
+                    if (!compareStrings(teacher.name, condName, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            case GROUP: {
-                int groupValue = std::get<int>(value);
-                if (operation == EQ && entry->getGroup() != groupValue) {
-                    match = false;
-                } else if (operation == NEQ && entry->getGroup() == groupValue) {
-                    match = false;
-                } else if (operation == LT && entry->getGroup() >= groupValue) {
-                    match = false;
-                } else if (operation == GT && entry->getGroup() <= groupValue) {
-                    match = false;
-                } else if (operation == LT_EQ && entry->getGroup() > groupValue) {
-                    match = false;
-                } else if (operation == GT_EQ && entry->getGroup() < groupValue) {
-                    match = false;
+                case TEACHERLASTNAME: {
+                    FullName teacher = (*it)->getTeacher();
+                    std::string condSurname = std::get<std::string>(value);
+                    if (!compareStrings(teacher.surname, condSurname, operation)) {
+                        match = false;
+                    }
+                    break;
                 }
-                break;
-            }
-            default:
-                break;
+                case TEACHERPATR: {
+                    FullName teacher = (*it)->getTeacher();
+                    std::string condPatronymic = std::get<std::string>(value);
+                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                case GROUP: {
+                    int group = (*it)->getGroup();
+                    int condGroup = std::get<int>(value);
+                    if (!compareInts(group, condGroup, operation)) {
+                        match = false;
+                    }
+                    break;
+                }
+                default:
+                    break;
             }
         }
         if (match) {
-            deletedEntries.push_back(entry);
-            delete entry; 
+            deletedEntries.push_back(*it);
+            delete *it;
+            it = schedule_.erase(it);
         } else {
-            remainingEntries.push_back(entry); 
+            ++it;
         }
     }
-    schedule_ = remainingEntries; 
     return deletedEntries;
+}
+
+bool compareDates(const Date& date1, const Date& date2, BinOp operation) {
+    switch (operation) {
+        case EQ:
+            return date1.day == date2.day && date1.month == date2.month;
+        case NEQ:
+            return date1.day != date2.day || date1.month != date2.month;
+        case LT:
+            return date1.month < date2.month || (date1.month == date2.month && date1.day < date2.day);
+        case GT:
+            return date1.month > date2.month || (date1.month == date2.month && date1.day > date2.day);
+        case LT_EQ:
+            return date1.month < date2.month || (date1.month == date2.month && date1.day <= date2.day);
+        case GT_EQ:
+            return date1.month > date2.month || (date1.month == date2.month && date1.day >= date2.day);
+        default:
+            return false;
+    }
+}
+
+bool compareLessons(int lesson, int lessonNum, BinOp operation) {
+    switch (operation) {
+        case EQ:
+            return lesson == lessonNum;
+        case NEQ:
+            return lesson != lessonNum;
+        case LT:
+            return lesson < lessonNum;
+        case GT:
+            return lesson > lessonNum;
+        case LT_EQ:
+            return lesson <= lessonNum;
+        case GT_EQ:
+            return lesson >= lessonNum;
+        default:
+            return false;
+    }
+}
+
+bool compareInts(int val1, int val2, BinOp operation) {
+    switch (operation) {
+        case EQ:
+            return val1 == val2;
+        case NEQ:
+            return val1 != val2;
+        case LT:
+            return val1 < val2;
+        case GT:
+            return val1 > val2;
+        case LT_EQ:
+            return val1 <= val2;
+        case GT_EQ:
+            return val1 >= val2;
+        default:
+            return false;
+    }
+}
+
+bool compareStrings(const std::string& str1, const std::string& str2, BinOp operation) {
+    switch (operation) {
+        case EQ:
+            return str1 == str2;
+        case NEQ:
+            return str1 != str2;
+        case LT:
+            return str1 < str2;
+        case GT:
+            return str1 > str2;
+        case LT_EQ:
+            return str1 <= str2;
+        case GT_EQ:
+            return str1 >= str2;
+        case LIKE:
+            return str1.find(str2) != std::string::npos;
+        default:
+            return false;
+    }
 }

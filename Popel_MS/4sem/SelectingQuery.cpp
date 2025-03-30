@@ -6,7 +6,6 @@
 void SelectingQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-
     ss >> token;
     if (token == "SELECT") {
         setCommand(SELECT);
@@ -44,7 +43,6 @@ bool SelectingQuery::parseTriple(const std::string& triple) {
         opStr = "LIKE";
     }
     BinOp operation = parseBinOp(opStr);
-
     std::string valueStr = triple.substr(opPos + opStr.length());
     Value value = parseValue(valueStr);
 
