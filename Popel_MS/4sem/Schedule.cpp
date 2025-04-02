@@ -3,10 +3,14 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <algorithm>
+#include <unordered_set>
 
-Schedule::Schedule() : schedule_() {}
+Schedule::Schedule() : schedule_(), teacher_index_(), group_index_(), room_index_(), lesson_index_(), subject_index_() {
+    buildIndexes();
+}
 
-Schedule::Schedule(FILE* fin) : schedule_() {
+Schedule::Schedule(FILE* fin) : schedule_(), teacher_index_(), group_index_(), room_index_(), lesson_index_(), subject_index_() {
     if (fin) {
         Date date;
         int lesson;
@@ -23,6 +27,8 @@ Schedule::Schedule(FILE* fin) : schedule_() {
             schedule_.push_back(newEntry);
         }
     }
+
+    buildIndexes();
 }
 
 Schedule::~Schedule() {
@@ -32,32 +38,61 @@ Schedule::~Schedule() {
     schedule_.clear();
 }
 
-bool Schedule::checkTimeCross(const Date& date1, const Date& date2) {
-    return date1.day == date2.day && date1.month == date2.month;
+void Schedule::buildIndexes() {
+    teacher_index_.clear();
+    group_index_.clear();
+    room_index_.clear();
+    lesson_index_.clear();
+    subject_index_.clear();
+
+    for (size_t i = 0; i < schedule_.size(); ++i) {
+        Entry* entry = schedule_[i];
+        FullName teacher = entry->getTeacher();
+        std::string teacherKey = std::string(teacher.surname) + " " + teacher.name + " " + teacher.patronymic;
+        teacher_index_[teacherKey].push_back(i);
+        group_index_[entry->getGroup()].push_back(i);
+        room_index_[entry->getRoom()].push_back(i);
+        lesson_index_[entry->getLesson()].push_back(i);
+        subject_index_[entry->getSubjectName()].push_back(i);
+    }
 }
 
-
-void Schedule::addEntry(Entry* entry) {
-     for (Entry* existingEntry : schedule_) {
-        if (existingEntry->getRoom() == entry->getRoom() && checkTimeCross(existingEntry->getDate(), entry->getDate())) {
-            //std::cerr << "Error: Time conflict with existing entry in room " << entry->getRoom() << std::endl;
-            delete entry; 
-            return;
+bool Schedule::checkTimeCross(const Date& date, int lesson, const FullName& teacher, int room, int group) {
+    for (const auto& entry : schedule_) {
+        if (entry->getDate().day == date.day && entry->getDate().month == date.month &&
+            entry->getLesson() == lesson) {
+            if (entry->getRoom() == room || entry->getGroup() == group ||
+                (strcmp(entry->getTeacher().surname, teacher.surname) == 0 &&
+                 strcmp(entry->getTeacher().name, teacher.name) == 0 &&
+                 strcmp(entry->getTeacher().patronymic, teacher.patronymic) == 0)) {
+                return true;
+            }
         }
     }
+    return false;
+}
+
+void Schedule::addEntry(Entry* entry) {
+    if (checkTimeCross(entry->getDate(), entry->getLesson(), entry->getTeacher(), entry->getRoom(), entry->getGroup())) {
+        delete entry;
+        return;
+    }
     schedule_.push_back(entry);
-    //buildInd();
+    buildIndexes();
 }
 
 void Schedule::deleteEntry(const Date& date, int lesson, int room) {
-    for (auto it = schedule_.begin(); it != schedule_.end(); ++it) {
-        if ((*it)->getDate().day == date.day && (*it)->getDate().month == date.month &&
-            (*it)->getLesson() == lesson && (*it)->getRoom() == room) {
-            delete *it;
-            schedule_.erase(it);
-            break;
-        }
+    auto it = std::remove_if(schedule_.begin(), schedule_.end(), [&](Entry* entry) {
+        return entry->getDate().day == date.day && entry->getDate().month == date.month &&
+               entry->getLesson() == lesson && entry->getRoom() == room;
+    });
+
+    for (auto iter = it; iter != schedule_.end(); ++iter) {
+        delete *iter;
     }
+
+    schedule_.erase(it, schedule_.end());
+    buildIndexes();
 }
 
 void Schedule::updateEntry(const Date& date, int lesson, int room, Entry* newEntry) {
@@ -68,286 +103,213 @@ void Schedule::updateEntry(const Date& date, int lesson, int room, Entry* newEnt
             break;
         }
     }
+    buildIndexes();
 }
 
-
 std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
-    std::vector<Entry*> result;
-    for (Entry* entry : schedule_) {
-        bool match = true;
-        for (const Cond& condition : crit) {
-            Field field = condition.getField();
-            BinOp operation = condition.getOperation();
-            Value value = condition.getVal();
+    if (crit.empty()) {
+        return schedule_;
+    }
 
-            switch (field) {
-                case DAY: {
-                    Date date = entry->getDate();
-                    Date condDate = std::get<Date>(value);
-                    if (!compareDates(date, condDate, operation)) {
-                        match = false;
-                    }
-                    break;
+    std::unordered_set<int> result_indices;
+    bool first = true;
+
+    for (const auto& cond : crit) {
+        std::unordered_set<int> current_indices;
+        switch (cond.getField()) {
+            case TEACHERNAME:
+            case TEACHERPATR:
+            case TEACHERLASTNAME: {
+                std::string teacherKey = std::get<std::string>(cond.getVal());
+                auto it = teacher_index_.find(teacherKey);
+                if (it != teacher_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
                 }
-                case LESSON_NUM: {
-                    int lesson = entry->getLesson();
-                    int condLessonNum = std::get<int>(value);
-                    if (!compareLessons(lesson, condLessonNum, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case ROOM: {
-                    int room = entry->getRoom();
-                    int condRoom = std::get<int>(value);
-                    if (!compareInts(room, condRoom, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case SUBJNAME: {
-                    const char* subject = entry->getSubjectName();
-                    std::string condSubject = std::get<std::string>(value);
-                    if (!compareStrings(subject, condSubject, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERNAME: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condName = std::get<std::string>(value);
-                    if (!compareStrings(teacher.name, condName, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERLASTNAME: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condSurname = std::get<std::string>(value);
-                    if (!compareStrings(teacher.surname, condSurname, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERPATR: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condPatronymic = std::get<std::string>(value);
-                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case GROUP: {
-                    int group = entry->getGroup();
-                    int condGroup = std::get<int>(value);
-                    if (!compareInts(group, condGroup, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                default:
-                    break;
+                break;
             }
+            case GROUP: {
+                int group = std::get<int>(cond.getVal());
+                auto it = group_index_.find(group);
+                if (it != group_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case ROOM: {
+                int room = std::get<int>(cond.getVal());
+                auto it = room_index_.find(room);
+                if (it != room_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case LESSON_NUM: {
+                int lesson = std::get<int>(cond.getVal());
+                auto it = lesson_index_.find(lesson);
+                if (it != lesson_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case SUBJNAME: {
+                std::string subject = std::get<std::string>(cond.getVal());
+                auto it = subject_index_.find(subject);
+                if (it != subject_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case DAY: {
+                Date date = std::get<Date>(cond.getVal());
+                for (size_t i = 0; i < schedule_.size(); ++i) {
+                    if (schedule_[i]->getDate().day == date.day && schedule_[i]->getDate().month == date.month) {
+                        current_indices.insert(i);
+                    }
+                }
+                break;
+            }
+            default:
+                break;
         }
-        if (match) {
-            result.push_back(entry);
+
+        if (first) {
+            result_indices = current_indices;
+            first = false;
+        } else {
+            std::unordered_set<int> intersection;
+            std::set_intersection(result_indices.begin(), result_indices.end(),
+                                  current_indices.begin(), current_indices.end(),
+                                  std::inserter(intersection, intersection.begin()));
+            result_indices = intersection;
         }
+    }
+
+    std::vector<Entry*> result;
+    for (int index : result_indices) {
+        result.push_back(schedule_[index]);
     }
     return result;
 }
 
 std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, const std::vector<Cond>& crit) {
-    std::vector<Entry*> result;
-    for (Entry* entry : selected) {
-        bool match = true;
-        for (const Cond& condition : crit) {
-            Field field = condition.getField();
-            BinOp operation = condition.getOperation();
-            Value value = condition.getVal();
+    std::unordered_set<int> selected_indices;
+    for (const auto& entry : selected) {
+        selected_indices.insert(std::find(schedule_.begin(), schedule_.end(), entry) - schedule_.begin());
+    }
 
-            switch (field) {
-                case DAY: {
-                    Date date = entry->getDate();
-                    Date condDate = std::get<Date>(value);
-                    if (!compareDates(date, condDate, operation)) {
-                        match = false;
-                    }
-                    break;
+    if (crit.empty()) {
+        return selected;
+    }
+
+    std::unordered_set<int> result_indices;
+    bool first = true;
+
+    for (const auto& cond : crit) {
+        std::unordered_set<int> current_indices;
+        switch (cond.getField()) {
+            case TEACHERNAME:
+            case TEACHERPATR:
+            case TEACHERLASTNAME: {
+                std::string teacherKey = std::get<std::string>(cond.getVal());
+                auto it = teacher_index_.find(teacherKey);
+                if (it != teacher_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
                 }
-                case LESSON_NUM: {
-                    int lesson = entry->getLesson();
-                    int condLessonNum = std::get<int>(value);
-                    if (!compareLessons(lesson, condLessonNum, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case ROOM: {
-                    int room = entry->getRoom();
-                    int condRoom = std::get<int>(value);
-                    if (!compareInts(room, condRoom, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case SUBJNAME: {
-                    const char* subject = entry->getSubjectName();
-                    std::string condSubject = std::get<std::string>(value);
-                    if (!compareStrings(subject, condSubject, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERNAME: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condName = std::get<std::string>(value);
-                    if (!compareStrings(teacher.name, condName, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERLASTNAME: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condSurname = std::get<std::string>(value);
-                    if (!compareStrings(teacher.surname, condSurname, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERPATR: {
-                    FullName teacher = entry->getTeacher();
-                    std::string condPatronymic = std::get<std::string>(value);
-                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case GROUP: {
-                    int group = entry->getGroup();
-                    int condGroup = std::get<int>(value);
-                    if (!compareInts(group, condGroup, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                default:
-                    break;
+                break;
             }
+            case GROUP: {
+                int group = std::get<int>(cond.getVal());
+                auto it = group_index_.find(group);
+                if (it != group_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case ROOM: {
+                int room = std::get<int>(cond.getVal());
+                auto it = room_index_.find(room);
+                if (it != room_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case LESSON_NUM: {
+                int lesson = std::get<int>(cond.getVal());
+                auto it = lesson_index_.find(lesson);
+                if (it != lesson_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case SUBJNAME: {
+                std::string subject = std::get<std::string>(cond.getVal());
+                auto it = subject_index_.find(subject);
+                if (it != subject_index_.end()) {
+                    current_indices.insert(it->second.begin(), it->second.end());
+                }
+                break;
+            }
+            case DAY: {
+                Date date = std::get<Date>(cond.getVal());
+                for (size_t i = 0; i < schedule_.size(); ++i) {
+                    if (schedule_[i]->getDate().day == date.day && schedule_[i]->getDate().month == date.month) {
+                        current_indices.insert(i);
+                    }
+                }
+                break;
+            }
+            default:
+                break;
         }
-        if (match) {
-            result.push_back(entry);
+
+        if (first) {
+            result_indices = current_indices;
+            first = false;
+        } else {
+            std::unordered_set<int> intersection;
+            std::set_intersection(result_indices.begin(), result_indices.end(),
+                                  current_indices.begin(), current_indices.end(),
+                                  std::inserter(intersection, intersection.begin()));
+            result_indices = intersection;
         }
+    }
+
+    std::unordered_set<int> final_indices;
+    std::set_intersection(result_indices.begin(), result_indices.end(),
+                          selected_indices.begin(), selected_indices.end(),
+                          std::inserter(final_indices, final_indices.begin()));
+
+    std::vector<Entry*> result;
+    for (int index : final_indices) {
+        result.push_back(schedule_[index]);
     }
     return result;
 }
 
 void Schedule::print(const std::vector<Entry*>& entries) {
-    for (Entry* entry : entries) {
-        std::cout << "Date: " << entry->getDate().day << "." << entry->getDate().month
-                  << ", Lesson: " << entry->getLesson()
-                  << ", Room: " << entry->getRoom()
-                  << ", Subject: " << entry->getSubjectName()
-                  << ", Teacher: " << entry->getTeacher().surname << " " << entry->getTeacher().name << " " << entry->getTeacher().patronymic
-                  << ", Group: " << entry->getGroup() << std::endl;
+    for (const auto& entry : entries) {
+        std::cout << entry->toString() << std::endl;
     }
 }
 
-void Schedule::saveToFile(FILE* fout) {
-    for (Entry* entry : schedule_) {
-        fprintf(fout, "%d %d %d %d %s %s %s %s %d\n",
-                entry->getDate().day, entry->getDate().month, entry->getLesson(), entry->getRoom(),
-                entry->getTeacher().surname, entry->getTeacher().name, entry->getTeacher().patronymic,
-                entry->getSubjectName(), entry->getGroup());
+void Schedule::saveToFile(std::ofstream& fout) {
+    for (const auto& entry : schedule_) {
+        fout << entry->getDate().day << " " << entry->getDate().month << " "
+             << entry->getLesson() << " " << entry->getRoom() << " "
+             << entry->getSubjectName() << " "
+             << entry->getTeacher().surname << " " << entry->getTeacher().name << " " << entry->getTeacher().patronymic << " "
+             << entry->getGroup() << std::endl;
     }
 }
 
 std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
-    std::vector<Entry*> deletedEntries;
-    for (auto it = schedule_.begin(); it != schedule_.end();) {
-        bool match = true;
-        for (const Cond& condition : crit) {
-            Field field = condition.getField();
-            BinOp operation = condition.getOperation();
-            Value value = condition.getVal();
-
-            switch (field) {
-                case DAY: {
-                    Date date = (*it)->getDate();
-                    Date condDate = std::get<Date>(value);
-                    if (!compareDates(date, condDate, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case LESSON_NUM: {
-                    int lesson = (*it)->getLesson();
-                    int condLessonNum = std::get<int>(value);
-                    if (!compareLessons(lesson, condLessonNum, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case ROOM: {
-                    int room = (*it)->getRoom();
-                    int condRoom = std::get<int>(value);
-                    if (!compareInts(room, condRoom, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case SUBJNAME: {
-                    const char* subject = (*it)->getSubjectName();
-                    std::string condSubject = std::get<std::string>(value);
-                    if (!compareStrings(subject, condSubject, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERNAME: {
-                    FullName teacher = (*it)->getTeacher();
-                    std::string condName = std::get<std::string>(value);
-                    if (!compareStrings(teacher.name, condName, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERLASTNAME: {
-                    FullName teacher = (*it)->getTeacher();
-                    std::string condSurname = std::get<std::string>(value);
-                    if (!compareStrings(teacher.surname, condSurname, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case TEACHERPATR: {
-                    FullName teacher = (*it)->getTeacher();
-                    std::string condPatronymic = std::get<std::string>(value);
-                    if (!compareStrings(teacher.patronymic, condPatronymic, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                case GROUP: {
-                    int group = (*it)->getGroup();
-                    int condGroup = std::get<int>(value);
-                    if (!compareInts(group, condGroup, operation)) {
-                        match = false;
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-        if (match) {
-            deletedEntries.push_back(*it);
-            delete *it;
-            it = schedule_.erase(it);
-        } else {
-            ++it;
-        }
+    std::vector<Entry*> result = select(crit);
+    for (const auto& entry : result) {
+        schedule_.erase(std::remove(schedule_.begin(), schedule_.end(), entry), schedule_.end());
+        delete entry;
     }
-    return deletedEntries;
+    buildIndexes();
+    return result;
 }
 
 bool compareDates(const Date& date1, const Date& date2, BinOp operation) {

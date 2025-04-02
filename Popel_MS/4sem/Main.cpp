@@ -1,5 +1,10 @@
 #include "Schedule.h"
 #include <iostream>
+#include <fstream>
+#include <locale>
+#include <cstring>
+#include <vector>
+#include <string>
 
 static Query* parseSelectingQuery(const std::string& query);
 static Query* parseAssigningQuery(const std::string& query);
@@ -75,46 +80,84 @@ static Query* parseDeleteQuery(const std::string& query) {
 }
 
 void registerParsers() {
-    //std::cout << "Регистрация parseSelectingQuery: " << reinterpret_cast<void*>(parseSelectingQuery) << std::endl;
     Query::register_parser(parseSelectingQuery);
-    //std::cout << "Регистрация parseUpdateQuery: " << reinterpret_cast<void*>(parseUpdateQuery) << std::endl;
     Query::register_parser(parseUpdateQuery);
-    //std::cout << "Регистрация parseInsertQuery: " << reinterpret_cast<void*>(parseInsertQuery) << std::endl;
     Query::register_parser(parseInsertQuery);
-    //std::cout << "Регистрация parsePrintQuery: " << reinterpret_cast<void*>(parsePrintQuery) << std::endl;
     Query::register_parser(parsePrintQuery);
-    //std::cout << "Регистрация parseDeleteQuery: " << reinterpret_cast<void*>(parseDeleteQuery) << std::endl;
     Query::register_parser(parseDeleteQuery);
-    //std::cout << "Регистрация parseAssigningQuery: " << reinterpret_cast<void*>(parseAssigningQuery) << std::endl;
     Query::register_parser(parseAssigningQuery);
 }
 
 int main() {
-    FILE* fin = fopen("schedule.txt", "r");
-    if (!fin) {
-        printf("Problems with openning file\n");
-        Query::clear_parsers();
-        return -1;
+    Schedule schedule;
+
+    std::cout << "Загрузка базы из текстового файла" << std::endl;
+    {
+        std::ifstream file("schedule.txt");
+        if (!file.is_open()) {
+            std::cerr << "Ошибка открытия файла: schedule.txt" << std::endl;
+            return 1;
+        }
+
+        Date date;
+        int lesson, room, group;
+        char subject_name[128];
+        FullName teacher;
+        while (file >> date.day >> date.month >> lesson >> room >> subject_name >> teacher.surname >> teacher.name >> teacher.patronymic >> group) {
+            Entry* entry = new Entry(date, lesson, room, subject_name, teacher, group);
+            schedule.addEntry(entry);
+        }
+
+        file.close();
     }
-    DataBase db(fin);
-    fclose(fin);
-  
-  
-    registerParsers();
-    std::string query = "INSERT room=130 subject=Math teacherLastName=Иванов group=210 day=14.03 lessonNum=3 end";
+    std::cout << "База загружена." << std::endl;
 
-    result res = db.startQuery(query);
-
-    if (res.error.getCode() != 0) {
-        printf("Incorrect Query\n");
-        Query::clear_parsers();
-        return -1;
+    std::cout << "Добавление нового пункта в расписание" << std::endl;
+    {
+        std::ofstream file("scheduleout.txt");
+        Date newDate = {15, 10};
+        FullName newTeacher = {"Петров", "Иван", "Иванович"};
+        Entry* newEntry = new Entry(newDate, 3, 101, "Физика", newTeacher, 211);
+        if (!schedule.checkTimeCross(newDate, 3, newTeacher, 101, 211)) {
+            schedule.addEntry(newEntry);
+            std::cout << "Новый пункт добавлен." << std::endl;
+        } else {
+            std::cerr << "Накладка времени!" << std::endl;
+            delete newEntry;
+        }
+        schedule.saveToFile(file);
     }
-    std::cout << res.message << std::endl;
-    Query::clear_parsers();
 
+    std::cout << "Удаление пункта из расписания" << std::endl;
+    {
+        Date deleteDate = {15, 10};
+        schedule.deleteEntry(deleteDate, 3, 101);
+        std::cout << "Пункт удален." << std::endl;
+    }
+
+    std::cout << "Получение частных расписаний" << std::endl;
+    {
+        std::vector<Cond> conditions = {
+            Cond(TEACHERLASTNAME, EQ, std::string("Иванов")),
+            Cond(GROUP, EQ, 210)
+        };
+        std::vector<Entry*> result = schedule.select(conditions);
+        for (const auto& entry : result) {
+            std::cout << entry->toString() << std::endl;
+        }
+        std::cout << "Частные расписания получены." << std::endl;
+    }
+    std::cout << "Вывод всего расписания" << std::endl;
+    {
+        std::vector<Entry*> allEntries = schedule.select({});
+        if (allEntries.empty()) {
+            std::cout << "Расписание пустое." << std::endl;
+        } else {
+            schedule.print(allEntries);
+            std::cout << "Расписание выведено." << std::endl;
+        }
+    }
     return 0;
 }
-
 
 
