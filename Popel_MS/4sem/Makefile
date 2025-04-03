@@ -29,4 +29,3 @@ clear:
 	rm -f $(OBJS) $(TARGET)
 
 .PHONY: all clear run
-
