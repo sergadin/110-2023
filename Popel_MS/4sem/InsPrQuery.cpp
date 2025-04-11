@@ -4,13 +4,15 @@
 
 void InsertQuery::parse() {
     setCommand(INSERT);
+    printf("HelloWorld from Insert!\n");
     AssigningQuery::parse();
 }
 
 void PrintQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-    ss >> token;
+    printf("HelloWorld from Print!\n");
+        ss >> token;
     if (token == "PRINT") {
         setCommand(PRINT);
     } else {
@@ -44,7 +46,7 @@ void PrintQuery::parse() {
 void DeleteQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-
+printf("HelloWorld from Delete!\n");
     ss >> token;
     if (token == "DELETE") {
         setCommand(DELETE);

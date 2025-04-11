@@ -7,227 +7,157 @@
 #include <cstring>
 #include <list>
 #include <fstream>
-#include <regex> //Это для масок и шаблонов
+#include <regex> // Это для масок и шаблонов
 #include <memory>
 #include <sstream>
 #include <unordered_map>
 
 //using namespace std;
 
-/*
- * Структура, хранящая данные о дате пары.
- * Переменные:
- *  day - день,
- *  month - месяц,
- */
-struct Date{
-  int day;
-  int month;
-};
-
-
-/*
- * Структура, хранящая данные о ФИО преподавателя.
- * Переменные:
- *  surname - фамилия,
- *  name - имя,
- *  patronymic - отчество.
- */
-struct FullName {
-  char surname[64];
-  char name[32];
-  char patronymic[64];
-};
-
-/*
- * Класс ошибок.
- * Переменные: code_ - код ошибки, mess_ - причина ошибки;
- */
 class Exception {
-  private:
+private:
     int code_;
     std::string mess_;
-  public:
+public:
     Exception(int c, std::string m) : code_(c), mess_(m) {}
     int getCode() const { return code_; }
     std::string getMessage() const { return mess_; }
 };
 
-using Value = std::variant<int, double, std::string, Date, FullName>;
+using Value = std::variant<int, double, std::string>;
 
-/*
- * Класс ячеек в базе данных.
- * Переменные:
- * time_ - время пары в расписании
- * room_ - номер аудитории
- * subject_name_ - название предмета
- * teacher_ - ФИО преподавателя
- * group_ - номер группы
- */
-class Entry{
-  private: 
-    Date date_;
+class Entry {
+private:
+    int day_;
+    int month_;
     int lesson_;
     int room_;
     char subject_name_[128];
-    FullName teacher_;
+    std::string teacher_;
     int group_;
-    
-  public:
-    Entry(Date date, int lesson, int room, const char* subjName, FullName teacher, int group): date_(date), lesson_(lesson), room_(room), teacher_(teacher), group_(group){
-      strncpy(subject_name_, subjName, sizeof(subject_name_));
+
+public:
+    Entry(int day, int month, int lesson, int room, const char* subjName, std::string teacher, int group)
+        : day_(day), month_(month), lesson_(lesson), room_(room), teacher_(teacher), group_(group) {
+        strncpy(subject_name_, subjName, sizeof(subject_name_));
     }
-    
-  Date getDate() const { return date_; }
-  int getLesson() const { return lesson_; }
-  int getRoom() const { return room_; }
-  const char* getSubjectName() const { return subject_name_; }
-  FullName getTeacher() const { return teacher_; }
-  int getGroup() const { return group_; }
-  
-  void setDate(const Date& date) { date_ = date; }
+
+    int getDay() const { return day_; }
+    int getMonth() const { return month_; }
+    int getLesson() const { return lesson_; }
+    int getRoom() const { return room_; }
+    const char* getSubjectName() const { return subject_name_; }
+    std::string getTeacher() const { return teacher_; }
+    int getGroup() const { return group_; }
+
+    void setDay(int day) { day_ = day; }
+    void setMonth(int month) { month_ = month; }
     void setLesson(int lesson) { lesson_ = lesson; }
     void setRoom(int room) { room_ = room; }
     void setSubjectName(const char* subjName) {
         strncpy(subject_name_, subjName, sizeof(subject_name_));
     }
-    void setTeacher(const FullName& teacher) { teacher_ = teacher; }
+    void setTeacher(
+    std::string teacher) { teacher_ = teacher; }
     void setGroup(int group) { group_ = group; }
-    
+
     std::string toString() const {
         std::stringstream ss;
-        ss << "Date: " << date_.day << "." << date_.month
+        ss << "Date: " << day_ << "." << month_
            << ", Lesson: " << lesson_
            << ", Room: " << room_
            << ", Subject: " << subject_name_
-           << ", Teacher: " << teacher_.surname << " " << teacher_.name << " " << teacher_.patronymic
+           << ", Teacher: " << teacher_
            << ", Group: " << group_;
         return ss.str();
     }
 };
 
-/*
- * Структура, хранящая данные о результате работы с базой данных.
- * Переменные:
- */
-struct result {
-    std::vector<Entry> entry;// результаты выборки, построенные по запросу
-    std::string message; //сообщения о статусе операций
-    Exception error; //ошибки
+struct ClientInfo {
+    int socket;
+    std::vector<Entry*> previousSelection;
 
-  result() : entry(), message(), error(0, ""){}
-
-    void addEntry(const Entry& ent){entry.push_back(ent);}
-    void addMessage(const std::string& mes){message = mes;}
-    void addError(const Exception& err){error = err;}
+    ClientInfo() : socket(0), previousSelection() {}
 };
 
-//Методы(запросы) для работы с базой данных.
-typedef enum {SELECT, RESELECT, ASSIGN, INSERT, UPDATE, DELETE, PRINT} ComType;
-//Названия столбцов в базе данных.
-typedef enum {DAY, LESSON_NUM, ROOM, SUBJNAME, TEACHERNAME, TEACHERPATR, TEACHERLASTNAME, GROUP, NONE_FIELD} Field;
-//Оператор сортировки.
-typedef enum {ASC, DESC} Order;
-//Бинарные операции.
-typedef enum {LT, GT, EQ, LT_EQ, GT_EQ, NEQ, LIKE} BinOp;
+struct result {
+    std::vector<Entry> entry; // результаты выборки, построенные по запросу
+    std::string message; // сообщения о статусе операций
+    Exception error; // ошибки
 
+    result() : entry(), message(), error(0, "") {}
 
-/*
- * Класс условий.
- * Переменные:
- * field_ - поле - название столбца, по нему выполняется условие
- * operation_ - бинарная операция сравнения
- * value_ - значение для сравнения, содержащееся в ячейке
- */
-class Cond{
-  private: 
+    void addEntry(const Entry& ent) { entry.push_back(ent); }
+    void addMessage(const std::string& mes) { message = mes; }
+    void addError(const Exception& err) { error = err; }
+};
+
+typedef enum { SELECT, RESELECT, ASSIGN, INSERT, UPDATE, DELETE, PRINT } ComType;
+typedef enum { DAY, MONTH, LESSON_NUM, ROOM, SUBJNAME, TEACHERNAME, GROUP, NONE_FIELD } Field;
+typedef enum { ASC, DESC } Order;
+typedef enum { LT, GT, EQ, LT_EQ, GT_EQ, NEQ, LIKE } BinOp;
+
+class Cond {
+private:
     Field field_;
     BinOp operation_;
     Value value_;
-  public:
+public:
     Cond(Field fld, BinOp optn, Value val) : field_(fld), operation_(optn), value_(val) {}
-    Field getField() const {return field_;}
-    BinOp getOperation() const {return operation_;}
-    Value getVal() const {return value_;}
+    Field getField() const { return field_; }
+    BinOp getOperation() const { return operation_; }
+    Value getVal() const { return value_; }
 };
 
-/*
- * Класс запрoсов.
- * Переменная: command_ - тип обрабатываемого запроса
- */
-class Query{
-  private:
+class Query {
+private:
     ComType command_;
     std::string query_;
-    using parser_fn = Query * (*)(const std::string &query);
+    using parser_fn = Query* (*)(const std::string& query);
     static std::list<parser_fn> parsers;
-  public:
-    Query(const std::string &query) : command_(SELECT), query_(query) {}
+public:
+    Query(const std::string& query) : command_(SELECT), query_(query) {}
 
     virtual ~Query() = default;
-    //Функция, выделяющая запрос из строчки и определяющая тип команды (функция для парсинга).
     virtual void parse() = 0;
-    ComType getCommand() const { return command_;}
-    static Query * do_parse(const std::string &query);
+    ComType getCommand() const { return command_; }
+    static Query* do_parse(const std::string& query);
     static void register_parser(parser_fn p);
     static void clear_parsers();
-  protected:
+protected:
     void setCommand(ComType command) { command_ = command; }
     virtual const std::string& getQueryString() const { return query_; }
 };
 
-/*
- * Подкласс запрсов вида select, reselect (для выборки данных).
- * Переменная: condition_ - вектор условий 
- * fields_ - вектор полей, которые нужно вывести.
- */
-class SelectingQuery : virtual public Query{
+class SelectingQuery : virtual public Query {
 public:
-  SelectingQuery(const std::string &query) : Query(query), condition_(), fields_() {}
-  void parse() override;
-  //Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
-  void parseCond();
-  const std::vector<Cond>& getConditions() const { return condition_; }
-  const std::vector<Field>& getFields() const {return fields_; }
-  //Функция, позволяющая проверить тип запроса и допускающая запрос до парсинга
-  //static void parse(Query& q, const std::string &query);
-  bool parseTriple(const std::string& triple);
+    SelectingQuery(const std::string& query) : Query(query), condition_(), fields_() {}
+    void parse() override;
+    void parseCond();
+    const std::vector<Cond>& getConditions() const { return condition_; }
+    const std::vector<Field>& getFields() const { return fields_; }
+    bool parseTriple(const std::string& triple);
 private:
-  std::vector<Cond> condition_;
-  std::vector<Field> fields_;  
+    std::vector<Cond> condition_;
+    std::vector<Field> fields_;
 };
 
-/*
- * Подкласс запрсов вида insert, delete.
- * Переменная: values_ - вектор пар для добавления или удаления.
- */
 class AssigningQuery : virtual public Query {
 public:
-  AssigningQuery(const std::string &query) : Query(query), values_() {}
-  void parse() override;
-//Функция для переопределения в UpdateQuery (функция-дублер переопределенной parse)
-  const std::vector<std::pair<Field, Value>>& getValues() const { return values_;}
-  //static void parse(Query& q, const std::string &query);
+    AssigningQuery(const std::string& query) : Query(query), values_() {}
+    void parse() override;
+    const std::vector<std::pair<Field, Value>>& getValues() const { return values_; }
 protected:
-  bool parseAssigningTriple(const std::string& triple);
+    bool parseAssigningTriple(const std::string& triple);
 private:
-  std::vector<std::pair<Field, Value>> values_;
-
+    std::vector<std::pair<Field, Value>> values_;
 };
 
-/*
- * Подкласс запрсов update (для обновления данных). 
- */
-class UpdateQuery : public SelectingQuery, public AssigningQuery { 
+class UpdateQuery : public SelectingQuery, public AssigningQuery {
 public:
-  UpdateQuery(const std::string &query) : Query(query), SelectingQuery(query), AssigningQuery(query) {}
-  void parse() override;
-  //static void parse(Query& q, const std::string &query);
+    UpdateQuery(const std::string& query) : Query(query), SelectingQuery(query), AssigningQuery(query) {}
+    void parse() override;
 };
-
-/*
- * Подкласс запросов insert для вставки новых данных.
- */
 
 class InsertQuery : public AssigningQuery {
 public:
@@ -235,26 +165,16 @@ public:
     void parse() override;
 };
 
-/*
- * Подкласс запросов print для вывода данных.
- * Переменная: fields_ - вектор полей для вывода.
- * sort_fields_ - вектор пар для сортировки.
- */
 class PrintQuery : public Query {
 private:
-  std::vector<Field> fields_;
-  std::vector<std::pair<Field, Order>> sort_fields_;
+    std::vector<Field> fields_;
+    std::vector<std::pair<Field, Order>> sort_fields_;
 public:
-  PrintQuery(const std::string &query) : Query(query), fields_(), sort_fields_() {}
-  void parse() override;
-  const std::vector<Field>& getFields() const { return fields_;}
-  const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_;}
-  //static void parse(Query& q, const std::string &query);
+    PrintQuery(const std::string& query) : Query(query), fields_(), sort_fields_() {}
+    void parse() override;
+    const std::vector<Field>& getFields() const { return fields_; }
+    const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_; }
 };
-
-/*
- * Подкласс запросов delete для удаления данных.
- */
 
 class DeleteQuery : public SelectingQuery {
 private:
@@ -267,75 +187,54 @@ public:
     const std::vector<Cond>& getConditions() const { return conditions; }
 };
 
-
-//Функции для более простого парсинга
 Field parseField(const std::string& fieldStr);
 BinOp parseBinOp(const std::string& opStr);
 Value parseValue(const std::string& valueStr);
-std::vector<std::pair<Date, Date>> parseDateRange(const std::string& dateStr);
+std::vector<std::pair<int, int>> parseDateRange(const std::string& dateStr);
 std::vector<std::pair<int, int>> parseLessonRange(const std::string& lessonStr);
 
-/*
- * Класс расписания.
- * Переменные:
- * schedule_ - само расписание - вектор ячеек
- * 
- */
-class Schedule{
-  private: 
+class Schedule {
+private:
     std::vector<Entry*> schedule_;
     std::unordered_map<std::string, std::vector<int>> teacher_index_;
     std::unordered_map<int, std::vector<int>> group_index_;
     std::unordered_map<int, std::vector<int>> room_index_;
     std::unordered_map<int, std::vector<int>> lesson_index_;
     std::unordered_map<std::string, std::vector<int>> subject_index_;
-  public:
+
+public:
     Schedule();
     Schedule(FILE* fin);
     ~Schedule();
-    bool checkTimeCross(const Date& date, int lesson, const FullName& teacher, int room, int group);
-    //Функция добавления новой ячейки
+    bool checkTimeCross(int day, int month, int lesson, std::string teacher, int room, int group);
     void addEntry(Entry* entry);
-    //Функция удаления ячейки
-    void deleteEntry(const Date& date, int lesson, int room);
-    // Функция обновления уже существующей ячейки
-    void updateEntry(const Date& date, int lesson, int room, Entry* newEntry);
-    //Функция выбора ячейки для работы с ней
+    void deleteEntry(int day, int month, int lesson, int room);
+    void updateEntry(int day, int month, int lesson, int room, Entry* newEntry);
     std::vector<Entry*> select(const std::vector<Cond>& crit);
-    //Функция выбора из уже имеющихся ячеек
     std::vector<Entry*> reselect(const std::vector<Entry*>& selected, const std::vector<Cond>& crit);
-    //Функция вывода подходящих ячеек на экран
-    void print(const std::vector<Entry*>& entries/*, const std::vector<Field>& fields*/);
-    //Функция, сохраняющая в файл массив ячеек (базу данных)
+    void print(const std::vector<Entry*>& entries);
     void saveToFile(std::ofstream& fout);
     std::vector<Entry*> deleteEntries(const std::vector<Cond>& crit);
-    
+
     void buildIndexes();
+    void loadFromFile(const std::string& filename);
 };
 
-/*
- * Класс базы данных
- * Переменная: schedule_ - расписание (массив ячеек).
- */
-class DataBase{
-  private:
-    Schedule *schedule_;
-    std::vector<Entry*> previousSelection;
-  public:
+class DataBase {
+private:
+    Schedule* schedule_;
+    std::unordered_map<int, ClientInfo> clientSessions;
+public:
     DataBase(FILE* fin);
     ~DataBase();
     DataBase(const DataBase&) = delete;
     DataBase& operator=(const DataBase&) = delete;
-    //Функция, получающая в виде строчки результат обработки запроса
-    result startQuery(std::string& query);
-    Schedule* getSchedule() const {return schedule_;}
+    result startQuery(int clientSocket, std::string& query);
+    Schedule* getSchedule() const { return schedule_; }
 };
 
-bool compareDates(const Date& date1, const Date& date2, BinOp operation);
-
+bool compareDates(int day1, int month1, int day2, int month2, BinOp operation);
 bool compareLessons(int lesson, int lessonNum, BinOp operation);
-
 bool compareInts(int val1, int val2, BinOp operation);
-
 bool compareStrings(const std::string& str1, const std::string& str2, BinOp operation);
-
+bool compareIntStr(const std::string& str1, const std::string& str2, BinOp operation);

@@ -5,27 +5,35 @@ CXXFLAGS = -Wall -Werror -Wformat-security -Wignored-qualifiers -Winit-self -Wsw
     -Wstrict-null-sentinel  -Wold-style-cast -Woverloaded-virtual \
     -Wsign-promo -Weffc++ -std=c++17
 
-TARGET = a.out
+TARGET_SERVER = server
+TARGET_CLIENT = client
+TARGET_MAIN = main
 
-SRCS = Main.cpp Schedule.cpp Query.cpp SelectingQuery.cpp AssigningQuery.cpp UpdateQuery.cpp InsPrQuery.cpp AuxFun.cpp DataBase.cpp
+SRCS_SERVER = server.cpp DataBase.cpp Schedule.cpp Query.cpp SelectingQuery.cpp AssigningQuery.cpp UpdateQuery.cpp InsPrQuery.cpp AuxFun.cpp
+SRCS_CLIENT = client.cpp
+SRCS_MAIN = Main.cpp DataBase.cpp Schedule.cpp Query.cpp SelectingQuery.cpp AssigningQuery.cpp UpdateQuery.cpp InsPrQuery.cpp AuxFun.cpp
 
-OBJS = $(SRCS:.cpp=.o)
+OBJS_SERVER = $(SRCS_SERVER:.cpp=.o)
+OBJS_CLIENT = $(SRCS_CLIENT:.cpp=.o)
+OBJS_MAIN = $(SRCS_MAIN:.cpp=.o)
 
 INCLUDES = Schedule.h
 
-all: run clear
+all: $(TARGET_SERVER) $(TARGET_CLIENT) $(TARGET_MAIN)
 
-run: $(TARGET)
-	valgrind --track-origins=yes --leak-check=full -s ./$(TARGET)
-	$(MAKE) clear
+$(TARGET_SERVER): $(OBJS_SERVER)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -g -o $@ $^
+$(TARGET_CLIENT): $(OBJS_CLIENT)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+	
+$(TARGET_MAIN): $(OBJS_MAIN)
+	$(CXX) $(CXXFLAGS) -o $@ $^	
 
 %.o: %.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-clear:
-	rm -f $(OBJS) $(TARGET)
+clean:
+	rm -f $(OBJS_SERVER) $(OBJS_CLIENT) $(OBJS_MAIN) $(TARGET_SERVER) $(TARGET_CLIENT) $(TARGET_MAIN)
 
-.PHONY: all clear run
+.PHONY: all clean
