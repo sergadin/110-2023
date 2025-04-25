@@ -7,7 +7,7 @@ void UpdateQuery::parse() {
     std::stringstream ss(SelectingQuery::getQueryString());
     std::string token;
     ComType parsingState = SELECT; 
-
+printf("HelloWorld from Update!\n");
     ss >> token;
     if (token == "UPDATE") {
         SelectingQuery::setCommand(UPDATE);

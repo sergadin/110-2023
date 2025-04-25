@@ -3,6 +3,90 @@
 #include <sstream>
 #include <regex>
 
+static Query* parseSelectingQuery(const std::string& query);
+static Query* parseAssigningQuery(const std::string& query);
+static Query* parseUpdateQuery(const std::string& query);
+static Query* parseInsertQuery(const std::string& query);
+static Query* parsePrintQuery(const std::string& query);
+static Query* parseDeleteQuery(const std::string& query);
+void registerParsers();
+
+static Query* parseSelectingQuery(const std::string& query) {
+    SelectingQuery* q = new SelectingQuery(query);
+    try {
+        q->parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+static Query* parseAssigningQuery(const std::string& query) {
+    AssigningQuery* q = new AssigningQuery(query);
+    try {
+        q->parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+static Query* parseUpdateQuery(const std::string& query) {
+    UpdateQuery* q = new UpdateQuery(query);
+    try {
+        q->UpdateQuery::parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+static Query* parseInsertQuery(const std::string& query) {
+    InsertQuery* q = new InsertQuery(query);
+    try {
+        q->parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+static Query* parsePrintQuery(const std::string& query) {
+    PrintQuery* q = new PrintQuery(query);
+    try {
+        q->parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+static Query* parseDeleteQuery(const std::string& query) {
+    DeleteQuery* q = new DeleteQuery(query);
+    try {
+        q->parse();
+        return q;
+    } catch (Exception &err) {
+        delete q;
+        return nullptr;
+    }
+}
+
+
+void registerParsers() {
+    Query::register_parser(parseSelectingQuery);
+    Query::register_parser(parseUpdateQuery);
+    Query::register_parser(parseInsertQuery);
+    Query::register_parser(parsePrintQuery);
+    Query::register_parser(parseDeleteQuery);
+    Query::register_parser(parseAssigningQuery);
+}
+
 DataBase::DataBase(FILE* fin) : schedule_(new Schedule()), clientSessions() {}
 
 DataBase::~DataBase() {
@@ -17,6 +101,7 @@ DataBase::~DataBase() {
 
 result DataBase::startQuery(int clientSocket, std::string& query) {
     result res;
+        registerParsers(); 
     try {
         std::unique_ptr<Query> q(Query::do_parse(query));
         if (!q) {
@@ -34,7 +119,6 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                 std::vector<Entry *> selectedEntries;
                 if (command == SELECT)
                 {
-                   
                     for (Entry *entry : clientSessions[clientSocket].previousSelection)
                     {
                         delete entry;
@@ -74,32 +158,87 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                           << ss.str() << std::endl;
             }
         }
-        else if (command == PRINT)
-        {
-            PrintQuery *pq = dynamic_cast<PrintQuery *>(q.get());
-            if (pq)
-            {
-                if (clientSessions[clientSocket].previousSelection.empty())
-                {
+        else if (command == PRINT) {
+            PrintQuery* pq = dynamic_cast<PrintQuery*>(q.get());
+            if (pq) {
+                if (clientSessions[clientSocket].previousSelection.empty()) {
                     res.addError(Exception(21, "No previous selection to print."));
                     return res;
                 }
 
+                std::vector<Entry*> entriesToPrint = clientSessions[clientSocket].previousSelection;
+
+
+                if (!pq->getSortFields().empty()) {
+                    for (const auto& sortField : pq->getSortFields()) {
+                        std::sort(entriesToPrint.begin(), entriesToPrint.end(), [&](Entry* a, Entry* b) {
+                            switch (sortField.first) {
+                                case DAY:
+                                    return sortField.second == ASC ? a->getDay() < b->getDay() : a->getDay() > b->getDay();
+                                case MONTH:
+                                    return sortField.second == ASC ? a->getMonth() < b->getMonth() : a->getMonth() > b->getMonth();
+                                case LESSON_NUM:
+                                    return sortField.second == ASC ? a->getLesson() < b->getLesson() : a->getLesson() > b->getLesson();
+                                case ROOM:
+                                    return sortField.second == ASC ? a->getRoom() < b->getRoom() : a->getRoom() > b->getRoom();
+                                case SUBJNAME:
+                                    return sortField.second == ASC ? strcmp(a->getSubjectName(), b->getSubjectName()) < 0 : strcmp(a->getSubjectName(), b->getSubjectName()) > 0;
+                                case TEACHERNAME:
+                                    return sortField.second == ASC ? a->getTeacher() < b->getTeacher() : a->getTeacher() > b->getTeacher();
+                                case GROUP:
+                                    return sortField.second == ASC ? a->getGroup() < b->getGroup() : a->getGroup() > b->getGroup();
+                                default:
+                                    return false;
+                            }
+                        });
+                    }
+                }
+
                 std::stringstream ss;
-                for (Entry *entry : clientSessions[clientSocket].previousSelection)
-                {
-                    ss << "Date: " << entry->getDay() << "." << entry->getMonth()
-                       << ", Lesson: " << entry->getLesson()
-                       << ", Room: " << entry->getRoom()
-                       << ", Subject: " << entry->getSubjectName()
-                       << ", Teacher: " << entry->getTeacher()
-                       << ", Group: " << entry->getGroup() << std::endl;
+                for (Entry* entry : entriesToPrint) {
+                    Entry filteredEntry = *entry;
+                    if (!pq->getFields().empty()) {
+                        for (Field field : pq->getFields()) {
+                            switch (field) {
+                                case DAY:
+                                    filteredEntry.setDay(0);
+                                    break;
+                                case MONTH:
+                                    filteredEntry.setMonth(0);
+                                    break;
+                                case LESSON_NUM:
+                                    filteredEntry.setLesson(0);
+                                    break;
+                                case ROOM:
+                                    filteredEntry.setRoom(0);
+                                    break;
+                                case SUBJNAME:
+                                    filteredEntry.setSubjectName("");
+                                    break;
+                                case TEACHERNAME:
+                                    filteredEntry.setTeacher("");
+                                    break;
+                                case GROUP:
+                                    filteredEntry.setGroup(0);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    ss << "Date: " << filteredEntry.getDay() << "." << filteredEntry.getMonth()
+                       << ", Lesson: " << filteredEntry.getLesson()
+                       << ", Room: " << filteredEntry.getRoom()
+                       << ", Subject: " << filteredEntry.getSubjectName()
+                       << ", Teacher: " << filteredEntry.getTeacher()
+                       << ", Group: " << filteredEntry.getGroup() << std::endl;
+                    res.addEntry(filteredEntry);
                 }
                 res.addMessage(ss.str());
                 std::cout << "Server response to client " << clientSocket << ":\n"
                           << ss.str() << std::endl;
             }
-        } else if (command == INSERT) {
+        }else if (command == INSERT) {
             AssigningQuery* iq = dynamic_cast<AssigningQuery*>(q.get());
             if (iq) {
                 int day = 0, month = 0, lesson = 0, room = 0, group = 0;

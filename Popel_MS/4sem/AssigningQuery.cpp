@@ -7,6 +7,7 @@ void AssigningQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
     ss >> token;
+    printf("HelloWorld from Assign!\n");
     if (token == "INSERT") {
         setCommand(INSERT);
     } else if (token == "DELETE") {

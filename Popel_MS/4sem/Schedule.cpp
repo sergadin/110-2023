@@ -111,7 +111,6 @@ std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
         switch (cond.getField()) {
             case TEACHERNAME: {
                 std::string teacher = std::get<std::string>(cond.getVal());
-                printf("teacher is - %s\n", teacher.c_str());
                 for (size_t i = 0; i < schedule_.size(); ++i) {
                     if (compareStrings(schedule_[i]->getTeacher(), teacher, cond.getOperation())) {
                         current_indices.insert(i);
@@ -412,7 +411,7 @@ std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
     std::vector<Entry*> result = select(crit);
     for (const auto& entry : result) {
         schedule_.erase(std::remove(schedule_.begin(), schedule_.end(), entry), schedule_.end());
-        delete entry; 
+        delete entry;
     }
     buildIndexes();
     return result;

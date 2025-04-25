@@ -12,19 +12,21 @@ void PrintQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
     printf("HelloWorld from Print!\n");
-        ss >> token;
+    ss >> token;
+    std::cout << token << std::endl;
     if (token == "PRINT") {
         setCommand(PRINT);
     } else {
-        throw Exception(7,"Expected PRINT");
+        throw Exception(7, "Expected PRINT");
     }
 
     while (ss >> token) {
+        std::cout << token << std::endl;
         if (token == "sort") {
             ss >> token;
             Field sortField = parseField(token);
             if (sortField == NONE_FIELD) {
-                throw Exception(16,"Invalid sort field in PRINT query");
+                throw Exception(16, "Invalid sort field in PRINT query");
             }
 
             ss >> token;
@@ -35,7 +37,7 @@ void PrintQuery::parse() {
         } else {
             Field field = parseField(token);
             if (field == NONE_FIELD) {
-                throw Exception(16,"Invalid field in PRINT query");
+                throw Exception(16, "Invalid field in PRINT query");
             }
             fields_.push_back(field);
         }
@@ -43,10 +45,11 @@ void PrintQuery::parse() {
 }
 
 
+
 void DeleteQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
-printf("HelloWorld from Delete!\n");
+    printf("HelloWorld from Delete!\n");
     ss >> token;
     if (token == "DELETE") {
         setCommand(DELETE);
@@ -64,4 +67,3 @@ printf("HelloWorld from Delete!\n");
         }
     }
 }
- 

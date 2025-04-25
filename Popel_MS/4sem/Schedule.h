@@ -81,9 +81,9 @@ struct ClientInfo {
 };
 
 struct result {
-    std::vector<Entry> entry; // результаты выборки, построенные по запросу
-    std::string message; // сообщения о статусе операций
-    Exception error; // ошибки
+    std::vector<Entry> entry;
+    std::string message; 
+    Exception error;
 
     result() : entry(), message(), error(0, "") {}
 

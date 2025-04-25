@@ -12,26 +12,20 @@ void SelectingQuery::parse() {
         throw Exception(5, "Expected SELECT or RESELECT");
     }
     if (token == "SELECT") {
-        printf("Selecting\n");
         setCommand(SELECT);
     } else if (token == "RESELECT") {
-        printf("Reselecting\n");
         setCommand(RESELECT);
     } else {
-        printf("ExeptionSelecting\n");
         throw Exception(5, "Expected SELECT or RESELECT");
     }
 
     while (ss >> token) {
         if (token == "end") {
-            printf("EndSelecting\n");
             break;
         } else {
             if (!parseTriple(token)) {
-                printf("ExeptionIncorrectSel\n");
                 throw Exception(13, "Incorrect syntax in SELECT/RESELECT query");
             }
-            printf("SelectingGood\n");
         }
     }
 }
@@ -42,28 +36,29 @@ bool SelectingQuery::parseTriple(const std::string& triple) {
     if (opPos == std::string::npos) {
         return false;
     }
-    printf("Read\n");
 
     std::string fieldStr = triple.substr(0, opPos);
     Field field = parseField(fieldStr);
+    std::cout << fieldStr << std::endl;
     if (field == NONE_FIELD) {
         return false;
     }
 
     std::string opStr = triple.substr(opPos, 2);
+    
     if (opStr == "!=" || opStr == "<=" || opStr == ">=") {
         opPos++;
         opl=2;
     } else {
         opStr = triple.substr(opPos, 1);
     }
-
+std::cout << opStr << std::endl;
     if (triple[opPos] == '~') {
         opStr = "LIKE";
     }
     BinOp operation = parseBinOp(opStr);
     std::string valueStr = triple.substr(opPos + opl);
-
+    std::cout << valueStr << std::endl;
     std::stringstream ss(valueStr);
     std::string token;
     while (std::getline(ss, token, ',')) {
@@ -82,7 +77,6 @@ bool SelectingQuery::parseTriple(const std::string& triple) {
             condition_.push_back(Cond(field, operation, value));
         }
     }
-
     return true;
 }
 

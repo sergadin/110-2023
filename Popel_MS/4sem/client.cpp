@@ -45,10 +45,6 @@ int main(int argc, char *argv[]) {
         std::string query;
         std::getline(std::cin, query);
 
-        if (query == "quit") {
-            break;
-        }
-
         int len = query.length();
         if (send(s, &len, sizeof(int), 0) == -1) {
             perror("send length");
@@ -60,9 +56,18 @@ int main(int argc, char *argv[]) {
         }
 
         memset(buf, 0, sizeof(buf));
-        int bytes_read = recv(s, buf, sizeof(buf) - 1, 0);
+        int bytes_read = recv(s, &len, sizeof(int), 0);
         if (bytes_read == -1) {
-            perror("recv");
+            perror("recv length");
+            break;
+        } else if (bytes_read == 0) {
+            printf("Server closed connection.\n");
+            break;
+        }
+
+        bytes_read = recv(s, buf, std::min(len, static_cast<int>(sizeof(buf)) - 1), 0);
+        if (bytes_read == -1) {
+            perror("recv data");
             break;
         } else if (bytes_read == 0) {
             printf("Server closed connection.\n");
@@ -71,6 +76,41 @@ int main(int argc, char *argv[]) {
 
         buf[bytes_read] = '\0';
         printf("Server response: %s\n", buf);
+
+        int entry_count;
+        bytes_read = recv(s, &entry_count, sizeof(int), 0);
+        if (bytes_read == -1) {
+            perror("recv entry count");
+            break;
+        } else if (bytes_read == 0) {
+            printf("Server closed connection.\n");
+            break;
+        }
+
+        for (int i = 0; i < entry_count; ++i) {
+            int entry_len;
+            bytes_read = recv(s, &entry_len, sizeof(int), 0);
+            if (bytes_read == -1) {
+                perror("recv entry length");
+                break;
+            } else if (bytes_read == 0) {
+                printf("Server closed connection.\n");
+                break;
+            }
+
+            memset(buf, 0, sizeof(buf));
+            bytes_read = recv(s, buf, std::min(entry_len, static_cast<int>(sizeof(buf)) - 1), 0);
+            if (bytes_read == -1) {
+                perror("recv entry data");
+                break;
+            } else if (bytes_read == 0) {
+                printf("Server closed connection.\n");
+                break;
+            }
+
+            buf[bytes_read] = '\0';
+            printf("Entry: %s\n", buf);
+        }
     }
 
     close(s);
