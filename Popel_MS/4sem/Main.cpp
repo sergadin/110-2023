@@ -9,6 +9,5 @@
 
 int main() {
 printf("Hello!!\n");
-    registerParsers();
     return 0;
 }
