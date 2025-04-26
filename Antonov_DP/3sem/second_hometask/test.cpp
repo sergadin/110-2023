@@ -6,21 +6,21 @@ int main(){
 	TreeNode rect(a, b);
 	for (int i = 0; i < 100; i++){
 		for (int j = 0; j < 100; j++){
-		point p(i, j);
-		std::cout << p[0] << " " << p[1] << "\n";
+		double first = ((double)i) / 10, second = ((double)j) / 10;
+		point p(first, second);
 		rect.add_point(p);
 		}
 	}
-	std::cout << rect.small_ << "\n";
 	rect.delete_point(a);
-	point c(55,55);
+	point c(9.9, 9.9);
 	point *test;
-	std::cout << 11111 << "\n";
-	std::cout << rect[0][0] << " ; " << rect[0][1] << "\n";
+	std::cout << rect.len() << "\n";
+	std::cout << "[" << rect[0][0] << " ; " << rect[0][1] << "]" << "\n";
 	test = rect.neighbours(c);
 	int len = rect.get_len_neighbours(c);
-	std::cout << len << "\n";
+	std::cout << "len of neighbours =" << len << "\n" << "neighbours: ";
 	for (int i = 0; i < len ; i++){
 		std::cout << test[i][0] << " " << test[i][1] << "\n";
 	}
+	delete[] test;
 }

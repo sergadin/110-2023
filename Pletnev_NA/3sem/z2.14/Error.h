@@ -6,32 +6,28 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <sstream>
+#include <stdexcept>
+#include <memory>
+#include <variant>
 #include <vector>
 #include <cstdio>
 #include <algorithm>
 #include <cstring>
 #include <set>
 #include <map>
+#include <optional>
+#include <limits>
+#include <regex>
 
-class Error
-{ 
+class Error : public std::runtime_error {
 private:
-    int code_ = 0;
-    std::string reason_ = "";
+    int code_;
 public:
-    Error(int code, std::string reason)
-    { 
-      code_ = code;
-      reason_ = reason;
-    }
-    std::string getReason()
-    {
-      return reason_;
-    }
-    int getCode()
-    { 
-      return code_;
-    }
+    Error(int code, const std::string& reason) : std::runtime_error(reason), code_(code) {}
+    Error(int code, std::string&& reason) : std::runtime_error(std::move(reason)), code_(code) {}
+
+    int getCode() const { return code_; }
 };
 
 #endif

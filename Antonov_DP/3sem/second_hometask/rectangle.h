@@ -43,7 +43,7 @@ public:
 		return real_;
 	}
 	bool compare(point &other){
-		if ((std::fabs(point_[0] - other.point_[0]) < 0.001) && (std::fabs(point_[1] - other.point_[1]) < 0.001)){
+		if ((std::fabs(point_[0] - other.point_[0]) < 0.0001) && (std::fabs(point_[1] - other.point_[1]) < 0.0001)){
 			return true;
 		}
 		return false;
@@ -57,7 +57,12 @@ protected:
 	point a_;
 	point b_;
 public:
-	rectangle(point a = (0, 0), point b = (0, 0)){
+	rectangle(){
+		point a(0, 0), b(0, 0);
+		a_ = a;
+		b_ = b;
+	}
+	rectangle(point a, point b){
 		a_ = a;
 		b_ = b;
 	}
@@ -80,13 +85,20 @@ public:
 };
 
 class TreeNode : public rectangle{
-public:
 	TreeNode *small_;
 	point *points_;
 	int level_;
 	int len_;
 public:
-	TreeNode(point a = (0, 0), point b = (0, 0), int n = 10) : rectangle(a, b){
+	TreeNode() : rectangle(){
+                points_ = new point[0];
+                small_ = 0;
+                level_ = 0;
+                len_ = 0;
+        }
+
+	//создаёт ветку дерева в виде прямоугольника
+	TreeNode(point a, point b) : rectangle(a, b){
 		points_ = new point[0];
 		small_ = 0;
 		level_ = 0;
@@ -96,16 +108,34 @@ public:
 		delete[] points_;
 		if (small_ != 0){ delete[] small_; }
 	}
+
+	// установить уровень
 	void set_level(int n){
 		level_ = n;
 	}
+
+	// добавить точку в множество
 	int add_point(point &p);
+
+	//превращает конец дерева в ветвь
 	void change();
+
+	//удаляет точку по координате точки
 	int delete_point(point &p);
+
+	//проверяет есть ли точка в множестве, выдаёт true если да, и false, если нет
 	bool point_in_set(point &p);
+
+	//выдаёт длину множества
 	int len();
+
+	//даёт указатель на массив точек, находящихся в окрестности с данной точкой p
 	point *neighbours(point &p);
+
+	//выдаёт длину множества точек, находящихся в окрестности с данной точкой p
 	int get_len_neighbours(point &p);
+
+	//выдаёт n-ую точку множества
 	point operator[](int n);
 };
 

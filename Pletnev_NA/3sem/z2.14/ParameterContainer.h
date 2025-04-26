@@ -3,152 +3,84 @@
 
 #include "Error.h"
 
-// Структура для хранения значения параметра
+//Структура для хранения параметров
 struct ParameterValue 
 {
-
-    enum Type {INT, DOUBLE, INT_ARRAY, DOUBLE_ARRAY, STRING};
+    enum class Type { INT, DOUBLE, STRING, INT_ARRAY, DOUBLE_ARRAY };
     Type type;
-
-    union {
-        int intValue;
-        double doubleValue;
-        std::vector<int> *intArray; 
-        std::vector<double> *doubleArray;
-        std::string *stringValue;
-    };
-
-    ~ParameterValue() = default;
+    std::variant<int, double, std::string, std::vector<int>, std::vector<double>> value;
 };
 
 
 // Узел бинарного дерева поиска
 struct Node 
 {
-    std::string key;
-    ParameterValue value;
-    Node *left, *right;
-    Node(const std::string& k, const ParameterValue& v) : key(k), value(v), left(nullptr), right(nullptr) {}
+    std::string key;             // Ключ параметра
+    ParameterValue value;        // Значение параметра
+    std::unique_ptr<Node> left;  // Левый потомок
+    std::unique_ptr<Node> right; // Правый потомок
+
+    // Конструктор узла
+    Node() : key(""), value{} {}
+    Node(const std::string& k, const ParameterValue& v) : key(k), value(v) {}
+
+    // Конструктор перемещения (для повышения производительности)
+    Node(std::string&& k, ParameterValue&& v) : key(std::move(k)), value(std::move(v)) {}
 };
 
 class ParameterContainer 
 {
+
 private:
 
-    Node *root;
+    std::unique_ptr<Node> root_; // Корень дерева
 
-    // Вспомогательная функция для рекурсивного поиска
-    ParameterValue* search(Node* node, const char* key) 
+    // Рекурсивное удаление узла
+    void clearTree(std::unique_ptr<Node>& node); 
+
+    std::string trim(const std::string& str) const; // Удаление пробелов с начала и конца строки
+    std::vector<int> parseIntArray(const std::string& valueStr) const; // Разбор массива целых чисел из строки
+    std::vector<double> parseDoubleArray(const std::string& valueStr) const; // Разбор массива вещественных чисел из строки
+    int parseInt(const std::string& valueStr) const; // Разбор целого числа из строки
+    double parseDouble(const std::string& valueStr) const; // Разбор вещественного числа из строки
+    void insert(const std::string& key, const ParameterValue& value); // Вставка узла в дерево
+    std::unique_ptr<Node> insertNodeIterative(std::unique_ptr<Node> parent, const std::string& key, const ParameterValue& value);
+    Node* findNode(Node* node, const std::string& key) const; // Рекурсивный поиск узла по ключу
+
+public:
+
+    // Конструктор: инициализирует пустое дерево
+    ParameterContainer() : root_(nullptr) {};
+
+    // Загрузка параметров из файла. Выбрасывает исключение при ошибке.
+    void loadFromFile(const std::string& filename);
+    std::vector<double> doubleArrayGet(const std::string& str) const 
     {
-        if (node == nullptr || strcmp(node->key.c_str(), key) == 0) 
-        {
-            return (node == nullptr) ? nullptr : &(node->value);
-        }
-
-        if (strcmp(node->key.c_str(), key) < 0)
-        {
-            return search(node->right, key);
-        }
-
-        return search(node->left, key);
+        return parseDoubleArray(str);
+    }
+    std::vector<int> intArrayGet(const std::string& str) const 
+    {
+        return parseIntArray(str);
+    }
+    double doubleGet(const std::string& str) const 
+    {
+        return parseDouble(str);
+    }
+    int intGet(const std::string& str) const 
+    {
+        return parseInt(str);
     }
 
-    // Рекурсивная функция для удаления всех узлов дерева
-    void clearTree(Node* node) 
-    {
-        if (node != nullptr) 
-        {
-            clearTree(node->left);
-            clearTree(node->right);
-            delete node;
-        }
-    }
+    // Получение параметров. Выбрасывает исключение, если ключ не найден или несоответствие типов.
+    int GetInt(const std::string& key) const;
+    double GetDouble(const std::string& key) const;
+    const std::vector<int>& GetIntArray(const std::string& key) const;
+    const std::vector<double>& GetDoubleArray(const std::string& key) const;
+    const std::string& GetString(const std::string& key) const;
+    std::optional<ParameterValue> GetValue(const std::string& key) const;
 
-    // Вспомогательная функция для рекурсивного вставки
-    void insert(Node* &node, const std::string& key, const ParameterValue& value) 
-    {
-        if (node == nullptr) 
-        {
-            node = new Node(key, value);
-            return;
-        }
-        if (key < node->key) insert(node->left, key, value);
-        else if (key > node->key) insert(node->right, key, value);
-        else 
-        {
-            throw Error(-101, "Key already exists"); //Обработка дубликатов ключей
-        }
-    }
-
-public: 
-    ParameterContainer() : root(nullptr) {}
-    ~ParameterContainer() { clearTree(root); }
-
-    void insert(const std::string& key, const ParameterValue& value) { insert(root, key, value); }
-
-    ParameterValue* get(const char* key) 
-    {
-        ParameterValue* pv = search(root, key);
-        if (pv == nullptr) 
-        {
-            throw Error(-102, "Key not found"); //Обработка отсутствия ключа
-        }
-        return pv;
-    }
-
-    int GetInt(const char* key) 
-    {
-        ParameterValue* pv = get(key);
-        if (pv->type != ParameterValue::INT) 
-        {
-            throw Error(-110, "Incorrect parameter type GetInt");
-        }
-        return pv->intValue;
-    }
-
-    double GetDouble(const char* key) 
-    {
-        ParameterValue* pv = get(key);
-        if (pv->type != ParameterValue::DOUBLE) 
-        {
-            throw Error(-111, "Incorrect parameter type GetDouble");
-        }
-        return pv->doubleValue;
-    }
-
-    const int* ParameterContainer::GetIntArray(const std::string& key) 
-    {
-        ParameterValue* pv = get(key);
-        if (std::holds_alternative<std::vector<int>>(pv->value)) 
-        {
-            return std::get<std::vector<int>>(pv->value).data(); // Возвращает указатель на начало вектора
-        } else {
-            throw Error(-112, "Incorrect parameter type GetIntArray");
-        }
-    }
-
-
-    const double* ParameterContainer::GetDoubleArray(const std::string& key) 
-    {
-        ParameterValue* pv = get(key);
-        if (std::holds_alternative<std::vector<double>>(pv->value)) 
-        {
-            return std::get<std::vector<double>>(pv->value).data(); // Возвращает указатель на начало вектора
-        } else {
-            throw Error(-113, "Incorrect parameter type GetDoubleArray");
-        }
-    }
-
-    const char* ParameterContainer::GetString(const std::string& key) 
-    {
-        ParameterValue* pv = get(key);
-        if (std::holds_alternative<std::string>(pv->value)) 
-        {
-            return std::get<std::string>(pv->value).c_str(); // Возвращает c_str() строки
-        } else {
-            throw Error(-114, "Incorrect parameter type GetString");
-        }
-    }
+     // Дестрструктор: удаляет дерево начиная с корня
+    ~ParameterContainer() { clearTree(root_); }
 
 };
 

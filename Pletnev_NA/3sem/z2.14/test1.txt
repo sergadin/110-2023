@@ -1,0 +1,6 @@
+myString = Mogno'.'na'.'dosrok?
+
+h = 
+tttt
+= 67
+myArrayDouble = [1.1, 2.2, fff, 4.4, 5.5]
