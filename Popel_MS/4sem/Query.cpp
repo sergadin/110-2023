@@ -4,7 +4,6 @@
 std::list<Query::parser_fn> Query::parsers;
 
 void Query::register_parser(parser_fn p) {
-//std::cout << "parseSelectingQuery: " << reinterpret_cast<void*>(p) << std::endl;
 if (p == nullptr) {
         throw Exception(6,"Функция парсера не может быть нулевой");
     }

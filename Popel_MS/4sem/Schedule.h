@@ -81,9 +81,9 @@ struct ClientInfo {
 };
 
 struct result {
-    std::vector<Entry> entry;
-    std::string message; 
-    Exception error;
+    std::vector<Entry> entry; // результаты выборки, построенные по запросу
+    std::string message; // сообщения о статусе операций
+    Exception error; // ошибки
 
     result() : entry(), message(), error(0, "") {}
 
@@ -177,14 +177,10 @@ public:
 };
 
 class DeleteQuery : public SelectingQuery {
-private:
-    std::vector<Cond> conditions;
-
 public:
-    DeleteQuery(const std::string& query) : Query(query), SelectingQuery(query), conditions() {}
+    DeleteQuery(const std::string& query) : Query(query), SelectingQuery(query) {}
     void parse() override;
 
-    const std::vector<Cond>& getConditions() const { return conditions; }
 };
 
 Field parseField(const std::string& fieldStr);
@@ -208,12 +204,12 @@ public:
     ~Schedule();
     bool checkTimeCross(int day, int month, int lesson, std::string teacher, int room, int group);
     void addEntry(Entry* entry);
-    void deleteEntry(int day, int month, int lesson, int room);
+    void deleteEntry(Entry* entry);
     void updateEntry(int day, int month, int lesson, int room, Entry* newEntry);
     std::vector<Entry*> select(const std::vector<Cond>& crit);
     std::vector<Entry*> reselect(const std::vector<Entry*>& selected, const std::vector<Cond>& crit);
     void print(const std::vector<Entry*>& entries);
-    void saveToFile(std::ofstream& fout);
+    void saveToFile(const std::string& filename);
     std::vector<Entry*> deleteEntries(const std::vector<Cond>& crit);
 
     void buildIndexes();
@@ -233,8 +229,6 @@ public:
     Schedule* getSchedule() const { return schedule_; }
 };
 
-bool compareDates(int day1, int month1, int day2, int month2, BinOp operation);
-bool compareLessons(int lesson, int lessonNum, BinOp operation);
 bool compareInts(int val1, int val2, BinOp operation);
 bool compareStrings(const std::string& str1, const std::string& str2, BinOp operation);
 bool compareIntStr(const std::string& str1, const std::string& str2, BinOp operation);

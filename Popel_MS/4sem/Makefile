@@ -28,7 +28,8 @@ $(TARGET_CLIENT): $(OBJS_CLIENT)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 	
 $(TARGET_MAIN): $(OBJS_MAIN)
-	$(CXX) $(CXXFLAGS) -o $@ $^	
+	$(CXX) $(CXXFLAGS) -o $(TARGET_MAIN) $(OBJS_MAIN)
+	valgrind --track-origins=yes --leak-check=full ./$(TARGET_MAIN)	
 
 %.o: %.cpp $(INCLUDES)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -36,4 +37,15 @@ $(TARGET_MAIN): $(OBJS_MAIN)
 clean:
 	rm -f $(OBJS_SERVER) $(OBJS_CLIENT) $(OBJS_MAIN) $(TARGET_SERVER) $(TARGET_CLIENT) $(TARGET_MAIN)
 
-.PHONY: all clean
+DOCUMENT = document.tex
+PDF = document.pdf
+
+$(PDF): $(DOCUMENT)
+	pdflatex $<
+
+latex:
+	pdflatex $(DOCUMENT)
+	pdflatex $(DOCUMENT)
+	
+	
+.PHONY: all clean latex

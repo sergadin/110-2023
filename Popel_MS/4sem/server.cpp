@@ -24,7 +24,8 @@
 struct ClientState {
     std::string lastQuery;
     std::string lastResult;
-    std::vector<Entry*> previousSelection; 
+    std::vector<Entry*> previousSelection;
+
     ClientState() : lastQuery(""), lastResult(""), previousSelection() {}
 
     ~ClientState() {
