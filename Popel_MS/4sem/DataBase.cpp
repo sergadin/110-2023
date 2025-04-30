@@ -133,17 +133,20 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                     selectedEntries = schedule_->select(sq->getConditions());
                 }
                 else
-                {
+                { // RESELECT
                     if (clientSessions[clientSocket].previousSelection.empty())
                     {
                         res.addError(Exception(20, "No previous selection to reselect from."));
                         return res;
                     }
+                    printf("Before selecting entries\n");
                     selectedEntries = schedule_->reselect(clientSessions[clientSocket].previousSelection, sq->getConditions());
                 }
-
+clientSessions[clientSocket].previousSelection.clear();
+                // Store the new selection (deep copy)
                 for (Entry *entry : selectedEntries)
                 {
+                printf("after selecting\n");
                     Entry *newEntry = new Entry(entry->getDay(), entry->getMonth(), entry->getLesson(), entry->getRoom(), entry->getSubjectName(), entry->getTeacher(), entry->getGroup());
                     clientSessions[clientSocket].previousSelection.push_back(newEntry);
                 }
@@ -153,7 +156,7 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                     ss << "Нет подходящих записей" << std::endl;
                 } else {
                     for (Entry *entry : clientSessions[clientSocket].previousSelection)
-                    {
+                    { 
                        ss << "Date: " << entry->getDay() << "." << entry->getMonth()
                            << ", Lesson: " << entry->getLesson()
                            << ", Room: " << entry->getRoom()

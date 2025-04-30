@@ -41,7 +41,16 @@ public:
         : day_(day), month_(month), lesson_(lesson), room_(room), teacher_(teacher), group_(group) {
         strncpy(subject_name_, subjName, sizeof(subject_name_));
     }
-
+    
+    bool operator==(const Entry& other) const {
+        return day_ == other.day_ &&
+               month_ == other.month_ &&
+               lesson_ == other.lesson_ &&
+               room_ == other.room_ &&
+               strcmp(subject_name_, other.subject_name_) == 0 &&
+               teacher_ == other.teacher_ &&
+               group_ == other.group_;
+    }
     int getDay() const { return day_; }
     int getMonth() const { return month_; }
     int getLesson() const { return lesson_; }

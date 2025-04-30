@@ -255,7 +255,12 @@ std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, cons
 
     std::unordered_set<int> selected_indices;
     for (const auto& entry : selected) {
-        selected_indices.insert(std::find(schedule_.begin(), schedule_.end(), entry) - schedule_.begin());
+        auto it = std::find_if(schedule_.begin(), schedule_.end(), [&](const Entry* e) {
+            return *e == *entry;
+        });
+        if (it != schedule_.end()) {
+            selected_indices.insert(it - schedule_.begin());
+        }
     }
 
     std::unordered_set<int> result_indices;
@@ -380,17 +385,34 @@ std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, cons
             result_indices = current_indices;
             first = false;
         } else {
-            std::unordered_set<int> intersection;
-            std::set_intersection(result_indices.begin(), result_indices.end(),
-                                  current_indices.begin(), current_indices.end(),
-                                  std::inserter(intersection, intersection.begin()));
-            result_indices = intersection;
+            std::unordered_set<int> intersection_set;
+            std::vector<int> result_indices_sorted(result_indices.begin(), result_indices.end());
+            std::vector<int> current_indices_sorted(current_indices.begin(), current_indices.end());
+            std::sort(result_indices_sorted.begin(), result_indices_sorted.end());
+            std::sort(current_indices_sorted.begin(), current_indices_sorted.end());
+
+            std::set_intersection(result_indices_sorted.begin(), result_indices_sorted.end(),
+                                  current_indices_sorted.begin(), current_indices_sorted.end(),
+                                  std::inserter(intersection_set, intersection_set.begin()));
+
+            std::vector<int> intersection_vector(intersection_set.begin(), intersection_set.end());
+            std::sort(intersection_vector.begin(), intersection_vector.end());
+
+            result_indices.clear();
+            for (const auto& index : intersection_vector) {
+                result_indices.insert(index);
+            }
         }
     }
 
     std::unordered_set<int> final_indices;
-    std::set_intersection(result_indices.begin(), result_indices.end(),
-                          selected_indices.begin(), selected_indices.end(),
+    std::vector<int> result_indices_sorted(result_indices.begin(), result_indices.end());
+    std::vector<int> selected_indices_sorted(selected_indices.begin(), selected_indices.end());
+    std::sort(result_indices_sorted.begin(), result_indices_sorted.end());
+    std::sort(selected_indices_sorted.begin(), selected_indices_sorted.end());
+
+    std::set_intersection(result_indices_sorted.begin(), result_indices_sorted.end(),
+                          selected_indices_sorted.begin(), selected_indices_sorted.end(),
                           std::inserter(final_indices, final_indices.begin()));
 
     std::vector<Entry*> result;
