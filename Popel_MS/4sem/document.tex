@@ -1,0 +1,398 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{comment}
+\usepackage{xcolor}
+\usepackage{listings} % For code formatting
+\usepackage{comment} % For comments
+\sloppy
+
+\title{Описание классов запросов}
+\author{Попель Мария}
+\date{}
+
+\lstset{
+    basicstyle=\ttfamily,
+    columns=fullflexible,
+    frame=single,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+}
+
+\begin{document}
+
+\maketitle
+
+\section*{Виды запросов и синтаксис}
+
+
+\section*{Возможные названия полей}
+В расписании присутствуют поля с названиями \texttt{group}, \texttt{month}, \texttt{day}, \texttt{lessonNum}, \texttt{subject}, \texttt{teacherName}, \texttt{room}. Соответственно номер группы, месяц, день, номер аудитории и номер пары записываются целыми числами или диапазоном, например, \texttt{210-215}. Название предмета или фамилия преподавателя записываются одним словом – для них возможен поиск по маскам, но невозможно применение логических операций или диапазонов. Доступные логические операции: \texttt{=}, \texttt{>}, \texttt{<}, \texttt{!=}, \texttt{>=}, \texttt{<=}, \texttt{\textasciitilde}.
+
+\section*{SELECT}
+Запрос имеет вид: \texttt{SELECT fldName\_1=val\_1 ... fldName\_n=val\_n end}
+
+Вместо знака \texttt{=} можно поставить \texttt{>=}, \texttt{<=}, \texttt{>}, \texttt{<}, \texttt{!=}, \texttt{\textasciitilde} - последний знак соответствует маске. Для маски верны следующие типы записи: \texttt{Абв*} - вместо \texttt{*} можно вставить \textit{ОДИН любой знак}; \texttt{Абв\^} - вместо \texttt{\^} можно вставить любое количество (кроме 0) любых символов.
+
+Каждая тройка запроса вводится без пробелов: название поля, логический оператор, значение. Сами тройки перечисляются через пробел без прочих знаков. В конце каждого запроса должна стоять запись \texttt{end}.
+
+\section*{RESELECT}
+Структура запроса имеет ту же логику, что и запрос типа \texttt{SELECT}. Но теперь отбор записей происходит из ранее отобранных с помощью \texttt{SELECT} записей. Если ранее не производилось отбора записей с помощью запроса \texttt{SELECT}, сервер выдаст ошибку \texttt{No previous selection to reselect from}.
+
+\section*{PRINT}
+Запрос имеет вид: \texttt{PRINT fldName\_1 ... fldName\_n sort fldName ASC end}. Вместо \texttt{ASC} – сортировка по возрастанию, можно написать \texttt{DESC} – сортировка по убыванию. Запрос будет выводить перечисленные поля с соответствующими им значениями из ранее определенной с помощью \texttt{SELECT} или \texttt{RESELECT}. Если между \texttt{PRINT} и \texttt{sort} не указывать названия полей, то будет выведена вся выбранная до того таблица. Если предыдущим запросом не был \texttt{SELECT} или \texttt{RESELECT}, то программа выдаст ошибку \texttt{No previous selection to print}.
+
+\section*{INSERT}
+Запрос имеет вид: \texttt{INSERT fldName\_1=val\_1 ... fldName\_n=val\_n end}. В качестве полей должны быть перечислены возможные названия полей. Они могут быть указаны не все – тогда значениям неуказанных полей будет присваиваться 0 или \texttt{""} в зависимости от типа поля. Здесь логическим символом может быть ТОЛЬКО знак \texttt{=}.
+
+Этот запрос добавляет новую запись в базу данных, если она не пересекается по дате, номеру пары и аудитории или именем преподавателя с другой уже существующей записью. В случае пересечения – исходная база данных не будет изменена.
+
+\section*{UPDATE}
+Запрос имеет вид: \texttt{UPDATE fldName\_11=val\_11 ... fldName\_n1=val\_n1 WHERE fldName\_12=val\_12 ... fldName\_n2=val\_n2 end}. Здесь до ключевого слова \texttt{WHERE} перечисляются поля, которые нужно исправить, с новыми значениями. В этой части запроса из логических символов возможен только знак \texttt{=}. После ключевого слова \texttt{WHERE} записываются условия, по которым отбираются записи для изменения. Здесь уже работает логика отбора как в запросе \texttt{SELECT}, т.е. возможны любые из имеющихся логических операций.
+
+\section*{DELETE}
+Запрос имеет вид: \texttt{DELETE fldName\_1=val\_1 ... fldName\_n=val\_n end}. Здесь в запросе после ключевого слова перечисляются условия, по которым идет отбор полей для удаления. Отбор происходит аналогично случаю запроса \texttt{SELECT}. Если не было отобрано ни одного запроса, сервер выдаст сообщение: \texttt{Nothing was deleted.}
+
+\section*{Общие сообщения}
+В общем случае, если выборка возвращает пустое множество значений, выдается сообщение: \texttt{Нет подходящих записей}.
+
+
+После выполнения запросов типа SELECT, RESELECT, PRINT - в файл scheduleout.txt выводится изначальный запрос. После выполнения запросов типа INSERT, UPDATE, DELETE - в этот же файл выводится измененненная база данных (расписание).
+
+\section*{Запуск сервера и клиента}
+Вводим \texttt{make}, затем \texttt{./server}. Потом в новом окне консоли запускаем клиент \texttt{./client localhost 1234}. Далее следовать появившимся инструкциям.
+
+
+
+\section*{Комментарии к .h-file}
+
+
+
+\section*{Класс ошибок}
+
+Переменные: \texttt{code\_} - код ошибки, \texttt{mess\_} - сообщение об ошибке.
+
+\begin{lstlisting}[language=C++]
+class Exception {
+private:
+    int code_;
+    std::string mess_;
+public:
+    Exception(int c, std::string m) : code_(c), mess_(m) {}
+    int getCode() const { return code_; }
+    std::string getMessage() const { return mess_; }
+};
+\end{lstlisting}
+
+\begin{comment}
+using Value = std::variant<int, double, std::string>;
+\end{comment}
+
+\section*{Класс записей}
+
+Переменные: \texttt{day\_} - день, \texttt{month\_} - месяц, \texttt{lesson\_} - номер пары, \texttt{room\_} - номер аудитории, \texttt{subject\_name\_} - название предмета, \texttt{teacher\_} - фамилия преподавателя, \texttt{group\_} - номер группы.
+
+Содержит функции для вывода каждой ячейки и функцию для вывода записи в строку (\texttt{toString}).
+
+\begin{lstlisting}[language=C++]
+class Entry {
+private:
+    int day_;
+    int month_;
+    int lesson_;
+    int room_;
+    char subject_name_[128];
+    std::string teacher_;
+    int group_;
+
+public:
+    Entry(int day, int month, int lesson, int room, const char* subjName, std::string teacher, int group)
+        : day_(day), month_(month), lesson_(lesson), room_(room), teacher_(teacher), group_(group) {
+        strncpy(subject_name_, subjName, sizeof(subject_name_));
+    }
+
+    bool operator==(const Entry& other) const {
+        return day_ == other.day_ &&
+               month_ == other.month_ &&
+               lesson_ == other.lesson_ &&
+               room_ == other.room_ &&
+               strcmp(subject_name_, other.subject_name_) == 0 &&
+               teacher_ == other.teacher_ &&
+               group_ == other.group_;
+    }
+
+    int getDay() const { return day_; }
+    int getMonth() const { return month_; }
+    int getLesson() const { return lesson_; }
+    int getRoom() const { return room_; }
+    const char* getSubjectName() const { return subject_name_; }
+    std::string getTeacher() const { return teacher_; }
+    int getGroup() const { return group_; }
+
+    void setDay(int day) { day_ = day; }
+    void setMonth(int month) { month_ = month; }
+    void setLesson(int lesson) { lesson_ = lesson; }
+    void setRoom(int room) { room_ = room; }
+    void setSubjectName(const char* subjName) {
+        strncpy(subject_name_, subjName, sizeof(subject_name_));
+    }
+    void setTeacher(std::string teacher) { teacher_ = teacher; }
+    void setGroup(int group) { group_ = group; }
+
+    std::string toString() const {
+        std::stringstream ss;
+        ss << "Date: " << day_ << "." << month_
+           << ", Lesson: " << lesson_
+           << ", Room: " << room_
+           << ", Subject: " << subject_name_
+           << ", Teacher: " << teacher_
+           << ", Group: " << group_;
+        return ss.str();
+    }
+};
+\end{lstlisting}
+
+\section*{Класс информации о клиенте и сессии}
+
+Переменные: \texttt{socket} – номер сокета, \texttt{previousSelection} – множество записей предыдущей сессии клиента.
+
+\begin{lstlisting}[language=C++]
+struct ClientInfo {
+    int socket;
+    std::vector<Entry*> previousSelection;
+
+    ClientInfo() : socket(0), previousSelection() {}
+};
+\end{lstlisting}
+
+\section*{Структура для вывода результата}
+
+Переменные: \texttt{entry} – запись, \texttt{message} – информация о результате, \texttt{error} - ошибки.
+\begin{lstlisting}[language=C++]
+struct result {
+    std::vector<Entry> entry;
+    std::string message;
+    Exception error;
+
+    result() : entry(), message(), error(0, "") {}
+
+    void addEntry(const Entry& ent) { entry.push_back(ent); }
+    void addMessage(const std::string& mes) { message = mes; }
+    void addError(const Exception& err) { error = err; }
+};
+\end{lstlisting}
+
+\section*{Новые структуры для обозначения ключевых слов, названия полей, логических операций и т.д.}
+
+\begin{lstlisting}[language=C++]
+typedef enum { SELECT, RESELECT, ASSIGN, INSERT, UPDATE, DELETE, PRINT } ComType;
+typedef enum { DAY, MONTH, LESSON_NUM, ROOM, SUBJNAME, TEACHERNAME, GROUP, NONE_FIELD } Field;
+typedef enum { ASC, DESC } Order;
+typedef enum { LT, GT, EQ, LT_EQ, GT_EQ, NEQ, LIKE } BinOp;
+\end{lstlisting}
+
+\section*{Класс условий}
+
+Переменные: \texttt{field\_} - название поля, \texttt{operation\_} - логическая операция, \texttt{value\_} - значение в поле.
+
+\begin{lstlisting}[language=C++]
+class Cond {
+private:
+    Field field_;
+    BinOp operation_;
+    Value value_;
+public:
+    Cond(Field fld, BinOp optn, Value val) : field_(fld), operation_(optn), value_(val) {}
+    Field getField() const { return field_; }
+    BinOp getOperation() const { return operation_; }
+    Value getVal() const { return value_; }
+};
+\end{lstlisting}
+
+
+\section*{Класс запроса}
+
+Переменные: \texttt{command\_} - тип запроса, \texttt{query\_} - запрос, \texttt{parsers} – вектор парсинговых функций.
+
+\begin{lstlisting}[language=C++]
+class Query {
+private:
+    ComType command_;
+    std::string query_;
+    using parser_fn = Query* (*)(const std::string& query);
+    static std::list<parser_fn> parsers;
+public:
+    Query(const std::string& query) : command_(SELECT), query_(query) {}
+
+    virtual ~Query() = default;
+    virtual void parse() = 0;
+    ComType getCommand() const { return command_; }
+    static Query* do_parse(const std::string& query);
+    static void register_parser(parser_fn p);
+    static void clear_parsers();
+protected:
+    void setCommand(ComType command) { command_ = command; }
+    virtual const std::string& getQueryString() const { return query_; }
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Select}
+
+Переменные: \texttt{condition\_} - вектор условий в тройках запроса, \texttt{fields\_} - вектор полей в тройках запроса.
+
+\begin{lstlisting}[language=C++]
+class SelectingQuery : virtual public Query {
+public:
+    SelectingQuery(const std::string& query) : Query(query), condition_(), fields_() {}
+    void parse() override;
+    void parseCond();
+    const std::vector<Cond>& getConditions() const { return condition_; }
+    const std::vector<Field>& getFields() const { return fields_; }
+    bool parseTriple(const std::string& triple);
+private:
+    std::vector<Cond> condition_;
+    std::vector<Field> fields_;
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Assign}
+
+Переменные: \texttt{values\_} - вектор пар значений и соответствующих им полей.
+
+\begin{lstlisting}[language=C++]
+class AssigningQuery : virtual public Query {
+public:
+    AssigningQuery(const std::string& query) : Query(query), values_() {}
+    void parse() override;
+    const std::vector<std::pair<Field, Value>>& getValues() const { return values_; }
+protected:
+    bool parseAssigningTriple(const std::string& triple);
+private:
+    std::vector<std::pair<Field, Value>> values_;
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Update}
+
+\begin{lstlisting}[language=C++]
+class UpdateQuery : public SelectingQuery, public AssigningQuery {
+public:
+    UpdateQuery(const std::string& query) : Query(query), SelectingQuery(query), AssigningQuery(query) {}
+    void parse() override;
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Insert}
+
+\begin{lstlisting}[language=C++]
+class InsertQuery : public AssigningQuery {
+public:
+    InsertQuery(const std::string& query) : Query(query), AssigningQuery(query) {}
+    void parse() override;
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Print}
+
+Переменные: \texttt{fields\_} - вектор полей в тройках запроса, \texttt{sort\_fields\_} - вектор пар полей и порядка сортировки.
+
+\begin{lstlisting}[language=C++]
+class PrintQuery : public Query {
+private:
+    std::vector<Field> fields_;
+    std::vector<std::pair<Field, Order>> sort_fields_;
+public:
+    PrintQuery(const std::string& query) : Query(query), fields_(), sort_fields_() {}
+    void parse() override;
+    const std::vector<Field>& getFields() const { return fields_; }
+    const std::vector<std::pair<Field, Order>>& getSortFields() const { return sort_fields_; }
+};
+\end{lstlisting}
+
+\section*{Класс запроса типа обработки запроса Delete}
+
+\begin{lstlisting}[language=C++]
+class DeleteQuery : public SelectingQuery {
+public:
+    DeleteQuery(const std::string& query) : Query(query), SelectingQuery(query) {}
+    void parse() override;
+};
+\end{lstlisting}
+
+\section*{Вспомогательные функции для парсинга}
+
+\begin{lstlisting}[language=C++]
+Field parseField(const std::string& fieldStr);
+BinOp parseBinOp(const std::string& opStr);
+Value parseValue(const std::string& valueStr);
+\end{lstlisting}
+
+\section*{Класс расписания}
+
+Переменные: \texttt{schedule\_} - расписание, индексы по типам полей.
+
+Функции: \texttt{checkTimeCross} – проверка пересечения записей, \texttt{saveToFile} – сохранение в файл, \texttt{deleteEntries} – удаление значений по набору условий, \texttt{buildIndexes()} – построение индексов, \texttt{loadFromFile} – загрузка из файла базы данных.
+
+\begin{lstlisting}[language=C++]
+class Schedule {
+private:
+    std::vector<Entry*> schedule_;
+    std::unordered_map<std::string, std::vector<int>> teacher_index_;
+    std::unordered_map<int, std::vector<int>> group_index_;
+    std::unordered_map<int, std::vector<int>> room_index_;
+    std::unordered_map<int, std::vector<int>> lesson_index_;
+    std::unordered_map<std::string, std::vector<int>> subject_index_;
+
+public:
+    Schedule();
+    Schedule(FILE* fin);
+    ~Schedule();
+    bool checkTimeCross(int day, int month, int lesson, std::string teacher, int room, int group);
+    void addEntry(Entry* entry);
+    void deleteEntry(Entry* entry);
+    void updateEntry(int day, int month, int lesson, int room, Entry* newEntry);
+    std::vector<Entry*> select(const std::vector<Cond>& crit);
+    std::vector<Entry*> reselect(const std::vector<Entry*>& selected, const std::vector<Cond>& crit);
+    void print(const std::vector<Entry*>& entries);
+    void saveToFile(const std::string& filename);
+    std::vector<Entry*> deleteEntries(const std::vector<Cond>& crit);
+
+    void buildIndexes();
+    void loadFromFile(const std::string& filename);
+};
+\end{lstlisting}
+
+\section*{Класс базы данных}
+
+Переменные: \texttt{schedule\_} - расписание, \texttt{clientSessions} – пары информации о клиенте, \texttt{startQuery} – основная функция, запускающая обработку запроса.
+
+\begin{lstlisting}[language=C++]
+class DataBase {
+private:
+    Schedule* schedule_;
+    std::unordered_map<int, ClientInfo> clientSessions;
+public:
+    DataBase(FILE* fin);
+    ~DataBase();
+    DataBase(const DataBase&) = delete;
+    DataBase& operator=(const DataBase&) = delete;
+    result startQuery(int clientSocket, std::string& query);
+    Schedule* getSchedule() const { return schedule_; }
+};
+\end{lstlisting}
+
+\section*{Функции сравнения}
+
+Функции сравнения целых чисел, строк, смеси целых чисел и строк.
+
+\begin{lstlisting}[language=C++]
+bool compareInts(int val1, int val2, BinOp operation);
+bool compareStrings(const std::string& str1, const std::string& str2, BinOp operation);
+bool compareIntStr(const std::string& str1, const std::string& str2, BinOp operation);
+\end{lstlisting}
+
+\end{document}
