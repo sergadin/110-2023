@@ -179,6 +179,7 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
 
                 std::vector<Entry*> entriesToPrint = clientSessions[clientSocket].previousSelection;
 
+                // Sort entries if sort fields are specified
                 if (!pq->getSortFields().empty()) {
                     for (const auto& sortField : pq->getSortFields()) {
                         std::sort(entriesToPrint.begin(), entriesToPrint.end(), [&](Entry* a, Entry* b) {
@@ -207,42 +208,45 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                 std::stringstream ss;
                 for (Entry* entry : entriesToPrint) {
                     Entry filteredEntry = *entry;
+                    
                     if (!pq->getFields().empty()) {
-                        for (Field field : pq->getFields()) {
-                            switch (field) {
-                                case DAY:
-                                    filteredEntry.setDay(0);
-                                    break;
-                                case MONTH:
-                                    filteredEntry.setMonth(0);
-                                    break;
-                                case LESSON_NUM:
-                                    filteredEntry.setLesson(0);
-                                    break;
-                                case ROOM:
-                                    filteredEntry.setRoom(0);
-                                    break;
-                                case SUBJNAME:
-                                    filteredEntry.setSubjectName("");
-                                    break;
-                                case TEACHERNAME:
-                                    filteredEntry.setTeacher("");
-                                    break;
-                                case GROUP:
-                                    filteredEntry.setGroup(0);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                for (Field field : pq->getFields()) {
+                    switch (field) {
+                        case DAY:
+                            ss << "Day: " << filteredEntry.getDay() << " ";
+                            break;
+                        case MONTH:
+                            ss << "Month: " << filteredEntry.getMonth() << " ";
+                            break;
+                        case LESSON_NUM:
+                            ss << "Lesson: " << filteredEntry.getLesson() << " ";
+                            break;
+                        case ROOM:
+                            ss << "Room: " << filteredEntry.getRoom() << " ";
+                            break;
+                        case SUBJNAME:
+                            ss << "Subject: " << filteredEntry.getSubjectName() << " ";
+                            break;
+                        case TEACHERNAME:
+                            ss << "Teacher: " << filteredEntry.getTeacher() << " ";
+                            break;
+                        case GROUP:
+                            ss << "Group: " << filteredEntry.getGroup() << " ";
+                            break;
+                        default:
+                            break;
                     }
-                    ss << "Date: " << filteredEntry.getDay() << "." << filteredEntry.getMonth()
-                       << ", Lesson: " << filteredEntry.getLesson()
-                       << ", Room: " << filteredEntry.getRoom()
-                       << ", Subject: " << filteredEntry.getSubjectName()
-                       << ", Teacher: " << filteredEntry.getTeacher()
-                       << ", Group: " << filteredEntry.getGroup() << std::endl;
-                    res.addEntry(filteredEntry);
+                }
+            } else {
+                // Если поля не указаны, выводим все поля
+                ss << "Date: " << filteredEntry.getDay() << "." << filteredEntry.getMonth()
+                   << ", Lesson: " << filteredEntry.getLesson()
+                   << ", Room: " << filteredEntry.getRoom()
+                   << ", Subject: " << filteredEntry.getSubjectName()
+                   << ", Teacher: " << filteredEntry.getTeacher()
+                   << ", Group: " << filteredEntry.getGroup() << std::endl;
+            }
+            ss << std::endl;
                 }
                 res.addMessage(ss.str());
                 std::cout << "Server response to client " << clientSocket << ":\n"
