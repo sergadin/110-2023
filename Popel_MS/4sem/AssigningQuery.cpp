@@ -10,9 +10,7 @@ void AssigningQuery::parse() {
     printf("HelloWorld from Assign!\n");
     if (token == "INSERT") {
         setCommand(INSERT);
-    } else if (token == "DELETE") {
-        setCommand(DELETE);
-    } else {
+    }else {
         throw Exception(6,"Expected INSERT or DELETE");
     }
 
@@ -37,8 +35,7 @@ bool AssigningQuery::parseAssigningTriple(const std::string& triple) {
     Field field = parseField(fieldStr);
     if (field == NONE_FIELD) {
         return false;
-    }
-
+    }  
     std::string valueStr = triple.substr(eqPos + 1);
     Value value = parseValue(valueStr);
     values_.push_back(std::make_pair(field, value));

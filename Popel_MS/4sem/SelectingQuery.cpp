@@ -7,7 +7,6 @@ void SelectingQuery::parse() {
     std::stringstream ss(getQueryString());
     std::string token;
     ss >> token;
-    printf("HelloWorld from Select!\n");
     if (token != "SELECT" && token != "RESELECT") {
         throw Exception(5, "Expected SELECT or RESELECT");
     }
@@ -32,14 +31,12 @@ void SelectingQuery::parse() {
 
 bool SelectingQuery::parseTriple(const std::string& triple) {
     size_t opPos = triple.find_first_of("=><!~");
-    int opl = 1;
     if (opPos == std::string::npos) {
         return false;
     }
 
     std::string fieldStr = triple.substr(0, opPos);
     Field field = parseField(fieldStr);
-    std::cout << fieldStr << std::endl;
     if (field == NONE_FIELD) {
         return false;
     }
@@ -47,23 +44,18 @@ bool SelectingQuery::parseTriple(const std::string& triple) {
     std::string opStr = triple.substr(opPos, 2);
     
     if (opStr == "!=" || opStr == "<=" || opStr == ">=") {
-        opPos++;
-        opl=2;
+        opPos+=2;
     } else {
         opStr = triple.substr(opPos, 1);
+        opPos++;
     }
-std::cout << opStr << std::endl;
-    if (triple[opPos] == '~') {
+    if (triple[opPos-1] == '~') {
         opStr = "LIKE";
     }
     BinOp operation = parseBinOp(opStr);
-    std::string valueStr = triple.substr(opPos + opl);
-    std::cout << valueStr << std::endl;
-    std::stringstream ss(valueStr);
-    std::string token;
-    while (std::getline(ss, token, ',')) {
-        if (token.find('-') != std::string::npos) {
-            std::stringstream rangeStream(token);
+    std::string valueStr = triple.substr(opPos);
+        if (valueStr.find('-') != std::string::npos) {
+            std::stringstream rangeStream(valueStr);
             std::string startStr, endStr;
             std::getline(rangeStream, startStr, '-');
             std::getline(rangeStream, endStr, '-');
@@ -73,10 +65,10 @@ std::cout << opStr << std::endl;
             condition_.push_back(Cond(field, GT_EQ, startVal));
             condition_.push_back(Cond(field, LT_EQ, endVal));
         } else {
-            Value value = parseValue(token);
+            Value value = parseValue(valueStr);
             condition_.push_back(Cond(field, operation, value));
         }
-    }
+   // }
+
     return true;
 }
-

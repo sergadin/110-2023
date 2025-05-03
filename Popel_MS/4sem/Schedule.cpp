@@ -75,16 +75,12 @@ void Schedule::addEntry(Entry* entry) {
     buildIndexes();
 }
 
-void Schedule::deleteEntry(int day, int month, int lesson, int room) {
-    auto it = std::remove_if(schedule_.begin(), schedule_.end(), [&](Entry* entry) {
-        return entry->getDay() == day && entry->getMonth() == month && entry->getLesson() == lesson && entry->getRoom() == room;
-    });
-
-    for (auto iter = it; iter != schedule_.end(); ++iter) {
-        delete *iter;
+void Schedule::deleteEntry(Entry* entry) {
+    auto it = std::find(schedule_.begin(), schedule_.end(), entry);
+    if (it != schedule_.end()) {
+        delete *it;
+        schedule_.erase(it);
     }
-
-    schedule_.erase(it, schedule_.end());
     buildIndexes();
 }
 
@@ -102,7 +98,6 @@ std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
     if (crit.empty()) {
         return schedule_;
     }
-
     std::unordered_set<int> result_indices;
     bool first = true;
 
@@ -130,7 +125,7 @@ std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
                     std::string groupStr = std::get<std::string>(cond.getVal());
                     for (const auto& pair : group_index_) {
                         if (compareIntStr(std::to_string(pair.first), groupStr, cond.getOperation())) {
-                            current_indices.insert(pair.second.begin(), pair.second.end());
+             current_indices.insert(pair.second.begin(), pair.second.end());
                         }
                     }
                 }
@@ -225,14 +220,27 @@ std::vector<Entry*> Schedule::select(const std::vector<Cond>& crit) {
             result_indices = current_indices;
             first = false;
         } else {
-            std::unordered_set<int> intersection;
-            std::set_intersection(result_indices.begin(), result_indices.end(),
-                                  current_indices.begin(), current_indices.end(),
-                                  std::inserter(intersection, intersection.begin()));
-            result_indices = intersection;
-        }
-    }
 
+    std::unordered_set<int> intersection_set;
+    std::vector<int> result_indices_sorted(result_indices.begin(), result_indices.end());
+    std::vector<int> current_indices_sorted(current_indices.begin(), current_indices.end());
+    std::sort(result_indices_sorted.begin(), result_indices_sorted.end());
+    std::sort(current_indices_sorted.begin(), current_indices_sorted.end());
+
+    std::set_intersection(result_indices_sorted.begin(), result_indices_sorted.end(),
+                          current_indices_sorted.begin(), current_indices_sorted.end(),
+                          std::inserter(intersection_set, intersection_set.begin()));
+
+
+    std::vector<int> intersection_vector(intersection_set.begin(), intersection_set.end());
+    std::sort(intersection_vector.begin(), intersection_vector.end());
+
+    result_indices.clear();
+    for (const auto& index : intersection_vector) {
+        result_indices.insert(index);
+    }
+}
+    }
     std::vector<Entry*> result;
     for (int index : result_indices) {
         result.push_back(schedule_[index]);
@@ -247,7 +255,12 @@ std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, cons
 
     std::unordered_set<int> selected_indices;
     for (const auto& entry : selected) {
-        selected_indices.insert(std::find(schedule_.begin(), schedule_.end(), entry) - schedule_.begin());
+        auto it = std::find_if(schedule_.begin(), schedule_.end(), [&](const Entry* e) {
+            return *e == *entry;
+        });
+        if (it != schedule_.end()) {
+            selected_indices.insert(it - schedule_.begin());
+        }
     }
 
     std::unordered_set<int> result_indices;
@@ -372,17 +385,34 @@ std::vector<Entry*> Schedule::reselect(const std::vector<Entry*>& selected, cons
             result_indices = current_indices;
             first = false;
         } else {
-            std::unordered_set<int> intersection;
-            std::set_intersection(result_indices.begin(), result_indices.end(),
-                                  current_indices.begin(), current_indices.end(),
-                                  std::inserter(intersection, intersection.begin()));
-            result_indices = intersection;
+            std::unordered_set<int> intersection_set;
+            std::vector<int> result_indices_sorted(result_indices.begin(), result_indices.end());
+            std::vector<int> current_indices_sorted(current_indices.begin(), current_indices.end());
+            std::sort(result_indices_sorted.begin(), result_indices_sorted.end());
+            std::sort(current_indices_sorted.begin(), current_indices_sorted.end());
+
+            std::set_intersection(result_indices_sorted.begin(), result_indices_sorted.end(),
+                                  current_indices_sorted.begin(), current_indices_sorted.end(),
+                                  std::inserter(intersection_set, intersection_set.begin()));
+
+            std::vector<int> intersection_vector(intersection_set.begin(), intersection_set.end());
+            std::sort(intersection_vector.begin(), intersection_vector.end());
+
+            result_indices.clear();
+            for (const auto& index : intersection_vector) {
+                result_indices.insert(index);
+            }
         }
     }
 
     std::unordered_set<int> final_indices;
-    std::set_intersection(result_indices.begin(), result_indices.end(),
-                          selected_indices.begin(), selected_indices.end(),
+    std::vector<int> result_indices_sorted(result_indices.begin(), result_indices.end());
+    std::vector<int> selected_indices_sorted(selected_indices.begin(), selected_indices.end());
+    std::sort(result_indices_sorted.begin(), result_indices_sorted.end());
+    std::sort(selected_indices_sorted.begin(), selected_indices_sorted.end());
+
+    std::set_intersection(result_indices_sorted.begin(), result_indices_sorted.end(),
+                          selected_indices_sorted.begin(), selected_indices_sorted.end(),
                           std::inserter(final_indices, final_indices.begin()));
 
     std::vector<Entry*> result;
@@ -397,14 +427,22 @@ void Schedule::print(const std::vector<Entry*>& entries) {
     }
 }
 
-void Schedule::saveToFile(std::ofstream& fout) {
+void Schedule::saveToFile(const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Ошибка открытия файла: " << filename << std::endl;
+        return;
+    }
+
     for (const auto& entry : schedule_) {
-        fout << entry->getDay() << " " << entry->getMonth() << " "
+        file << entry->getDay() << " " << entry->getMonth() << " "
              << entry->getLesson() << " " << entry->getRoom() << " "
              << entry->getSubjectName() << " "
              << entry->getTeacher() << " "
              << entry->getGroup() << std::endl;
     }
+
+    file.close();
 }
 
 std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
@@ -417,47 +455,12 @@ std::vector<Entry*> Schedule::deleteEntries(const std::vector<Cond>& crit) {
     return result;
 }
 
-bool compareDates(int day1, int month1, int day2, int month2, BinOp operation) {
-    switch (operation) {
-        case EQ:
-            return day1 == day2 && month1 == month2;
-        case NEQ:
-            return day1 != day2 || month1 != month2;
-        case LT:
-            return month1 < month2 || (month1 == month2 && day1 < day2);
-        case GT:
-            return month1 > month2 || (month1 == month2 && day1 > day2);
-        case LT_EQ:
-            return month1 < month2 || (month1 == month2 && day1 <= day2);
-        case GT_EQ:
-            return month1 > month2 || (month1 == month2 && day1 >= day2);
-        default:
-            return false;
-    }
-}
-
-bool compareLessons(int lesson, int lessonNum, BinOp operation) {
-    switch (operation) {
-        case EQ:
-            return lesson == lessonNum;
-        case NEQ:
-            return lesson != lessonNum;
-        case LT:
-            return lesson < lessonNum;
-        case GT:
-            return lesson > lessonNum;
-        case LT_EQ:
-            return lesson <= lessonNum;
-        case GT_EQ:
-            return lesson >= lessonNum;
-        default:
-            return false;
-    }
-}
 
 bool compareInts(int val1, int val2, BinOp operation) {
     switch (operation) {
         case EQ:
+        if(val1==val2){
+        }
             return val1 == val2;
         case NEQ:
             return val1 != val2;

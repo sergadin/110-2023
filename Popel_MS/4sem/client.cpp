@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     }
 
     while (true) {
-        std::cout << "Enter query (or 'quit' to exit): ";
+        std::cout << "Enter query (or 'quit' to exit or 'kill' to kill the program): ";
         std::string query;
         std::getline(std::cin, query);
 

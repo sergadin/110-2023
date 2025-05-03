@@ -2,6 +2,12 @@
 #include <iostream>
 #include <sstream>
 #include <regex>
+#include <fstream>
+#include <string>
+#include <algorithm>
+#include <unordered_set>
+#include <vector>
+#include <list>
 
 static Query* parseSelectingQuery(const std::string& query);
 static Query* parseAssigningQuery(const std::string& query);
@@ -95,22 +101,21 @@ DataBase::~DataBase() {
         for (Entry* entry : client.second.previousSelection) {
             delete entry;
         }
+        client.second.previousSelection.clear();
     }
     clientSessions.clear();
 }
 
 result DataBase::startQuery(int clientSocket, std::string& query) {
     result res;
-        registerParsers(); 
+        registerParsers();
     try {
         std::unique_ptr<Query> q(Query::do_parse(query));
         if (!q) {
             res.addError(Exception(1, "Invalid query"));
             return res;
         }
-
         ComType command = q->getCommand();
-
         if (command == SELECT || command == RESELECT)
         {
             SelectingQuery *sq = dynamic_cast<SelectingQuery *>(q.get());
@@ -118,44 +123,53 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
             {
                 std::vector<Entry *> selectedEntries;
                 if (command == SELECT)
-                {
+                { 
                     for (Entry *entry : clientSessions[clientSocket].previousSelection)
                     {
                         delete entry;
                     }
-                    clientSessions[clientSocket].previousSelection.clear(); 
+                    clientSessions[clientSocket].previousSelection.clear();
 
                     selectedEntries = schedule_->select(sq->getConditions());
                 }
                 else
-                { 
+                { // RESELECT
                     if (clientSessions[clientSocket].previousSelection.empty())
                     {
                         res.addError(Exception(20, "No previous selection to reselect from."));
                         return res;
                     }
+                    printf("Before selecting entries\n");
                     selectedEntries = schedule_->reselect(clientSessions[clientSocket].previousSelection, sq->getConditions());
                 }
-
+clientSessions[clientSocket].previousSelection.clear();
+                // Store the new selection (deep copy)
                 for (Entry *entry : selectedEntries)
                 {
+                printf("after selecting\n");
                     Entry *newEntry = new Entry(entry->getDay(), entry->getMonth(), entry->getLesson(), entry->getRoom(), entry->getSubjectName(), entry->getTeacher(), entry->getGroup());
                     clientSessions[clientSocket].previousSelection.push_back(newEntry);
                 }
 
                 std::stringstream ss;
-                for (Entry *entry : clientSessions[clientSocket].previousSelection)
-                {
-                    ss << "Date: " << entry->getDay() << "." << entry->getMonth()
-                       << ", Lesson: " << entry->getLesson()
-                       << ", Room: " << entry->getRoom()
-                       << ", Subject: " << entry->getSubjectName()
-                       << ", Teacher: " << entry->getTeacher()
-                       << ", Group: " << entry->getGroup() << std::endl;
+                if (clientSessions[clientSocket].previousSelection.empty()) {
+                    ss << "Нет подходящих записей" << std::endl;
+                } else {
+                    for (Entry *entry : clientSessions[clientSocket].previousSelection)
+                    { 
+                       ss << "Date: " << entry->getDay() << "." << entry->getMonth()
+                           << ", Lesson: " << entry->getLesson()
+                           << ", Room: " << entry->getRoom()
+                           << ", Subject: " << entry->getSubjectName()
+                           << ", Teacher: " << entry->getTeacher()
+                           << ", Group: " << entry->getGroup() << std::endl;
+                    }
                 }
                 res.addMessage(ss.str());
                 std::cout << "Server response to client " << clientSocket << ":\n"
                           << ss.str() << std::endl;
+                          
+                          schedule_->saveToFile("scheduleout.txt");
             }
         }
         else if (command == PRINT) {
@@ -168,7 +182,7 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
 
                 std::vector<Entry*> entriesToPrint = clientSessions[clientSocket].previousSelection;
 
-
+                // Sort entries if sort fields are specified
                 if (!pq->getSortFields().empty()) {
                     for (const auto& sortField : pq->getSortFields()) {
                         std::sort(entriesToPrint.begin(), entriesToPrint.end(), [&](Entry* a, Entry* b) {
@@ -197,46 +211,51 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                 std::stringstream ss;
                 for (Entry* entry : entriesToPrint) {
                     Entry filteredEntry = *entry;
+                    
                     if (!pq->getFields().empty()) {
-                        for (Field field : pq->getFields()) {
-                            switch (field) {
-                                case DAY:
-                                    filteredEntry.setDay(0);
-                                    break;
-                                case MONTH:
-                                    filteredEntry.setMonth(0);
-                                    break;
-                                case LESSON_NUM:
-                                    filteredEntry.setLesson(0);
-                                    break;
-                                case ROOM:
-                                    filteredEntry.setRoom(0);
-                                    break;
-                                case SUBJNAME:
-                                    filteredEntry.setSubjectName("");
-                                    break;
-                                case TEACHERNAME:
-                                    filteredEntry.setTeacher("");
-                                    break;
-                                case GROUP:
-                                    filteredEntry.setGroup(0);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
+                for (Field field : pq->getFields()) {
+                    switch (field) {
+                        case DAY:
+                            ss << "Day: " << filteredEntry.getDay() << " ";
+                            break;
+                        case MONTH:
+                            ss << "Month: " << filteredEntry.getMonth() << " ";
+                            break;
+                        case LESSON_NUM:
+                            ss << "Lesson: " << filteredEntry.getLesson() << " ";
+                            break;
+                        case ROOM:
+                            ss << "Room: " << filteredEntry.getRoom() << " ";
+                            break;
+                        case SUBJNAME:
+                            ss << "Subject: " << filteredEntry.getSubjectName() << " ";
+                            break;
+                        case TEACHERNAME:
+                            ss << "Teacher: " << filteredEntry.getTeacher() << " ";
+                            break;
+                        case GROUP:
+                            ss << "Group: " << filteredEntry.getGroup() << " ";
+                            break;
+                        default:
+                            break;
                     }
-                    ss << "Date: " << filteredEntry.getDay() << "." << filteredEntry.getMonth()
-                       << ", Lesson: " << filteredEntry.getLesson()
-                       << ", Room: " << filteredEntry.getRoom()
-                       << ", Subject: " << filteredEntry.getSubjectName()
-                       << ", Teacher: " << filteredEntry.getTeacher()
-                       << ", Group: " << filteredEntry.getGroup() << std::endl;
-                    res.addEntry(filteredEntry);
+                }
+            } else {
+                // Если поля не указаны, выводим все поля
+                ss << "Date: " << filteredEntry.getDay() << "." << filteredEntry.getMonth()
+                   << ", Lesson: " << filteredEntry.getLesson()
+                   << ", Room: " << filteredEntry.getRoom()
+                   << ", Subject: " << filteredEntry.getSubjectName()
+                   << ", Teacher: " << filteredEntry.getTeacher()
+                   << ", Group: " << filteredEntry.getGroup() << std::endl;
+            }
+            ss << std::endl;
                 }
                 res.addMessage(ss.str());
                 std::cout << "Server response to client " << clientSocket << ":\n"
                           << ss.str() << std::endl;
+                          
+                          schedule_->saveToFile("scheduleout.txt");
             }
         }else if (command == INSERT) {
             AssigningQuery* iq = dynamic_cast<AssigningQuery*>(q.get());
@@ -286,15 +305,15 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                 Entry* newEntry = new Entry(day, month, lesson, room, subject_name, teacher, group);
                 schedule_->addEntry(newEntry);
                 res.addMessage("Entry inserted successfully.");
+                
+                schedule_->saveToFile("scheduleout.txt");
             }
         } else if (command == UPDATE) {
             UpdateQuery* uq = dynamic_cast<UpdateQuery*>(q.get());
             if (uq) {
                 const std::vector<Cond>& conditions = uq->getConditions();
                 const std::vector<std::pair<Field, Value>>& values = uq->getValues();
-
                 std::vector<Entry*> entriesToUpdate = schedule_->select(conditions);
-
                 for (Entry* entry : entriesToUpdate) {
                     for (const auto& pair : values) {
                         Field field = pair.first;
@@ -334,18 +353,30 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
                 }
 
                 res.addMessage("Entries updated successfully.");
+                
+                schedule_->saveToFile("scheduleout.txt");
             }
         } else if (command == DELETE) {
             DeleteQuery* dq = dynamic_cast<DeleteQuery*>(q.get());
             if (dq) {
-                std::vector<Entry*> deletedEntries = schedule_->select(dq->getConditions());
-                for (Entry* entry : deletedEntries) {
-                    schedule_->deleteEntry(entry->getDay(), entry->getMonth(), entry->getLesson(), entry->getRoom());
+                const std::vector<Cond>& conditions = dq->getConditions();
+                if(conditions.empty()){
                 }
-                std::stringstream ss;
-                ss << deletedEntries.size() << " entries deleted successfully.";
-                res.addMessage(ss.str());
+                std::vector<Entry*> entriesToDelete = schedule_->select(conditions);
+
+                if (entriesToDelete.empty()) {
+                    res.addMessage("Nothing was deleted.");
+                } else {
+
+                    for (Entry* entry : entriesToDelete) {
+                        schedule_->deleteEntry(entry);
+                    }
+                    std::stringstream ss;
+                    ss << entriesToDelete.size() << " entries deleted successfully.";
+                    res.addMessage(ss.str());
+                }
                 clientSessions[clientSocket].previousSelection.clear();
+                schedule_->saveToFile("scheduleout.txt");
             }
         }
     } catch (const Exception& err) {
@@ -355,6 +386,7 @@ result DataBase::startQuery(int clientSocket, std::string& query) {
     } catch (...) {
         res.addError(Exception(1, "Unknown exception occurred"));
     }
+
 
     return res;
 }

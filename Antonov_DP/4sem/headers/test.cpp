@@ -1,8 +1,8 @@
-#include "student.hpp"
-#include <iostream>
+#include "database.hpp"
+
 
 int main(){
-	char name[] = "ВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВасяВася";
+	char name[] = "Антонов";
 	int group = 210;
 	double rating = 4;
 	char info[] = "Москва";
