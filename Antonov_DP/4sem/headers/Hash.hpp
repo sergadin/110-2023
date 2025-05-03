@@ -17,5 +17,5 @@ public:
 	void Add_student(student &st);
 	void Delete_group(int &gr);
 	void Delete_student(int &gr, char name[64]);
-	vector<student> Give_group(int &gr)
+	vector<student> Give_group(int &gr);
 };
