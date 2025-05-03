@@ -1,5 +1,8 @@
+#include <iostream>
 #include <cstring>
-#include "database"
+
+#ifndef student_h
+#define student_h
 
 
 class student {
@@ -24,3 +27,5 @@ public:
 		std::cout << "info: " << info_ << "\n";
 	}
 };
+
+#endif
