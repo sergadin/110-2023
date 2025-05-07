@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <sstream>
+#include <fstream>
 
 const int PORT = 8081;
 const char* SERVER_IP = "127.0.0.1";
@@ -54,7 +55,7 @@ class Client {
 		return response;
 	}
 
-	~Client() { 
+	~Client() {
 		if (sock != -1) {
 			close(sock);
 		}
@@ -65,49 +66,102 @@ void printHelp() {
 	std::cout << "\nAvailable commands:\n"
 		<< "  GET_ALL          - Get all students\n"
 		<< "  SELECT [QUERY]   - Filter students (e.g: SELECT rating>4.0;group=101)\n"
+		<< "  RESELECT [QUERY] - Refine previous selection\n"
 		<< "  ADD|name|group|rating|info - Add new student\n"
-		<< "  FORMAT [html/text] - Set output format\n"
+		<< "  DELETE [NAME]    - Delete a student by name\n"
+		<< "  FORMAT [html/text] [filename] - Set output format and optional filename\n"
 		<< "  EXIT             - Quit\n\n";
 }
 
-void printResults(const std::vector<StudentDatabase::Student>& students, 
-		const std::string& format = "html") 
+void printResults(const std::vector<StudentDatabase::Student>& students,
+		const std::string& format = "html",
+		const std::string& filename = "")
 {
+	std::stringstream output;
 	if (format == "html") {
-		std::cout << "<table border='1'>\n<tr><th>Name</th><th>Group</th><th>Rating</th><th>Info</th></tr>\n";
+		output << "<table border='1'>\n<tr><th>Name</th><th>Group</th><th>Rating</th><th>Info</th></tr>\n";
 		for (const auto& s : students) {
-			std::cout << "<tr><td>" << s.name << "</td><td>" << s.group 
-				<< "</td><td>" << std::fixed << std::setprecision(2) << s.rating 
+			output << "<tr><td>" << s.name << "</td><td>" << s.group
+				<< "</td><td>" << std::fixed << std::setprecision(2) << s.rating
 				<< "</td><td>" << s.info << "</td></tr>\n";
 		}
-		std::cout << "</table>\n";
-	} else {
-		std::cout << "Found " << students.size() << " students:\n";
+		output << "</table>\n";
+	}
+	else {
+		output << "Found " << students.size() << " students:\n";
 		for (const auto& s : students) {
-			std::cout << s.name << " | Group: " << s.group 
-				<< " | Rating: " << std::fixed << std::setprecision(2) << s.rating 
+			output << s.name << " | Group: " << s.group
+				<< " | Rating: " << std::fixed << std::setprecision(2) << s.rating
 				<< " | Info: " << s.info << "\n";
 		}
 	}
-	std::cout << std::endl;
+	output << std::endl;
+
+	if (!filename.empty()) {
+		std::ofstream file(filename);
+		if (file.is_open()) {
+			file << output.str();
+			file.close();
+			std::cout << "Results saved to " << filename << std::endl;
+		}
+		else {
+			std::cerr << "Error opening file " << filename << " for writing." << std::endl;
+		}
+	}
+	else {
+		std::cout << output.str();
+	}
 }
 
-int main() {
+
+int main(int argc, char* argv[]) {
 	Client client;
 	if (!client.connect()) return 1;
 
 	std::string current_format = "html";
 	printHelp();
 
+	std::string scenarioFile;
+	if (argc > 1) {
+		scenarioFile = argv[1];
+		std::cout << "Running scenario from file: " << scenarioFile << std::endl;
+	}
+
+	std::istream* inputSource = &std::cin;
+	std::ifstream scenarioStream;
+	if (!scenarioFile.empty()) {
+		scenarioStream.open(scenarioFile);
+		if (scenarioStream.is_open()) {
+			inputSource = &scenarioStream;
+		}
+		else {
+			std::cerr << "Could not open scenario file: " << scenarioFile << std::endl;
+			return 1;
+		}
+	}
+
 	while (true) {
 		std::cout << "[FORMAT: " << current_format << "]> ";
 		std::string input;
-		std::getline(std::cin, input);
+		std::getline(*inputSource, input);
+
+		if (inputSource == &scenarioStream && scenarioStream.eof()) {
+			std::cout << "Scenario complete." << std::endl;
+			break;
+		}
 
 		if (input.empty()) continue;
 
 		if (input.substr(0, 6) == "FORMAT") {
-			current_format = (input.find("text") != std::string::npos) ? "text" : "html";
+			std::istringstream iss(input.substr(7));
+			std::string format, filename;
+			iss >> format >> filename;
+			if (format == "text" || format == "html") {
+				current_format = format;
+			}
+			else {
+				std::cerr << "Invalid format. Use 'text' or 'html'." << std::endl;
+			}
 			continue;
 		}
 
@@ -124,8 +178,31 @@ int main() {
 		}
 
 		try {
-			auto students = StudentDatabase::deserialize(response);
-			printResults(students, current_format);
+			if (input.substr(0, 6) == "DELETE" || input.substr(0, 3) == "ADD"){
+				std::cout << response << std::endl;
+			} else {
+				auto students = StudentDatabase::deserialize(response);
+				std::istringstream iss(input.substr(7));
+				std::string format, filename;
+
+				if (input.substr(0, 6) == "SELECT" || input.substr(0, 8) == "RESELECT") {
+					std::string command = input.substr(0, 6);
+					std::string query = input.substr(7); 
+
+
+					size_t formatPos = query.find("FORMAT");
+					if (formatPos != std::string::npos) {
+						std::string formatInfo = query.substr(formatPos + 7); 
+						std::istringstream formatIss(formatInfo);
+						formatIss >> format >> filename;
+						query = query.substr(0, formatPos); 
+					}
+
+					printResults(students, current_format, filename);
+				} else {
+					printResults(students, current_format);
+				}
+			}
 		} catch (...) {
 			std::cerr << "Invalid data received" << std::endl;
 		}

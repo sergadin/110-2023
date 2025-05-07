@@ -31,21 +31,17 @@ class StudentDatabase {
 			}
 		};
 
-
 		bool loadFromFile(const std::string& filename);
 		bool saveToFile(const std::string& filename);
 		bool addStudent(const Student& student);
 		bool removeStudent(const std::string& name);
 		bool updateStudent(const std::string& name, const Student& new_student);
 
-
 		std::vector<Student> select(const std::string& query);
 		std::vector<Student> reselect(const std::string& query);
 
-
 		void printAllStudents() const;
-		void sortByField(std::vector<Student>& students, const std::string& field); 
-
+		void sortByField(std::vector<Student>& students, const std::string& field);
 
 		static std::string serialize(const std::vector<Student>& students);
 		static std::vector<Student> deserialize(const std::string& data);
@@ -56,14 +52,12 @@ class StudentDatabase {
 		std::unordered_map<double, std::unordered_set<int>> ratingIndex;
 		std::vector<Student> previousResults;
 
-
 		struct SelectionCriteria {
 			std::string fieldName;
 			enum class ValueType { STRING, INTEGER, DOUBLE } valueType;
 			std::variant<std::string, int, double> value;
 			enum class Operation { EQUAL, GREATER_THAN, LESS_THAN, CONTAINS } operation;
 		};
-
 
 		int binarySearch(const std::string& name) const;
 		double getRatingRangeKey(double rating) const;

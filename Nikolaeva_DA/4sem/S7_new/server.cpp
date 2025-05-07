@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <sstream>
+#include <fstream>
 
 const int PORT = 8081;
 const int BUFFER_SIZE = 4096;
@@ -20,7 +21,6 @@ void handle_client(int client_sock, StudentDatabase& db) {
 	while (true) {
 		memset(buffer, 0, BUFFER_SIZE);
 		int bytes_read = recv(client_sock, buffer, BUFFER_SIZE, 0);
-
 
 		if (bytes_read <= 0) {
 			std::cout << "Client disconnected" << std::endl;
@@ -39,6 +39,10 @@ void handle_client(int client_sock, StudentDatabase& db) {
 			else if (request.substr(0, 6) == "SELECT") {
 				std::string query = request.substr(7);
 				response = StudentDatabase::serialize(db.select(query));
+			}
+			else if (request.substr(0, 8) == "RESELECT") {
+				std::string query = request.substr(9);
+				response = StudentDatabase::serialize(db.reselect(query));
 			}
 			else if (request.substr(0, 3) == "ADD") {
 				std::istringstream iss(request.substr(4));
@@ -59,11 +63,22 @@ void handle_client(int client_sock, StudentDatabase& db) {
 
 					if (db.addStudent(student)) {
 						response = "SUCCESS: Student added";
-					} else {
+					}
+					else {
 						response = "ERROR: Student already exists";
 					}
-				} else {
+				}
+				else {
 					response = "ERROR: Invalid ADD format";
+				}
+			}
+			else if (request.substr(0, 6) == "DELETE") {
+				std::string nameToDelete = request.substr(7);
+				if (db.removeStudent(nameToDelete)) {
+					response = "SUCCESS: Student deleted";
+				}
+				else {
+					response = "ERROR: Student not found";
 				}
 			}
 			else {
@@ -100,7 +115,6 @@ int main() {
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = INADDR_ANY;
 
-
 	int opt = 1;
 	setsockopt(server_sock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
@@ -122,8 +136,8 @@ int main() {
 		sockaddr_in client_addr{};
 		socklen_t client_len = sizeof(client_addr);
 
-		int client_sock = accept(server_sock, 
-				(sockaddr*)&client_addr, 
+		int client_sock = accept(server_sock,
+				(sockaddr*)&client_addr,
 				&client_len);
 
 		if (client_sock < 0) {

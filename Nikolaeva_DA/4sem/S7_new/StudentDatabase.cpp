@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 int StudentDatabase::binarySearch(const string& name) const {
 	int left = 0;
 	int right = students.size() - 1;
@@ -22,11 +21,9 @@ int StudentDatabase::binarySearch(const string& name) const {
 	return -1;
 }
 
-
 double StudentDatabase::getRatingRangeKey(double rating) const {
 	return floor(rating * 10) / 10.0;
 }
-
 
 void StudentDatabase::rebuildIndices() {
 	groupIndex.clear();
@@ -36,12 +33,10 @@ void StudentDatabase::rebuildIndices() {
 	}
 }
 
-
 void StudentDatabase::updateIndices(int index, const Student& student) {
 	groupIndex[student.group].insert(index);
 	ratingIndex[getRatingRangeKey(student.rating)].insert(index);
 }
-
 
 void StudentDatabase::removeFromIndices(int index) {
 	if (index < 0 || index >= static_cast<int>(students.size())) return;
@@ -51,12 +46,10 @@ void StudentDatabase::removeFromIndices(int index) {
 	ratingIndex[getRatingRangeKey(student.rating)].erase(index);
 }
 
-
 void StudentDatabase::sortStudentsByName() {
-	std::sort(students.begin(), students.end(), 
+	std::sort(students.begin(), students.end(),
 			[](const Student& a, const Student& b) { return a.name < b.name; });
 }
-
 
 bool StudentDatabase::loadFromFile(const string& filename) {
 	ifstream file(filename);
@@ -71,7 +64,7 @@ bool StudentDatabase::loadFromFile(const string& filename) {
 		if (getline(iss, name, ',') &&
 				getline(iss, groupStr, ',') &&
 				getline(iss, ratingStr, ',') &&
-				getline(iss, info)) 
+				getline(iss, info))
 		{
 			try {
 				students.emplace_back(
@@ -82,6 +75,7 @@ bool StudentDatabase::loadFromFile(const string& filename) {
 						);
 			} catch (...) {
 
+				std::cerr << "Error parsing line: " << line << std::endl;
 			}
 		}
 	}
@@ -90,7 +84,6 @@ bool StudentDatabase::loadFromFile(const string& filename) {
 	rebuildIndices();
 	return true;
 }
-
 
 bool StudentDatabase::saveToFile(const string& filename) {
 	ofstream file(filename);
@@ -104,7 +97,6 @@ bool StudentDatabase::saveToFile(const string& filename) {
 	return true;
 }
 
-
 bool StudentDatabase::addStudent(const Student& student) {
 	if (binarySearch(student.name) != -1) return false;
 
@@ -114,16 +106,15 @@ bool StudentDatabase::addStudent(const Student& student) {
 	return true;
 }
 
-
 bool StudentDatabase::removeStudent(const string& name) {
 	int index = binarySearch(name);
 	if (index == -1) return false;
 
 	removeFromIndices(index);
 	students.erase(students.begin() + index);
+	rebuildIndices();
 	return true;
 }
-
 
 bool StudentDatabase::updateStudent(const string& name, const Student& new_student) {
 	int index = binarySearch(name);
@@ -134,7 +125,6 @@ bool StudentDatabase::updateStudent(const string& name, const Student& new_stude
 	updateIndices(index, new_student);
 	return true;
 }
-
 
 vector<StudentDatabase::Student> StudentDatabase::select(const string& query) {
 	previousResults.clear();
@@ -165,7 +155,49 @@ vector<StudentDatabase::Student> StudentDatabase::select(const string& query) {
 		}
 	} catch (...) {
 
+		std::cerr << "Error in select query: " << query << std::endl;
 	}
+	return previousResults;
+}
+
+vector<StudentDatabase::Student> StudentDatabase::reselect(const string& query) {
+	if (previousResults.empty()) {
+		return select(query); 
+	}
+
+	vector<Student> currentResults = previousResults; 
+	previousResults.clear(); 
+
+	try {
+		auto criteria = parseQuery(query);
+
+		for (const auto& s : currentResults) {
+			bool match = true;
+			for (const auto& c : criteria) {
+				if (c.fieldName == "name") {
+					string val = get<string>(c.value);
+					if (c.operation == SelectionCriteria::Operation::EQUAL && s.name != val) match = false;
+					if (c.operation == SelectionCriteria::Operation::CONTAINS && s.name.find(val) == string::npos) match = false;
+				}
+				else if (c.fieldName == "group") {
+					int val = get<int>(c.value);
+					if (s.group != val) match = false;
+				}
+				else if (c.fieldName == "rating") {
+					double val = get<double>(c.value);
+					if (c.operation == SelectionCriteria::Operation::EQUAL && fabs(s.rating - val) >= 1e-9) match = false;
+					if (c.operation == SelectionCriteria::Operation::GREATER_THAN && s.rating <= val) match = false;
+					if (c.operation == SelectionCriteria::Operation::LESS_THAN && s.rating >= val) match = false;
+				}
+				if (!match) break;
+			}
+			if (match) previousResults.push_back(s);
+		}
+	} catch (...) {
+
+		std::cerr << "Error in reselect query: " << query << std::endl;
+	}
+
 	return previousResults;
 }
 
@@ -180,7 +212,6 @@ string StudentDatabase::serialize(const vector<Student>& students) {
 	}
 	return ss.str();
 }
-
 
 vector<StudentDatabase::Student> StudentDatabase::deserialize(const string& data) {
 	vector<Student> result;
@@ -205,11 +236,11 @@ vector<StudentDatabase::Student> StudentDatabase::deserialize(const string& data
 					);
 		} catch (...) {
 
+			std::cerr << "Error deserializing record " << i << std::endl;
 		}
 	}
 	return result;
 }
-
 
 vector<StudentDatabase::SelectionCriteria> StudentDatabase::parseQuery(const string& query) const {
 	vector<SelectionCriteria> criteria;
@@ -223,12 +254,14 @@ vector<StudentDatabase::SelectionCriteria> StudentDatabase::parseQuery(const str
 		string op = match[2];
 		string value = match[3];
 
-
 		if (op == "=") c.operation = SelectionCriteria::Operation::EQUAL;
 		else if (op == ">") c.operation = SelectionCriteria::Operation::GREATER_THAN;
 		else if (op == "<") c.operation = SelectionCriteria::Operation::LESS_THAN;
 		else if (op == "*=") c.operation = SelectionCriteria::Operation::CONTAINS;
-
+		else {
+			std::cerr << "Invalid operator: " << op << std::endl;
+			continue;
+		}
 
 		if (c.fieldName == "name") {
 			c.valueType = SelectionCriteria::ValueType::STRING;
@@ -236,11 +269,25 @@ vector<StudentDatabase::SelectionCriteria> StudentDatabase::parseQuery(const str
 		}
 		else if (c.fieldName == "group") {
 			c.valueType = SelectionCriteria::ValueType::INTEGER;
-			c.value = stoi(value);
+			try {
+				c.value = stoi(value);
+			} catch (const std::invalid_argument& e) {
+				std::cerr << "Invalid group value: " << value << std::endl;
+				continue;
+			}
 		}
 		else if (c.fieldName == "rating") {
 			c.valueType = SelectionCriteria::ValueType::DOUBLE;
-			c.value = stod(value);
+			try {
+				c.value = stod(value);
+			} catch (const std::invalid_argument& e) {
+				std::cerr << "Invalid rating value: " << value << std::endl;
+				continue;
+			}
+		}
+		else {
+			std::cerr << "Invalid field name: " << c.fieldName << std::endl;
+			continue;
 		}
 
 		criteria.push_back(c);
@@ -256,7 +303,6 @@ void StudentDatabase::printAllStudents() const {
 		cout << s << "\n";
 	}
 }
-
 
 void StudentDatabase::sortByField(vector<Student>& students, const string& field) {
 	if (field == "name") {
