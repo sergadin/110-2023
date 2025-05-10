@@ -8,4 +8,6 @@ int main(){
 	char info[] = "Москва";
 	student person(name, group, rating, info);
 	person.print();
+	Hash hash;
+	hash.Add_group(group);
 }

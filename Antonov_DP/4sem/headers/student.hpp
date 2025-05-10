@@ -12,14 +12,14 @@ class student {
 	char *info_;
 public:
 	student() = delete;
-	student(const char *name, int group, double rating, const char *info){
+	student(const char *name, int group, double rating, const char *info = ""){
 		strncpy(name_, name, 64);
 		group_ = group;
 		rating_ = rating;
-		info_ = new char[0];
+		info_ = (char *)"";
 		strcpy(info_, info);
 	}
-	~student() {delete[] info_;}
+	~student();
 	void print(){
 		std::cout << "name: " << name_ << "\n";
 		std::cout << "group: " << group_ << "\n";
