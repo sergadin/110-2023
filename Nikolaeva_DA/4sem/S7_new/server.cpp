@@ -34,7 +34,8 @@ void handle_client(int client_sock, StudentDatabase& db) {
 			std::lock_guard<std::mutex> lock(db_mutex);
 
 			if (request == "GET_ALL") {
-				response = StudentDatabase::serialize(db.select(""));
+
+				response = StudentDatabase::serialize(db.getAllStudents());
 			}
 			else if (request.substr(0, 6) == "SELECT") {
 				std::string query = request.substr(7);
@@ -100,8 +101,10 @@ void handle_client(int client_sock, StudentDatabase& db) {
 int main() {
 	StudentDatabase db;
 	if (!db.loadFromFile("students.csv")) {
-		std::cerr << "Failed to initialize database" << std::endl;
-		return 1;
+		std::cerr << "Warning: Failed to load students.csv, initializing with empty database" << std::endl;
+
+		db.addStudent({"Иван Иванов", 101, 4.5, "Пример данных"});
+		db.addStudent({"Мария Петрова", 102, 3.8, "Тестовые данные"});
 	}
 
 	int server_sock = socket(AF_INET, SOCK_STREAM, 0);

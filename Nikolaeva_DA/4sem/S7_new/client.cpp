@@ -78,6 +78,12 @@ void printResults(const std::vector<StudentDatabase::Student>& students,
 		const std::string& filename = "")
 {
 	std::stringstream output;
+
+	if(students.empty()){
+		std::cout << "No results found." << std::endl;
+		return;
+	}
+
 	if (format == "html") {
 		output << "<table border='1'>\n<tr><th>Name</th><th>Group</th><th>Rating</th><th>Info</th></tr>\n";
 		for (const auto& s : students) {
@@ -112,7 +118,6 @@ void printResults(const std::vector<StudentDatabase::Student>& students,
 		std::cout << output.str();
 	}
 }
-
 
 int main(int argc, char* argv[]) {
 	Client client;
@@ -182,24 +187,11 @@ int main(int argc, char* argv[]) {
 				std::cout << response << std::endl;
 			} else {
 				auto students = StudentDatabase::deserialize(response);
-				std::istringstream iss(input.substr(7));
-				std::string format, filename;
-
-				if (input.substr(0, 6) == "SELECT" || input.substr(0, 8) == "RESELECT") {
-					std::string command = input.substr(0, 6);
-					std::string query = input.substr(7); 
-
-
-					size_t formatPos = query.find("FORMAT");
-					if (formatPos != std::string::npos) {
-						std::string formatInfo = query.substr(formatPos + 7); 
-						std::istringstream formatIss(formatInfo);
-						formatIss >> format >> filename;
-						query = query.substr(0, formatPos); 
-					}
-
-					printResults(students, current_format, filename);
-				} else {
+				if (input == "GET_ALL") {
+					printResults(students, current_format);
+				}
+				else if (input.substr(0, 6) == "SELECT" || input.substr(0, 8) == "RESELECT") {
+					std::string query = input.substr(input.find(' ') + 1);
 					printResults(students, current_format);
 				}
 			}

@@ -126,81 +126,109 @@ bool StudentDatabase::updateStudent(const string& name, const Student& new_stude
 	return true;
 }
 
-vector<StudentDatabase::Student> StudentDatabase::select(const string& query) {
+
+std::vector<StudentDatabase::Student> StudentDatabase::select(const std::string& query) {
 	previousResults.clear();
+
+	if (query.empty()) {
+		std::cerr << "Error: Empty query" << std::endl;
+		return {};
+	}
+
 	try {
 		auto criteria = parseQuery(query);
+
+		if (criteria.empty()) {
+			std::cerr << "Error: Invalid query syntax. Example: SELECT rating>4.0;group=101" << std::endl;
+			return {};
+		}
+
+		std::vector<Student> result;
 
 		for (const auto& s : students) {
 			bool match = true;
 			for (const auto& c : criteria) {
 				if (c.fieldName == "name") {
-					string val = get<string>(c.value);
+					std::string val = std::get<std::string>(c.value);
 					if (c.operation == SelectionCriteria::Operation::EQUAL && s.name != val) match = false;
-					if (c.operation == SelectionCriteria::Operation::CONTAINS && s.name.find(val) == string::npos) match = false;
-				}
+					if (c.operation == SelectionCriteria::Operation::CONTAINS && s.name.find(val) == std::string::npos) match = false;
+				} 
 				else if (c.fieldName == "group") {
-					int val = get<int>(c.value);
+					int val = std::get<int>(c.value);
 					if (s.group != val) match = false;
-				}
+				} 
 				else if (c.fieldName == "rating") {
-					double val = get<double>(c.value);
+					double val = std::get<double>(c.value);
 					if (c.operation == SelectionCriteria::Operation::EQUAL && fabs(s.rating - val) >= 1e-9) match = false;
 					if (c.operation == SelectionCriteria::Operation::GREATER_THAN && s.rating <= val) match = false;
 					if (c.operation == SelectionCriteria::Operation::LESS_THAN && s.rating >= val) match = false;
 				}
 				if (!match) break;
 			}
-			if (match) previousResults.push_back(s);
+			if (match) result.push_back(s);
 		}
-	} catch (...) {
 
-		std::cerr << "Error in select query: " << query << std::endl;
+		previousResults = result;
+		return result;
+
+	} catch (const std::exception& e) {  
+		std::cerr << "Query execution error: " << e.what() << std::endl;
+		return {}; 
 	}
-	return previousResults;
 }
 
-vector<StudentDatabase::Student> StudentDatabase::reselect(const string& query) {
+std::vector<StudentDatabase::Student> StudentDatabase::reselect(const std::string& query) {
 	if (previousResults.empty()) {
-		return select(query); 
+		std::cout << "No previous results. Performing regular SELECT." << std::endl;
+		return select(query);
 	}
 
-	vector<Student> currentResults = previousResults; 
-	previousResults.clear(); 
+	if (query.empty()) {
+		std::cerr << "Error: Empty query" << std::endl;
+		return {};
+	}
 
 	try {
 		auto criteria = parseQuery(query);
 
-		for (const auto& s : currentResults) {
+		if (criteria.empty()) {
+			std::cerr << "Error: Invalid query syntax. Example: RESELECT rating>4.0;group=101" << std::endl;
+			return {};
+		}
+
+		std::vector<Student> result;
+
+		for (const auto& s : previousResults) {
 			bool match = true;
 			for (const auto& c : criteria) {
 				if (c.fieldName == "name") {
-					string val = get<string>(c.value);
+					std::string val = std::get<std::string>(c.value);
 					if (c.operation == SelectionCriteria::Operation::EQUAL && s.name != val) match = false;
-					if (c.operation == SelectionCriteria::Operation::CONTAINS && s.name.find(val) == string::npos) match = false;
-				}
+					if (c.operation == SelectionCriteria::Operation::CONTAINS && s.name.find(val) == std::string::npos) match = false;
+				} 
 				else if (c.fieldName == "group") {
-					int val = get<int>(c.value);
+					int val = std::get<int>(c.value);
 					if (s.group != val) match = false;
-				}
+				} 
 				else if (c.fieldName == "rating") {
-					double val = get<double>(c.value);
+					double val = std::get<double>(c.value);
 					if (c.operation == SelectionCriteria::Operation::EQUAL && fabs(s.rating - val) >= 1e-9) match = false;
 					if (c.operation == SelectionCriteria::Operation::GREATER_THAN && s.rating <= val) match = false;
 					if (c.operation == SelectionCriteria::Operation::LESS_THAN && s.rating >= val) match = false;
 				}
 				if (!match) break;
 			}
-			if (match) previousResults.push_back(s);
+			if (match) result.push_back(s);
 		}
-	} catch (...) {
 
-		std::cerr << "Error in reselect query: " << query << std::endl;
+		previousResults = result;
+		return result;
+
+	} catch (const std::exception& e) {  
+		std::cerr << "Query execution error: " << e.what() << std::endl;
+		return {}; 
 	}
-
-	return previousResults;
 }
-
 
 string StudentDatabase::serialize(const vector<Student>& students) {
 	stringstream ss;
@@ -242,62 +270,58 @@ vector<StudentDatabase::Student> StudentDatabase::deserialize(const string& data
 	return result;
 }
 
-vector<StudentDatabase::SelectionCriteria> StudentDatabase::parseQuery(const string& query) const {
-	vector<SelectionCriteria> criteria;
-	regex pattern(R"((\w+)\s*([><=*]+)\s*([^;]+))");
-	smatch match;
-	string remaining = query;
+std::vector<StudentDatabase::SelectionCriteria> StudentDatabase::parseQuery(const std::string& query) const {
+	std::vector<SelectionCriteria> criteria;
+	std::regex pattern(R"((name|group|rating)\s*([><=*]+)\s*([^;]+))");
+	std::smatch match;
+	std::string remaining = query;
 
-	while (regex_search(remaining, match, pattern)) {
+	while (std::regex_search(remaining, match, pattern)) {
 		SelectionCriteria c;
 		c.fieldName = match[1];
-		string op = match[2];
-		string value = match[3];
+		std::string op = match[2];
+		std::string value = match[3];
+		value.erase(value.find_last_not_of(" \t") + 1);
 
 		if (op == "=") c.operation = SelectionCriteria::Operation::EQUAL;
 		else if (op == ">") c.operation = SelectionCriteria::Operation::GREATER_THAN;
 		else if (op == "<") c.operation = SelectionCriteria::Operation::LESS_THAN;
 		else if (op == "*=") c.operation = SelectionCriteria::Operation::CONTAINS;
 		else {
-			std::cerr << "Invalid operator: " << op << std::endl;
-			continue;
+			std::cerr << "Error: Invalid operator: " << op << std::endl;
+			return {};
 		}
 
-		if (c.fieldName == "name") {
-			c.valueType = SelectionCriteria::ValueType::STRING;
-			c.value = value;
-		}
-		else if (c.fieldName == "group") {
-			c.valueType = SelectionCriteria::ValueType::INTEGER;
-			try {
-				c.value = stoi(value);
-			} catch (const std::invalid_argument& e) {
-				std::cerr << "Invalid group value: " << value << std::endl;
-				continue;
+		try {
+			if (c.fieldName == "name") {
+				c.value = value;
+			} 
+			else if (c.fieldName == "group") {
+				c.value = std::stoi(value);
+			} 
+			else if (c.fieldName == "rating") {
+				c.value = std::stod(value);
+			} 
+			else {
+				std::cerr << "Error: Unknown field: " << c.fieldName << std::endl;
+				return {};
 			}
-		}
-		else if (c.fieldName == "rating") {
-			c.valueType = SelectionCriteria::ValueType::DOUBLE;
-			try {
-				c.value = stod(value);
-			} catch (const std::invalid_argument& e) {
-				std::cerr << "Invalid rating value: " << value << std::endl;
-				continue;
-			}
-		}
-		else {
-			std::cerr << "Invalid field name: " << c.fieldName << std::endl;
-			continue;
+		} 
+		catch (const std::exception& e) {
+			std::cerr << "Error parsing value '" << value << "' for field '" << c.fieldName << "': " << e.what() << std::endl;
+			return {};
 		}
 
 		criteria.push_back(c);
 		remaining = match.suffix();
 	}
 
+	if (criteria.empty()) {
+		std::cerr << "Error: No valid criteria found in query" << std::endl;
+	}
+
 	return criteria;
 }
-
-
 void StudentDatabase::printAllStudents() const {
 	for (const auto& s : students) {
 		cout << s << "\n";

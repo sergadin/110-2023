@@ -39,6 +39,9 @@ class StudentDatabase {
 
 		std::vector<Student> select(const std::string& query);
 		std::vector<Student> reselect(const std::string& query);
+		std::vector<Student> getAllStudents() const {
+			return students;
+		}
 
 		void printAllStudents() const;
 		void sortByField(std::vector<Student>& students, const std::string& field);
