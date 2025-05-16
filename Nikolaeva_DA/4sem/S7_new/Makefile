@@ -2,33 +2,25 @@ CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -pthread
 LDFLAGS = -pthread
 
-SRV_SRCS = server.cpp StudentDatabase.cpp
-CLI_SRCS = client.cpp StudentDatabase.cpp
-APP_SRCS = main.cpp StudentDatabase.cpp
+all: program docs
 
-TARGETS = server client student_app
+program: main server client
 
-all: $(TARGETS)
+main: main.o StudentDatabase.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-server: $(SRV_SRCS)
-	$(CXX) $(CXXFLAGS) $(SRV_SRCS) -o $@ $(LDFLAGS)
+server: server.o StudentDatabase.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-client: $(CLI_SRCS)
-	$(CXX) $(CXXFLAGS) $(CLI_SRCS) -o $@ $(LDFLAGS)
+client: client.o StudentDatabase.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-student_app: $(APP_SRCS)
-	$(CXX) $(CXXFLAGS) $(APP_SRCS) -o $@ $(LDFLAGS)
+docs: documentation.pdf
+
+documentation.pdf: documentation.tex
+	xelatex -interaction=nonstopmode documentation.tex
+	xelatex -interaction=nonstopmode documentation.tex
+	rm -f *.aux *.log *.out *.toc
 
 clean:
-	rm -f $(TARGETS) *.o
-
-.PHONY: all clean
-
-run_server:
-	./server
-
-run_client:
-	./client
-
-run_app:
-	./student_app
+	rm -f *.o main server client documentation.pdf

@@ -183,7 +183,10 @@ int main(int argc, char* argv[]) {
 		}
 
 		try {
-			if (input.substr(0, 6) == "DELETE" || input.substr(0, 3) == "ADD"){
+			if (response.substr(0, 5) == "ERROR") {
+				std::cerr << response << std::endl;
+			}
+			else if (input.substr(0, 6) == "DELETE" || input.substr(0, 3) == "ADD"){
 				std::cout << response << std::endl;
 			} else {
 				auto students = StudentDatabase::deserialize(response);

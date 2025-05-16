@@ -8,6 +8,7 @@
 #include <cstring>
 #include <sstream>
 #include <fstream>
+#include <regex>
 
 const int PORT = 8081;
 const int BUFFER_SIZE = 4096;
@@ -33,16 +34,22 @@ void handle_client(int client_sock, StudentDatabase& db) {
 		try {
 			std::lock_guard<std::mutex> lock(db_mutex);
 
-			if (request == "GET_ALL") {
+			request = std::regex_replace(request, std::regex("^\\s+|\\s+$"), "");
 
+			if (request == "GET_ALL") {
 				response = StudentDatabase::serialize(db.getAllStudents());
 			}
+			else if (request == "get_all") {
+				response = "ERROR: Command must be uppercase (use GET_ALL)";
+			}
 			else if (request.substr(0, 6) == "SELECT") {
-				std::string query = request.substr(7);
+				std::string query = request.substr(6);
+				query = std::regex_replace(query, std::regex("^\\s+"), "");
 				response = StudentDatabase::serialize(db.select(query));
 			}
 			else if (request.substr(0, 8) == "RESELECT") {
-				std::string query = request.substr(9);
+				std::string query = request.substr(8);
+				query = std::regex_replace(query, std::regex("^\\s+"), "");
 				response = StudentDatabase::serialize(db.reselect(query));
 			}
 			else if (request.substr(0, 3) == "ADD") {

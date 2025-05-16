@@ -1,0 +1,189 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{russian}
+\setotherlanguage{english}
+\setmainfont{DejaVu Serif}
+\setsansfont{DejaVu Sans}
+\setmonofont{DejaVu Sans Mono}
+
+\usepackage{geometry}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{graphicx}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    frame=single
+}
+
+\lstset{style=mystyle}
+
+\title{Документация к системе управления студенческой базой данных}
+\date{Версия 1.0 \\ \today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Краткое описание}
+Система представляет собой клиент-серверное приложение для управления базой данных студентов с возможностью:
+\begin{itemize}[noitemsep]
+\item Добавления, удаления и изменения записей
+\item Поиска по различным критериям
+\item Сохранения и загрузки данных из файла
+\item Сетевого взаимодействия между клиентом и сервером
+\end{itemize}
+
+\tableofcontents
+
+\section{Требования к системе}
+\begin{itemize}
+\item Linux-система (рекомендуется Ubuntu 20.04+)
+\item g++ версии 9.0+
+\item Утилита make
+\item Пакет texlive-full для генерации документации
+\item Доступ к порту 8081 для сетевого взаимодействия
+\end{itemize}
+
+\section{Установка и запуск}
+\subsection{Установка зависимостей}
+\begin{lstlisting}[language=bash]
+sudo apt update
+sudo apt install g++ make texlive-full texlive-lang-cyrillic
+\end{lstlisting}
+
+\subsection{Сборка проекта}
+\begin{enumerate}
+\item Клонируйте репозиторий или скопируйте файлы в рабочую директорию
+\item Выполните в терминале:
+\begin{lstlisting}[language=bash]
+make all
+\end{lstlisting}
+\end{enumerate}
+
+\subsection{Запуск системы}
+\begin{enumerate}
+\item Запустите сервер в отдельном терминале:
+\begin{lstlisting}[language=bash]
+./server
+\end{lstlisting}
+
+\item Запустите клиент в другом терминале:
+\begin{lstlisting}[language=bash]
+./client
+\end{lstlisting}
+
+\item Для запуска с тестовым сценарием:
+\begin{lstlisting}[language=bash]
+./client test_scenario.txt
+\end{lstlisting}
+\end{enumerate}
+
+\section{Формат данных}
+\subsection{Структура файла данных}
+Данные хранятся в CSV-файле \texttt{students.csv}:
+\begin{lstlisting}
+Иван Иванов,101,4.5,Примечание1
+Петр Петров,102,3.8,Примечание2
+\end{lstlisting}
+
+\subsection{Структура студента}
+\begin{lstlisting}[language=C++]
+struct Student {
+    std::string name;    // ФИО студента
+    int group;           // Номер группы
+    double rating;       // Рейтинг (2.0-5.0)
+    std::string info;    // Дополнительная информация
+};
+\end{lstlisting}
+
+\section{Руководство пользователя}
+\subsection{Команды клиента}
+\begin{tabular}{|l|p{8cm}|}
+\hline
+\textbf{Команда} & \textbf{Описание} \\ \hline
+GET\_ALL & Получить список всех студентов \\ \hline
+SELECT \textit{условие} & Фильтрация (пример: \texttt{SELECT rating>4.0;group=101}) \\ \hline
+RESELECT \textit{условие} & Уточнение предыдущего выбора \\ \hline
+ADD|\textit{имя}|\textit{группа}|\textit{рейтинг}|\textit{инфо} & Добавление студента \\ \hline
+DELETE \textit{имя} & Удаление студента \\ \hline
+FORMAT [html|text] [файл] & Установка формата вывода \\ \hline
+HELP & Вывод справки \\ \hline
+EXIT & Выход из программы \\ \hline
+\end{tabular}
+
+\subsection{Примеры использования}
+\begin{lstlisting}[language=bash]
+# Добавление студента
+ADD|Сидоров Алексей|103|4.2|Активен в науке
+
+# Поиск студентов с рейтингом >4.0 из группы 101
+SELECT rating>4.0;group=101
+
+# Сохранение результатов в HTML
+FORMAT html result.html
+SELECT rating>3.5
+\end{lstlisting}
+
+\section{Архитектура системы}
+\subsection{Серверная часть}
+\begin{itemize}
+\item Многопоточная обработка подключений
+\item Использование мьютексов для синхронизации
+\item Порт по умолчанию: 8081
+\end{itemize}
+
+\subsection{Клиентская часть}
+\begin{itemize}
+\item Поддержка интерактивного режима
+\item Возможность выполнения сценариев
+\item Два формата вывода: текстовый и HTML
+\end{itemize}
+
+\section{Генерация документации}
+Для генерации PDF-документации выполните:
+\begin{lstlisting}[language=bash]
+make documentation.pdf
+\end{lstlisting}
+
+Или вручную:
+\begin{lstlisting}[language=bash]
+xelatex documentation.tex
+\end{lstlisting}
+
+\section{Тестирование}
+Включен тестовый сценарий \texttt{test\_scenario.txt}:
+\begin{lstlisting}
+GET_ALL
+ADD|Тестовый Студент|999|5.0|Тестовая запись
+SELECT group=999
+DELETE Тестовый Студент
+\end{lstlisting}
+
+
+\end{document}
