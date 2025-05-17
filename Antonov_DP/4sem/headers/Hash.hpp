@@ -1,4 +1,3 @@
-#include "Tree.hpp"
 #include "List.hpp"
 
 
@@ -10,9 +9,9 @@ union h_object{
 
 class Hash {
 	h_object* hash_;
-	size_t max_size;
-	friend unsigned int Hash_func(int gr);
+	int max_size;
 public:
+	int Hash_func(int gr);
 	Hash(size_t max_size = 100){
 		hash_ = new h_object[max_size];
 	}

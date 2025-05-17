@@ -1,9 +1,6 @@
 #include <iostream>
 #include <cstring>
 
-#ifndef student_h
-#define student_h
-
 
 class student {
 	char name_[64];
@@ -16,10 +13,12 @@ public:
 		strncpy(name_, name, 64);
 		group_ = group;
 		rating_ = rating;
-		info_ = (char *)"";
+		info_ = new char[strlen(info)];
 		strcpy(info_, info);
 	}
-	~student();
+	~student(){
+		delete[] info_;
+	}
 	void print(){
 		std::cout << "name: " << name_ << "\n";
 		std::cout << "group: " << group_ << "\n";
@@ -27,5 +26,3 @@ public:
 		std::cout << "info: " << info_ << "\n";
 	}
 };
-
-#endif
