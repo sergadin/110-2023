@@ -120,6 +120,7 @@ void printResults(const std::vector<StudentDatabase::Student>& students,
 }
 
 int main(int argc, char* argv[]) {
+	std::vector<StudentDatabase::Student> previousResults; 
 	Client client;
 	if (!client.connect()) return 1;
 

@@ -48,9 +48,10 @@ void handle_client(int client_sock, StudentDatabase& db) {
 				response = StudentDatabase::serialize(db.select(query));
 			}
 			else if (request.substr(0, 8) == "RESELECT") {
+
 				std::string query = request.substr(8);
 				query = std::regex_replace(query, std::regex("^\\s+"), "");
-				response = StudentDatabase::serialize(db.reselect(query));
+				response = StudentDatabase::serialize(db.select(query));
 			}
 			else if (request.substr(0, 3) == "ADD") {
 				std::istringstream iss(request.substr(4));
