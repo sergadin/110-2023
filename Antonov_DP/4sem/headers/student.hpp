@@ -3,11 +3,11 @@
 
 
 class student {
+public:
 	char name_[64];
 	int group_;
 	double rating_;
 	char *info_;
-public:
 	student() = delete;
 	student(const char *name, int group, double rating, const char *info = ""){
 		strncpy(name_, name, 64);

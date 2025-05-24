@@ -2,29 +2,20 @@
 
 
 class TreeNode{
+public:
 	student *value_;
 	TreeNode *left_, *right_;
 	int balance;
-	TreeNode() { left_ = right_ = nullptr; value_ = nullptr;}
-public:
+	TreeNode() { left_ = right_ = nullptr; value_ = nullptr; balance = 0;}
 	~TreeNode(){
-		if (left_ == nullptr){
+		if (left_ != nullptr){
 			delete left_;
 		}
-		else{
-			left_->~TreeNode();
-			delete left_;
-		}
-		if (right_ == nullptr){
-                        delete right_;
-                }
-                else{
-                        right_->~TreeNode();
+		if (right_ != nullptr){
                         delete right_;
                 }
 	}
-	int add(student *st); //добавление студента возвращает OK, если сработало и N_OK, в противном случае
-	int del(char *name); //удаление по имени. OK, если сработало и N_OK, в противном случае
-	void bal(); // сбалансировать дерево
+	friend TreeNode *add(TreeNode *tree_, student *st, int &grow); //добавление студента возвращает OK, если сработало и N_OK, в противном случае
+	friend TreeNode *del(TreeNode *tree_, char *name, int &grow); //удаление по имени. OK, если сработало и N_OK, в противном случае
 	student pull(char *name); //получить данные о студенте
 };
