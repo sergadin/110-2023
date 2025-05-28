@@ -1,6 +1,12 @@
-O memAddr:   0x53d280 memSize: 12 allocAddr:   0x40289d freeAddr:   0x40290e # memory overwritten beyond allocated 12 bytes
-# 4 byte beyond area:
-# 00 bb cc dd 
-# abort; DUMP of current state
-# total allocation requests:      2 ; max. mem used 0 kBytes
-# leak      0 Bytes	:-)
+# LeakReport
+# from new @ |      size  # Pointer Addr
+L   0x402ddb          32  # 0x108a390
+L   0x402ddb          32  # 0x108a360
+L   0x402ddb          32  # 0x108a3f0
+L   0x402ddb          32  # 0x108a450
+L   0x402ddb          32  # 0x108a480
+L   0x402ddb          32  # 0x108a420
+L   0x402ddb          32  # 0x108a3c0
+# total allocation requests:     16 ; max. mem used 0 kBytes
+# leak    224 Bytes	:-(
+WORK TIME - 00:00:00.00

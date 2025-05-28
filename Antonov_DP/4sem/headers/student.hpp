@@ -14,7 +14,7 @@ public:
 		group_ = group;
 		rating_ = rating;
 		info_ = new char[strlen(info)];
-		info_ = strcpy(info_, info);
+		info_ = strncpy(info_, info,strlen(info));
 	}
 	~student(){
 		delete[] info_;
@@ -24,16 +24,18 @@ public:
                 group_ = other.group_;
                 rating_ = other.rating_;
                 info_ = new char[strlen(other.info_)];
-                info_ = strcpy(info_, other.info_);
+                info_ = strncpy(info_, other.info_,strlen(other.info_));
         }
 	student &operator=(const student& other){
 		if (this == &other) { return *this; }
+		std::cout << "6" << "\n";
 		delete[] info_;
+		std::cout << "6" << "\n";
 		strncpy(name_, other.name_, 64);
                 group_ = other.group_;
                 rating_ = other.rating_;
                 info_ = new char[strlen(other.info_)];
-                info_ = strcpy(info_, other.info_);
+                info_ = strncpy(info_, other.info_, strlen(other.info_));
 	}
 	void print(){
 		std::cout << "name: " << name_ << "\n";

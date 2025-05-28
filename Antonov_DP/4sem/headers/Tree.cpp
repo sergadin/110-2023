@@ -101,6 +101,7 @@ TreeNode *add(TreeNode *tree_, student *st, int &grow){
                         }
 		}
 	}
+	return tree_;
 }
 
 
@@ -220,9 +221,18 @@ TreeNode *del(TreeNode *tree_, char *name, int &grow)
 
 
 student TreeNode::pull(char *name){
-	if (strcmp(name,this->value_->name_) < 0) {return this->left_->pull(name);}
-	if (strcmp(name,this->value_->name_) > 0) {return this->right_->pull(name);}
-	if (this == nullptr){std::cout << "1" << "\n";}
+	std::cout << "2" << "\n";
+	if (strcmp(name,this->value_->name_) < 0) {
+		if (left_ == nullptr){std::cout << "1" << "\n";}
+		return this->left_->pull(name);
+	}
+	if (strcmp(name,this->value_->name_) > 0) {
+		if (right_ == nullptr){std::cout << "1" << "\n";}
+		return this->right_->pull(name);
+	}
+	std::cout << "2" << "\n";
 	student st (this->value_->name_,this->value_->group_, this->value_->rating_, this->value_->info_);
+	std::cout << "2" << "\n";
+	st.print();
 	return st;
 }
