@@ -32,6 +32,8 @@ class BNode {
     BNode* search(std::string k);
 
     void clear();
+    
+    
 
 public:
     BNode(int t1, bool leaf1) {
