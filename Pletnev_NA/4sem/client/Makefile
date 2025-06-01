@@ -5,6 +5,8 @@ SRCS = main.cpp database.cpp
 OBJS = $(SRCS:.cpp=.o)
 TARGET = workload_db
 
+.PHONY: all clean
+
 all: $(TARGET)
 
 $(TARGET): $(OBJS)

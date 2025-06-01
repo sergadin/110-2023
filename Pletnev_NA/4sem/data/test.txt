@@ -1,0 +1,88 @@
+# --- Тестирование команды 'add node' ---
+add node
+# Ожидаемый вывод: Usage: add node <path>
+
+add node faculty/science/math/имя_с_недопустимым_символом!
+# Ожидаемый вывод: Error: Invalid character or empty segment in node path part: 'имя_с_недопустимым_символом!' ...
+
+add node faculty/science//math
+# Ожидаемый вывод (если splitPath корректно обрабатывает и isValidPath/createNodeByPath это учитывают):
+# Может быть создано faculty/science/math, либо ошибка о невалидном сегменте "" если он не отфильтрован до isValidNodeNamePart
+
+add node ""
+# Ожидаемый вывод: Error: Cannot create node with empty path. (или из isValidPath)
+
+add node /
+# Ожидаемый вывод: Error: Invalid node path format '/'... (или из isValidPath)
+
+# --- Тестирование команды 'add employee' ---
+add employee
+# Ожидаемый вывод: Usage: add employee <path> '<name>' [workload1:hours1 ...]
+
+add employee faculty/non_existent_path 'Test User' lectures:10
+# Ожидаемый вывод: Error: Node not found at path: 'faculty/non_existent_path' to add employee...
+
+add employee faculty/science 'Test User' lectures:bad_hours
+# Ожидаемый вывод: Error: Invalid number format for hours in workload item 'lectures:bad_hours'.
+
+add employee faculty/science 'Test User' lectures:-50
+# Ожидаемый вывод: Error: Workload hours for type 'lectures' cannot be negative...
+
+add employee faculty/science 'User/With/Slash' lectures:10
+# Ожидаемый вывод: Error: Invalid employee name: 'User/With/Slash'...
+
+add employee faculty/science 'Valid Name' bad:type:format:10
+# Ожидаемый вывод: Error: Invalid workload format for item 'bad:type:format:10'. Expected type:hours
+
+add employee faculty/science 'Another User' valid_type:100 extra_arg
+# Ожидаемый вывод: Error: Invalid workload format for item 'extra_arg'. Expected type:hours (или ошибка о лишних аргументах, если парсер команды строгий)
+# Или, если парсер нагрузки берет только то, что соответствует, а остальное игнорирует,
+# то сотрудник добавится с 'valid_type:100'. Текущий processCommand должен выдать ошибку для 'extra_arg'.
+
+add employee faculty/science/math 'Ivanov I.I.' lectures:10 # Предположим, Иванов уже есть
+add employee faculty/science/math 'Ivanov I.I.' seminars:20
+# Ожидаемый вывод при второй попытке: Error: Employee 'Ivanov I.I.' already exists in node 'faculty/science/math'...
+
+# --- Тестирование команды 'query' ---
+query
+# Ожидаемый вывод: Usage: query columns <col1> [col2...] where <path> [row_sum]
+
+query columns name where
+# Ожидаемый вывод: Error: Path missing after 'where' in query.
+
+query columns name where faculty/non_existent_path
+# Ожидаемый вывод: Error: Node not found for query: 'faculty/non_existent_path'
+
+query columns name lectures seminars where faculty/science row_sum unexpected_arg
+# Ожидаемый вывод: Error: Unexpected arguments after query specification: 'unexpected_arg...'
+
+query columns where faculty/science
+# Ожидаемый вывод: Error: No columns specified for query. (или из-за структуры, не найдет where)
+
+# --- Тестирование команды 'save' и 'load' ---
+save
+# Ожидаемый вывод: Error: Missing filename for 'save' command. Usage: save <filename>
+
+save my_db.txt extra_arg
+# Ожидаемый вывод: Error: Too many arguments for 'save' command. Usage: save <filename>
+
+save bad/path/to/file.txt
+# Ожидаемый вывод: Error: Filename 'bad/path/to/file.txt' should not contain path separators...
+
+load
+# Ожидаемый вывод: Error: Missing filename for 'load' command. Usage: load <filename>
+
+load non_existent_file.txt
+# Ожидаемый вывод: Error opening file for loading: 'non_existent_file.txt'
+
+# --- Тестирование неизвестной команды ---
+delete all students
+# Ожидаемый вывод: Unknown command: 'delete'. Type 'help' for commands.
+
+# --- Тестирование пустой строки ---
+(просто нажмите Enter)
+# Ожидаемый вывод: (ничего, просто новая строка приглашения '>')
+
+# --- Тестирование строки только из пробелов ---
+   
+# Ожидаемый вывод: (ничего, просто новая строка приглашения '>')

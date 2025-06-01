@@ -1,6 +1,0 @@
-add workload lectures 48
-add workload seminars 32
-add node faculty/math/professor
-add employee faculty/math/professor Ivan lectures:48 seminars:32
-add employee faculty/math/professor Anna lectures:36 seminars:40
-query columns node_name lectures seminars where professo
