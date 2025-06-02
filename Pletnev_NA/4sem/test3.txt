@@ -1,0 +1,8 @@
+# Команды для Клиента 3
+add node client3_other_node
+add node client3_other_node/sub_beta
+add employee client3_other_node/sub_beta 'David_C3' c3_beta_task:33 c_common:30
+query columns name c3_beta_task c_common where client3_other_node/sub_beta
+# Попытка чтения данных, которые создал Клиент 2
+query columns name c2_alpha_task where client2_main_node/sub_alpha
+save db_after_client3.txt
