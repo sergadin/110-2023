@@ -1,7 +1,7 @@
 # --- Базовые команды и проверка связи ---
 help
 
-# --- Тестирование 'add node' ---
+# --- Тестирование 'add node' (остается как было, но нужно для структуры) ---
 add node faculty
 add node faculty/science
 add node faculty/arts
@@ -21,22 +21,30 @@ add_subject CS101 'Introduction to Programming'
 add_subject MATH202 'Linear Algebra and Analytical Geometry'
 add_subject PHYS101 'General Physics I'
 add_subject HIST100 'World History Overview'
+add_subject CS205 'Data Structures'
 # Повторное добавление предмета с тем же ID
-add_subject CS101 'Intro to CS'
+add_subject CS101 'Intro to CS (Duplicate Attempt)'
 # -> Ожидается: Error: Subject with ID 'CS101' already exists.
 # Ошибки 'add_subject'
-add_subject EMPTY_NAME ''
+add_subject '' 'Empty ID Subject'
+# -> Ожидается: Error: Subject ID cannot be empty.
+add_subject EMPTY_NAME_SUBJ ''
 # -> Ожидается: Error: Subject name cannot be empty.
 add_subject
-# -> Ожидается: Usage: add_subject <id> "<subject_name>"
-add_subject ID_ONLY
-# -> Ожидается: Usage: add_subject <id> "<subject_name>"
+# -> Ожидается: Usage: add_subject <id> '<subject_name>'
+add_subject ID_ONLY_FOR_SUBJ
+# -> Ожидается: Usage: add_subject <id> '<subject_name>'
 
 # --- Тестирование 'list_subjects' ---
 list_subjects
-# -> Ожидается: Вывод таблицы с ID и именами добавленных предметов
+# -> Ожидается: Вывод таблицы с ID и именами всех добавленных предметов:
+#    CS101 | Introduction to Programming
+#    MATH202 | Linear Algebra and Analytical Geometry
+#    PHYS101 | General Physics I
+#    HIST100 | World History Overview
+#    CS205 | Data Structures
 
-# --- Тестирование 'add employee' ---
+# --- Тестирование 'add employee' (остается как было, но нужно для структуры) ---
 add employee faculty/science/math 'Ivanov I.I.' lectures:40 seminars:60 project:20
 add employee faculty/science/physics 'Sidorov S.S.' lectures:30 research:100
 add employee faculty/arts/history 'Smirnova A.A.' lectures:60 archive:50
@@ -47,92 +55,131 @@ add employee faculty/science/chemistry 'Zotov Z.Z.'
 assign_subject_to_employee faculty/science/math 'Ivanov I.I.' CS101
 assign_subject_to_employee faculty/science/math 'Ivanov I.I.' MATH202
 assign_subject_to_employee faculty/science/physics 'Sidorov S.S.' PHYS101
+assign_subject_to_employee faculty/arts/history 'Smirnova A.A.' HIST100
 # Повторное назначение того же предмета
 assign_subject_to_employee faculty/science/math 'Ivanov I.I.' CS101
-# -> Ожидается: Info: Subject 'CS101' is already assigned...
+# -> Ожидается: Info: Subject 'CS101' is already assigned to employee 'Ivanov I.I.'.
 # Ошибки 'assign_subject_to_employee'
 assign_subject_to_employee faculty/science/math 'NonExistentEmp' CS101
-# -> Ожидается: Error: Employee 'NonExistentEmp' not found...
-assign_subject_to_employee faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ
-# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ' not found...
+# -> Ожидается: Error: Employee 'NonExistentEmp' not found at path 'faculty/science/math'.
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ_ID
+# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ_ID' not found.
 assign_subject_to_employee
 # -> Ожидается: Usage: assign_subject_to_employee <employee_path> '<employee_name>' <subject_id>
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.'
+# -> Ожидается: Usage: assign_subject_to_employee <employee_path> '<employee_name>' <subject_id> (или ошибка о нехватке аргументов)
 
 # --- Тестирование 'add_schedule' ---
 # Успешное добавление в расписание
+# Предполагаем, что Иванов ведет CS101 и MATH202, а Сидоров PHYS101
 add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '09:00-10:30' 'Room A1'
 add_schedule faculty/science/math 'Ivanov I.I.' CS101 семинар Monday '10:45-12:15' 'Room A2'
 add_schedule faculty/science/math 'Ivanov I.I.' MATH202 лекция Tuesday '14:00-15:30' 'BigHall'
 add_schedule faculty/science/physics 'Sidorov S.S.' PHYS101 лаба Wednesday '10:00-13:00' # Без аудитории
-# Попытка добавить занятие в то же время (конфликт)
+# Попытка добавить занятие в то же время для того же преподавателя (конфликт)
 add_schedule faculty/science/math 'Ivanov I.I.' MATH202 проект Monday '09:00-10:30' 'Room B1'
-# -> Ожидается: Error: Time slot conflict for employee 'Ivanov I.I.' on Monday at 09:00-10:30...
+# -> Ожидается: Error: Time slot conflict for employee 'Ivanov I.I.' on Monday at 09:00-10:30.
+# Попытка добавить занятие для предмета, который не назначен преподавателю
+add_schedule faculty/science/math 'Ivanov I.I.' CS205 лекция Friday '10:00-11:30' 'Room C1'
+# -> Ожидается: Error: Subject 'CS205' is not assigned to employee 'Ivanov I.I.'.
 # Ошибки 'add_schedule'
-add_schedule faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ лекция Friday '10:00-11:30'
-# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ' not found...
-add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция InvalidDay '10:00-11:30'
-# -> Ожидается: Error: Invalid day of week 'InvalidDay'...
-add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '' # Пустой time_slot
-# -> Ожидается: Error: Invalid time slot ''.
-add_schedule faculty/non_existent_path 'Ivanov I.I.' CS101 лекция Monday '10:00-11:30'
+add_schedule faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ_ID лекция Friday '10:00-11:30' 'Room D1'
+# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ_ID' not found.
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция InvalidDay '10:00-11:30' 'Room E1'
+# -> Ожидается: Error: Invalid day of week 'InvalidDay'. (Нужна валидация дней недели)
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '' 'Room F1'
+# -> Ожидается: Error: Invalid time slot ''. (Нужна валидация формата времени)
+add_schedule faculty/non_existent_path 'Ivanov I.I.' CS101 лекция Monday '10:00-11:30' 'Room G1'
 # -> Ожидается: Error: Employee 'Ivanov I.I.' not found at path 'faculty/non_existent_path'.
 add_schedule
-# -> Ожидается: Usage: add_schedule <employee_path> '<employee_name>' ...
+# -> Ожидается: Usage: add_schedule <employee_path> '<employee_name>' <subject_id> <activity_type> <day> '<time_slot>' [room]
 
 # --- Тестирование 'view_schedule' ---
 view_schedule faculty/science/math 'Ivanov I.I.'
-# -> Ожидается: Вывод расписания Иванова
+# -> Ожидается: Вывод расписания Иванова:
+#    Monday 09:00-10:30: CS101 (лекция) - Room A1
+#    Monday 10:45-12:15: CS101 (семинар) - Room A2
+#    Tuesday 14:00-15:30: MATH202 (лекция) - BigHall
+view_schedule faculty/science/physics 'Sidorov S.S.'
+# -> Ожидается: Вывод расписания Сидорова:
+#    Wednesday 10:00-13:00: PHYS101 (лаба) - N/A (или пустая строка для аудитории)
 view_schedule faculty/science/chemistry 'Zotov Z.Z.'
 # -> Ожидается: No schedule found for employee 'Zotov Z.Z.'.
 # Ошибки 'view_schedule'
-view_schedule faculty/science/math 'NonExistentEmp'
-# -> Ожидается: Error: Employee 'NonExistentEmp' not found...
+view_schedule faculty/science/math 'NonExistentEmpForSchedule'
+# -> Ожидается: Error: Employee 'NonExistentEmpForSchedule' not found at path 'faculty/science/math'.
 view_schedule
 # -> Ожидается: Usage: view_schedule <employee_path> '<employee_name>'
 
-# --- Тестирование 'query' (остается актуальным, но можно добавить проверку новых сотрудников) ---
+# --- Тестирование 'query' (с учетом новых сотрудников) ---
 query columns name lectures seminars project research archive coursework where faculty row_sum
-# Запрос к узлу без сотрудников
-add node faculty/empty_query_dept
-query columns name lectures where faculty/empty_query_dept
-# -> Ожидается: No employees found under path: 'faculty/empty_query_dept'
 
-# --- Тестирование 'save' (теперь сохраняет и предметы, и расписание) ---
-save extended_db.txt
-# -> Ожидается: Database saved to 'extended_db.txt'
-# Проверить содержимое файла extended_db.txt вручную на наличие:
+# --- Тестирование 'save' (теперь сохраняет и предметы, и назначения, и расписание) ---
+save extended_database_v2.txt
+# -> Ожидается: Database saved to 'extended_database_v2.txt'
+# Проверить содержимое файла extended_database_v2.txt вручную на наличие:
 # subject CS101 'Introduction to Programming'
-# ...
+# ... (все предметы)
+# node faculty
+# ... (все узлы)
 # employee faculty/science/math 'Ivanov I.I.' lectures:40 seminars:60 project:20
+# ... (все сотрудники с их базовой нагрузкой)
 # emp_subject faculty/science/math 'Ivanov I.I.' CS101
 # emp_subject faculty/science/math 'Ivanov I.I.' MATH202
+# ... (все назначения предметов сотрудникам)
 # emp_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '09:00-10:30' 'Room A1'
-# ...
+# ... (все записи расписания)
 
-# --- Тестирование 'load' (теперь загружает и предметы, и расписание) ---
+# --- Тестирование 'load' (теперь загружает все новые данные) ---
 # "Очистка" БД (предполагая, что load несуществующего файла очищает)
-load _temp_empty_to_clear_db_extended.txt
-# Проверка, что база пуста (или почти пуста)
+load _temp_empty_to_clear_db_extended_v2.txt
+# Проверка, что база пуста
 list_subjects
 # -> Ожидается: No subjects in catalog.
 query columns name lectures where faculty/science/math
 # -> Ожидается: No employees found... (или ошибка, если узел faculty/science/math тоже удалился)
 view_schedule faculty/science/math 'Ivanov I.I.'
-# -> Ожидается: Error: Employee 'Ivanov I.I.' not found...
+# -> Ожидается: Error: Employee 'Ivanov I.I.' not found... (или узел не найден)
 
 # Загрузка сохраненных данных
-load extended_db.txt
-# -> Ожидается: Database loaded from 'extended_db.txt'
+load extended_database_v2.txt
+# -> Ожидается: Database loaded from 'extended_database_v2.txt'
 # Проверка загруженных данных
 list_subjects
 # -> Ожидается: Вывод всех ранее сохраненных предметов
 query columns name lectures seminars project where faculty/science/math
-# -> Ожидается: Вывод Иванова с его нагрузкой
+# -> Ожидается: Вывод Иванова с его базовой нагрузкой
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' CS205 # Попытка назначить новый предмет после загрузки
+# -> Ожидается: Успешное назначение или сообщение, что уже назначен, если это было в файле
 view_schedule faculty/science/math 'Ivanov I.I.'
-# -> Ожидается: Вывод расписания Иванова, как было сохранено
+# -> Ожидается: Вывод расписания Иванова, как было сохранено (включая CS101 и MATH202)
+
+# --- Тестирование команд удаления и редактирования (добавленных ранее) ---
+# Удаление сотрудника
+remove employee faculty/science/math 'Petrov P.P.'
+# -> Ожидается: Employee 'Petrov P.P.' removed from node 'faculty/science/math'.
+query columns name seminars labs where faculty/science/math
+# -> Ожидается: Петрова больше нет в списке.
+# Редактирование нагрузки сотрудника
+edit employee faculty/science/math 'Ivanov I.I.' workload lectures:50 seminars:70 new_course:30
+# -> Ожидается: Workload for employee 'Ivanov I.I.' in node 'faculty/science/math' updated.
+query columns name lectures seminars new_course project where faculty/science/math
+# -> Ожидается: У Иванова обновленная нагрузка, project должен быть 0 или отсутствовать.
+# Удаление узла (сначала пустого)
+add node faculty/arts/to_delete
+remove node faculty/arts/to_delete
+# -> Ожидается: Node 'faculty/arts/to_delete' removed successfully.
+# Попытка удалить непустой узел без флага -r
+remove node faculty/science/math
+# -> Ожидается: Error: Node 'faculty/science/math' is not empty. Use recursive delete...
+# Рекурсивное удаление узла
+remove node faculty/science/physics --recursive
+# -> Ожидается: Node 'faculty/science/physics' removed successfully.
+query columns name lectures where faculty/science/physics
+# -> Ожидается: Error: Node not found for query: 'faculty/science/physics'
 
 # --- Тестирование неизвестных команд и пустого ввода (остается актуальным) ---
-yet_another_unknown_command
-# -> Ожидается: Unknown command: 'yet_another_unknown_command'.
+this_is_not_a_command
+# -> Ожидается: Unknown command: 'this_is_not_a_command'.
 # (пустая строка - нажать Enter)
 # -> Ожидается: (ничего, новое приглашение)

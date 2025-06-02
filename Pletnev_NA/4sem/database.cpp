@@ -6,647 +6,537 @@
 #include <algorithm>
 #include <iomanip>
 #include <limits>
+#include <map>
 
-// Пространство имен для функций валидации
+// --- Пространство имен Validation ---
 namespace Validation {
-    // Проверка валидности части имени узла
     bool isValidNodeNamePart(const std::string& name_part) {
         if (name_part.empty()) return false;
         for (char c : name_part) {
             if (!std::isalnum(c) && c != '_' && c != '-') {
-                if (c == '.' || c == ' ') continue; // Допустимы для гибкости
+                if (c == '.' || c == ' ') continue;
                 return false;
             }
         }
         return true;
     }
-
-    // Проверка валидности всего пути
     bool isValidPath(const std::string& path, const Database* db) {
-        if (path.empty() && path != "") return false; // Пустой путь "" может быть валиден для корня
+        if (path.empty() && path != "") {
+             if (path == "") return true; 
+             return false;
+        }
         std::vector<std::string> parts = db->splitPath(path);
-        if (parts.empty() && !path.empty()) return false; // Случай "///"
+        if (parts.empty() && !path.empty()) return false; 
         for (const std::string& part : parts) {
             if (!isValidNodeNamePart(part)) return false;
         }
         return true;
     }
-
-    // Проверка валидности имени сотрудника
     bool isValidEmployeeName(const std::string& name) {
         if (name.empty()) return false;
         for (char c : name) {
-            if (c == '/' || c == '\'' || c == ':') return false; // Запрещенные символы
+            if (c == '/' || c == '\'' || c == ':') return false;
         }
         return true;
     }
-
-    // Проверка валидности типа нагрузки
-    bool isValidWorkloadType(const std::string& type) {
+    bool isValidWorkloadType(const std::string& type) { // Также для activity_type
         if (type.empty()) return false;
         for (char c : type) {
-            if (!std::isalnum(c) && c != '_' && c != '-') return false;
+            if (!std::isalnum(c) && c != '_' && c != '-' && c != ' ') return false;
         }
         return true;
     }
+    bool isValidSubjectId(const std::string& id) {
+        if (id.empty()) return false;
+        for (char c : id) { 
+            if (!std::isalnum(c) && c != '-') return false;
+        }
+        return true;
+    }
+    bool isValidSubjectName(const std::string& name) {
+        return !name.empty(); 
+    }
+    const std::vector<std::string> VALID_DAYS = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"};
+    bool isValidDayOfWeek(const std::string& day, const Database* db) {
+        std::string lower_day = db->toLowerInternal(day); 
+        return std::find(VALID_DAYS.begin(), VALID_DAYS.end(), lower_day) != VALID_DAYS.end();
+    }
+    bool isValidTimeSlot(const std::string& time_slot) {
+        if (time_slot.length() != 11) return false;
+        if (time_slot[2] != ':' || time_slot[5] != '-' || time_slot[8] != ':') return false;
+        for (int i : {0, 1, 3, 4, 6, 7, 9, 10}) {
+            if (!std::isdigit(time_slot[i])) return false;
+        }
+        return true;
+    }
+     bool isValidActivityType(const std::string& type) {
+        return !type.empty(); 
+    }
+} 
+
+// --- Вспомогательные функции ---
+void displayHelpInformation() {
+    std::cout << "=== University Workload Database Management System ===" << std::endl;
+    std::cout << "Available commands:" << std::endl;
+    std::cout << "  add node <path>" << std::endl;
+    std::cout << "    - Example: add node faculty/science/mathematics" << std::endl;
+    std::cout << "  add employee <path> '<name>' [<type1>:<hours1> ...]" << std::endl;
+    std::cout << "    - Example: add employee faculty/cs 'Ivanov I.I.' lectures:40" << std::endl;
+    std::cout << "  add_subject <id> '<name>'" << std::endl;
+    std::cout << "    - Example: add_subject CS101 'Intro to Programming'" << std::endl;
+    std::cout << "  list_subjects" << std::endl;
+    std::cout << "  assign_subject_to_employee <emp_path> '<emp_name>' <subj_id>" << std::endl;
+    std::cout << "    - Example: assign_subject_to_employee faculty/cs 'Ivanov I.I.' CS101" << std::endl;
+    std::cout << "  add_schedule <emp_path> '<emp_name>' <subj_id> <activity> <day> '<time>' [room]" << std::endl;
+    std::cout << "    - Example: add_schedule faculty/cs 'Ivanov I.I.' CS101 лекция Monday '09:00-10:30' 'A101'" << std::endl;
+    std::cout << "  view_schedule <emp_path> '<emp_name>'" << std::endl;
+    std::cout << "    - Example: view_schedule faculty/cs 'Ivanov I.I.'" << std::endl;
+    std::cout << "  remove node <path> [-r | --recursive]" << std::endl;
+    std::cout << "    - Example (empty): remove node faculty/arts/empty_dept" << std::endl;
+    std::cout << "    - Example (recursive):  remove node faculty/science --recursive" << std::endl;
+    std::cout << "  remove employee <node_path> '<employee_name>'" << std::endl;
+    std::cout << "    - Example: remove employee faculty/cs 'Ivanov I.I.'" << std::endl;
+    std::cout << "  edit employee <node_path> '<employee_name>' workload [<new_wl1>:<new_hr1> ...]" << std::endl;
+    std::cout << "    - Example: edit employee faculty/cs 'Petrov P.P.' workload labs:50" << std::endl;
+    std::cout << "  query columns <col1> [col2...] where <path> [row_sum]" << std::endl;
+    std::cout << "    - Example: query columns name lectures where faculty/science row_sum" << std::endl;
+    std::cout << "  save <filename>" << std::endl;
+    std::cout << "    - Example: save my_database.txt" << std::endl;
+    std::cout << "  load <filename>" << std::endl;
+    std::cout << "    - Example: load my_database.txt" << std::endl;
+    std::cout << "  reset_database" << std::endl;
+    std::cout << "    - Clears all data from the current database session." << std::endl;
+    std::cout << "  help" << std::endl;
+    std::cout << "    - Shows this help message." << std::endl;
+    std::cout << "--------------------------------------------------------" << std::endl;
 }
 
-
+// --- Реализация методов Database ---
 std::string Database::toLower(const std::string& str) const {
     std::string lowerStr = str;
     std::transform(lowerStr.begin(), lowerStr.end(), lowerStr.begin(),
                    [](unsigned char c){ return std::tolower(c); });
     return lowerStr;
 }
-
+std::string Database::toLowerInternal(const std::string& str) const {
+    return toLower(str);
+}
 std::vector<std::string> Database::tokenize(const std::string& cmd) const {
-    std::vector<std::string> tokens;
-    std::string current;
-    bool inQuote = false;
+    std::vector<std::string> tokens; std::string current; bool inQuote = false;
     for (char c : cmd) {
-        if (c == '\'' && !inQuote) {
-            inQuote = true;
-        } else if (c == '\'' && inQuote) {
-            inQuote = false;
-            tokens.push_back(current);
-            current.clear();
-        } else if (c == ' ' && !inQuote) {
-            if (!current.empty()) {
-                tokens.push_back(current);
-                current.clear();
-            }
-        } else {
-            current += c;
-        }
+        if (c == '\'' && !inQuote) { inQuote = true; } 
+        else if (c == '\'' && inQuote) { inQuote = false; tokens.push_back(current); current.clear(); } 
+        else if (c == ' ' && !inQuote) { if (!current.empty()) { tokens.push_back(current); current.clear(); } } 
+        else { current += c; }
     }
-    if (!current.empty()) {
-        tokens.push_back(current);
-    }
-    return tokens;
+    if (!current.empty()) { tokens.push_back(current); } return tokens;
 }
-
-Database::Database() {
-    root = new Node(""); // Инициализация корневого узла
-}
-
-Database::~Database() {
-    deleteTree(root); // Очистка памяти при уничтожении объекта
-}
-
+Database::Database() { root = new Node(""); }
+Database::~Database() { deleteTree(root); }
 void Database::deleteTree(Node* node) {
     if (!node) return;
-    for (auto& pair : node->children) {
-        deleteTree(pair.second);
-    }
+    for (auto& pair : node->children) { deleteTree(pair.second); }
     delete node;
 }
-
 std::vector<std::string> Database::splitPath(const std::string& path) const {
-    std::vector<std::string> parts;
-    if (path.empty()) return parts;
-    std::stringstream ss(path);
-    std::string part;
-    while (std::getline(ss, part, '/')) {
-        if (!part.empty()) {
-            parts.push_back(part);
-        }
-    }
+    std::vector<std::string> parts; if (path.empty()) return parts;
+    std::stringstream ss(path); std::string part;
+    while (std::getline(ss, part, '/')) { if (!part.empty()) { parts.push_back(part); } }
     return parts;
 }
-
 Node* Database::getNode(const std::string& path) {
     std::vector<std::string> parts = splitPath(path);
-    if (path.empty() && parts.empty()) return root; // Пустой путь -> корень
-    if (!path.empty() && parts.empty()) return nullptr; // Невалидный путь типа "///"
+    if (path.empty() && parts.empty()) return root;
+    if (!path.empty() && parts.empty() && path != "") return nullptr; 
     Node* current = root;
     for (const auto& part : parts) {
         auto it = current->children.find(part);
-        if (it == current->children.end()) {
-            return nullptr; // Узел не найден
-        }
+        if (it == current->children.end()) return nullptr;
         current = it->second;
     }
     return current;
 }
-
 Node* Database::createNodeByPath(const std::string& path) {
     std::vector<std::string> parts = splitPath(path);
-    if (parts.empty() && !path.empty()) {
-        std::cout << "Error: Invalid node path format '" << path << "'. Path cannot consist only of separators." << std::endl;
-        return nullptr;
-    }
-    if (path.empty()){
-         std::cout << "Error: Cannot create node with empty path." << std::endl;
-        return nullptr;
-    }
+    if (parts.empty() && !path.empty()) { std::cout << "Error: Invalid node path format '" << path << "'." << std::endl; return nullptr; }
+    if (path.empty()){ std::cout << "Error: Cannot create node with empty path." << std::endl; return nullptr; }
     Node* current = root;
     for (const auto& part : parts) {
-        if (!Validation::isValidNodeNamePart(part)) {
-            std::cout << "Error: Invalid character or empty segment in node path part: '" << part << "' from path '" << path << "'." << std::endl;
-            return nullptr;
-        }
+        if (!Validation::isValidNodeNamePart(part)) { std::cout << "Error: Invalid segment '" << part << "' in path '" << path << "'." << std::endl; return nullptr; }
         auto it = current->children.find(part);
-        if (it == current->children.end()) {
-            Node* newNode = new Node(part);
-            current->children[part] = newNode;
-            current = newNode;
-        } else {
-            current = it->second;
-        }
+        if (it == current->children.end()) { Node* newNode = new Node(part); current->children[part] = newNode; current = newNode; } 
+        else { current = it->second; }
     }
     return current;
 }
-
-std::vector<Employee> Database::getAllEmployeesRecursive(Node* node) const {
-    std::vector<Employee> result;
-    if (!node) return result;
-    result = node->employees; // Сотрудники текущего узла
-    for (auto& pair : node->children) { // Рекурсивно для дочерних
-        std::vector<Employee> subEmployees = getAllEmployeesRecursive(pair.second);
-        result.insert(result.end(), subEmployees.begin(), subEmployees.end());
+void Database::getAllEmployeesRecursive(Node* node, std::vector<Employee*>& emp_list) {
+    if (!node) return;
+    for (size_t i = 0; i < node->employees.size(); ++i) {
+        emp_list.push_back(&(node->employees[i]));
     }
-    return result;
+    for (auto& pair : node->children) {
+        getAllEmployeesRecursive(pair.second, emp_list);
+    }
 }
-
+Employee* Database::findEmployee(const std::string& node_path, const std::string& employee_name) {
+    Node* node = getNode(node_path);
+    if (!node) return nullptr;
+    for (auto& emp : node->employees) {
+        if (emp.name == employee_name) return &emp;
+    }
+    return nullptr;
+}
+bool Database::checkTimeSlotConflict(const Employee* employee, const std::string& day, const std::string& time_slot) const {
+    if (!employee) return false;
+    std::string lower_day = toLower(day);
+    auto day_schedule_it = employee->schedule_by_day.find(lower_day);
+    if (day_schedule_it != employee->schedule_by_day.end()) {
+        for (const auto& entry : day_schedule_it->second) {
+            if (entry.time_slot == time_slot) return true;
+        }
+    }
+    return false;
+}
+int Database::dayOfWeekToIndex(const std::string& day) const {
+    std::string lower_day = toLower(day);
+    for (size_t i = 0; i < Validation::VALID_DAYS.size(); ++i) {
+        if (Validation::VALID_DAYS[i] == lower_day) return i;
+    }
+    return Validation::VALID_DAYS.size(); 
+}
 void Database::addNode(const std::string& path) {
-    if (!Validation::isValidPath(path, this)) {
-        return; // Сообщение об ошибке выводится из isValidPath или createNodeByPath
-    }
-    Node* created_node = createNodeByPath(path);
-    if (created_node) {
-        std::cout << "Node added/exists at path: " << path << std::endl;
-    }
+    if (path.empty()){ std::cout << "Error: Path for add node cannot be empty." << std::endl; return; }
+    if (!Validation::isValidPath(path, this)) { std::cout << "Error: Invalid path format for add node: '" << path << "'" << std::endl; return; }
+    Node* n = createNodeByPath(path);
+    if (n) std::cout << "Node added/exists at path: " << path << std::endl;
 }
-
 void Database::addEmployee(const std::string& path, const std::string& name, const std::vector<std::pair<std::string, int>>& workload) {
-    if (!Validation::isValidPath(path, this)) {
-        std::cout << "Error: Invalid path format for adding employee: '" << path << "'" << std::endl;
-        return;
+    if (!Validation::isValidPath(path, this)) { std::cout << "Error: Invalid path: '" << path << "'" << std::endl; return; }
+    if (!Validation::isValidEmployeeName(name)) { std::cout << "Error: Invalid employee name: '" << name << "'" << std::endl; return; }
+    if (workload.empty()) std::cout << "Warning: Employee '" << name << "' added with no workload." << std::endl;
+    for(const auto& wl : workload){
+        if(!Validation::isValidWorkloadType(wl.first)){ std::cout << "Error: Invalid workload type '" << wl.first << "'" << std::endl; return; }
+        if(wl.second < 0){ std::cout << "Error: Workload hours for '" << wl.first << "' cannot be negative." << std::endl; return; }
     }
-    if (!Validation::isValidEmployeeName(name)) {
-        std::cout << "Error: Invalid employee name: '" << name << "'. Name cannot be empty or contain '/', ':', or '\\''." << std::endl;
-        return;
-    }
-    if (workload.empty()){
-        std::cout << "Warning: Adding employee '" << name << "' with no workload specified." << std::endl;
-    }
-    for(const auto& wl_item : workload){
-        if(!Validation::isValidWorkloadType(wl_item.first)){
-            std::cout << "Error: Invalid workload type '" << wl_item.first << "' for employee '" << name << "'." << std::endl;
-            return;
-        }
-        if(wl_item.second < 0){
-            std::cout << "Error: Workload hours for type '" << wl_item.first << "' cannot be negative for employee '" << name << "'." << std::endl;
-            return;
-        }
-    }
-    Node* node = getNode(path);
-    if (node == nullptr) {
-        std::cout << "Error: Node not found at path: '" << path << "' to add employee. Please create the node first." << std::endl;
-        return;
-    }
-    for (const auto& emp : node->employees) {
-        if (emp.name == name) {
-            std::cout << "Error: Employee '" << name << "' already exists in node '" << path << "'. Use a different name or update mechanism." << std::endl;
-            return;
-        }
-    }
-    node->employees.push_back({name, workload});
+    Node* n = getNode(path);
+    if (!n) { std::cout << "Error: Node not found: '" << path << "'. Create node first." << std::endl; return; }
+    for (const auto& emp : n->employees) if (emp.name == name) { std::cout << "Error: Employee '" << name << "' already exists in '" << path << "'" << std::endl; return; }
+    n->employees.push_back({name, workload, {}, {}});
     std::cout << "Employee '" << name << "' added to node '" << path << "'" << std::endl;
 }
-
 void Database::query(const std::vector<std::string>& columns, const std::string& path, bool row_sum) {
-    if (!Validation::isValidPath(path, this) && !path.empty()) {
-        std::cout << "Error: Invalid path format for query: '" << path << "'" << std::endl;
-        return;
-    }
-    if (columns.empty()) {
-        std::cout << "Error: No columns specified for query." << std::endl;
-        return;
-    }
-    // Опциональная валидация имен столбцов
-    for(const auto& col_name : columns) {
-        if (toLower(col_name) != "name" && toLower(col_name) != "row_sum" && !Validation::isValidWorkloadType(col_name)){
-            // Можно добавить вывод ошибки, если имя столбца невалидно
-        }
-    }
-    Node* node = getNode(path);
-    if (node == nullptr && !path.empty()) {
-        std::cout << "Error: Node not found for query: '" << path << "'" << std::endl;
-        return;
-    }
-    if (node == nullptr && path.empty()) node = root; // Запрос к корню
-    auto allEmps = getAllEmployeesRecursive(node);
-    if (allEmps.empty()) {
-        std::cout << "No employees found under path: '" << path << "'" << std::endl;
-        return;
-    }
-    std::vector<std::string> printColumns = columns;
-    // Печать заголовков
-    for (size_t i = 0; i < printColumns.size(); ++i) {
-        std::cout << std::left << std::setw(15) << printColumns[i];
-    }
-    if (row_sum) {
-        std::cout << std::left << std::setw(15) << "row_sum";
-    }
+    if (!Validation::isValidPath(path, this) && !path.empty()) { std::cout << "Error: Invalid query path: '" << path << "'" << std::endl; return; }
+    if (columns.empty()) { std::cout << "Error: No columns for query." << std::endl; return; }
+    Node* n = getNode(path);
+    if (!n && !path.empty()) { std::cout << "Error: Node not found for query: '" << path << "'" << std::endl; return; }
+    if (!n && path.empty()) n = root;
+    std::vector<Employee*> allEmpPtrs; 
+    getAllEmployeesRecursive(n, allEmpPtrs);
+    if (allEmpPtrs.empty()) { std::cout << "No employees found under path: '" << path << "'" << std::endl; return; }
+    for (const auto& col : columns) std::cout << std::left << std::setw(20) << col;
+    if (row_sum) std::cout << std::left << std::setw(15) << "row_sum";
     std::cout << std::endl;
-    // Печать разделителя
-    for (size_t i = 0; i < printColumns.size(); ++i) std::cout << std::string(15, '-');
+    for (size_t i = 0; i < columns.size(); ++i) std::cout << std::string(20, '-');
     if (row_sum) std::cout << std::string(15, '-');
     std::cout << std::endl;
-    // Печать данных
-    for (const auto& emp : allEmps) {
-        int currentRowSum = 0;
-        for (const auto& col_header : printColumns) {
-            std::string lower_col_header = toLower(col_header);
-            if (lower_col_header == "name") {
-                std::cout << std::left << std::setw(15) << emp.name;
-            } else {
+    for (const auto* emp_ptr : allEmpPtrs) { 
+        const Employee& emp = *emp_ptr; 
+        int currentSum = 0;
+        for (const auto& col_h : columns) {
+            std::string lower_col_h = toLower(col_h);
+            if (lower_col_h == "name") std::cout << std::left << std::setw(20) << emp.name;
+            else {
                 auto it = std::find_if(emp.workload.begin(), emp.workload.end(),
-                                       [this, &lower_col_header](const auto& wl_pair){ return this->toLower(wl_pair.first) == lower_col_header; });
-                if (it != emp.workload.end()) {
-                    std::cout << std::left << std::setw(15) << it->second;
-                    if (row_sum) currentRowSum += it->second;
-                } else {
-                    std::cout << std::left << std::setw(15) << 0;
-                }
+                    [this, &lower_col_h](const auto& p){ return this->toLower(p.first) == lower_col_h; });
+                if (it != emp.workload.end()) { std::cout << std::left << std::setw(15) << it->second; if (row_sum) currentSum += it->second; } 
+                else { std::cout << std::left << std::setw(15) << 0; }
             }
         }
-        if (row_sum) {
-            std::cout << std::left << std::setw(15) << currentRowSum;
-        }
+        if (row_sum) std::cout << std::left << std::setw(15) << currentSum;
         std::cout << std::endl;
     }
 }
+void Database::addSubject(const std::string& id, const std::string& name) {
+    if (!Validation::isValidSubjectId(id)) { std::cout << "Error: Subject ID '" << id << "' is invalid or empty." << std::endl; return; }
+    if (!Validation::isValidSubjectName(name)) { std::cout << "Error: Subject name cannot be empty." << std::endl; return; }
+    if (subject_catalog.count(id)) { std::cout << "Error: Subject with ID '" << id << "' already exists." << std::endl; return; }
+    subject_catalog[id] = {id, name};
+    std::cout << "Subject '" << name << "' (ID: " << id << ") added." << std::endl;
+}
+void Database::listSubjects() const {
+    if (subject_catalog.empty()) { std::cout << "No subjects in catalog." << std::endl; return; }
+    std::cout << std::left << std::setw(15) << "Subject ID" << "| " << "Subject Name" << std::endl;
+    std::cout << std::string(15, '-') << "+-" << std::string(30, '-') << std::endl;
+    for (const auto& pair : subject_catalog) {
+        std::cout << std::left << std::setw(15) << pair.second.id << "| " << pair.second.name << std::endl;
+    }
+}
+void Database::assignSubjectToEmployee(const std::string& node_path, const std::string& employee_name, const std::string& subject_id) {
+    Employee* emp = findEmployee(node_path, employee_name);
+    if (!emp) { std::cout << "Error: Employee '" << employee_name << "' not found at path '" << node_path << "'." << std::endl; return; }
+    if (!subject_catalog.count(subject_id)) { std::cout << "Error: Subject with ID '" << subject_id << "' not found." << std::endl; return; }
+    if (emp->assigned_subject_ids.count(subject_id)) {
+        std::cout << "Info: Subject '" << subject_id << "' is already assigned to employee '" << employee_name << "'." << std::endl; return;
+    }
+    emp->assigned_subject_ids.insert(subject_id);
+    std::cout << "Subject '" << subject_id << "' assigned to employee '" << employee_name << "'." << std::endl;
+}
+void Database::addScheduleEntry(const std::string& node_path, const std::string& employee_name,
+                               const std::string& subject_id, const std::string& activity_type,
+                               const std::string& day, const std::string& time_slot, const std::string& room) {
+    Employee* emp = findEmployee(node_path, employee_name);
+    if (!emp) { std::cout << "Error: Employee '" << employee_name << "' not found at path '" << node_path << "'." << std::endl; return; }
+    if (!subject_catalog.count(subject_id)) { std::cout << "Error: Subject with ID '" << subject_id << "' not found." << std::endl; return; }
+    if (!emp->assigned_subject_ids.count(subject_id)) {
+        std::cout << "Error: Subject '" << subject_id << "' is not assigned to employee '" << employee_name << "'. Assign subject first." << std::endl; return;
+    }
+    if (!Validation::isValidActivityType(activity_type)) { std::cout << "Error: Activity type cannot be empty." << std::endl; return; }
+    if (!Validation::isValidDayOfWeek(day, this)) { std::cout << "Error: Invalid day of week '" << day << "'." << std::endl; return; }
+    if (!Validation::isValidTimeSlot(time_slot)) { std::cout << "Error: Invalid time slot format '" << time_slot << "'." << std::endl; return; }
+    std::string lower_day = toLower(day);
+    if (checkTimeSlotConflict(emp, lower_day, time_slot)) {
+        std::cout << "Error: Time slot conflict for employee '" << employee_name << "' on " << day << " at " << time_slot << "." << std::endl; return;
+    }
+    emp->schedule_by_day[lower_day].push_back({subject_id, activity_type, lower_day, time_slot, room});
+    std::sort(emp->schedule_by_day[lower_day].begin(), emp->schedule_by_day[lower_day].end()); // Keep sorted by time
+    std::cout << "Scheduled: " << subject_id << " (" << activity_type << ") for " << employee_name 
+              << " on " << day << " " << time_slot << (room.empty() ? "" : " in room '" + room + "'") << "." << std::endl;
+}
+void Database::viewSchedule(const std::string& node_path, const std::string& employee_name) const {
+    const Employee* emp = const_cast<Database*>(this)->findEmployee(node_path, employee_name); // findEmployee needs to be const or use a const version
+    if (!emp) { std::cout << "Error: Employee '" << employee_name << "' not found at path '" << node_path << "'." << std::endl; return; }
+    if (emp->schedule_by_day.empty()) { std::cout << "No schedule found for employee '" << employee_name << "'." << std::endl; return; }
+    std::cout << "Schedule for " << emp->name << ":" << std::endl;
+    std::vector<std::pair<int, std::string>> sorted_day_keys;
+    for(const auto& day_pair : emp->schedule_by_day) {
+        sorted_day_keys.push_back({dayOfWeekToIndex(day_pair.first), day_pair.first});
+    }
+    std::sort(sorted_day_keys.begin(), sorted_day_keys.end());
 
+    for (const auto& day_key_pair : sorted_day_keys) {
+        const std::string& day = day_key_pair.second;
+        const auto& entries = emp->schedule_by_day.at(day);
+        std::cout << "  " << day << ":" << std::endl; // Capitalize day?
+        for (const auto& entry : entries) { 
+            std::cout << "    " << entry.time_slot << ": "
+                      << entry.subject_id << " (" << entry.activity_type << ")"
+                      << (entry.room.empty() ? "" : " - Room '" + entry.room + "'") << std::endl;
+        }
+    }
+}
+void Database::resetDatabase() {
+    deleteTree(root);
+    root = new Node("");
+    subject_catalog.clear();
+    std::cout << "Database has been reset." << std::endl;
+}
 void Database::save(const std::string& filename) const {
-    if (filename.empty()){
-        std::cout << "Error: Filename for save cannot be empty." << std::endl;
-        return;
-    }
+    if (filename.empty()){ std::cout << "Error: Filename for save empty." << std::endl; return; }
     if (filename.find('/') != std::string::npos || filename.find('\\') != std::string::npos) {
-        std::cout << "Error: Filename '" << filename << "' should not contain path separators. Saving in current directory." << std::endl;
-        // Можно либо запретить, либо извлечь только имя файла. Пока просто предупреждение.
+        std::cout << "Error: Filename '" << filename << "' has path separators." << std::endl;
     }
-    std::ofstream out(filename);
-    if (!out) {
-        std::cout << "Error opening file for saving: '" << filename << "'" << std::endl;
-        return;
-    }
-    // Рекурсивная лямбда для сохранения
-    std::function<void(const Node*, const std::string&)> saveNodeRecursiveFunc =
-        [&](const Node* currentNode, const std::string& currentPathStr) {
-        if (!currentNode) return;
-        if (currentNode != root && (!currentPathStr.empty())) {
-             bool hasContent = !currentNode->employees.empty() || !currentNode->children.empty();
-             if(hasContent || !currentNode->name.empty()){ // Сохраняем узел, если он не пуст или имеет имя
-                out << "node " << currentPathStr << std::endl;
+    std::ofstream out(filename); if (!out) { std::cout << "Error opening file for saving: '" << filename << "'" << std::endl; return; }
+    for(const auto& pair : subject_catalog){ out << "subject " << pair.second.id << " '" << pair.second.name << "'" << std::endl; }
+    std::function<void(const Node*, const std::string&)> saveRec = 
+        [&](const Node* curr, const std::string& cPath) {
+        if (!curr) return;
+        if (curr != root && (!cPath.empty())) {
+             if(!curr->employees.empty() || !curr->children.empty() || !curr->name.empty()){
+                out << "node " << cPath << std::endl;
              }
         }
-        for (const auto& emp : currentNode->employees) {
-            out << "employee " << currentPathStr << " '" << emp.name << "'";
-            for (const auto& wl : emp.workload) {
-                out << " " << wl.first << ":" << wl.second;
-            }
+        for (const auto& emp : curr->employees) {
+            out << "employee " << cPath << " '" << emp.name << "'";
+            for (const auto& wl : emp.workload) out << " " << wl.first << ":" << wl.second;
             out << std::endl;
+            for (const std::string& subj_id : emp.assigned_subject_ids) {
+                out << "emp_subject " << cPath << " '" << emp.name << "' " << subj_id << std::endl;
+            }
+            for (const auto& day_pair : emp.schedule_by_day) {
+                for (const auto& entry : day_pair.second) {
+                    out << "emp_schedule " << cPath << " '" << emp.name << "' "
+                        << entry.subject_id << " " << entry.activity_type << " "
+                        << entry.day_of_week << " '" << entry.time_slot << "' "
+                        << (entry.room.empty() ? "NO_ROOM" : "'" + entry.room + "'") << std::endl;
+                }
+            }
         }
-        for (const auto& pair : currentNode->children) {
-            std::string childPathStr = currentPathStr.empty() ? pair.first : currentPathStr + "/" + pair.first;
-            saveNodeRecursiveFunc(pair.second, childPathStr);
+        for (const auto& pair : curr->children) {
+            saveRec(pair.second, cPath.empty() ? pair.first : cPath + "/" + pair.first);
         }
     };
-    saveNodeRecursiveFunc(root, ""); // Начинаем с корня
-    out.close();
+    saveRec(root, ""); out.close();
     std::cout << "Database saved to '" << filename << "'" << std::endl;
 }
-
 void Database::load(const std::string& filename) {
-    if (filename.empty()){
-        std::cout << "Error: Filename for load cannot be empty." << std::endl;
-        return;
-    }
-    std::ifstream in(filename);
-    if (!in) {
-        std::cout << "Error opening file for loading: '" << filename << "'" << std::endl;
-        return;
-    }
-    deleteTree(root); // Очищаем текущую базу
-    root = new Node("");
+    if (filename.empty()){ std::cout << "Error: Filename for load empty." << std::endl; return; }
+    std::ifstream in(filename); if (!in) { std::cout << "Error opening file for loading: '" << filename << "'" << std::endl; return; }
+    resetDatabase(); 
     std::cout << "Loading database from '" << filename << "'..." << std::endl;
-    std::string line;
-    int lineNum = 0;
+    std::string line; int lineNum = 0;
     while (std::getline(in, line)) {
-        lineNum++;
-        auto tokens = this->tokenize(line);
-        if (tokens.empty() || (!tokens.empty() && tokens[0].rfind('#', 0) == 0)) continue; // Пропуск пустых и комментариев
-        std::string command_type = toLower(tokens[0]);
-        if (command_type == "node") {
+        lineNum++; auto tokens = this->tokenize(line);
+        if (tokens.empty() || (!tokens.empty() && tokens[0].rfind('#', 0) == 0)) continue;
+        std::string cmd_type = toLower(tokens[0]);
+        if (cmd_type == "node") {
             if (tokens.size() == 2) {
-                if (!Validation::isValidPath(tokens[1], this)) {
-                     std::cout << "Warning (load line " << lineNum << "): Invalid node path '" << tokens[1] << "'. Skipping." << std::endl; continue;
-                }
+                if (!Validation::isValidPath(tokens[1], this)) { std::cout << "Warning(L" << lineNum << "): Invalid node path '" << tokens[1] << "'. Skip." << std::endl; continue; }
                 this->createNodeByPath(tokens[1]);
-            } else {
-                std::cout << "Warning (load line " << lineNum << "): Malformed 'node' command. Expected 'node <path>'. Skipping." << std::endl;
-            }
-        } else if (command_type == "employee") {
-            if (tokens.size() >= 3) { // employee <path> '<name>' [workload...]
-                std::string path_str = tokens[1];
-                std::string name_str = tokens[2];
-                if (!Validation::isValidPath(path_str, this)) {
-                    std::cout << "Warning (load line " << lineNum << "): Invalid path '" << path_str << "' for employee. Skipping." << std::endl; continue;
-                }
-                if (!Validation::isValidEmployeeName(name_str)) {
-                    std::cout << "Warning (load line " << lineNum << "): Invalid employee name '" << name_str << "'. Skipping." << std::endl; continue;
-                }
-                Node* nodeForEmployee = getNode(path_str);
-                if (!nodeForEmployee) {
-                    nodeForEmployee = createNodeByPath(path_str);
-                    if (!nodeForEmployee) { std::cout << "Warning (load line " << lineNum << "): Failed to create/get node for employee at path '" << path_str << "'. Skipping." << std::endl; continue; }
-                    std::cout << "Info (load line " << lineNum << "): Created missing node path for employee: '" << path_str << "'" << std::endl;
-                }
-                std::vector<std::pair<std::string, int>> workload_vec;
+            } else { std::cout << "Warning(L" << lineNum << "): Malformed 'node'. Skip." << std::endl; }
+        } else if (cmd_type == "subject") { 
+            if (tokens.size() == 3) { addSubject(tokens[1], tokens[2]); } 
+            else { std::cout << "Warning(L" << lineNum << "): Malformed 'subject'. Skip." << std::endl; }
+        } else if (cmd_type == "employee") {
+            if (tokens.size() >= 3) { 
+                std::string p_str = tokens[1]; std::string n_str = tokens[2];
+                if (!Validation::isValidPath(p_str, this)) { std::cout << "Warning(L" << lineNum << "): Invalid path '" << p_str << "'. Skip." << std::endl; continue; }
+                if (!Validation::isValidEmployeeName(n_str)) { std::cout << "Warning(L" << lineNum << "): Invalid emp name '" << n_str << "'. Skip." << std::endl; continue; }
+                Node* nFE = getNode(p_str);
+                if (!nFE) { nFE = createNodeByPath(p_str); if (!nFE) { std::cout << "Warning(L" << lineNum << "): Fail create/get node '" << p_str << "'. Skip." << std::endl; continue; } }
+                std::vector<std::pair<std::string, int>> wl_v;
                 for (size_t i = 3; i < tokens.size(); ++i) {
-                    size_t colonPos = tokens[i].find(':');
-                    if (colonPos != std::string::npos && colonPos > 0 && colonPos < tokens[i].length() - 1) {
-                        std::string type_str = tokens[i].substr(0, colonPos);
-                        std::string hours_str = tokens[i].substr(colonPos + 1);
-                        if (!Validation::isValidWorkloadType(type_str)) {
-                             std::cout << "Warning (load line " << lineNum << "): Invalid workload type '" << type_str << "'. Skipping this workload item." << std::endl; continue;
-                        }
-                        try {
-                            int hours_val = std::stoi(hours_str);
-                            if (hours_val < 0) {
-                                std::cout << "Warning (load line " << lineNum << "): Negative hours (" << hours_val << ") for workload type '" << type_str << "'. Skipping this workload item." << std::endl; continue;
-                            }
-                            workload_vec.push_back({type_str, hours_val});
-                        } catch (const std::invalid_argument& ) {
-                            std::cout << "Warning (load line " << lineNum << "): Invalid number format for hours in '" << tokens[i] << "'. Skipping this workload item." << std::endl;
-                        } catch (const std::out_of_range& ) {
-                            std::cout << "Warning (load line " << lineNum << "): Hours value out of range in '" << tokens[i] << "'. Skipping this workload item." << std::endl;
-                        }
-                    } else {
-                        std::cout << "Warning (load line " << lineNum << "): Invalid workload format: '" << tokens[i] << "'. Expected type:hours. Skipping this workload item." << std::endl;
-                    }
+                    size_t cPos = tokens[i].find(':');
+                    if (cPos!=std::string::npos && cPos>0 && cPos<tokens[i].length()-1) {
+                        std::string t = tokens[i].substr(0,cPos), h=tokens[i].substr(cPos+1);
+                        if(Validation::isValidWorkloadType(t)){try{int hv=std::stoi(h); if(hv>=0)wl_v.push_back({t,hv}); else std::cout<<"W(L"<<lineNum<<"): Neg hours. Skip item."<<std::endl;}catch(const std::exception&){std::cout<<"W(L"<<lineNum<<"): Inv hours. Skip item."<<std::endl;}}
+                        else std::cout<<"W(L"<<lineNum<<"): Inv wl type. Skip item."<<std::endl;
+                    } else {std::cout<<"W(L"<<lineNum<<"): Inv wl fmt. Skip item."<<std::endl;}
                 }
-                 if (nodeForEmployee) {
-                     bool exists = false;
-                     for(const auto& e : nodeForEmployee->employees) if(e.name == name_str) exists = true;
-                     if(!exists) {
-                        nodeForEmployee->employees.push_back({name_str, workload_vec});
-                     } else {
-                        std::cout << "Info (load line " << lineNum << "): Employee '" << name_str << "' already exists in '" << path_str << "'. Skipping." << std::endl;
-                     }
-                 }
-            } else {
-                 std::cout << "Warning (load line " << lineNum << "): Malformed 'employee' command. Expected 'employee <path> '<name>' [workload...]'. Skipping." << std::endl;
-            }
-        } else {
-            std::cout << "Warning (load line " << lineNum << "): Unknown or malformed line in file: '" << line << "'. Skipping." << std::endl;
-        }
+                bool ex=false; for(const auto& e : nFE->employees) if(e.name==n_str) ex=true;
+                if(!ex) nFE->employees.push_back({n_str, wl_v, {}, {}});
+            } else { std::cout << "Warning(L" << lineNum << "): Malformed 'employee'. Skip." << std::endl; }
+        } else if (cmd_type == "emp_subject") { 
+            if (tokens.size() == 4) { assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]); } 
+            else { std::cout << "Warning(L" << lineNum << "): Malformed 'emp_subject'. Skip." << std::endl; }
+        } else if (cmd_type == "emp_schedule") { 
+            if (tokens.size() == 7 || tokens.size() == 8) { 
+                std::string room_val = (tokens.size() == 8 && tokens[7] != "NO_ROOM") ? tokens[7] : "";
+                addScheduleEntry(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6], room_val);
+            } else { std::cout << "Warning(L" << lineNum << "): Malformed 'emp_schedule'. Skip." << std::endl; }
+        } else { std::cout << "Warning(L" << lineNum << "): Unknown line: '" << line << "'. Skip." << std::endl; }
     }
-    in.close();
-    std::cout << "Database loaded from '" << filename << "'" << std::endl;
+    in.close(); std::cout << "Database loaded from '" << filename << "'" << std::endl;
 }
-
-// --- Новые методы ---
 void Database::removeNode(const std::string& path, bool recursive_delete) {
-    if (!Validation::isValidPath(path, this) || path.empty()) {
-        std::cout << "Error (removeNode): Invalid or empty path '" << path << "'." << std::endl;
-        return;
-    }
-    std::vector<std::string> parts = splitPath(path);
-    if (parts.empty()) {
-        std::cout << "Error (removeNode): Cannot remove the root node." << std::endl;
-        return;
-    }
-    Node* current_search = root;
-    Node* parent_of_target = nullptr; // Инициализируем nullptr
-    // Находим родителя целевого узла
-    for (size_t i = 0; i < parts.size() - 1; ++i) { // Идем до предпоследнего элемента
-        auto it = current_search->children.find(parts[i]);
-        if (it == current_search->children.end()) {
-            std::cout << "Error (removeNode): Path segment '" << parts[i] << "' not found in path '" << path << "'." << std::endl;
-            return;
+    if (!Validation::isValidPath(path, this) || path.empty()) { std::cout << "Error: Invalid path '" << path << "'." << std::endl; return; }
+    std::vector<std::string> parts = splitPath(path); if (parts.empty()) { std::cout << "Error: Cannot remove root." << std::endl; return; }
+    Node* current_s = root; Node* parent_target = root; 
+    if (parts.size() > 1) { 
+        for (size_t i = 0; i < parts.size() - 1; ++i) {
+            auto it = current_s->children.find(parts[i]);
+            if (it == current_s->children.end()) { std::cout << "Error: Path segment '" << parts[i] << "' not found." << std::endl; return; }
+            current_s = it->second;
         }
-        current_search = it->second;
+        parent_target = current_s;
+    } 
+    auto target_it = parent_target->children.find(parts.back());
+    if (target_it == parent_target->children.end()) { std::cout << "Error: Target node '" << parts.back() << "' not found." << std::endl; return; }
+    Node* target_n = target_it->second;
+    if (!recursive_delete && (!target_n->children.empty() || !target_n->employees.empty())) {
+        std::cout << "Error: Node '" << path << "' not empty. Use recursive delete." << std::endl; return;
     }
-    parent_of_target = current_search; // Теперь current_search это родитель
-    // Находим сам целевой узел
-    auto target_it = parent_of_target->children.find(parts.back());
-    if (target_it == parent_of_target->children.end()) {
-        std::cout << "Error (removeNode): Target node '" << parts.back() << "' not found in parent '" << (parts.size() > 1 ? parts[parts.size()-2] : "root") << "' for path '" << path << "'." << std::endl;
-        return;
-    }
-    Node* target_node = target_it->second;
-
-    if (!recursive_delete && (!target_node->children.empty() || !target_node->employees.empty())) {
-        std::cout << "Error (removeNode): Node '" << path << "' is not empty. Use recursive delete or remove contents first." << std::endl;
-        return;
-    }
-    parent_of_target->children.erase(parts.back()); // Удаляем из карты родителя
-    deleteTree(target_node); // Удаляем само поддерево (или узел, если пуст)
-    std::cout << "Node '" << path << "' removed successfully." << std::endl;
+    parent_target->children.erase(parts.back()); deleteTree(target_n);
+    std::cout << "Node '" << path << "' removed." << std::endl;
 }
-
 void Database::removeEmployee(const std::string& node_path, const std::string& employee_name) {
-    if (!Validation::isValidPath(node_path, this) || node_path.empty()) {
-        std::cout << "Error (removeEmployee): Invalid or empty node path '" << node_path << "'." << std::endl;
-        return;
-    }
-    if (!Validation::isValidEmployeeName(employee_name)) {
-        std::cout << "Error (removeEmployee): Invalid employee name '" << employee_name << "'." << std::endl;
-        return;
-    }
-    Node* node = getNode(node_path);
-    if (!node) {
-        std::cout << "Error (removeEmployee): Node not found at path '" << node_path << "'." << std::endl;
-        return;
-    }
-    auto& emps = node->employees;
-    auto it = std::remove_if(emps.begin(), emps.end(),
-                             [&](const Employee& emp) { return emp.name == employee_name; });
-    if (it != emps.end()) {
-        emps.erase(it, emps.end());
-        std::cout << "Employee '" << employee_name << "' removed from node '" << node_path << "'." << std::endl;
-    } else {
-        std::cout << "Error (removeEmployee): Employee '" << employee_name << "' not found in node '" << node_path << "'." << std::endl;
-    }
+    if (!Validation::isValidPath(node_path, this) || node_path.empty()) { std::cout << "Error: Invalid node path '" << node_path << "'." << std::endl; return; }
+    if (!Validation::isValidEmployeeName(employee_name)) { std::cout << "Error: Invalid employee name '" << employee_name << "'." << std::endl; return; }
+    Node* n = getNode(node_path); if (!n) { std::cout << "Error: Node not found: '" << node_path << "'." << std::endl; return; }
+    auto& emps = n->employees;
+    auto it = std::remove_if(emps.begin(), emps.end(), [&](const Employee& e){ return e.name == employee_name; });
+    if (it != emps.end()) { emps.erase(it, emps.end()); std::cout << "Employee '" << employee_name << "' removed from '" << node_path << "'." << std::endl; }
+    else { std::cout << "Error: Employee '" << employee_name << "' not found in '" << node_path << "'." << std::endl; }
 }
-
-void Database::editEmployeeWorkload(const std::string& node_path, 
-                                    const std::string& employee_name,
-                                    const std::vector<std::pair<std::string, int>>& new_workload) {
-    if (!Validation::isValidPath(node_path, this) || node_path.empty()) {
-        std::cout << "Error (editEmployeeWorkload): Invalid or empty node path '" << node_path << "'." << std::endl;
-        return;
+void Database::editEmployeeWorkload(const std::string& node_path, const std::string& employee_name, const std::vector<std::pair<std::string, int>>& new_workload) {
+    if (!Validation::isValidPath(node_path, this) || node_path.empty()) { std::cout << "Error: Invalid node path '" << node_path << "'." << std::endl; return; }
+    if (!Validation::isValidEmployeeName(employee_name)) { std::cout << "Error: Invalid employee name '" << employee_name << "'." << std::endl; return; }
+    if (new_workload.empty()) std::cout << "Warning: New workload for '" << employee_name << "' is empty. Workload cleared." << std::endl;
+    for(const auto& wl : new_workload){
+        if(!Validation::isValidWorkloadType(wl.first)){ std::cout << "Error: Invalid new workload type '" << wl.first << "'." << std::endl; return; }
+        if(wl.second < 0){ std::cout << "Error: New workload hours for '" << wl.first << "' cannot be negative." << std::endl; return; }
     }
-    if (!Validation::isValidEmployeeName(employee_name)) {
-        std::cout << "Error (editEmployeeWorkload): Invalid employee name '" << employee_name << "'." << std::endl;
-        return;
-    }
-    if (new_workload.empty()){
-        std::cout << "Warning (editEmployeeWorkload): New workload for employee '" << employee_name << "' is empty. Old workload will be cleared." << std::endl;
-    }
-    for(const auto& wl_item : new_workload){
-        if(!Validation::isValidWorkloadType(wl_item.first)){
-            std::cout << "Error (editEmployeeWorkload): Invalid new workload type '" << wl_item.first << "'." << std::endl;
-            return;
-        }
-        if(wl_item.second < 0){
-            std::cout << "Error (editEmployeeWorkload): New workload hours for type '" << wl_item.first << "' cannot be negative." << std::endl;
-            return;
-        }
-    }
-    Node* node = getNode(node_path);
-    if (!node) {
-        std::cout << "Error (editEmployeeWorkload): Node not found at path '" << node_path << "'." << std::endl;
-        return;
-    }
-    for (auto& emp : node->employees) {
-        if (emp.name == employee_name) {
-            emp.workload = new_workload; // Замена старой нагрузки
-            std::cout << "Workload for employee '" << employee_name << "' in node '" << node_path << "' updated." << std::endl;
-            return;
-        }
-    }
-    std::cout << "Error (editEmployeeWorkload): Employee '" << employee_name << "' not found in node '" << node_path << "'." << std::endl;
+    Employee* emp_ptr = findEmployee(node_path, employee_name); 
+    if (!emp_ptr) { std::cout << "Error: Employee '" << employee_name << "' not found in '" << node_path << "'." << std::endl; return; }
+    emp_ptr->workload = new_workload;
+    std::cout << "Workload for '" << employee_name << "' in '" << node_path << "' updated." << std::endl;
 }
-
-// Главный обработчик команд
 void Database::processCommand(const std::string& command_line) {
-    if (command_line.empty() || command_line.find_first_not_of(" \t\n\r") == std::string::npos) {
-        return;
-    }
-    auto tokens = tokenize(command_line);
-    if (tokens.empty()) return;
-    std::string cmd_keyword = toLower(tokens[0]);
-
-    if (cmd_keyword == "add") {
-        if (tokens.size() < 2) {
-            std::cout << "Error: 'add' command requires a subcommand (node or employee)." << std::endl; return;
-        }
-        std::string add_type = toLower(tokens[1]);
-        if (add_type == "node") {
-            if (tokens.size() == 3) { addNode(tokens[2]); } 
-            else { std::cout << "Usage: add node <path>" << std::endl; }
-        } else if (add_type == "employee") {
+    if (command_line.empty() || command_line.find_first_not_of(" \t\n\r") == std::string::npos) return;
+    auto tokens = tokenize(command_line); if (tokens.empty()) return;
+    std::string cmd = toLower(tokens[0]);
+    if (cmd == "help") {
+        if (tokens.size() == 1) displayHelpInformation();
+        else std::cout << "Usage: help" << std::endl;
+    } else if (cmd == "add") {
+        if (tokens.size() < 2) { std::cout << "Error: 'add' needs subcommand." << std::endl; return; }
+        std::string type = toLower(tokens[1]);
+        if (type == "node") { if (tokens.size() == 3) addNode(tokens[2]); else std::cout << "Usage: add node <path>" << std::endl; }
+        else if (type == "employee") {
             if (tokens.size() >= 4) {
-                std::string path = tokens[2]; std::string name = tokens[3];
-                std::vector<std::pair<std::string, int>> workload;
-                if (tokens.size() >= 5) {
-                    for (size_t i = 4; i < tokens.size(); ++i) {
-                        size_t colonPos = tokens[i].find(':');
-                        if (colonPos != std::string::npos && colonPos > 0 && colonPos < tokens[i].length() - 1) {
-                            std::string type = tokens[i].substr(0, colonPos);
-                            std::string hours_str = tokens[i].substr(colonPos + 1);
-                            try { workload.push_back({type, std::stoi(hours_str)}); } 
-                            catch (const std::exception& e) { std::cout << "Error: Invalid hours in '" << tokens[i] << "': " << e.what() << std::endl; return; }
-                        } else { std::cout << "Error: Invalid workload format '" << tokens[i] << "'. Expected type:hours" << std::endl; return; }
-                    }
-                }
-                addEmployee(path, name, workload);
-            } else { std::cout << "Usage: add employee <path> '<name>' [workload...]" << std::endl; }
-        } else { std::cout << "Error: Unknown 'add' subcommand '" << tokens[1] << "'." << std::endl; }
-    } else if (cmd_keyword == "query") {
-        if (tokens.size() < 5 || toLower(tokens[1]) != "columns") { std::cout << "Usage: query columns <cols> where <path> [row_sum]" << std::endl; return; }
-        std::vector<std::string> cols; size_t idx = 2;
-        while(idx < tokens.size() && toLower(tokens[idx]) != "where") { cols.push_back(tokens[idx++]); }
-        if (idx >= tokens.size() || toLower(tokens[idx]) != "where") { std::cout << "Error: 'where' missing in query." << std::endl; return; }
-        idx++; if (idx >= tokens.size()) { std::cout << "Error: Path missing after 'where'." << std::endl; return; }
-        std::string path = tokens[idx++]; bool row_sum = false;
-        if (idx < tokens.size() && toLower(tokens[idx]) == "row_sum") { row_sum = true; idx++; }
-        if (idx < tokens.size()) { std::cout << "Error: Unexpected args after query: '" << tokens[idx] << "...'" << std::endl; return; }
-        if (cols.empty()){ std::cout << "Error: No columns for query." << std::endl; return; }
-        query(cols, path, row_sum);
-    } else if (cmd_keyword == "remove") {
-        if (tokens.size() < 2) { std::cout << "Error: 'remove' needs subcommand (node/employee)." << std::endl; return; }
-        std::string type = toLower(tokens[1]);
-        if (type == "node") { // remove node <path> [-r]
-            if (tokens.size() == 3) { removeNode(tokens[2], false); }
-            else if (tokens.size() == 4 && (tokens[3] == "-r" || tokens[3] == "--recursive")) { removeNode(tokens[2], true); }
-            else { std::cout << "Usage: remove node <path> [-r|--recursive]" << std::endl; }
-        } else if (type == "employee") { // remove employee <node_path> '<employee_name>'
-            if (tokens.size() == 4) { removeEmployee(tokens[2], tokens[3]); }
-            else { std::cout << "Usage: remove employee <node_path> '<employee_name>'" << std::endl; }
-        } else { std::cout << "Error: Unknown 'remove' subcommand '" << tokens[1] << "'." << std::endl; }
-    } else if (cmd_keyword == "edit") {
-        if (tokens.size() < 2) { std::cout << "Error: 'edit' needs subcommand (employee)." << std::endl; return; }
-        std::string type = toLower(tokens[1]);
-        if (type == "employee") { // edit employee <path> '<name>' workload <wl...>
-            if (tokens.size() >= 6 && toLower(tokens[4]) == "workload") {
-                std::string path = tokens[2]; std::string name = tokens[3];
-                std::vector<std::pair<std::string, int>> new_wl;
-                for (size_t i = 5; i < tokens.size(); ++i) {
-                    size_t colon = tokens[i].find(':');
-                    if (colon != std::string::npos && colon > 0 && colon < tokens[i].length() - 1) {
-                        try { new_wl.push_back({tokens[i].substr(0, colon), std::stoi(tokens[i].substr(colon + 1))}); }
-                        catch (const std::exception& e) { std::cout << "Error: Invalid hours in '" << tokens[i] << "': " << e.what() << std::endl; return; }
-                    } else { std::cout << "Error: Invalid workload format '" << tokens[i] << "'." << std::endl; return; }
-                }
-                editEmployeeWorkload(path, name, new_wl);
-            } else { std::cout << "Usage: edit employee <path> '<name>' workload <type:hours>..." << std::endl; }
-        } else { std::cout << "Error: Unknown 'edit' subcommand '" << tokens[1] << "'." << std::endl; }
-    } else if (cmd_keyword == "save") {
-        if (tokens.size() == 2) { if (tokens.size() > 2) { std::cout << "Error: Too many args for 'save'." << std::endl; return; } save(tokens[1]); }
-        else if (tokens.size() == 1) { std::cout << "Error: Missing filename for 'save'." << std::endl; std::cout << "Usage: save <filename>" << std::endl; }
-        else { std::cout << "Error: Too many args for 'save'." << std::endl; std::cout << "Usage: save <filename>" << std::endl; }
-    } else if (cmd_keyword == "load") {
-        if (tokens.size() == 2) { if (tokens.size() > 2) { std::cout << "Error: Too many args for 'load'." << std::endl; return; } load(tokens[1]); }
-        else if (tokens.size() == 1) { std::cout << "Error: Missing filename for 'load'." << std::endl; std::cout << "Usage: load <filename>" << std::endl; }
-        else { std::cout << "Error: Too many args for 'load'." << std::endl; std::cout << "Usage: load <filename>" << std::endl; }
-    } else {
+                std::string p = tokens[2], n_emp = tokens[3]; std::vector<std::pair<std::string, int>> wl;
+                if (tokens.size() >= 5) for (size_t i=4; i<tokens.size(); ++i) {
+                    size_t c = tokens[i].find(':');
+                    if (c!=std::string::npos && c>0 && c<tokens[i].length()-1) { try {wl.push_back({tokens[i].substr(0,c), std::stoi(tokens[i].substr(c+1))});} catch (const std::exception& e){std::cout<<"Err: Invalid hours '"<<tokens[i]<<"': "<<e.what()<<std::endl;return;}}
+                    else {std::cout<<"Err: Invalid wl format '"<<tokens[i]<<"'."<<std::endl;return;}
+                } addEmployee(p,n_emp,wl);
+            } else std::cout << "Usage: add employee <path> '<name>' [wl...]" << std::endl;
+        } else if (type == "subject") { 
+            if (tokens.size() == 4) addSubject(tokens[2], tokens[3]);
+            else std::cout << "Usage: add subject <id> '<name>'" << std::endl;
+        } else if (type == "schedule") { 
+            if (tokens.size() == 8 || tokens.size() == 9) { 
+                addScheduleEntry(tokens[2], tokens[3], tokens[4], tokens[5], tokens[6], tokens[7], (tokens.size() == 9 ? tokens[8] : ""));
+            } else { std::cout << "Usage: add schedule <emp_path> '<emp_name>' <subj_id> <activity> <day> '<time_slot>' [room]" << std::endl; }
+        }
+        else { std::cout << "Error: Unknown 'add' subcommand '" << tokens[1] << "'." << std::endl; }
+    } else if (cmd == "list_subjects") {
+        if (tokens.size() == 1) listSubjects(); else std::cout << "Usage: list_subjects" << std::endl;
+    } else if (cmd == "assign_subject_to_employee") {
+        if (tokens.size() == 5) assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]); // Было 4, но имя в кавычках это отдельный токен для парсера
+        else if (tokens.size() == 4) assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]); // Если имя без пробелов
+        else std::cout << "Usage: assign_subject_to_employee <emp_path> '<emp_name>' <subj_id>" << std::endl;
+    } else if (cmd == "view_schedule") {
+        if (tokens.size() == 4) viewSchedule(tokens[1], tokens[2]); // Было 3, но имя в кавычках
+        else if (tokens.size() == 3) viewSchedule(tokens[1], tokens[2]); // Если имя без пробелов
+        else std::cout << "Usage: view_schedule <emp_path> '<emp_name>'" << std::endl;
+    }
+     else if (cmd == "query") {
+        if (tokens.size()<5 || toLower(tokens[1])!="columns") {std::cout<<"Usage: query columns <c> where <p> [row_sum]"<<std::endl;return;}
+        std::vector<std::string> cols; size_t i=2; while(i<tokens.size() && toLower(tokens[i])!="where") cols.push_back(tokens[i++]);
+        if (i>=tokens.size() || toLower(tokens[i])!="where") {std::cout<<"Err: 'where' missing."<<std::endl;return;} i++;
+        if (i>=tokens.size()) {std::cout<<"Err: Path missing."<<std::endl;return;} std::string p=tokens[i++]; bool rs=false;
+        if (i<tokens.size() && toLower(tokens[i])=="row_sum") {rs=true; i++;}
+        if (i<tokens.size()) {std::cout<<"Err: Unexpected args: '"<<tokens[i]<<"..."<<std::endl;return;}
+        if (cols.empty()){std::cout<<"Err: No columns."<<std::endl;return;} query(cols,p,rs);
+    } else if (cmd == "remove") {
+        if (tokens.size()<2) {std::cout<<"Err: 'remove' needs subcommand."<<std::endl;return;} std::string t=toLower(tokens[1]);
+        if (t=="node") { if (tokens.size()==3) removeNode(tokens[2],false); else if (tokens.size()==4 && (tokens[3]=="-r"||tokens[3]=="--recursive")) removeNode(tokens[2],true); else std::cout<<"Usage: remove node <p> [-r]"<<std::endl;}
+        else if (t=="employee") { if (tokens.size()==4) removeEmployee(tokens[2],tokens[3]); else std::cout<<"Usage: remove employee <p> '<name>' "<<std::endl;}
+        else std::cout<<"Err: Unknown 'remove' subcommand '"<<tokens[1]<<"'."<<std::endl;
+    } else if (cmd == "edit") {
+        if (tokens.size()<2) {std::cout<<"Err: 'edit' needs subcommand."<<std::endl;return;} std::string t=toLower(tokens[1]);
+        if (t=="employee") {
+            if (tokens.size()>=6 && toLower(tokens[4])=="workload") {
+                std::string p=tokens[2], n_emp=tokens[3]; std::vector<std::pair<std::string,int>> wl;
+                for(size_t i=5; i<tokens.size(); ++i) { size_t c=tokens[i].find(':');
+                    if(c!=std::string::npos && c>0 && c<tokens[i].length()-1){ try {wl.push_back({tokens[i].substr(0,c),std::stoi(tokens[i].substr(c+1))});} catch(const std::exception&e){std::cout<<"Err: Invalid hours '"<<tokens[i]<<"': "<<e.what()<<std::endl;return;}}
+                    else {std::cout<<"Err: Invalid wl format '"<<tokens[i]<<"'."<<std::endl;return;}
+                } editEmployeeWorkload(p,n_emp,wl);
+            } else std::cout<<"Usage: edit employee <p> '<name>' workload <type:h>..."<<std::endl;
+        } else std::cout<<"Err: Unknown 'edit' subcommand '"<<tokens[1]<<"'."<<std::endl;
+    } else if (cmd == "save") {
+        if (tokens.size()==2) {if(tokens.size()>2){std::cout<<"Err: Too many args 'save'."<<std::endl;return;} save(tokens[1]);}
+        else if (tokens.size()==1) {std::cout<<"Err: Missing filename 'save'."<<std::endl;std::cout<<"Usage: save <fn>"<<std::endl;}
+        else {std::cout<<"Err: Too many args 'save'."<<std::endl;std::cout<<"Usage: save <fn>"<<std::endl;}
+    } else if (cmd == "load") {
+        if (tokens.size()==2) {if(tokens.size()>2){std::cout<<"Err: Too many args 'load'."<<std::endl;return;} load(tokens[1]);}
+        else if (tokens.size()==1) {std::cout<<"Err: Missing filename 'load'."<<std::endl;std::cout<<"Usage: load <fn>"<<std::endl;}
+        else {std::cout<<"Err: Too many args 'load'."<<std::endl;std::cout<<"Usage: load <fn>"<<std::endl;}
+    } else if (cmd == "reset_database") { 
+        if (tokens.size() == 1) resetDatabase();
+        else std::cout << "Usage: reset_database" << std::endl;
+    }
+    else {
         std::cout << "Unknown command: '" << tokens[0] << "'. Type 'help' for commands." << std::endl;
     }
-}
-
-void displayHelpInformation() {
-    std::cout << "=== University Workload Database Management System ===" << std::endl;
-    std::cout << "Available commands:" << std::endl;
-    std::cout << "  add node <path>" << std::endl;
-    std::cout << "    - Adds an organizational node. Path segments are separated by '/'. " << std::endl;
-    std::cout << "    - Example: add node faculty/science/mathematics" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  add employee <path> '<name>' [<type1>:<hours1> <type2>:<hours2> ...]" << std::endl;
-    std::cout << "    - Adds an employee to the specified node path with their workload." << std::endl;
-    std::cout << "    - Employee name must be in single quotes if it contains spaces." << std::endl;
-    std::cout << "    - Workload items are space-separated pairs of type:hours." << std::endl;
-    std::cout << "    - Example: add employee faculty/science/mathematics 'Ivanov I.I.' lectures:40 seminars:60" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  remove node <path> [-r | --recursive]" << std::endl;
-    std::cout << "    - Removes an organizational node at the specified path." << std::endl;
-    std::cout << "    - By default, only empty nodes (no children, no employees) can be removed." << std::endl;
-    std::cout << "    - Use -r or --recursive to remove a node and all its contents (sub-nodes and employees)." << std::endl;
-    std::cout << "    - Example (empty node): remove node faculty/arts/empty_dept" << std::endl;
-    std::cout << "    - Example (recursive):  remove node faculty/science --recursive" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  remove employee <node_path> '<employee_name>'" << std::endl;
-    std::cout << "    - Removes an employee from the specified node." << std::endl;
-    std::cout << "    - Employee name must be in single quotes if it contains spaces." << std::endl;
-    std::cout << "    - Example: remove employee faculty/science/mathematics 'Ivanov I.I.'" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  edit employee <node_path> '<employee_name>' workload [<new_type1>:<new_hours1> ...]" << std::endl;
-    std::cout << "    - Replaces the entire workload of an existing employee." << std::endl;
-    std::cout << "    - If no new workload items are provided, the employee's workload will be cleared." << std::endl;
-    std::cout << "    - Example: edit employee faculty/science/mathematics 'Petrov P.P.' workload labs:50 project_new:30" << std::endl;
-    std::cout << "    - Example (clear workload): edit employee faculty/science/mathematics 'Petrov P.P.' workload" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  query columns <col1> [col2...] where <path> [row_sum]" << std::endl;
-    std::cout << "    - Queries and displays employee data from the specified path and its sub-nodes." << std::endl;
-    std::cout << "    - <cols>: Space-separated list of columns to display (e.g., name, lectures, seminars)." << std::endl;
-    std::cout << "    - <path>: Path to the node to query." << std::endl;
-    std::cout << "    - [row_sum]: Optional. If present, adds a column with the sum of numeric workload columns for each employee." << std::endl;
-    std::cout << "    - Example: query columns name lectures seminars where faculty/science row_sum" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  save <filename>" << std::endl;
-    std::cout << "    - Saves the current state of the database to the specified file." << std::endl;
-    std::cout << "    - Example: save my_database.txt" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  load <filename>" << std::endl;
-    std::cout << "    - Loads the database state from the specified file, overwriting current data." << std::endl;
-    std::cout << "    - Example: load my_database.txt" << std::endl;
-    std::cout << std::endl;
-    std::cout << "  help" << std::endl;
-    std::cout << "    - Shows this help message." << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
 }
