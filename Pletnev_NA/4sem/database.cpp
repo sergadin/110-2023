@@ -21,10 +21,7 @@ namespace Validation {
         return true;
     }
     bool isValidPath(const std::string& path, const Database* db) {
-        if (path.empty() && path != "") {
-             if (path == "") return true; 
-             return false;
-        }
+        if (path.empty()) return false; // Пустой путь невалиден для команд, требующих путь
         std::vector<std::string> parts = db->splitPath(path);
         if (parts.empty() && !path.empty()) return false; 
         for (const std::string& part : parts) {
@@ -39,7 +36,7 @@ namespace Validation {
         }
         return true;
     }
-    bool isValidWorkloadType(const std::string& type) { // Также для activity_type
+    bool isValidWorkloadType(const std::string& type) { 
         if (type.empty()) return false;
         for (char c : type) {
             if (!std::isalnum(c) && c != '_' && c != '-' && c != ' ') return false;
@@ -67,6 +64,7 @@ namespace Validation {
         for (int i : {0, 1, 3, 4, 6, 7, 9, 10}) {
             if (!std::isdigit(time_slot[i])) return false;
         }
+        // TODO: Более строгая проверка корректности времени (00-23, 00-59, start < end)
         return true;
     }
      bool isValidActivityType(const std::string& type) {
@@ -74,8 +72,8 @@ namespace Validation {
     }
 } 
 
-// --- Вспомогательные функции ---
-void displayHelpInformation() {
+// --- Вспомогательная функция для вывода справки ---
+void Database::displayHelpInformation() const { // Сделана методом класса
     std::cout << "=== University Workload Database Management System ===" << std::endl;
     std::cout << "Available commands:" << std::endl;
     std::cout << "  add node <path>" << std::endl;
@@ -159,7 +157,7 @@ Node* Database::getNode(const std::string& path) {
 Node* Database::createNodeByPath(const std::string& path) {
     std::vector<std::string> parts = splitPath(path);
     if (parts.empty() && !path.empty()) { std::cout << "Error: Invalid node path format '" << path << "'." << std::endl; return nullptr; }
-    if (path.empty()){ std::cout << "Error: Cannot create node with empty path." << std::endl; return nullptr; }
+    if (path.empty()){ std::cout << "Error: Cannot create node with empty path." << std::endl; return nullptr; } // Исправлено для CMD-11
     Node* current = root;
     for (const auto& part : parts) {
         if (!Validation::isValidNodeNamePart(part)) { std::cout << "Error: Invalid segment '" << part << "' in path '" << path << "'." << std::endl; return nullptr; }
@@ -192,7 +190,7 @@ bool Database::checkTimeSlotConflict(const Employee* employee, const std::string
     auto day_schedule_it = employee->schedule_by_day.find(lower_day);
     if (day_schedule_it != employee->schedule_by_day.end()) {
         for (const auto& entry : day_schedule_it->second) {
-            if (entry.time_slot == time_slot) return true;
+            if (entry.time_slot == time_slot) return true; // Упрощенная проверка
         }
     }
     return false;
@@ -267,7 +265,7 @@ void Database::listSubjects() const {
     if (subject_catalog.empty()) { std::cout << "No subjects in catalog." << std::endl; return; }
     std::cout << std::left << std::setw(15) << "Subject ID" << "| " << "Subject Name" << std::endl;
     std::cout << std::string(15, '-') << "+-" << std::string(30, '-') << std::endl;
-    for (const auto& pair : subject_catalog) {
+    for (const auto& pair : subject_catalog) { // unordered_map не гарантирует порядок, для тестов может быть ОК
         std::cout << std::left << std::setw(15) << pair.second.id << "| " << pair.second.name << std::endl;
     }
 }
@@ -298,15 +296,16 @@ void Database::addScheduleEntry(const std::string& node_path, const std::string&
         std::cout << "Error: Time slot conflict for employee '" << employee_name << "' on " << day << " at " << time_slot << "." << std::endl; return;
     }
     emp->schedule_by_day[lower_day].push_back({subject_id, activity_type, lower_day, time_slot, room});
-    std::sort(emp->schedule_by_day[lower_day].begin(), emp->schedule_by_day[lower_day].end()); // Keep sorted by time
+    std::sort(emp->schedule_by_day[lower_day].begin(), emp->schedule_by_day[lower_day].end());
     std::cout << "Scheduled: " << subject_id << " (" << activity_type << ") for " << employee_name 
               << " on " << day << " " << time_slot << (room.empty() ? "" : " in room '" + room + "'") << "." << std::endl;
 }
 void Database::viewSchedule(const std::string& node_path, const std::string& employee_name) const {
-    const Employee* emp = const_cast<Database*>(this)->findEmployee(node_path, employee_name); // findEmployee needs to be const or use a const version
+    const Employee* emp = const_cast<Database*>(this)->findEmployee(node_path, employee_name);
     if (!emp) { std::cout << "Error: Employee '" << employee_name << "' not found at path '" << node_path << "'." << std::endl; return; }
     if (emp->schedule_by_day.empty()) { std::cout << "No schedule found for employee '" << employee_name << "'." << std::endl; return; }
     std::cout << "Schedule for " << emp->name << ":" << std::endl;
+    
     std::vector<std::pair<int, std::string>> sorted_day_keys;
     for(const auto& day_pair : emp->schedule_by_day) {
         sorted_day_keys.push_back({dayOfWeekToIndex(day_pair.first), day_pair.first});
@@ -314,9 +313,13 @@ void Database::viewSchedule(const std::string& node_path, const std::string& emp
     std::sort(sorted_day_keys.begin(), sorted_day_keys.end());
 
     for (const auto& day_key_pair : sorted_day_keys) {
-        const std::string& day = day_key_pair.second;
-        const auto& entries = emp->schedule_by_day.at(day);
-        std::cout << "  " << day << ":" << std::endl; // Capitalize day?
+        const std::string& day_str = day_key_pair.second;
+        const auto& entries = emp->schedule_by_day.at(day_str); // Используем at() для const доступа
+        // Капитализация первого символа дня недели для вывода
+        std::string display_day = day_str;
+        if (!display_day.empty()) display_day[0] = std::toupper(display_day[0]);
+
+        std::cout << "  " << display_day << ":" << std::endl;
         for (const auto& entry : entries) { 
             std::cout << "    " << entry.time_slot << ": "
                       << entry.subject_id << " (" << entry.activity_type << ")"
@@ -481,10 +484,11 @@ void Database::processCommand(const std::string& command_line) {
                 } addEmployee(p,n_emp,wl);
             } else std::cout << "Usage: add employee <path> '<name>' [wl...]" << std::endl;
         } else if (type == "subject") { 
-            if (tokens.size() == 4) addSubject(tokens[2], tokens[3]);
+            if (tokens.size() == 4) addSubject(tokens[2], tokens[3]); // add subject ID 'Name'
             else std::cout << "Usage: add subject <id> '<name>'" << std::endl;
         } else if (type == "schedule") { 
-            if (tokens.size() == 8 || tokens.size() == 9) { 
+            if (tokens.size() == 8 || tokens.size() == 9) { // add schedule path name subj_id activity day 'time' [room]
+                 // tokens[0]=add, [1]=schedule, [2]=path, [3]=name, [4]=subj_id, [5]=activity, [6]=day, [7]=time, [8]=room(opt)
                 addScheduleEntry(tokens[2], tokens[3], tokens[4], tokens[5], tokens[6], tokens[7], (tokens.size() == 9 ? tokens[8] : ""));
             } else { std::cout << "Usage: add schedule <emp_path> '<emp_name>' <subj_id> <activity> <day> '<time_slot>' [room]" << std::endl; }
         }
@@ -492,13 +496,21 @@ void Database::processCommand(const std::string& command_line) {
     } else if (cmd == "list_subjects") {
         if (tokens.size() == 1) listSubjects(); else std::cout << "Usage: list_subjects" << std::endl;
     } else if (cmd == "assign_subject_to_employee") {
-        if (tokens.size() == 5) assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]); // Было 4, но имя в кавычках это отдельный токен для парсера
-        else if (tokens.size() == 4) assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]); // Если имя без пробелов
-        else std::cout << "Usage: assign_subject_to_employee <emp_path> '<emp_name>' <subj_id>" << std::endl;
+        // assign_subject_to_employee <emp_path> '<emp_name>' <subj_id>
+        // tokens: [0]command, [1]path, [2]name, [3]subj_id --> size 4
+        if (tokens.size() == 4) { 
+            assignSubjectToEmployee(tokens[1], tokens[2], tokens[3]);
+        } else { 
+            std::cout << "Usage: assign_subject_to_employee <emp_path> '<emp_name>' <subj_id>" << std::endl; 
+        }
     } else if (cmd == "view_schedule") {
-        if (tokens.size() == 4) viewSchedule(tokens[1], tokens[2]); // Было 3, но имя в кавычках
-        else if (tokens.size() == 3) viewSchedule(tokens[1], tokens[2]); // Если имя без пробелов
-        else std::cout << "Usage: view_schedule <emp_path> '<emp_name>'" << std::endl;
+        // view_schedule <emp_path> '<emp_name>'
+        // tokens: [0]command, [1]path, [2]name --> size 3
+        if (tokens.size() == 3) {
+            viewSchedule(tokens[1], tokens[2]);
+        } else { 
+            std::cout << "Usage: view_schedule <emp_path> '<emp_name>'" << std::endl; 
+        }
     }
      else if (cmd == "query") {
         if (tokens.size()<5 || toLower(tokens[1])!="columns") {std::cout<<"Usage: query columns <c> where <p> [row_sum]"<<std::endl;return;}
