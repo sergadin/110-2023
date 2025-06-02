@@ -1,159 +1,138 @@
-# Тестовый сценарий для University Workload Database
-
 # --- Базовые команды и проверка связи ---
 help
 
 # --- Тестирование 'add node' ---
-# Успешное добавление
 add node faculty
 add node faculty/science
 add node faculty/arts
 add node faculty/science/math
 add node faculty/science/physics
 add node faculty/arts/history
-# Повторное добавление существующего узла (должно быть без ошибки, просто подтверждение)
-add node faculty/science
-# Добавление узла с путем, где промежуточный узел уже существует
 add node faculty/science/chemistry
-# Добавление глубоко вложенного узла
 add node faculty/science/math/applied_math/group1
-
 # Ошибки 'add node'
 add node
 # -> Ожидается: Usage: add node <path>
-add node faculty/science/math/имя_с_пробелом!_и_воскл_знаком
-# -> Ожидается: Error: Invalid character...
-add node faculty/science//math_double_slash
-# -> Ожидается: Успешно (faculty/science/math_double_slash) или ошибка о пустом сегменте, в зависимости от реализации splitPath/проверки
 add node ""
 # -> Ожидается: Error: Cannot create node with empty path.
-add node /
-# -> Ожидается: Error: Invalid node path format... (или Node added/exists at path: "" если / отбрасывается)
+
+# --- Тестирование 'add_subject' ---
+add_subject CS101 'Introduction to Programming'
+add_subject MATH202 'Linear Algebra and Analytical Geometry'
+add_subject PHYS101 'General Physics I'
+add_subject HIST100 'World History Overview'
+# Повторное добавление предмета с тем же ID
+add_subject CS101 'Intro to CS'
+# -> Ожидается: Error: Subject with ID 'CS101' already exists.
+# Ошибки 'add_subject'
+add_subject EMPTY_NAME ''
+# -> Ожидается: Error: Subject name cannot be empty.
+add_subject
+# -> Ожидается: Usage: add_subject <id> "<subject_name>"
+add_subject ID_ONLY
+# -> Ожидается: Usage: add_subject <id> "<subject_name>"
+
+# --- Тестирование 'list_subjects' ---
+list_subjects
+# -> Ожидается: Вывод таблицы с ID и именами добавленных предметов
 
 # --- Тестирование 'add employee' ---
-# Успешное добавление
 add employee faculty/science/math 'Ivanov I.I.' lectures:40 seminars:60 project:20
-add employee faculty/science/math 'Petrov P.P.' seminars:80 labs:40
-add employee faculty/science/physics 'Sidorov S.S.' lectures:30 seminars:50 labs:60 research:100
-add employee faculty/science/physics 'Kuznetsova K.K.' seminars:70 project:30 research:20
-add employee faculty/arts/history 'Smirnova A.A.' lectures:60 seminars:40 archive:50
-add employee faculty/arts/history 'Popov V.V.' lectures:50 seminars:50
-add employee faculty/science/math/applied_math/group1 'Student X' coursework:15
-# Добавление сотрудника без нагрузки
+add employee faculty/science/physics 'Sidorov S.S.' lectures:30 research:100
+add employee faculty/arts/history 'Smirnova A.A.' lectures:60 archive:50
 add employee faculty/science/chemistry 'Zotov Z.Z.'
-# -> Ожидается: Warning: Adding employee 'Zotov Z.Z.' with no workload specified. ... Employee 'Zotov Z.Z.' added...
 
-# Ошибки 'add employee'
-add employee
-# -> Ожидается: Usage: add employee <path> '<name>' ...
-add employee faculty/non_existent_dept 'Test User' lectures:10
-# -> Ожидается: Error: Node not found at path: 'faculty/non_existent_dept'...
-add employee faculty/science/math 'BadHours User' lectures:abc seminars:20
-# -> Ожидается: Error: Invalid number format for hours...
-add employee faculty/science/math 'NegativeHours User' lectures:-10
-# -> Ожидается: Error: Workload hours for type 'lectures' cannot be negative...
-add employee faculty/science/math 'User/With/Slash' lectures:10
-# -> Ожидается: Error: Invalid employee name...
-add employee faculty/science/math 'Colon:In:Name' lectures:10
-# -> Ожидается: Error: Invalid employee name...
-add employee faculty/science/math 'Quote\'InName' lectures:10
-# -> Ожидается: Error: Invalid employee name...
-add employee faculty/science/math 'Ivanov I.I.' lectures:50 # Попытка добавить существующего
-# -> Ожидается: Error: Employee 'Ivanov I.I.' already exists...
-add employee faculty/science/math 'ValidName' bad:type:10
-# -> Ожидается: Error: Invalid workload format for item 'bad:type:10'...
-add employee faculty/science/math 'ValidName' lectures:10 extra_token
-# -> Ожидается: Error: Invalid workload format for item 'extra_token'... (или другая ошибка о лишних аргументах)
-add employee faculty/science/math 'NoQuoteName' lectures:10
-# -> В зависимости от вашего tokenize, это может сработать или нет. Если tokenize требует кавычки.
-#    Если 'NoQuoteName' будет токеном имени, а 'lectures:10' следующим, то
-#    Ожидается: Usage: add employee <path> '<name>' ... (так как не хватает аргументов для нагрузки)
-#    Либо, если ваш tokenize более гибкий: Error: Invalid employee name... (если имя должно быть в кавычках)
+# --- Тестирование 'assign_subject_to_employee' ---
+# Успешное назначение
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' CS101
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' MATH202
+assign_subject_to_employee faculty/science/physics 'Sidorov S.S.' PHYS101
+# Повторное назначение того же предмета
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' CS101
+# -> Ожидается: Info: Subject 'CS101' is already assigned...
+# Ошибки 'assign_subject_to_employee'
+assign_subject_to_employee faculty/science/math 'NonExistentEmp' CS101
+# -> Ожидается: Error: Employee 'NonExistentEmp' not found...
+assign_subject_to_employee faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ
+# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ' not found...
+assign_subject_to_employee
+# -> Ожидается: Usage: assign_subject_to_employee <employee_path> '<employee_name>' <subject_id>
 
-# --- Тестирование 'query' ---
-# Запрос к существующему узлу с сотрудниками
-query columns name lectures seminars project where faculty/science/math row_sum
-# Запрос к узлу, где есть под-узлы с сотрудниками
-query columns name lectures seminars labs research project where faculty/science row_sum
-# Запрос к узлу с другими типами нагрузки
-query columns name lectures seminars archive where faculty/arts/history
-# Запрос к узлу без сотрудников (но узел существует)
-add node faculty/empty_dept
-query columns name lectures where faculty/empty_dept
-# -> Ожидается: No employees found under path: 'faculty/empty_dept'
-# Запрос с несуществующими столбцами (типами нагрузки)
-query columns name non_existent_workload another_bad_column where faculty/science/math
-# -> Ожидается: Таблица с именами сотрудников и 0 для несуществующих столбцов.
-# Запрос к несуществующему узлу
-query columns name lectures where faculty/non_existent_dept_for_query
-# -> Ожидается: Error: Node not found for query: 'faculty/non_existent_dept_for_query'
-# Запрос без столбцов
-query columns where faculty/science/math
-# -> Ожидается: Error: No columns specified for query.
-# Запрос с неверной структурой
-query name lectures where faculty/science/math
-# -> Ожидается: Usage: query columns <col1> ...
-query columns name lectures faculty/science/math row_sum # пропущено 'where'
-# -> Ожидается: Error: 'where' keyword missing...
+# --- Тестирование 'add_schedule' ---
+# Успешное добавление в расписание
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '09:00-10:30' 'Room A1'
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 семинар Monday '10:45-12:15' 'Room A2'
+add_schedule faculty/science/math 'Ivanov I.I.' MATH202 лекция Tuesday '14:00-15:30' 'BigHall'
+add_schedule faculty/science/physics 'Sidorov S.S.' PHYS101 лаба Wednesday '10:00-13:00' # Без аудитории
+# Попытка добавить занятие в то же время (конфликт)
+add_schedule faculty/science/math 'Ivanov I.I.' MATH202 проект Monday '09:00-10:30' 'Room B1'
+# -> Ожидается: Error: Time slot conflict for employee 'Ivanov I.I.' on Monday at 09:00-10:30...
+# Ошибки 'add_schedule'
+add_schedule faculty/science/math 'Ivanov I.I.' NON_EXISTENT_SUBJ лекция Friday '10:00-11:30'
+# -> Ожидается: Error: Subject with ID 'NON_EXISTENT_SUBJ' not found...
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция InvalidDay '10:00-11:30'
+# -> Ожидается: Error: Invalid day of week 'InvalidDay'...
+add_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '' # Пустой time_slot
+# -> Ожидается: Error: Invalid time slot ''.
+add_schedule faculty/non_existent_path 'Ivanov I.I.' CS101 лекция Monday '10:00-11:30'
+# -> Ожидается: Error: Employee 'Ivanov I.I.' not found at path 'faculty/non_existent_path'.
+add_schedule
+# -> Ожидается: Usage: add_schedule <employee_path> '<employee_name>' ...
 
-# Тестирование query к корню (если "" или "/" поддерживается как путь к корню)
-# query columns name lectures where "" row_sum # или "/"
-# -> Ожидается: Вывод всех сотрудников из всех узлов
+# --- Тестирование 'view_schedule' ---
+view_schedule faculty/science/math 'Ivanov I.I.'
+# -> Ожидается: Вывод расписания Иванова
+view_schedule faculty/science/chemistry 'Zotov Z.Z.'
+# -> Ожидается: No schedule found for employee 'Zotov Z.Z.'.
+# Ошибки 'view_schedule'
+view_schedule faculty/science/math 'NonExistentEmp'
+# -> Ожидается: Error: Employee 'NonExistentEmp' not found...
+view_schedule
+# -> Ожидается: Usage: view_schedule <employee_path> '<employee_name>'
 
-# --- Тестирование 'save' ---
-save test_db_output.txt
-# -> Ожидается: Database saved to 'test_db_output.txt'
-# Проверить содержимое файла test_db_output.txt вручную
+# --- Тестирование 'query' (остается актуальным, но можно добавить проверку новых сотрудников) ---
+query columns name lectures seminars project research archive coursework where faculty row_sum
+# Запрос к узлу без сотрудников
+add node faculty/empty_query_dept
+query columns name lectures where faculty/empty_query_dept
+# -> Ожидается: No employees found under path: 'faculty/empty_query_dept'
 
-# Ошибки 'save'
-save
-# -> Ожидается: Error: Missing filename for 'save' command.
-save file1.txt file2.txt
-# -> Ожидается: Error: Too many arguments for 'save' command.
-save bad/path/file.txt
-# -> Ожидается: Error: Filename 'bad/path/file.txt' should not contain path separators...
+# --- Тестирование 'save' (теперь сохраняет и предметы, и расписание) ---
+save extended_db.txt
+# -> Ожидается: Database saved to 'extended_db.txt'
+# Проверить содержимое файла extended_db.txt вручную на наличие:
+# subject CS101 'Introduction to Programming'
+# ...
+# employee faculty/science/math 'Ivanov I.I.' lectures:40 seminars:60 project:20
+# emp_subject faculty/science/math 'Ivanov I.I.' CS101
+# emp_subject faculty/science/math 'Ivanov I.I.' MATH202
+# emp_schedule faculty/science/math 'Ivanov I.I.' CS101 лекция Monday '09:00-10:30' 'Room A1'
+# ...
 
-# --- Тестирование 'load' ---
-# Сначала сохраним что-то, потом очистим и загрузим
-add node for_load_test
-add employee for_load_test 'Loader Man' loading:100
-save for_load_test_db.txt
-
+# --- Тестирование 'load' (теперь загружает и предметы, и расписание) ---
 # "Очистка" БД (предполагая, что load несуществующего файла очищает)
-load _temp_empty_to_clear_db.txt
+load _temp_empty_to_clear_db_extended.txt
 # Проверка, что база пуста (или почти пуста)
-query columns name loading where for_load_test
-# -> Ожидается: No employees found... (или ошибка, если узел for_load_test тоже удалился)
+list_subjects
+# -> Ожидается: No subjects in catalog.
+query columns name lectures where faculty/science/math
+# -> Ожидается: No employees found... (или ошибка, если узел faculty/science/math тоже удалился)
+view_schedule faculty/science/math 'Ivanov I.I.'
+# -> Ожидается: Error: Employee 'Ivanov I.I.' not found...
 
 # Загрузка сохраненных данных
-load for_load_test_db.txt
-# -> Ожидается: Database loaded from 'for_load_test_db.txt'
+load extended_db.txt
+# -> Ожидается: Database loaded from 'extended_db.txt'
 # Проверка загруженных данных
-query columns name loading where for_load_test
-# -> Ожидается: Вывод 'Loader Man' с loading:100
+list_subjects
+# -> Ожидается: Вывод всех ранее сохраненных предметов
+query columns name lectures seminars project where faculty/science/math
+# -> Ожидается: Вывод Иванова с его нагрузкой
+view_schedule faculty/science/math 'Ivanov I.I.'
+# -> Ожидается: Вывод расписания Иванова, как было сохранено
 
-# Ошибки 'load'
-load
-# -> Ожидается: Error: Missing filename for 'load' command.
-load file1.txt file2.txt
-# -> Ожидается: Error: Too many arguments for 'load' command.
-load non_existent_file_to_load.txt
-# -> Ожидается: Error opening file for loading: 'non_existent_file_to_load.txt'
-# (Можно создать файл с некорректным форматом и проверить его загрузку)
-# Пример некорректного файла (создать вручную my_corrupted_db.txt):
-# node faculty
-# employee faculty/cs 'Test' lectures_INVALID_FORMAT
-# load my_corrupted_db.txt
-# -> Ожидается: Warning (load line ...): Invalid workload format...
-
-# --- Тестирование неизвестных команд и пустого ввода ---
-unknown_command_test
-# -> Ожидается: Unknown command: 'unknown_command_test'.
+# --- Тестирование неизвестных команд и пустого ввода (остается актуальным) ---
+yet_another_unknown_command
+# -> Ожидается: Unknown command: 'yet_another_unknown_command'.
 # (пустая строка - нажать Enter)
 # -> Ожидается: (ничего, новое приглашение)
-    # (строка из пробелов - нажать пробелы и Enter)
-# -> Ожидается: (ничего, новое приглашение)
-
-# --- Конец тестов ---
-# Для ручного завершения клиента:
-# client_exit

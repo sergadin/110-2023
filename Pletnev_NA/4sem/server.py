@@ -6,15 +6,15 @@ import time
 
 HOST = '127.0.0.1'
 PORT = 65432
-CPP_EXECUTABLE = './workload_db' # Убедитесь, что путь правильный
+CPP_EXECUTABLE = './workload_db' 
 END_MARKER = "__END_OF_CPP_OUTPUT__"
-DB_FILE = "persistent_database.txt" # Файл для сохранения/загрузки состояния
+# DB_PERSIST_FILE = "persistent_database.txt" # Если C++ будет сам грузить/сохранять
 
 cpp_process = None
 cpp_stdin = None
 cpp_stdout = None
-cpp_stderr = None
-lock = threading.Lock() # Блокировка для синхронизации доступа к C++ процессу
+cpp_stderr = None # Пока не используется активно для передачи клиенту, но можно добавить
+lock = threading.Lock()
 
 def start_cpp_process():
     global cpp_process, cpp_stdin, cpp_stdout, cpp_stderr
@@ -28,19 +28,23 @@ def start_cpp_process():
             [CPP_EXECUTABLE],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
+            stderr=subprocess.PIPE, # Перехватываем stderr C++
+            text=True, # Работаем с текстом
+            encoding='utf-8', # Ожидаем UTF-8 от C++
+            errors='replace', # Заменяем ошибки кодировки, если C++ выводит не UTF-8
             bufsize=1, 
-            universal_newlines=True
+            universal_newlines=True 
         )
         cpp_stdin = cpp_process.stdin
         cpp_stdout = cpp_process.stdout
         cpp_stderr = cpp_process.stderr
         
-        time.sleep(0.5)
-        if cpp_process.poll() is not None: # Процесс завершился сразу
+        time.sleep(0.5) 
+        if cpp_process.poll() is not None:
             print(f"FATAL ERROR: C++ process terminated unexpectedly after start.")
-            print_cpp_errors()
+            err_out = ""
+            if cpp_stderr: err_out = cpp_stderr.read()
+            if err_out: print(f"--- C++ Stderr on immediate exit ---\n{err_out.strip()}")
             return False
             
         print("C++ process started successfully.")
@@ -49,75 +53,66 @@ def start_cpp_process():
         print(f"FATAL ERROR: Could not start C++ process: {e}")
         return False
 
-def print_cpp_errors():
-    global cpp_stderr
-    if cpp_stderr:
-        try:
-            time.sleep(0.1) # Даем время на запись в stderr
-            if cpp_stderr.readable():
-                 if cpp_process and cpp_process.poll() is not None:
-                    err_output = cpp_process.stderr.read()
-                    if err_output:
-                        print(f"--- C++ Stderr (on process exit/error) ---\n{err_output.strip()}")
-        except Exception as e:
-            print(f"Error reading C++ stderr: {e}")
-
-
 def send_command_to_cpp(command_str):
-    global cpp_stdin, cpp_stdout, cpp_stderr, lock
+    global cpp_stdin, cpp_stdout, cpp_stderr, lock, cpp_process
 
     if not cpp_process or cpp_process.poll() is not None:
         print("Error: C++ process is not running. Attempting to restart.")
         if not start_cpp_process():
             return "FATAL: C++ process could not be restarted.", ""
     
-    with lock: # Синхронизируем доступ к C++ процессу
+    with lock:
+        full_response = ""
+        error_response = ""
         try:
-            # print(f"To C++: {command_str}") # Для отладки
+            # print(f"DEBUG_SERVER: To C++: {command_str}")
             cpp_stdin.write(command_str + "\n")
             cpp_stdin.flush()
 
             output_buffer = []
-            error_buffer = []
-            
-            # Чтение stdout до маркера
             while True:
                 line = cpp_stdout.readline()
-                if not line: # EOF или ошибка
-                    # print("Warning: EOF from C++ stdout before end marker.")
+                if not line: 
+                    print("Warning: EOF from C++ stdout, process might have exited unexpectedly.")
+                    # Попытка прочитать stderr, если процесс упал
+                    if cpp_process.poll() is not None and cpp_stderr:
+                        error_response += cpp_stderr.read()
                     break 
                 if END_MARKER in line:
-                    # print(f"Got END_MARKER from C++ stdout") # Для отладки
+                    # Убираем сам маркер из строки, если он часть строки
+                    line_before_marker = line.split(END_MARKER, 1)[0]
+                    if line_before_marker.strip(): # Если до маркера что-то было
+                        output_buffer.append(line_before_marker)
                     break
                 output_buffer.append(line)
-
-            time.sleep(0.01) # Короткая пауза
-            if cpp_process.poll() is not None:
-                err_output = cpp_stderr.read() # Читаем все, что есть, если процесс упал
-                if err_output:
-                    error_buffer.append(err_output)
             
-            stdout_data = "".join(output_buffer).strip()
-            stderr_data = "".join(error_buffer).strip()
+            full_response = "".join(output_buffer).strip()
 
-            return stdout_data, stderr_data
+            # Неблокирующее чтение stderr (очень упрощенно, лучше делать в отдельном потоке)
+            # Но если C++ пишет ошибки и потом END_MARKER, то это не нужно.
+            # Если C++ падает, poll() != None, и мы можем попытаться прочитать stderr.
+            if cpp_process.poll() is not None and cpp_stderr:
+                 error_response += cpp_stderr.read()
+
 
         except BrokenPipeError:
             print("Error: Broken pipe to C++ process. It might have crashed. Restarting.")
+            error_response = "Error: C++ process connection lost."
             if start_cpp_process():
-                 return "Error: C++ process crashed and was restarted. Please try again.", ""
+                 full_response = "C++ process crashed and was restarted. Please try again."
             else:
-                 return "FATAL: C++ process crashed and could not be restarted.", ""
+                 full_response = "FATAL: C++ process crashed and could not be restarted."
         except Exception as e:
             print(f"Error communicating with C++ process: {e}")
-            # Попытка перезапуска, если процесс упал
+            error_response = f"Server error during C++ communication: {e}"
             if cpp_process and cpp_process.poll() is not None:
                 print("C++ process seems to have terminated. Attempting restart.")
                 if start_cpp_process():
-                    return f"Error during C++ communication ({e}), process restarted. Try again.", ""
+                    full_response = f"C++ process restarted after error. Try again."
                 else:
-                    return f"FATAL: C++ process terminated and could not be restarted after error: {e}", ""
-            return f"Error: {e}", ""
+                    full_response = f"FATAL: C++ process terminated and could not be restarted."
+        
+        return full_response, error_response.strip()
 
 
 def handle_client(conn, addr):
@@ -127,27 +122,38 @@ def handle_client(conn, addr):
             data = conn.recv(1024)
             if not data:
                 break
-            command = data.decode().strip()
+            command = data.decode('utf-8').strip() # Клиент шлет utf-8
             print(f"Client {addr} sent: {command}")
 
-            if command.lower() == 'client_exit':
-                conn.sendall("Server: Closing connection.".encode())
-                break
+            final_response_to_client = ""
+
+            if command.lower() == 'exit': # Клиент хочет выйти
+                # Сервер говорит C++ процессу завершиться (если это последний клиент или по логике сервера)
+                # В данном примере, команда 'exit' от клиента заставит C++ процесс выйти.
+                # Это не очень хорошо для многопользовательского сервера.
+                # Лучше, чтобы 'exit' от клиента просто закрывал его соединение.
+                # А C++ процесс останавливался только при остановке сервера.
+                #
+                # Изменим: 'exit' от клиента просто закрывает его сессию.
+                # C++ процесс завершается командой 'exit_server_mode' от сервера при его остановке.
+                print(f"Client {addr} requested to close session.")
+                final_response_to_client = "Server: Closing your session. Goodbye!"
+                conn.sendall(final_response_to_client.encode('utf-8'))
+                break # Выход из цикла handle_client для этого клиента
 
             stdout_res, stderr_res = send_command_to_cpp(command)
             
-            response = ""
             if stdout_res:
-                response += f"{stdout_res}\n"
-            if stderr_res: # Добавляем ошибки C++ в ответ
-                if response: # Если уже был stdout, добавляем разделитель
-                    response += f"--- C++ Stderr ---\n"
-                response += f"{stderr_res}\n"
+                final_response_to_client += f"{stdout_res}\n"
+            if stderr_res:
+                if final_response_to_client: 
+                    final_response_to_client += f"--- C++ Errors/Warnings ---\n"
+                final_response_to_client += f"{stderr_res}\n"
             
-            if not response.strip():
-                response = "Command processed, no specific output from C++ app.\n"
+            if not final_response_to_client.strip():
+                final_response_to_client = "Command processed by C++ app, no specific output.\n"
 
-            conn.sendall(response.encode())
+            conn.sendall(final_response_to_client.encode('utf-8'))
     except ConnectionResetError:
         print(f"Client {addr} connection reset.")
     except Exception as e:
@@ -162,7 +168,7 @@ def main_server():
         return
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Разрешаем переиспользование адреса
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind((HOST, PORT))
         except OSError as e:
@@ -176,28 +182,40 @@ def main_server():
             while True:
                 conn, addr = s.accept()
                 client_thread = threading.Thread(target=handle_client, args=(conn, addr))
-                client_thread.daemon = True # Потоки завершатся, когда завершится основной
+                client_thread.daemon = True 
                 client_thread.start()
         except KeyboardInterrupt:
             print("\nServer shutting down by user interrupt (Ctrl+C)...")
         finally:
             print("Closing C++ process...")
-            if cpp_process and cpp_process.poll() is None: # Если процесс еще жив
+            if cpp_process and cpp_process.poll() is None:
                 try:
-                    # Попытка корректного завершения C++
-                    # send_command_to_cpp(f"save {DB_FILE}") # Сохраняем перед выходом
-                    send_command_to_cpp("exit_server_mode") 
-                    cpp_process.wait(timeout=5) # Ждем завершения
+                    # Посылаем команду для корректного завершения C++
+                    # (C++ main должен обработать "exit_server_mode")
+                    cpp_stdin.write("exit_server_mode\n") 
+                    cpp_stdin.flush()
+                    cpp_process.wait(timeout=5)
+                    print("C++ process exited via command.")
                 except subprocess.TimeoutExpired:
-                    print("C++ process did not exit gracefully, killing.")
+                    print("C++ process did not exit via command, killing.")
                     cpp_process.kill()
+                    cpp_process.wait()
                 except Exception as e:
-                    print(f"Error during C++ process shutdown: {e}")
+                    print(f"Error sending exit_server_mode or waiting for C++ process: {e}")
                     if cpp_process and cpp_process.poll() is None:
-                        cpp_process.kill() # Принудительное завершение в случае ошибки
-            print_cpp_errors() # Показать ошибки, если были при завершении
-            print("Server stopped.")
+                        cpp_process.kill()
+                        cpp_process.wait()
+            
+            # Попытка прочитать остатки stderr после завершения
+            if cpp_stderr and not cpp_stderr.closed:
+                try:
+                    remaining_err = cpp_stderr.read()
+                    if remaining_err:
+                        print(f"--- Remaining C++ Stderr on shutdown ---\n{remaining_err.strip()}")
+                except:
+                    pass # Игнорируем ошибки чтения из уже закрытого потока
 
+            print("Server stopped.")
 
 if __name__ == '__main__':
     main_server()
