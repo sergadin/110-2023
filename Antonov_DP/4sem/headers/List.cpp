@@ -36,7 +36,7 @@ int List::add(student *st){
 		return 0;
 	}
 	while(p->next_ != nullptr){
-		if (p->val_->rating_ >= st->rating_ >= p->next_->val_->rating_){
+		if ((p->val_->rating_ >= st->rating_) && (st->rating_ >= p->next_->val_->rating_)){
 			ListNode *answer = new ListNode;
 			answer->val_ = st;
 			answer->next_ = p->next_;

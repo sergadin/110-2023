@@ -3,7 +3,7 @@
 
 
 int Hash::Hash_func(int gr){
-	int n = ((31 * ((int) (gr / 100)) + 11 * (gr % 100))%max_size);
+	int n = ((31 * ((int) (gr / 100)) + 11 * (gr % 100)) % max_size);
 	return n;
 }
 
@@ -34,12 +34,13 @@ void Hash::Delete_group(int &gr){
                 st = (st + 1)%max_size;
                 i++;
         }
-	std::cout << 2 << "\n";
         if (i == max_size){
 		std::cout << "1" << "\n";
         }
         else{
                 hash_[st].val_ = 0;
+		delete hash_[st].tree_root_;
+		delete hash_[st].list_root_;
         }
 }
 
@@ -86,4 +87,26 @@ void Hash::Delete_student(int &gr, char name[64]){
                 hash_[num].tree_root_ = del(hash_[num].tree_root_ ,name, grow);
                 hash_[num].list_root_->clear();
 	}
+}
+
+
+void Hash::Delete_student(int &gr, binop oper, double rating){
+        int num = this->Hash_func(gr);
+        int i = 0;
+        while ((hash_[num].val_ != gr) && hash_[num].val_){
+                if (i == max_size) { break;}
+                num = (num + 1) % max_size;
+                i++;
+        }
+        if ((i == max_size) || (hash_[num].val_ == 0)){
+                std::cout << 1 << "\n";
+        }
+        else{
+                List *deleted = hash_[num].list_root_->del(oper, rating);
+		clear_null(deleted, hash_[num].tree_root_);
+        }
+}
+
+void Hash::Delete_student(student &st){
+	this->Delete_student(st.group_, st.name_);
 }

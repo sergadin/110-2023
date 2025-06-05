@@ -58,7 +58,7 @@ public:
                 }
                 delete this;
         }
-        friend void clear(List *deleted, TreeNode *tree);
+        friend void clear_null(List *deleted, TreeNode *tree);
 };
 
 
@@ -69,20 +69,32 @@ struct h_object{
 };
 
 class Hash {
+public:
         h_object* hash_;
         int max_size;
-public:
         int Hash_func(int gr);
-        Hash(size_t max_size = 100){
-                hash_ = new h_object[max_size];
+        Hash(int max_size_ = 100){
+                hash_ = new h_object[max_size_];
+		max_size=max_size_;
+		for (int i = 0; i < max_size;i++){
+			hash_[i].val_ = 0;
+		}
         }
         ~Hash(){
+		for (int i = 0; i < max_size; i++){
+			if(hash_[i].val_ != 0){
+				hash_[i].tree_root_->kill();
+				delete hash_[i].list_root_;
+			}
+		}
                 delete[] hash_;
         }
         void Add_group(int &gr);
         void Add_student(student &st);
         void Delete_group(int &gr);
         void Delete_student(int &gr, char name[64]);
+	void Delete_student(int &gr, binop oper, double rating);
+	void Delete_student(student &st);
         std::vector<student> Give_group(int &gr);
 };
 
@@ -95,7 +107,7 @@ class database {
 struct Cond{
 	field f_;
 	binop b_;
-	union{
+	struct{
 		int gr;
 		char *name;
 		double rat;
@@ -107,15 +119,4 @@ struct Command {
     oper cmd;
     SearchConditions conditions;
 };
-
-
-
-
-
-
-
-
-
-
-
 

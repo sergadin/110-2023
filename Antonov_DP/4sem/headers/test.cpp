@@ -21,17 +21,16 @@ int main(){
         rating = 3.5;
         student st3(name3, group, rating, info);
 	char name4[] = "Baderko";
-	group = 111;
-        rating = 4,5;
+	group = 210;
+        rating = 4.5;
         student st4(name4, group, rating, info);
 	Hash hash;
-	std::cout << 1 << "\n";
 	hash.Add_student(st);
-	std::cout << 1 << "\n";
 	hash.Add_student(st1);
-	std::cout << 1 << "\n";
 	hash.Add_student(st2);
-	std::cout << 1 << "\n";
 	hash.Add_student(st3);
 	hash.Add_student(st4);
+	hash.Delete_student(group, GR, 3);
+	hash.Delete_student(group, name2);
+	std::cout << 5 << "\n";
 }
