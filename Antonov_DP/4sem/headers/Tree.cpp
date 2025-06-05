@@ -1,4 +1,4 @@
-#include "Tree.hpp"
+#include "database.hpp"
 
 
 TreeNode *SearchRightmost(TreeNode *tree_);
@@ -206,7 +206,7 @@ TreeNode *del(TreeNode *tree_, char *name, int &grow)
 			grow = -1;
 			return p;
 		}
-		if (tree_->left_ == nullptr) {
+		if (tree_->left_ == nullptr) {std::cout << "1" << "\n";
 			p = tree_->right_;
 			delete tree_;
 			grow = -1;
@@ -235,4 +235,14 @@ student TreeNode::pull(char *name){
 	std::cout << "2" << "\n";
 	st.print();
 	return st;
+}
+
+void clear_null(List *deleted,TreeNode *tree){
+	ListNode *p = deleted->start;
+	int grow;
+	while (p != nullptr){
+		tree = del(tree, p->val_->name_,grow);
+		p = p->next_;
+	}
+	delete deleted;
 }

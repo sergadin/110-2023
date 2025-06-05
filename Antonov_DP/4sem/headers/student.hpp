@@ -13,7 +13,7 @@ public:
 		strncpy(name_, name, 64);
 		group_ = group;
 		rating_ = rating;
-		info_ = new char[strlen(info)];
+		info_ = new char[strlen(info) + 1];
 		info_ = strncpy(info_, info,strlen(info));
 	}
 	~student(){
@@ -23,7 +23,7 @@ public:
                 strncpy(name_, other.name_, 64);
                 group_ = other.group_;
                 rating_ = other.rating_;
-                info_ = new char[strlen(other.info_)];
+                info_ = new char[strlen(other.info_) + 1];
                 info_ = strncpy(info_, other.info_,strlen(other.info_));
         }
 	student &operator=(const student& other){
@@ -34,7 +34,7 @@ public:
 		strncpy(name_, other.name_, 64);
                 group_ = other.group_;
                 rating_ = other.rating_;
-                info_ = new char[strlen(other.info_)];
+                info_ = new char[strlen(other.info_) + 1];
                 info_ = strncpy(info_, other.info_, strlen(other.info_));
 	}
 	void print(){
