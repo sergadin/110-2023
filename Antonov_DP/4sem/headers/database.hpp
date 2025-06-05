@@ -83,7 +83,9 @@ public:
         ~Hash(){
 		for (int i = 0; i < max_size; i++){
 			if(hash_[i].val_ != 0){
-				hash_[i].tree_root_->kill();
+				if (hash_[i].tree_root_ != nullptr){
+					hash_[i].tree_root_->kill();
+				}
 				delete hash_[i].list_root_;
 			}
 		}
