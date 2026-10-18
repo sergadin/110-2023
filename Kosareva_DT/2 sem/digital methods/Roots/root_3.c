@@ -1,36 +1,47 @@
-#include <stdio.h>
 #include "root_3.h"
 #include <math.h>
+#include <stdio.h>
 
-void root(R_Rfun f, double begin, double end, double eps, int count, double res) {
-	double x, y, a, b;
+double root(R_Rfun f, double a, double b, double eps, int *count, error *err) {
+	double x, y, fa, fb; //коо пересечения с Ох и значения на краях
 	
-	a = (*f)(begin);
-	b = (*f)(end); //Значения на концах интервала
+	*err = OK;
 	
-	if (a*b > eps) { //Один и тот же знак
-		printf("Интервал не подходит\n");
-		return;
+	if (f == NULL) {
+		*err = NO_FUNCTION;
+		return INFINITY;
 	}
 	
-	//   (end - x)/(x - begin) = -b/a
-	//   end - x = b*begin/a - x*b/a
-	//   x*(a - b) = end*a - b*begin
-	x = (end*a - b*begin)/(a - b); //Пересечение хорды с Ox
+	fa = (*f)(a);
+	fb = (*f)(b); //Значения на концах интервала
+	
+	if (fa*fb > eps) { //Один и тот же знак
+		*err = SAME_SIGN;
+		if (fa < fb) {
+			return fa;
+		}
+		return fb;
+	}
+	
+	x = (b*fa - fb*a)/(fa - fb);
 	y = (*f)(x);
 	
 	if (fabs(y) < eps) {
-		printf("%lf - %d итераций. Нужный результат - %lf\n", x, count, res);
-		return;
+		return x;
 	}
-	count++;
 	
-	if (y*a > 0) {
-		root(f, x, end, eps, count, res);
+	(*count)++;
+	if (*count > 100000) {
+		*err = LIMIT;
+		return -1;
+	}
+		
+	if (y*fa > eps) {
+		x = root(f, x, b, eps, count, err);
 	}
 	else {
-		root(f, begin, x, eps, count, res);
+		x = root(f, a, x, eps, count, err);
 	}
 	
-	return;
+	return x;
 }

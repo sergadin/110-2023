@@ -1,0 +1,23 @@
+all : a.out run
+
+
+
+min_value.o : min_value.c min_value.h
+
+	gcc -c -g min_value.c
+
+
+
+main.o : main.c min_value.h
+
+	gcc -c -g main.c
+
+run : a.out
+
+	./a.out
+
+
+
+a.out : main.o min_value.o
+
+	gcc -g main.o min_value.o -lm

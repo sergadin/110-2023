@@ -1,3 +1,4 @@
 typedef double (*R_Rfun)(double);
+typedef enum {OK, LIMIT, SAME_SIGN, NO_FUNCTION} error;
 
-void root(R_Rfun f, double begin, double end, double eps, int count, double res);
+double root(R_Rfun f, double a, double b, double eps, int *count, error *err);

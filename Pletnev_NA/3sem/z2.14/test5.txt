@@ -1,0 +1,8 @@
+myR2 = $myR1$myString
+myInt = 5
+
+myString = Hello, world!
+
+myR1 = 321$myInt
+
+myInt = 3854

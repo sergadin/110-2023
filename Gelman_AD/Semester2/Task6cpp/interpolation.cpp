@@ -2,6 +2,14 @@
 #include <vector>
 #include "interpolation.h"
 
+class MyClass
+{
+public:
+    std::vector<double> x;       // The arguments of the function
+    std::vector<double> y;      // The values of the function
+    std::vector<double> x1;    // The given mesh for approximate function
+};
+
 // Function for calculating the values ​​of an approximate function on a given mesh using piecewise linear interpolation
 std::vector<double> linear_interpolation(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& x1)
 {
@@ -26,15 +34,17 @@ std::vector<double> interpolate(std::vector<double> x, std::vector<double> y, st
 {
     *err = OK;
 
+    MyClass myObj;  // Create an object of MyClass
+
     // Calculating approximate function values
-    std::vector<double> result = linear_interpolation(x, y, x1);
+    std::vector<double> result = linear_interpolation(myObj.x, myObj.y, myObj.x1);
 
     // Printing the results
-    std::cout << "x1\ty1\tExact y1\n";
-    for (size_t i = 0; i < x1.size(); i++) 
+    std::cout << "myObj.x1\tmyObj.y1\texact_result\n";
+    for (size_t i = 0; i < myObj.x1.size(); i++) 
     {
-        double exact_result = x1[i] * x1[i]; // Exact function values
-        std::cout << x1[i] << "\t" << result[i] << "\t" << exact_result << std::endl;
+        double exact_result = myObj.x1[i] * myObj.x1[i]; // Exact function values
+        std::cout << myObj.x1[i] << "\t" << result[i] << "\t" << exact_result << std::endl;
     }
     return result;
 }

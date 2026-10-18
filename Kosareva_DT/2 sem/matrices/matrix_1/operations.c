@@ -2,7 +2,8 @@
 
 //Меняем местами i-тую и j-тую строчки
 void swap(double *matrix, int n, int m, int i, int j) {
-	int x, k;
+	double x;
+	int k;
 	for (k=0; k<m; k++) {
 		x = matrix[k + m*i];
 		matrix[k + m*i] = matrix[k + m*j];

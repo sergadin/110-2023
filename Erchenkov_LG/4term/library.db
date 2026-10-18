@@ -1,0 +1,25 @@
+Title: Categories for the Working Mathematician
+AuthorName: Saunders
+AuthorSurname: MacLane
+Publicher: Springer
+Pages: 300
+Classifiers:
+  Обучение: Математика
+---
+Title: A tour of C++
+AuthorName: Bjern
+AuthorSurname: Stroustrup
+Publisher: Csociety
+Pages: 600
+Classifiers:
+  Обучение: Программирование
+---
+Title: 1984
+AuthorName: Джордж 
+AuthorSurname: Оруэлл
+Publisher: Классика
+Pages: 200
+Classifiers:
+  Жанр: Антиутопия
+---
+

@@ -1,0 +1,6 @@
+Testing text with some brackets
+A lot of 
+In different states 
+ So,
+I think, it  do all  correctly
+That's all */

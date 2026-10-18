@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1728937207 source:c:\users\79262\documents\github\mishagrishkin15\interpolate\interpolation.c
+	"interpolation.h"
+
+1728937230 c:\users\79262\documents\github\mishagrishkin15\interpolate\interpolation.h
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+
+1729005499 source:c:\users\79262\documents\github\mishagrishkin15\interpolate\main.c
+	"interpolation.h"
+

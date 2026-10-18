@@ -1,6 +1,6 @@
 all : a.out run
 FormatingPar.o : FormatingPar.c FormatingPar.h
-	gcc -c PosOfWord.c 
+	gcc -c FormatingPar.c 
 
 main.o : main.c FormatingPar.h
 	gcc -c main.c 

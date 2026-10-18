@@ -1,7 +1,7 @@
 #include "./utils/utils.h"
 
 
-void function_string5 (FILE *output, FILE *input)
+void function_string5 (FILE *output, FILE *input) \
 {
 	int symbols_size = 256;
    	int *symbol_frequency = NULL;

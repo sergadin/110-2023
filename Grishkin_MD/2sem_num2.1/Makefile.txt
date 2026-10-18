@@ -1,0 +1,23 @@
+all : a.out run
+
+
+
+integral.o : integral.c integral.h
+
+	gcc -c -g integral.c
+
+
+
+main.o : main.c integral.h
+
+	gcc -c -g main.c
+
+run : a.out
+
+	./a.out
+
+
+
+a.out : main.o integral.o
+
+	gcc -g main.o integral.o -lm

@@ -1,0 +1,7 @@
+Testing text with some brackets
+A lot of /* brackets */
+In different states /* Do you think
+it will work correctly?
+Or not? */ So,
+I think, it /*SHOULD*/ do all /*tasks*/ correctly
+That's all */

@@ -33,13 +33,23 @@ int main(void){
         
         if((output = fopen(test[i].output, "w")) == NULL){
             printf("Тест №%d не пройден", i + 1);
+            fclose(input);
             return -1;
         }
         
         
         FormatingPar(input, output, &error, test[i].wide);
         
-        
+        if(error == OK){
+            printf("Тест №%d успешно пройден", i + 1);
+        }
+        else{
+            printf("Тест №%d не пройден", i + 1);
+            fclose(input);
+            fclose(output);
+            return -1;
+        }
+
         fclose(input);
         fclose(output);
     }    

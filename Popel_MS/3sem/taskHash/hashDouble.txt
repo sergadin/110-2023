@@ -1,0 +1,4 @@
+double
+str1 23.02
+str2 24
+str3 0.004

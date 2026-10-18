@@ -1,0 +1,3 @@
+Alexander Efimovich Krasnov;210;4.6;sashakras19@mail.ru
+Denis Efimovich Krasnov;210;3.7;deniskras@mail.ru
+Maria Sergeevna Sidorova;105;4.9;mariasid18@mail.ru
