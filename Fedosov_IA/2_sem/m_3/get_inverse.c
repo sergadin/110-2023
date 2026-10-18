@@ -4,7 +4,6 @@
 #include "get_inverse.h"
 #define EPS 1e-8
 
-
 // функция транспонирования матрицы
 static double *transponate(double *mas, int rows, int cols)
 {
@@ -91,23 +90,17 @@ static double determinant(double *mas, int m)
   return (d);
 }
 
-double *inverse(double* mat, int size, Error *error)
+double *inverse(double *mat, int size, Error *error)
 {
   double *temp;
   double *temp2;
   int m = size;
-  if (*error == EMPTY_FILE)
-  {
-    free(mat);
-    return 0;
-  }
 
   double *rez = (double *)malloc(m * m * sizeof(double));
   double det = determinant(mat, m); // находим определитель исходной матрицы
   if (fabs(det) < EPS)
   {
     free(rez);
-    free(mat);
     *error = NO_INVERSE;
     return 0;
   }
@@ -127,7 +120,6 @@ double *inverse(double* mat, int size, Error *error)
     }
   }
 
-  free(mat);
   *error = OK;
   temp2 = transponate(rez, m, m);
   free(rez);
